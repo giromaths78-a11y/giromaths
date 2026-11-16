@@ -1,0 +1,569 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Programmes de construction</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--acc:#2563eb;--acc2:#1e40af;--soft:#e6eeff;--bg:#f7f9ff;--card:#fff;--ink:#15203a;--muted:#5b6782;--line:#d6e0f5;
+  --ok:#15803d;--oksoft:#dcfce7;--bad:#b91c1c;--badsoft:#fee2e2;--hint:#7c3aed;--pad:#94a3b8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--acc:#7aa5ff;--acc2:#a9c4ff;--soft:#1b2a47;--bg:#0f1522;--card:#172033;--ink:#e8eefb;--muted:#a3b0c8;--line:#2c3a55;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;--pad:#64748b;color-scheme:dark}}
+:root[data-theme="dark"]{--acc:#7aa5ff;--acc2:#a9c4ff;--soft:#1b2a47;--bg:#0f1522;--card:#172033;--ink:#e8eefb;--muted:#a3b0c8;--line:#2c3a55;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;--pad:#64748b;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+header.hero{background:linear-gradient(135deg,#2563eb,#1e3a8a);color:#fff;border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
+header.hero::after{content:"⊥ //  ○";position:absolute;right:14px;bottom:-12px;font:700 54px/1 "Space Grotesk",sans-serif;opacity:.15;white-space:nowrap}
+.eyebrow{font:600 .8rem "Space Grotesk",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+h1{font:700 clamp(1.6rem,4.5vw,2.3rem)/1.1 "Space Grotesk",sans-serif;margin:4px 0 6px}
+header.hero p{margin:0;max-width:60ch;opacity:.95;position:relative;z-index:1}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 10px}
+.tab{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font:600 .9rem Inter,sans-serif;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+.tab .n{font-variant-numeric:tabular-nums;opacity:.8;font-weight:500;margin-left:4px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);margin-bottom:12px}
+.score{font:700 1rem "Space Grotesk",sans-serif;font-variant-numeric:tabular-nums}
+.progress{flex:1 1 160px;height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:120px}
+.progress span{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.btn{border:1.5px solid var(--acc);background:var(--card);color:var(--acc);border-radius:8px;padding:5px 12px;font:600 .88rem Inter,sans-serif;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--acc);color:var(--bg)}
+.btn:focus-visible,input:focus-visible,.tab:focus-visible,.choice:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.rappel{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.95rem}
+.rappel b{color:var(--acc2)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.q.ok{border-color:var(--ok);box-shadow:inset 4px 0 0 var(--ok)}
+.q.bad{border-color:var(--bad);box-shadow:inset 4px 0 0 var(--bad)}
+.qhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.num{font:700 .85rem "Space Grotesk",sans-serif;background:var(--soft);color:var(--acc2);border-radius:6px;padding:1px 8px}
+.consigne{color:var(--muted);font-size:.9rem}
+.expr{font-size:1.15rem;margin:6px 0 8px}
+.expr.txt{font-size:1rem}
+.m{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;white-space:nowrap}
+.ans{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ans input{font:1.1rem "Cambria Math","Times New Roman",serif;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:8.5em;max-width:100%;text-align:center}
+.ans .lbl{font-size:1.15rem}
+.ans input.sm{width:5.2em}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choice{border:1.5px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 14px;cursor:pointer;font:600 1rem Inter,sans-serif;color:var(--ink);min-width:44px}
+.choice.big{font:700 1.25rem "Cambria Math","Times New Roman",serif;min-width:52px}
+.choice.sel{border-color:var(--acc);background:var(--soft)}
+.choice .rk{display:inline-block;min-width:1.4em;margin-right:4px;border-radius:50%;background:var(--acc);color:var(--bg);font:700 .8rem/1.4em Inter,sans-serif;text-align:center}
+.seq{font-size:1.15rem;min-height:1.6em;margin:2px 0}
+.fb{margin-top:6px;font-size:.92rem}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}.fb.hint{color:var(--hint)}
+.corr{margin-top:8px;background:var(--soft);border-radius:8px;padding:8px 12px;font-size:1rem}
+.corr .line{display:block;margin:2px 0}
+.corr .why{display:block;font:italic .88rem Inter,sans-serif;color:var(--muted);margin-top:4px}
+.ai{display:contents}
+.ans input.ok{border-color:var(--ok);background:var(--oksoft)}
+.ans input.bad{border-color:var(--bad);background:var(--badsoft)}
+.etoiles{color:#f59e0b;letter-spacing:2px;font-size:1rem;margin-left:4px}
+.aide{font-size:.85rem;color:var(--muted);margin:0 0 10px}
+footer{margin-top:28px;color:var(--muted);font-size:.82rem;text-align:center}
+.ans input.xs{width:2.6em;padding:6px 4px}
+.ans input.md{width:6.5em}
+.ans input.wd{width:7.6em;font:600 .9rem Inter,sans-serif;padding:5px 4px}
+table.numt th input.wd{width:7em}
+table.numt th.pe{background:var(--card)}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.15}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px 2px}
+.fr>span:last-child{padding:2px 3px 0}
+.fr input{margin:1px 0}
+.tpl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font:1.15rem "Cambria Math","STIX Two Math","Times New Roman",serif}
+.tpl .t{white-space:nowrap}
+.tw{overflow-x:auto;max-width:100%}
+table.numt{border-collapse:collapse;font-size:.85rem;text-align:center}
+table.numt th{background:var(--soft);color:var(--acc2);border:1px solid var(--line);padding:4px 3px;font-weight:600;min-width:3.4em;line-height:1.15}
+table.numt th.vg,table.numt td.vg{min-width:1em;width:1em;border-left:2px solid var(--acc);border-right:2px solid var(--acc)}
+table.numt td{border:1px solid var(--line);padding:3px;font:1.2rem "Cambria Math","Times New Roman",serif;height:2.1em}
+table.numt td input.xs{width:2.2em}
+table.numt td.vg{font-weight:700;color:var(--acc2)}
+svg.gl{width:100%;max-width:820px;height:auto;display:block;margin:4px 0;touch-action:manipulation}
+svg.gl .ax{stroke:var(--ink);stroke-width:2}
+svg.gl .tk{stroke:var(--ink);stroke-width:1.3}
+svg.gl text{fill:var(--ink);font:15px "Cambria Math","Times New Roman",serif;text-anchor:middle}
+svg.gl .pt{stroke:#e11d48;stroke-width:3.5}
+svg.gl text.pl{fill:#e11d48;font:700 16px Inter,sans-serif}
+svg.gl .hit{fill:transparent;cursor:pointer}
+svg.gl .hit:hover{fill:var(--soft);fill-opacity:.8}
+svg.gl .sel{stroke:var(--acc);stroke-width:3.5}
+svg.gl text.sl{fill:var(--acc);font:700 16px Inter,sans-serif}
+svg.gl .sol{stroke:var(--ok);stroke-width:3.5}
+svg.gl text.so{fill:var(--ok);font:700 15px Inter,sans-serif}
+svg.band rect{stroke:var(--ink);stroke-width:1.2}
+svg.band .on{fill:#facc15}svg.band .off{fill:var(--card)}
+.placehint{font-size:.88rem;color:var(--muted)}
+
+[hidden]{display:none!important}
+.progs{display:grid;gap:8px;margin:16px 0 10px}
+.progs .grp{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.progs .gl{font:700 .8rem "Space Grotesk",sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);min-width:5.5em}
+.prog{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:5px 12px;font:600 .86rem Inter,sans-serif;cursor:pointer}
+.prog[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.card h2{font:700 1.15rem "Space Grotesk",sans-serif;margin:0 0 6px;color:var(--acc2)}
+ol.steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:5px}
+ol.steps li{display:flex;gap:10px;align-items:flex-start;padding:4px 6px;border-radius:8px}
+ol.steps li.ok{background:var(--oksoft)}ol.steps li.bad{background:var(--badsoft)}
+ol.steps .sn{flex:0 0 auto;font:700 .82rem "Space Grotesk",sans-serif;background:var(--soft);color:var(--acc2);border-radius:6px;min-width:1.8em;text-align:center;padding:1px 4px;margin-top:2px}
+ol.steps li.ok .sn{background:var(--ok);color:var(--bg)}ol.steps li.bad .sn{background:var(--bad);color:var(--bg)}
+ol.steps .sm{font-size:.86rem;color:var(--bad);margin-top:2px}
+ol.steps .how{font-size:.88rem;color:var(--hint);margin-top:3px}
+.acts{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;align-items:center}
+#bilan{font:600 .92rem Inter,sans-serif}.okc{color:var(--ok)}
+.toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line)}
+.tool{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:8px;padding:4px 9px;font:600 .84rem Inter,sans-serif;cursor:pointer;display:inline-flex;gap:5px;align-items:center}
+.tool .ti{font:700 .95rem "Cambria Math","Times New Roman",serif;color:var(--acc)}
+.tool[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:var(--bg)}.tool[aria-pressed="true"] .ti{color:var(--bg)}
+.fld{display:inline-flex;gap:5px;align-items:center;font-size:.86rem;color:var(--muted)}
+.fld input{width:3.6em;font:600 1rem Inter,sans-serif;padding:3px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--card);color:var(--ink);text-align:center}
+.sep{flex:1 1 auto}
+.planw{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-top:8px;overflow:hidden}
+svg#plan{width:100%;height:auto;display:block;touch-action:manipulation;cursor:crosshair;user-select:none}
+svg#plan.sol{cursor:default;background:repeating-linear-gradient(45deg,transparent 0 12px,color-mix(in srgb,var(--ok) 5%,transparent) 12px 24px)}
+#plan .grid circle{fill:var(--line)}
+#plan .cv{stroke:var(--ink);stroke-width:.045;fill:none;stroke-linecap:round}
+#plan .cv.aide{stroke:var(--muted);stroke-dasharray:.15 .12;stroke-width:.03}
+#plan .cv.hl{stroke:var(--acc);stroke-width:.09}
+#plan .neu{stroke:#e11d48!important}
+#plan .px{stroke:var(--ink);stroke-width:.05;fill:none}
+#plan text{font:italic .5px "Cambria Math","Times New Roman",serif;fill:var(--ink)}
+#plan text.ln{fill:#e11d48;font-size:.46px;text-anchor:middle}
+#plan .pv{stroke:var(--acc);stroke-width:.035;stroke-dasharray:.12 .1;fill:none}
+#plan .snap{fill:none;stroke:var(--acc);stroke-width:.04}
+#plan .snap.on{fill:var(--acc);fill-opacity:.25}
+#status{min-height:1.6em;font-size:.9rem;color:var(--muted);padding:6px 10px;border-top:1px solid var(--line)}
+#status.bad{color:var(--bad)}
+.solbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-top:1px solid var(--line);background:var(--oksoft)}
+.rename{display:flex;gap:6px;align-items:center;flex-wrap:wrap;padding:8px 10px;border-top:1px solid var(--line);background:var(--soft)}
+.rename input{font:1.1rem "Cambria Math","Times New Roman",serif;width:5em;padding:3px 8px;border:1.5px solid var(--acc);border-radius:6px;background:var(--card);color:var(--ink)}
+@media (min-width:700px){.toolbar{position:sticky;top:0;z-index:5}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">6ème · S2 · Droites et cercles</div>
+  <h1>Programmes de construction</h1>
+  <p>Lis le programme, construis la figure avec les outils, puis vérifie. Les mesures changent à chaque nouveau programme. Deux points voisins de la grille sont à 1 cm l’un de l’autre.</p>
+</header>
+<div class="progs">
+  <div class="grp"><span class="gl">Droites</span><span id="progD" class="grp"></span></div>
+  <div class="grp"><span class="gl">Cercles</span><span id="progC" class="grp"></span></div>
+</div>
+<section class="card">
+  <h2 id="progTitle"></h2>
+  <ol class="steps" id="steps"></ol>
+  <div class="acts"><button class="btn primary" id="verif">Vérifier ma figure</button><button class="btn" id="showSol">Voir la correction</button><button class="btn" id="newProg">Nouveau programme (autres mesures)</button><span id="bilan"></span></div>
+</section>
+<div class="toolbar">
+  <span id="tools" style="display:contents"></span>
+  <span class="sep"></span>
+  <label class="fld">Prochain point <input id="nextName" maxlength="3" autocomplete="off"></label>
+  <label class="fld" id="rayonBox" hidden>Rayon <input id="rayon" inputmode="decimal" autocomplete="off" placeholder="cm"> cm</label>
+  <button class="btn" id="undo">Annuler</button><button class="btn" id="clear">Tout effacer</button>
+</div>
+<div class="planw">
+  <svg id="plan" viewBox="0 0 16 10" role="img" aria-label="Plan de construction"></svg>
+  <div class="rename" id="renameBox" hidden><span id="renameLbl">Nom :</span><input id="renameIn" autocomplete="off" autocapitalize="off" spellcheck="false"><button class="btn primary" id="renameOk">OK</button><button class="btn" id="renameNo">Annuler</button></div>
+  <div class="solbar" id="solBar" hidden><b>Correction</b><button class="btn" id="solPrev">◀ Étape précédente</button><span id="solInfo"></span><button class="btn" id="solNext">Étape suivante ▶</button><button class="btn" id="solAll">Tout afficher</button></div>
+  <div id="status"></div>
+</div>
+<p class="aide" style="margin-top:10px">Les points s'accrochent aux droites, aux cercles et aux points d'intersection. Sur une droite, la distance au point de départ s'affiche (comme avec une règle graduée).</p>
+<footer>GiroMaths · 6ème S2 · Droites et cercles · © 2026</footer>
+</div>
+<script>
+(function(){
+"use strict";
+/* ============ géométrie (unité : le cm) ============ */
+const W=16,H=10,EPS=0.02;
+const V=(x,y)=>({x,y});
+const sub=(a,b)=>V(a.x-b.x,a.y-b.y),addv=(a,b)=>V(a.x+b.x,a.y+b.y),mul=(a,k)=>V(a.x*k,a.y*k);
+const dot=(a,b)=>a.x*b.x+a.y*b.y,cross=(a,b)=>a.x*b.y-a.y*b.x,len=a=>Math.hypot(a.x,a.y);
+const unit=a=>{const l=len(a);return V(a.x/l,a.y/l);};
+const dist=(a,b)=>len(sub(a,b));
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const fmt=x=>{const r=Math.round(x*10)/10;return String(r).replace(".",",");};
+const M=s=>'<span class="m">'+s+'</span>';
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+/* ============ figure : liste d'objets ============
+ pt   {t:"pt",id,x,y,name,hid}
+ seg  {t:"seg",a,b}     ray {t:"ray",a,b}     line {t:"line",a,b,name}  ou  {t:"line",th,d,via,name}
+ circ {t:"circ",c,r}
+*/
+function Fig(objs){
+  const byId={};objs.forEach(o=>{if(o.t==="pt")byId[o.id]=o;});
+  const P=id=>byId[id];
+  function geo(o){
+    if(o.t==="circ"){const c=P(o.c);return {circ:true,c:V(c.x,c.y),r:o.r};}
+    if(o.th!=null){const p=P(o.th);return {p:V(p.x,p.y),d:o.d,lo:-Infinity,hi:Infinity,orig:p};}
+    const a=P(o.a),b=P(o.b);const d=unit(sub(b,a));
+    return {p:V(a.x,a.y),d,lo:o.t==="line"?-Infinity:0,hi:o.t==="seg"?dist(a,b):Infinity,orig:a};}
+  const curves=()=>objs.filter(o=>o.t!=="pt");
+  const lineObjs=()=>objs.filter(o=>o.t==="seg"||o.t==="ray"||o.t==="line");
+  const pts=()=>objs.filter(o=>o.t==="pt"&&!o.hid);
+  const pt=n=>{let r=null;objs.forEach(o=>{if(o.t==="pt"&&!o.hid&&o.name===n)r=o;});return r;};
+  const supDist=(g,X)=>Math.abs(cross(sub(X,g.p),g.d));
+  const onSup=(o,X)=>supDist(geo(o),X)<EPS;
+  const onObj=(o,X)=>{const g=geo(o);if(g.circ)return Math.abs(dist(g.c,X)-g.r)<EPS;const t=dot(sub(X,g.p),g.d);return supDist(g,X)<EPS&&t>g.lo-EPS&&t<g.hi+EPS;};
+  const same=(X,Y)=>dist(X,Y)<EPS;
+  const segs=(A,B)=>objs.filter(o=>o.t==="seg"&&((same(P(o.a),A)&&same(P(o.b),B))||(same(P(o.a),B)&&same(P(o.b),A))));
+  const lines=(A,B)=>objs.filter(o=>o.t==="line"&&onSup(o,A)&&onSup(o,B));
+  const rays=(A,B)=>objs.filter(o=>o.t==="ray"&&same(geo(o).p,A)&&onObj(o,B));
+  const dirOf=(A,B)=>unit(sub(B,A));
+  const isPerp=(o,d)=>Math.abs(dot(geo(o).d,d))<1e-3;
+  const isPara=(o,d)=>Math.abs(cross(geo(o).d,d))<1e-3;
+  const circs=()=>objs.filter(o=>o.t==="circ");
+  const circ=(C,r)=>circs().filter(o=>same(P(o.c),C)&&(r==null||Math.abs(o.r-r)<EPS));
+  const named=nm=>objs.filter(o=>o.t==="line"&&o.name===nm);
+  const onCirc=(o,X)=>Math.abs(dist(P(o.c),X)-o.r)<EPS;
+  return {objs,P,geo,curves,lineObjs,pts,pt,onSup,onObj,same,segs,lines,rays,dirOf,isPerp,isPara,circs,circ,named,onCirc,dist};
+}
+// intersections de deux courbes
+function inter(F,o1,o2){const g1=F.geo(o1),g2=F.geo(o2);const res=[];
+  const inR=(g,t)=>t>g.lo-1e-7&&t<g.hi+1e-7;
+  if(!g1.circ&&!g2.circ){const den=cross(g1.d,g2.d);if(Math.abs(den)<1e-9)return res;const w=sub(g2.p,g1.p);const t=cross(w,g2.d)/den,s=cross(w,g1.d)/den;
+    if(inR(g1,t)&&inR(g2,s))res.push(addv(g1.p,mul(g1.d,t)));return res;}
+  if(g1.circ&&g2.circ){const d=dist(g1.c,g2.c);if(d<1e-9||d>g1.r+g2.r+1e-9||d<Math.abs(g1.r-g2.r)-1e-9)return res;
+    const a=(g1.r*g1.r-g2.r*g2.r+d*d)/(2*d),h=Math.sqrt(Math.max(0,g1.r*g1.r-a*a));const u=unit(sub(g2.c,g1.c)),m=addv(g1.c,mul(u,a)),n=V(-u.y,u.x);
+    res.push(addv(m,mul(n,h)));if(h>1e-9)res.push(addv(m,mul(n,-h)));return res;}
+  const L=g1.circ?g2:g1,C=g1.circ?g1:g2;const f=sub(L.p,C.c);const b=dot(f,L.d),c=dot(f,f)-C.r*C.r,disc=b*b-c;if(disc<-1e-9)return res;
+  const sq=Math.sqrt(Math.max(0,disc));[-b-sq,-b+sq].forEach((t,i)=>{if(i===1&&sq<1e-9)return;if(inR(L,t))res.push(addv(L.p,mul(L.d,t)));});return res;}
+
+/* ============ programmes de construction ============ */
+const ok=()=>[true];const no=m=>[false,m||"Pas encore fait."];
+// aide : trouve la droite perpendiculaire (ou parallèle) à la direction d passant par X
+const throughWith=(F,X,d,perp)=>F.objs.filter(o=>o.t==="line"&&F.onSup(o,X)&&(perp?F.isPerp(o,d):F.isPara(o,d)));
+function nomCheck(F,list,nm){if(!list.length)return null;if(list.some(o=>o.name===nm))return ok();return no(`La droite est tracée ; nomme-la ${M("("+nm+")")} avec l'outil « Nommer ».`);}
+function stepSeg(A,B,L){return {txt:`Trace un segment ${M(`[${A}${B}]`)}${L?` de ${fmt(L)} cm`:""}.`,how:L?`Règle graduée : place ${M(A)}, puis ${M(B)} à ${fmt(L)} cm de ${M(A)}, et trace le segment.`:`Règle : trace le segment qui relie ${M(A)} et ${M(B)}.`,
+  check:F=>{const a=F.pt(A),b=F.pt(B);if(!a||!b)return no(`Place et nomme les points ${M(A)} et ${M(B)}.`);if(!F.segs(a,b).length)return no(`Le segment ${M(`[${A}${B}]`)} n'est pas tracé.`);
+    if(L&&Math.abs(F.dist(a,b)-L)>EPS)return no(`${M(`${A}${B} = ${fmt(F.dist(a,b))} cm`)} au lieu de ${fmt(L)} cm.`);return ok();}};}
+function chkSeg(F,A,B){const a=F.pt(A),b=F.pt(B);return a&&b&&F.segs(a,b).length>0;}
+function stepSegs(list){return {txt:`Trace ${list.length>1?"les segments":"le segment"} ${(l=>l.length>1?l.slice(0,-1).join(", ")+" et "+l[l.length-1]:l[0])(list.map(([a,b])=>M(`[${a}${b}]`)))}.`,how:"Règle : relie les points deux à deux.",
+  check:F=>{const miss=list.filter(([a,b])=>!chkSeg(F,a,b));return miss.length?no(`Il manque : ${miss.map(([a,b])=>M(`[${a}${b}]`)).join(", ")}.`):ok();}};}
+function stepLine(A,B){return {txt:`Trace la droite ${M(`(${A}${B})`)}.`,how:`Règle : trace une droite qui passe par ${M(A)} et ${M(B)} et dépasse des deux côtés.`,
+  check:F=>{const a=F.pt(A),b=F.pt(B);if(!a||!b)return no(`Il faut d'abord les points ${M(A)} et ${M(B)}.`);if(F.lines(a,b).length)return ok();
+    if(F.segs(a,b).length||F.rays(a,b).length||F.rays(b,a).length)return no(`Tu as tracé un segment ou une demi-droite : une droite est illimitée des deux côtés (outil « Droite »).`);return no();}};}
+function stepRay(A,B){return {txt:`Trace la demi-droite ${M(`[${A}${B})`)}.`,how:`Règle : pars de l'origine ${M(A)}, passe par ${M(B)} et continue après ${M(B)}.`,
+  check:F=>{const a=F.pt(A),b=F.pt(B);if(!a||!b)return no(`Il faut d'abord les points ${M(A)} et ${M(B)}.`);if(F.rays(a,b).length)return ok();
+    if(F.rays(b,a).length)return no(`Tu as tracé ${M(`[${B}${A})`)} : l'origine de ${M(`[${A}${B})`)} est ${M(A)}.`);if(F.lines(a,b).length||F.segs(a,b).length)return no(`Utilise l'outil « Demi-droite », en cliquant d'abord sur l'origine ${M(A)}.`);return no();}};}
+function stepPerp(A,B,C,nm,lab){const L=lab||`(${A}${B})`;return {txt:`Trace la droite perpendiculaire à ${M(L)} passant par ${M(C)}${nm?` ; nomme-la ${M(`(${nm})`)}`:""}.`,
+  how:`Équerre : un côté de l'angle droit sur ${M(L)}, l'autre passant par ${M(C)}. Outil « Perpendiculaire » : clique sur la droite, puis sur ${M(C)}.`,
+  check:F=>{const a=F.pt(A),b=F.pt(B),c=F.pt(C);if(!a||!b||!c)return no(`Il faut d'abord les points ${M(A)}, ${M(B)} et ${M(C)}.`);const l=throughWith(F,c,F.dirOf(a,b),true);
+    if(!l.length)return no();return nm?nomCheck(F,l,nm):ok();}};}
+function stepPara(A,B,C,nm){return {txt:`Trace la droite parallèle à ${M(`(${A}${B})`)} passant par ${M(C)}${nm?` ; nomme-la ${M(`(${nm})`)}`:""}.`,
+  how:`Règle et équerre (on fait glisser l'équerre) — outil « Parallèle » : clique sur la droite ${M(`(${A}${B})`)}, puis sur ${M(C)}.`,
+  check:F=>{const a=F.pt(A),b=F.pt(B),c=F.pt(C);if(!a||!b||!c)return no(`Il faut d'abord les points ${M(A)}, ${M(B)} et ${M(C)}.`);const l=throughWith(F,c,F.dirOf(a,b),false);
+    if(!l.length)return no();return nm?nomCheck(F,l,nm):ok();}};}
+function stepMilieu(I,A,B){return {txt:`Place le point ${M(I)}, milieu du segment ${M(`[${A}${B}]`)}.`,how:`Règle graduée : mesure ${M(A+B)} et divise par 2 ; place ${M(I)} sur le segment à cette distance de ${M(A)}.`,
+  check:F=>{const i=F.pt(I),a=F.pt(A),b=F.pt(B);if(!a||!b)return no(`Il faut d'abord le segment ${M(`[${A}${B}]`)}.`);if(!i)return no(`Place et nomme le point ${M(I)}.`);
+    const onS=Math.abs(F.dist(a,i)+F.dist(i,b)-F.dist(a,b))<EPS;if(!onS)return no(`${M(I)} doit appartenir au segment ${M(`[${A}${B}]`)}.`);
+    if(Math.abs(F.dist(i,a)-F.dist(i,b))>EPS)return no(`${M(`${I}${A} = ${fmt(F.dist(i,a))} cm`)} et ${M(`${I}${B} = ${fmt(F.dist(i,b))} cm`)} : ce n'est pas le milieu.`);return ok();}};}
+function stepCercle(O,r,nm){return {txt:`Trace le cercle${nm?" "+M(nm):""} de centre ${M(O)} et de rayon ${fmt(r)} cm.`,how:`Compas : écartement ${fmt(r)} cm (sur la règle), pointe sèche sur ${M(O)}. Outil « Cercle » : écris ${fmt(r)} dans « rayon », puis clique sur ${M(O)}.`,
+  check:F=>{const o=F.pt(O);if(!o)return no(`Place et nomme le point ${M(O)}.`);if(F.circ(o,r).length)return ok();const c=F.circ(o);if(c.length)return no(`Le cercle de centre ${M(O)} a pour rayon ${fmt(c[0].r)} cm au lieu de ${fmt(r)} cm.`);return no();}};}
+function stepPtOnCirc(Pn,O,r,diff){return {txt:`Place un point ${M(Pn)} sur le cercle de centre ${M(O)}${diff?`, différent de ${diff.map(M).join(" et de ")}`:""}.`,how:`Clique sur le cercle : le point s'y accroche.`,
+  check:F=>{const p=F.pt(Pn),o=F.pt(O);if(!p)return no(`Place et nomme le point ${M(Pn)}.`);if(!o||Math.abs(F.dist(o,p)-r)>EPS)return no(`${M(Pn)} n'est pas sur le cercle.`);
+    if(diff&&diff.some(n=>{const q=F.pt(n);return q&&F.same(q,p);}))return no(`${M(Pn)} doit être différent de ${diff.map(M).join(" et ")}.`);return ok();}};}
+
+const PROGS=[
+ {id:"d1",theme:"droites",title:"Milieu et perpendiculaire",
+  params:()=>({n:pick([6,7,8,9,10]),h:pick([2,3,4])}),
+  steps:p=>[stepSeg("A","B",p.n),stepMilieu("I","A","B"),stepPerp("A","B","I","d"),
+    {txt:`Place un point ${M("C")} sur la droite ${M("(d)")} tel que ${M(`IC = ${p.h} cm`)}.`,how:`Règle graduée posée sur ${M("(d)")}, le 0 sur ${M("I")}.`,
+     check:F=>{const c=F.pt("C"),i=F.pt("I"),a=F.pt("A"),b=F.pt("B");if(!c)return no(`Place et nomme le point ${M("C")}.`);if(!i||!a||!b)return no();
+       if(!throughWith(F,i,F.dirOf(a,b),true).some(o=>F.onSup(o,c)))return no(`${M("C")} doit appartenir à la droite ${M("(d)")}.`);
+       if(Math.abs(F.dist(i,c)-p.h)>EPS)return no(`${M(`IC = ${fmt(F.dist(i,c))} cm`)} au lieu de ${p.h} cm.`);return ok();}},
+    stepSegs([["A","C"],["B","C"]])],
+  sol:(p,E)=>{E.st(0);E.pt("A",8-p.n/2,7.5);E.pt("B",8+p.n/2,7.5);const s=E.seg("A","B");E.st(1);E.pt("I",8,7.5);E.st(2);E.perp(s,"I","d");
+    E.st(3);E.pt("C",8,7.5-p.h);E.st(4);E.seg("A","C");E.seg("B","C");}},
+ {id:"d2",theme:"droites",title:"Demi-droite et parallèle",
+  params:()=>({}),
+  steps:p=>[{txt:`Place trois points ${M("A")}, ${M("B")} et ${M("C")} non alignés.`,how:`Place les trois points de façon qu'aucune droite ne passe par les trois.`,
+     check:F=>{const a=F.pt("A"),b=F.pt("B"),c=F.pt("C");if(!a||!b||!c)return no(`Place et nomme les points ${M("A")}, ${M("B")} et ${M("C")}.`);
+       if(F.same(a,b)||Math.abs(cross(sub(b,a),sub(c,a)))/dist(a,b)<0.3)return no(`Les points ${M("A")}, ${M("B")} et ${M("C")} semblent alignés : éloigne ${M("C")} de la droite ${M("(AB)")}.`);return ok();}},
+    stepLine("A","B"),stepRay("A","C"),stepSegs([["B","C"]]),stepPara("A","B","C","d"),
+    {txt:`Place un point ${M("D")} sur la demi-droite ${M("[AC)")} tel que ${M("D ∉ [AC]")}.`,how:`${M("D")} est sur la demi-droite, mais après ${M("C")} (pas entre ${M("A")} et ${M("C")}).`,
+     check:F=>{const d=F.pt("D"),a=F.pt("A"),c=F.pt("C");if(!d)return no(`Place et nomme le point ${M("D")}.`);if(!a||!c)return no();
+       const g={p:a,d:F.dirOf(a,c)};const t=dot(sub(d,a),g.d);if(Math.abs(cross(sub(d,a),g.d))>EPS||t<-EPS)return no(`${M("D")} doit appartenir à la demi-droite ${M("[AC)")}.`);
+       if(t<F.dist(a,c)+EPS)return no(`${M("D")} est sur le segment ${M("[AC]")} : place-le après ${M("C")}.`);return ok();}},
+    stepLine("B","D"),
+    {txt:`Les droites ${M("(d)")} et ${M("(BD)")} se coupent : place leur point d'intersection ${M("E")}.`,how:`Clique sur le croisement des deux droites : le point s'y accroche.`,
+     check:F=>{const e=F.pt("E"),a=F.pt("A"),b=F.pt("B"),c=F.pt("C"),d=F.pt("D");if(!e)return no(`Place et nomme le point ${M("E")}.`);if(!a||!b||!c||!d)return no();
+       const onBD=Math.abs(cross(sub(e,b),F.dirOf(b,d)))<EPS;const onPar=Math.abs(cross(sub(e,c),F.dirOf(a,b)))<EPS;
+       return onBD&&onPar?ok():no(`${M("E")} doit être à la fois sur ${M("(d)")} et sur ${M("(BD)")}.`);}}],
+  sol:(p,E)=>{E.st(0);E.pt("A",2,8);E.pt("B",9.5,8);E.pt("C",5,4.5);E.st(1);const l=E.line("A","B");E.st(2);E.ray("A","C");E.st(3);E.seg("B","C");E.st(4);E.para(l,"C","d");
+    E.st(5);E.pt("D",6.5,2.75);E.st(6);E.line("B","D");E.st(7);const t=(8-4.5)/(8-2.75);E.pt("E",9.5+(6.5-9.5)*t,4.5);}},
+ {id:"d3",theme:"droites",title:"La droite (xy) et deux perpendiculaires",
+  params:()=>({n:pick([4,5,6,7]),h:pick([2,3])}),
+  steps:p=>[{txt:`Trace une droite et nomme-la ${M("(xy)")}.`,how:`Outil « Droite » : clique deux fois n'importe où, puis « Nommer » et écris ${M("xy")}.`,
+     check:F=>F.named("xy").length||F.named("yx").length?ok():F.objs.some(o=>o.t==="line")?no(`Nomme ta droite ${M("(xy)")} avec l'outil « Nommer ».`):no()},
+    {txt:`Place deux points ${M("A")} et ${M("B")} sur ${M("(xy)")} tels que ${M(`AB = ${p.n} cm`)}.`,how:`Règle graduée posée sur ${M("(xy)")}.`,
+     check:F=>{const a=F.pt("A"),b=F.pt("B"),l=[...F.named("xy"),...F.named("yx")];if(!a||!b)return no(`Place et nomme les points ${M("A")} et ${M("B")}.`);if(!l.length)return no(`Il faut d'abord la droite ${M("(xy)")}.`);
+       if(!l.some(o=>F.onSup(o,a)&&F.onSup(o,b)))return no(`${M("A")} et ${M("B")} doivent appartenir à ${M("(xy)")}.`);if(Math.abs(F.dist(a,b)-p.n)>EPS)return no(`${M(`AB = ${fmt(F.dist(a,b))} cm`)} au lieu de ${p.n} cm.`);return ok();}},
+    stepMilieu("M","A","B"),stepPerp("A","B","A","d","(xy)"),stepPerp("A","B","B","d'","(xy)"),
+    {txt:`Place un point ${M("C")} sur ${M("(d)")} tel que ${M(`AC = ${p.h} cm`)}, puis un point ${M("D")} sur ${M("(d')")}, du même côté de ${M("(xy)")} que ${M("C")}, tel que ${M(`BD = ${p.h} cm`)}.`,how:`Règle graduée sur ${M("(d)")} puis sur ${M("(d')")}, le 0 sur ${M("A")} puis sur ${M("B")}.`,
+     check:F=>{const a=F.pt("A"),b=F.pt("B"),c=F.pt("C"),d=F.pt("D");if(!c||!d)return no(`Place et nomme les points ${M("C")} et ${M("D")}.`);if(!a||!b)return no();const u=F.dirOf(a,b);
+       if(Math.abs(dot(sub(c,a),u))>EPS||Math.abs(F.dist(a,c)-p.h)>EPS)return no(`${M("C")} doit être sur ${M("(d)")} avec ${M(`AC = ${p.h} cm`)}.`);
+       if(Math.abs(dot(sub(d,b),u))>EPS||Math.abs(F.dist(b,d)-p.h)>EPS)return no(`${M("D")} doit être sur ${M("(d')")} avec ${M(`BD = ${p.h} cm`)}.`);
+       if(cross(u,sub(c,a))*cross(u,sub(d,b))<0)return no(`${M("C")} et ${M("D")} doivent être du même côté de ${M("(xy)")}.`);return ok();}},
+    stepSegs([["C","D"]])],
+  sol:(p,E)=>{E.st(0);const l=E.lineAnon(1,7,15,7,"xy");E.st(1);E.pt("A",8-p.n/2,7);E.pt("B",8+p.n/2,7);E.st(2);E.pt("M",8,7);E.st(3);E.perp(l,"A","d");E.st(4);E.perp(l,"B","d'");
+    E.st(5);E.pt("C",8-p.n/2,7-p.h);E.pt("D",8+p.n/2,7-p.h);E.st(6);E.seg("C","D");}},
+ {id:"d4",theme:"droites",title:"Sur la demi-droite [FE)",
+  params:()=>{const n=pick([3,4,5]);return {n,m:pick([2,3]),k:pick([2,3,4])};},
+  steps:p=>[stepSeg("E","F",p.n),stepRay("F","E"),
+    {txt:`Place le point ${M("G")} sur ${M("[FE)")} tel que ${M("G ∉ [FE]")} et ${M(`EG = ${p.m} cm`)}.`,how:`${M("G")} est sur la demi-droite, après ${M("E")} : ${M(`FG = ${p.n} + ${p.m} = ${p.n+p.m} cm`)}.`,
+     check:F=>{const e=F.pt("E"),f=F.pt("F"),g=F.pt("G");if(!g)return no(`Place et nomme le point ${M("G")}.`);if(!e||!f)return no();const u=F.dirOf(f,e);const t=dot(sub(g,f),u);
+       if(Math.abs(cross(sub(g,f),u))>EPS||t<-EPS)return no(`${M("G")} doit appartenir à ${M("[FE)")}.`);if(t<F.dist(f,e)+EPS)return no(`${M("G")} est sur le segment ${M("[FE]")} : il doit être après ${M("E")}.`);
+       if(Math.abs(F.dist(e,g)-p.m)>EPS)return no(`${M(`EG = ${fmt(F.dist(e,g))} cm`)} au lieu de ${p.m} cm.`);return ok();}},
+    stepPerp("E","F","G","d"),
+    {txt:`Place un point ${M("H")} sur ${M("(d)")} tel que ${M(`GH = ${p.k} cm`)}.`,how:`Règle graduée sur ${M("(d)")}, le 0 sur ${M("G")}.`,
+     check:F=>{const e=F.pt("E"),f=F.pt("F"),g=F.pt("G"),h=F.pt("H");if(!h)return no(`Place et nomme le point ${M("H")}.`);if(!e||!f||!g)return no();
+       if(Math.abs(dot(sub(h,g),F.dirOf(e,f)))>EPS)return no(`${M("H")} doit appartenir à ${M("(d)")}.`);if(Math.abs(F.dist(g,h)-p.k)>EPS)return no(`${M(`GH = ${fmt(F.dist(g,h))} cm`)} au lieu de ${p.k} cm.`);return ok();}},
+    stepPara("E","F","H","d'")],
+  sol:(p,E)=>{E.st(0);E.pt("F",12,7);E.pt("E",12-p.n,7);const s=E.seg("E","F");E.st(1);E.ray("F","E");E.st(2);E.pt("G",12-p.n-p.m,7);E.st(3);E.perp(s,"G","d");
+    E.st(4);E.pt("H",12-p.n-p.m,7-p.k);E.st(5);E.para(s,"H","d'");}},
+ {id:"d5",theme:"droites",title:"Parallèle et points alignés",
+  params:()=>({n:pick([8,9,10]),a:pick([3,4])}),
+  steps:p=>[stepSeg("R","T",p.n),
+    {txt:`Place le point ${M("S")} sur ${M("[RT]")} tel que ${M(`RS = ${p.a} cm`)}.`,how:`Règle graduée sur ${M("[RT]")}, le 0 sur ${M("R")}.`,
+     check:F=>{const r=F.pt("R"),t=F.pt("T"),s=F.pt("S");if(!s)return no(`Place et nomme le point ${M("S")}.`);if(!r||!t)return no();
+       if(Math.abs(F.dist(r,s)+F.dist(s,t)-F.dist(r,t))>EPS)return no(`${M("S")} doit appartenir au segment ${M("[RT]")}.`);if(Math.abs(F.dist(r,s)-p.a)>EPS)return no(`${M(`RS = ${fmt(F.dist(r,s))} cm`)} au lieu de ${p.a} cm.`);return ok();}},
+    {txt:`Place un point ${M("U")} tel que ${M("R")}, ${M("S")} et ${M("U")} ne soient pas alignés.`,how:`${M("U")} ne doit pas être sur la droite ${M("(RS)")}.`,
+     check:F=>{const r=F.pt("R"),s=F.pt("S"),u=F.pt("U");if(!u)return no(`Place et nomme le point ${M("U")}.`);if(!r||!s)return no();
+       return Math.abs(cross(sub(u,r),F.dirOf(r,s)))<0.3?no(`${M("U")} est (presque) sur la droite ${M("(RS)")} : éloigne-le.`):ok();}},
+    stepLine("S","U"),stepLine("R","U"),stepPara("S","U","T"),
+    {txt:`La parallèle à ${M("(SU)")} passant par ${M("T")} coupe la droite ${M("(RU)")} : place leur point d'intersection ${M("V")}.`,how:`Clique sur le croisement des deux droites.`,
+     check:F=>{const r=F.pt("R"),s=F.pt("S"),u=F.pt("U"),t=F.pt("T"),v=F.pt("V");if(!v)return no(`Place et nomme le point ${M("V")}.`);if(!r||!s||!u||!t)return no();
+       const a=Math.abs(cross(sub(v,r),F.dirOf(r,u)))<EPS,b=Math.abs(cross(sub(v,t),F.dirOf(s,u)))<EPS;return a&&b?ok():no(`${M("V")} doit être sur ${M("(RU)")} et sur la parallèle à ${M("(SU)")} passant par ${M("T")}.`);}}],
+  sol:(p,E)=>{const w=V(0.45,-0.6);E.st(0);E.pt("R",2,8.5);E.pt("T",2+p.n,8.5);const s=E.seg("R","T");E.st(1);E.pt("S",2+p.a,8.5);E.st(2);E.pt("U",2+p.a*w.x,8.5+p.a*w.y);
+    E.st(3);const su=E.line("S","U");E.st(4);E.line("R","U");E.st(5);E.para(su,"T");E.st(6);E.pt("V",2+p.n*w.x,8.5+p.n*w.y);}},
+ {id:"c1",theme:"cercles",title:"Rayon, diamètre, corde",
+  params:()=>({r:pick([2,2.5,3,3.5])}),
+  steps:p=>[{txt:`Place un point ${M("O")}.`,how:`Outil « Point » ; vérifie que le nom est ${M("O")}.`,check:F=>F.pt("O")?ok():no(`Place et nomme le point ${M("O")}.`)},
+    stepCercle("O",p.r,"𝒞"),stepPtOnCirc("A","O",p.r),
+    {txt:`Trace le diamètre ${M("[AB]")} du cercle ${M("𝒞")}.`,how:`Trace la droite ${M("(AO)")} : elle recoupe le cercle en ${M("B")}. Place ${M("B")}, puis trace ${M("[AB]")}.`,
+     check:F=>{const a=F.pt("A"),b=F.pt("B"),o=F.pt("O");if(!b)return no(`Place et nomme le point ${M("B")}.`);if(!a||!o)return no();if(Math.abs(F.dist(o,b)-p.r)>EPS)return no(`${M("B")} doit être sur le cercle.`);
+       if(Math.abs(F.dist(a,o)+F.dist(o,b)-F.dist(a,b))>EPS)return no(`Un diamètre passe par le centre ${M("O")} : ${M("B")} est mal placé.`);if(!F.segs(a,b).length)return no(`Trace le segment ${M("[AB]")}.`);return ok();}},
+    stepPtOnCirc("C","O",p.r,["A","B"]),
+    {txt:`Trace la corde ${M("[AC]")} et le rayon ${M("[OC]")}.`,how:`Règle : relie les points.`,check:F=>{const m=[["A","C"],["O","C"]].filter(([a,b])=>!chkSeg(F,a,b));return m.length?no(`Il manque : ${m.map(([a,b])=>M(`[${a}${b}]`)).join(", ")}.`):ok();}},
+    stepPerp("A","B","O"),
+    {txt:`Cette perpendiculaire coupe le cercle ${M("𝒞")} en deux points : place-les et nomme-les ${M("E")} et ${M("F")}.`,how:`Clique sur les deux croisements de la droite et du cercle.`,
+     check:F=>{const a=F.pt("A"),b=F.pt("B"),o=F.pt("O"),e=F.pt("E"),f=F.pt("F");if(!e||!f)return no(`Place et nomme les points ${M("E")} et ${M("F")}.`);if(!a||!b||!o)return no();
+       const good=X=>Math.abs(F.dist(o,X)-p.r)<EPS&&Math.abs(dot(sub(X,o),F.dirOf(a,b)))<EPS;if(!good(e)||!good(f))return no(`${M("E")} et ${M("F")} doivent être sur le cercle et sur la perpendiculaire.`);
+       return F.same(e,f)?no(`${M("E")} et ${M("F")} doivent être deux points différents.`):ok();}}],
+  sol:(p,E)=>{const o=V(8,5),r=p.r,at=a=>V(o.x+r*Math.cos(a),o.y-r*Math.sin(a));E.st(0);E.pt("O",8,5);E.st(1);E.circ("O",r);
+    const A=at(Math.PI*200/180),B=at(Math.PI*20/180),C=at(Math.PI*150/180);E.st(2);E.pt("A",A.x,A.y);E.st(3);E.lineAnonPts("A","O");E.pt("B",B.x,B.y);const ab=E.seg("A","B");
+    E.st(4);E.pt("C",C.x,C.y);E.st(5);E.seg("A","C");E.seg("O","C");E.st(6);E.perp(ab,"O");const e=at(Math.PI*110/180),f=at(Math.PI*290/180);E.st(7);E.pt("E",e.x,e.y);E.pt("F",f.x,f.y);}},
+ {id:"c2",theme:"cercles",title:"Deux cercles qui se coupent",
+  params:()=>{let n,r1,r2;do{n=pick([5,6,7]);r1=pick([3,3.5,4]);r2=pick([3,3.5,4,4.5]);}while(!(r1+r2>n+0.8&&Math.abs(r1-r2)<n-0.8));return {n,r1,r2};},
+  steps:p=>[stepSeg("A","B",p.n),stepCercle("A",p.r1),stepCercle("B",p.r2),
+    {txt:`Les deux cercles se coupent en deux points : place-les et nomme-les ${M("C")} et ${M("D")}.`,how:`Clique sur les deux croisements des cercles.`,
+     check:F=>{const a=F.pt("A"),b=F.pt("B"),c=F.pt("C"),d=F.pt("D");if(!c||!d)return no(`Place et nomme les points ${M("C")} et ${M("D")}.`);if(!a||!b)return no();
+       const g=X=>Math.abs(F.dist(a,X)-p.r1)<EPS&&Math.abs(F.dist(b,X)-p.r2)<EPS;if(!g(c)||!g(d))return no(`${M("C")} et ${M("D")} doivent être sur les deux cercles.`);return F.same(c,d)?no(`${M("C")} et ${M("D")} doivent être différents.`):ok();}},
+    stepSegs([["A","C"],["B","C"]]),stepLine("C","D")],
+  sol:(p,E)=>{const A=V(8-p.n/2,5),B=V(8+p.n/2,5);E.st(0);E.pt("A",A.x,A.y);E.pt("B",B.x,B.y);E.seg("A","B");E.st(1);const c1=E.circ("A",p.r1);E.st(2);const c2=E.circ("B",p.r2);
+    const a=(p.r1*p.r1-p.r2*p.r2+p.n*p.n)/(2*p.n),h=Math.sqrt(p.r1*p.r1-a*a);E.st(3);E.pt("C",A.x+a,5-h);E.pt("D",A.x+a,5+h);E.st(4);E.seg("A","C");E.seg("B","C");E.st(5);E.line("C","D");}},
+ {id:"c3",theme:"cercles",title:"Un point à deux distances données",
+  params:()=>pick([{n:5,a:3,b:4},{n:6,a:4,b:4},{n:6,a:3,b:5},{n:5,a:4,b:3},{n:7,a:4,b:5},{n:6,a:5,b:3}]),
+  steps:p=>[stepSeg("A","B",p.n),
+    {txt:`Place un point ${M("M")} tel que ${M(`AM = ${p.a} cm`)} et ${M(`BM = ${p.b} cm`)}.`,how:`Les points à ${p.a} cm de ${M("A")} sont sur le cercle de centre ${M("A")} et de rayon ${p.a} cm ; ceux à ${p.b} cm de ${M("B")}, sur le cercle de centre ${M("B")} et de rayon ${p.b} cm. ${M("M")} est sur les deux.`,
+     check:F=>{const a=F.pt("A"),b=F.pt("B"),m=F.pt("M");if(!m)return no(`Place et nomme le point ${M("M")}.`);if(!a||!b)return no();
+       if(Math.abs(F.dist(a,m)-p.a)>EPS)return no(`${M(`AM = ${fmt(F.dist(a,m))} cm`)} au lieu de ${p.a} cm. Astuce : trace des cercles.`);if(Math.abs(F.dist(b,m)-p.b)>EPS)return no(`${M(`BM = ${fmt(F.dist(b,m))} cm`)} au lieu de ${p.b} cm. Astuce : trace des cercles.`);return ok();}},
+    {txt:`Place un point ${M("N")}, différent de ${M("M")}, tel que ${M(`AN = ${p.a} cm`)} et ${M(`BN = ${p.b} cm`)}.`,how:`C'est l'autre point d'intersection des deux cercles.`,
+     check:F=>{const a=F.pt("A"),b=F.pt("B"),m=F.pt("M"),n=F.pt("N");if(!n)return no(`Place et nomme le point ${M("N")}.`);if(!a||!b)return no();
+       if(Math.abs(F.dist(a,n)-p.a)>EPS||Math.abs(F.dist(b,n)-p.b)>EPS)return no(`Il faut ${M(`AN = ${p.a} cm`)} et ${M(`BN = ${p.b} cm`)}.`);if(m&&F.same(m,n))return no(`${M("N")} doit être différent de ${M("M")}.`);return ok();}},
+    stepSegs([["A","M"],["B","M"],["A","N"],["B","N"]])],
+  sol:(p,E)=>{const A=V(8-p.n/2,5);E.st(0);E.pt("A",A.x,5);E.pt("B",A.x+p.n,5);E.seg("A","B");const a=(p.a*p.a-p.b*p.b+p.n*p.n)/(2*p.n),h=Math.sqrt(p.a*p.a-a*a);
+    E.st(1);E.circ("A",p.a);E.circ("B",p.b);E.pt("M",A.x+a,5-h);E.st(2);E.pt("N",A.x+a,5+h);E.st(3);E.seg("A","M");E.seg("B","M");E.seg("A","N");E.seg("B","N");}},
+ {id:"c4",theme:"cercles",title:"Cercle et droite",
+  params:()=>({r:pick([2,2.5,3])}),
+  steps:p=>[{txt:`Trace une droite et nomme-la ${M("(d)")}.`,how:`Outil « Droite » : deux clics, puis « Nommer ».`,check:F=>F.named("d").length?ok():F.objs.some(o=>o.t==="line")?no(`Nomme ta droite ${M("(d)")} avec l'outil « Nommer ».`):no()},
+    {txt:`Place un point ${M("O")} sur la droite ${M("(d)")}.`,how:`Clique sur la droite : le point s'y accroche.`,check:F=>{const o=F.pt("O");if(!o)return no(`Place et nomme le point ${M("O")}.`);return F.named("d").some(l=>F.onSup(l,o))?ok():no(`${M("O")} doit appartenir à ${M("(d)")}.`);}},
+    stepCercle("O",p.r),
+    {txt:`Ce cercle coupe ${M("(d)")} en deux points : place-les et nomme-les ${M("A")} et ${M("B")}.`,how:`Clique sur les deux croisements de la droite et du cercle.`,
+     check:F=>{const o=F.pt("O"),a=F.pt("A"),b=F.pt("B"),d=F.named("d");if(!a||!b)return no(`Place et nomme les points ${M("A")} et ${M("B")}.`);if(!o||!d.length)return no();
+       const g=X=>Math.abs(F.dist(o,X)-p.r)<EPS&&d.some(l=>F.onSup(l,X));if(!g(a)||!g(b))return no(`${M("A")} et ${M("B")} doivent être sur le cercle et sur ${M("(d)")}.`);return F.same(a,b)?no(`${M("A")} et ${M("B")} doivent être différents.`):ok();}},
+    {txt:`Trace le cercle de centre ${M("A")} qui passe par ${M("O")}.`,how:`Compas : pointe sèche sur ${M("A")}, mine sur ${M("O")}. Outil « Cercle » (case rayon vide) : clique sur ${M("A")} puis sur ${M("O")}.`,
+     check:F=>{const a=F.pt("A"),o=F.pt("O");if(!a||!o)return no();if(F.circ(a,F.dist(a,o)).length)return ok();return F.circ(a).length?no(`Le cercle de centre ${M("A")} doit passer par ${M("O")}.`):no();}},
+    {txt:`Les deux cercles se coupent en deux points : place-les et nomme-les ${M("E")} et ${M("F")}.`,how:`Clique sur les deux croisements des cercles.`,
+     check:F=>{const a=F.pt("A"),o=F.pt("O"),e=F.pt("E"),f=F.pt("F");if(!e||!f)return no(`Place et nomme les points ${M("E")} et ${M("F")}.`);if(!a||!o)return no();
+       const g=X=>Math.abs(F.dist(o,X)-p.r)<EPS&&Math.abs(F.dist(a,X)-p.r)<EPS;if(!g(e)||!g(f))return no(`${M("E")} et ${M("F")} doivent être sur les deux cercles.`);return F.same(e,f)?no(`${M("E")} et ${M("F")} doivent être différents.`):ok();}},
+    stepSegs([["E","F"]])],
+  sol:(p,E)=>{E.st(0);E.lineAnon(1,6,15,6,"d");E.st(1);E.pt("O",9,6);E.st(2);E.circ("O",p.r);E.st(3);E.pt("A",9-p.r,6);E.pt("B",9+p.r,6);E.st(4);E.circ("A",p.r);
+    const h=p.r*Math.sqrt(3)/2;E.st(5);E.pt("E",9-p.r/2,6-h);E.pt("F",9-p.r/2,6+h);E.st(6);E.seg("E","F");}}
+];
+
+/* ============ constructeur de la figure corrigée ============ */
+function buildSol(prog,p){const objs=[];let id=1000,step=0;const byName={};
+  const push=o=>{o.step=step;objs.push(o);return o;};
+  const E={st:k=>{step=k;},
+    pt:(n,x,y)=>{const o=push({t:"pt",id:id++,x,y,name:n});byName[n]=o;return o;},
+    seg:(a,b)=>push({t:"seg",a:byName[a].id,b:byName[b].id}),ray:(a,b)=>push({t:"ray",a:byName[a].id,b:byName[b].id}),
+    line:(a,b,nm)=>push({t:"line",a:byName[a].id,b:byName[b].id,name:nm||""}),
+    lineAnonPts:(a,b)=>push({t:"line",a:byName[a].id,b:byName[b].id,name:"",aide:true}),
+    lineAnon:(x1,y1,x2,y2,nm)=>{const a=push({t:"pt",id:id++,x:x1,y:y1,name:"",hid:true}),b=push({t:"pt",id:id++,x:x2,y:y2,name:"",hid:true});return push({t:"line",a:a.id,b:b.id,name:nm||""});},
+    perp:(ref,P,nm)=>{const F=Fig(objs);const d=F.geo(ref).d;return push({t:"line",th:byName[P].id,d:V(-d.y,d.x),via:"perp",name:nm||""});},
+    para:(ref,P,nm)=>{const F=Fig(objs);const d=F.geo(ref).d;return push({t:"line",th:byName[P].id,d:V(d.x,d.y),via:"para",name:nm||""});},
+    circ:(c,r)=>push({t:"circ",c:byName[c].id,r})};
+  prog.sol(p,E);return objs;}
+
+/* ============ dessin ============ */
+function tRange(p,d){let lo=-1e9,hi=1e9;[[p.x,d.x,0,W],[p.y,d.y,0,H]].forEach(([c,v,a,b])=>{if(Math.abs(v)<1e-12){if(c<a||c>b){lo=1;hi=0;}return;}let t1=(a-c)/v,t2=(b-c)/v;if(t1>t2)[t1,t2]=[t2,t1];lo=Math.max(lo,t1);hi=Math.min(hi,t2);});return [lo,hi];}
+const r3=x=>Math.round(x*1000)/1000;
+function lineEnds(F,o){const g=F.geo(o);if(g.circ)return null;let [lo,hi]=tRange(g.p,g.d);lo=Math.max(lo,g.lo);hi=Math.min(hi,g.hi);if(lo>hi)return null;return [addv(g.p,mul(g.d,lo)),addv(g.p,mul(g.d,hi)),g];}
+function drawFig(objs,opt){opt=opt||{};const F=Fig(objs);let s="";
+  F.curves().forEach(o=>{const cl=(opt.hl===o?"hl ":"")+(o.aide?"aide ":"")+(opt.newStep!=null&&o.step===opt.newStep?"neu ":"")+"cv";
+    if(o.t==="circ"){const g=F.geo(o);s+=`<circle cx="${r3(g.c.x)}" cy="${r3(g.c.y)}" r="${r3(g.r)}" class="${cl}"/>`;return;}
+    const e=lineEnds(F,o);if(!e)return;const [a,b,g]=e;s+=`<line x1="${r3(a.x)}" y1="${r3(a.y)}" x2="${r3(b.x)}" y2="${r3(b.y)}" class="${cl}"/>`;
+    if(o.name&&o.t==="line"){const n=V(-g.d.y,g.d.x);const up=n.y>0?mul(n,-1):n;
+      if(/^[a-z][a-z']?$/.test(o.name)&&o.name.length===2&&o.name[1]!=="'"){const p1=addv(addv(a,mul(g.d,0.45)),mul(up,0.35)),p2=addv(addv(b,mul(g.d,-0.45)),mul(up,0.35));
+        s+=`<text x="${r3(p1.x)}" y="${r3(p1.y+0.15)}" class="ln">${o.name[0]}</text><text x="${r3(p2.x)}" y="${r3(p2.y+0.15)}" class="ln">${o.name[1]}</text>`;}
+      else{const q=addv(addv(b,mul(g.d,-0.7)),mul(up,0.4));s+=`<text x="${r3(q.x)}" y="${r3(q.y+0.15)}" class="ln">(${esc(o.name)})</text>`;}}});
+  F.pts().forEach(o=>{const k=0.14;const cl=(opt.newStep!=null&&o.step===opt.newStep?"neu ":"")+"px";
+    s+=`<path class="${cl}" d="M${r3(o.x-k)} ${r3(o.y-k)}L${r3(o.x+k)} ${r3(o.y+k)}M${r3(o.x-k)} ${r3(o.y+k)}L${r3(o.x+k)} ${r3(o.y-k)}"/>`;
+    if(o.name)s+=`<text x="${r3(o.x+0.22)}" y="${r3(o.y-0.2)}" class="pn">${esc(o.name)}</text>`;});
+  return s;}
+const GRID=(()=>{let s='<g class="grid">';for(let x=0;x<=W;x++)for(let y=0;y<=H;y++)s+=`<circle cx="${x}" cy="${y}" r="0.035"/>`;return s+"</g>";})();
+
+/* ============ interface ============ */
+const $=id=>document.getElementById(id);
+const svg=$("plan"),status=$("status");
+let prog=null,params=null,objs=[],undo=[],tool="point",pend=null,nextId=1,hover=null,result=null,solStep=0,showSol=false;
+const TOOLS=[["point","Point","×"],["seg","Segment","[ ]"],["line","Droite","( )"],["ray","Demi-droite","[ )"],["perp","Perpendiculaire","⊥"],["para","Parallèle","//"],["circ","Cercle","○"],["name","Nommer","Aa"],["erase","Gomme","⌫"]];
+const AIDE={point:"Clique pour placer un point. Il s'accroche aux droites, aux cercles et aux croisements.",seg:"Clique sur la 1re extrémité, puis sur la 2e. La longueur s'affiche.",
+  line:"Clique sur deux points de la droite (ou deux endroits quelconques).",ray:"Clique d'abord sur l'origine, puis sur un autre point de la demi-droite.",
+  perp:"Clique sur une droite (ou un segment), puis sur le point par lequel doit passer la perpendiculaire.",para:"Clique sur une droite (ou un segment), puis sur le point par lequel doit passer la parallèle.",
+  circ:"Écris le rayon puis clique sur le centre. Ou laisse la case vide : clique sur le centre, puis sur un point du cercle.",name:"Clique sur un point ou une droite pour changer son nom.",erase:"Clique sur un objet pour l'effacer."};
+$("tools").innerHTML=TOOLS.map(([k,l,i])=>`<button class="tool" data-tool="${k}" aria-pressed="${k===tool}"><span class="ti">${i}</span>${l}</button>`).join("");
+
+function pxPerCm(){return svg.getBoundingClientRect().width/W;}
+function toCm(e){const pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());return V(q.x,q.y);}
+const F=()=>Fig(objs);
+function originName(F,o){const g=F.geo(o);return g.orig&&!g.orig.hid?g.orig.name:"";}
+function objLabel(F,o){if(o.t==="circ"){const c=F.P(o.c);return `le cercle de centre ${c.name||"?"}`;}
+  if(o.name)return `la droite (${o.name})`;if(o.th!=null)return "la droite";const a=F.P(o.a),b=F.P(o.b);
+  if(a.hid||b.hid)return o.t==="ray"?"la demi-droite":"la droite";return o.t==="seg"?`[${a.name}${b.name}]`:o.t==="ray"?`[${a.name}${b.name})`:`(${a.name}${b.name})`;}
+function curveDist(Fg,o,q){const g=Fg.geo(o);if(g.circ)return Math.abs(dist(q,g.c)-g.r);const t=Math.max(g.lo,Math.min(g.hi,dot(sub(q,g.p),g.d)));return dist(q,addv(g.p,mul(g.d,t)));}
+function nearestCurve(q,filter){const Fg=F();const thr=14/pxPerCm();let best=null,bd=thr;Fg.curves().forEach(o=>{if(filter&&!filter(o))return;const d=curveDist(Fg,o,q);if(d<bd){bd=d;best=o;}});return best;}
+function snap(q,from){const Fg=F();const thr=14/pxPerCm();
+  let best=null,bd=thr;Fg.pts().forEach(o=>{const d=dist(q,o);if(d<bd){bd=d;best=o;}});if(best)return {k:"pt",id:best.id,x:best.x,y:best.y,desc:`Point ${best.name}`+(from?` — longueur ${fmt(dist(from,best))} cm`:"")};
+  const cv=Fg.curves();let bi=null;bd=thr;
+  for(let i=0;i<cv.length;i++)for(let j=i+1;j<cv.length;j++)inter(Fg,cv[i],cv[j]).forEach(X=>{const d=dist(q,X);if(d<bd){bd=d;bi=X;}});
+  if(bi)return {k:"new",x:bi.x,y:bi.y,desc:"Point d'intersection"+(from?` — longueur ${fmt(dist(from,bi))} cm`:"")};
+  let bo=null;bd=thr*0.8;cv.forEach(o=>{const d=curveDist(Fg,o,q);if(d<bd){bd=d;bo=o;}});
+  if(bo){const g=Fg.geo(bo);
+    if(g.circ){let a=Math.atan2(q.y-g.c.y,q.x-g.c.x);a=Math.round(a*180/Math.PI)*Math.PI/180;const X=V(g.c.x+g.r*Math.cos(a),g.c.y+g.r*Math.sin(a));
+      return {k:"new",x:X.x,y:X.y,on:bo,desc:`Sur ${objLabel(Fg,bo)}`+(from?` — longueur ${fmt(dist(from,X))} cm`:"")};}
+    let t=dot(sub(q,g.p),g.d);t=Math.round(t*10)/10;t=Math.max(g.lo,Math.min(g.hi,t));const X=addv(g.p,mul(g.d,t));const on=originName(Fg,bo);
+    return {k:"new",x:X.x,y:X.y,on:bo,desc:`Sur ${objLabel(Fg,bo)}`+(on?`, à ${fmt(Math.abs(t))} cm de ${on}`:"")+(from?` — longueur ${fmt(dist(from,X))} cm`:"")};}
+  if(from){const v=sub(q,from),L=len(v);if(L<1e-6)return null;const Lr=Math.max(0.1,Math.round(L*10)/10);const X=addv(from,mul(v,Lr/L));return {k:"new",x:X.x,y:X.y,desc:`Longueur : ${fmt(Lr)} cm`};}
+  return {k:"new",x:Math.round(q.x*10)/10,y:Math.round(q.y*10)/10,desc:""};}
+function save(){undo.push(JSON.stringify({objs,nextId}));if(undo.length>80)undo.shift();}
+function usedNames(){return new Set(objs.filter(o=>o.t==="pt"&&o.name).map(o=>o.name));}
+function suggestName(){const used=usedNames();const order=(prog?prog.letters:[]).concat("ABCDEFGHIJKLMNPQRSTUVWXYZ".split(""));const n=order.find(l=>!used.has(l));$("nextName").value=n||"";}
+function normPt(s){s=String(s).trim().replace(/[’`´]/g,"'");return /^[A-Za-z][0-9']?$/.test(s)?s[0].toUpperCase()+s.slice(1):null;}
+function normLine(s){s=String(s).trim().replace(/[’`´]/g,"'").replace(/^\((.*)\)$/,"$1").replace(/\s/g,"");return /^[a-z]([a-z]|'{1,2}|[0-9₁₂₃])?$/.test(s)?s:null;}
+function getPoint(sn,hidden){if(sn.k==="pt")return sn.id;
+  let name="";if(!hidden){name=normPt($("nextName").value);if(!name){msg("Écris un nom de point valide (une lettre majuscule) dans « Prochain point ».",true);return null;}
+    if(usedNames().has(name)){msg(`Le nom ${name} est déjà utilisé : change le nom du prochain point.`,true);return null;}}
+  const o={t:"pt",id:nextId++,x:sn.x,y:sn.y,name,hid:!!hidden};objs.push(o);if(!hidden)suggestName();return o.id;}
+function msg(t,bad){status.innerHTML=t;status.classList.toggle("bad",!!bad);}
+function aide(){msg(AIDE[tool]+(pend?" <b>Clique maintenant sur le 2e élément.</b>":""));}
+function click(e){if(showSol)return;const q=toCm(e);
+  if(tool==="erase"){const Fg=F();const thr=14/pxPerCm();let p=null,bd=thr;Fg.pts().forEach(o=>{const d=dist(q,o);if(d<bd){bd=d;p=o;}});
+    const c=p?null:nearestCurve(q);if(!p&&!c)return;save();
+    if(p){const dead=new Set([p.id]);objs=objs.filter(o=>!(o===p||o.a===p.id||o.b===p.id||o.c===p.id||o.th===p.id));}
+    else{objs=objs.filter(o=>o!==c);objs=objs.filter(o=>!(o.t==="pt"&&o.hid&&!objs.some(x=>x.a===o.id||x.b===o.id)));}
+    afterChange();return;}
+  if(tool==="name"){const Fg=F();const thr=14/pxPerCm();let p=null,bd=thr;Fg.pts().forEach(o=>{const d=dist(q,o);if(d<bd){bd=d;p=o;}});
+    const c=p?null:nearestCurve(q,o=>o.t==="line");if(!p&&!c){msg("Clique sur un point ou sur une droite.",true);return;}openRename(p||c);return;}
+  if(tool==="perp"||tool==="para"){
+    if(!pend){const c=nearestCurve(q,o=>o.t!=="circ");if(!c){msg("Clique d'abord sur une droite, une demi-droite ou un segment.",true);return;}pend={ref:c};render();aide();return;}
+    const sn=snap(q);if(!sn)return;save();const id=getPoint(sn);if(id==null){undo.pop();return;}const d=F().geo(pend.ref).d;
+    objs.push({t:"line",th:id,d:tool==="perp"?V(-d.y,d.x):V(d.x,d.y),via:tool,name:""});pend=null;afterChange();return;}
+  if(tool==="point"){const sn=snap(q);if(!sn||sn.k==="pt"){if(sn)msg("Il y a déjà un point ici.",true);return;}save();if(getPoint(sn)==null)undo.pop();afterChange();return;}
+  if(tool==="circ"){const rv=parseFloat(String($("rayon").value).replace(",","."));
+    if(!pend){const sn=snap(q);if(!sn)return;save();const id=getPoint(sn);if(id==null){undo.pop();return;}
+      if(rv>0){objs.push({t:"circ",c:id,r:Math.round(rv*100)/100});afterChange();return;}pend={id,saved:true};afterChange(true);return;}
+    const c=F().P(pend.id);const sn=snap(q,c);if(!sn)return;const r=dist(c,sn);if(r<0.05)return;objs.push({t:"circ",c:pend.id,r});pend=null;afterChange();return;}
+  // seg, line, ray
+  if(!pend){const sn=snap(q);if(!sn)return;save();const id=getPoint(sn,tool==="line"&&sn.k!=="pt");if(id==null){undo.pop();return;}pend={id};afterChange(true);return;}
+  const a=F().P(pend.id);const sn=snap(q,a);if(!sn)return;if(sn.k==="pt"&&sn.id===pend.id)return;if(dist(a,sn)<0.05)return;
+  const id=getPoint(sn,(tool==="line"||tool==="ray")&&sn.k!=="pt");if(id==null)return;objs.push({t:tool,a:pend.id,b:id,name:""});pend=null;afterChange();}
+function afterChange(keep){if(!keep)pend=null;result=null;render();renderSteps();if(!keep)aide();else aide();}
+function preview(q){const Fg=F();
+  if(tool==="erase")return {hl:nearestCurve(q)};
+  if(tool==="name")return {hl:nearestCurve(q,o=>o.t==="line")};
+  if((tool==="perp"||tool==="para")&&!pend)return {hl:nearestCurve(q,o=>o.t!=="circ")};
+  const from=pend&&pend.id!=null?Fg.P(pend.id):null;
+  return {sn:snap(q,(tool==="seg"||tool==="line"||tool==="ray"||tool==="circ")?from:null)};}
+svg.addEventListener("pointermove",e=>{if(showSol)return;const q=toCm(e);hover=preview(q);render();if(hover.sn&&hover.sn.desc)msg(hover.sn.desc);else if(!hover.sn)aide();});
+svg.addEventListener("pointerleave",()=>{hover=null;render();aide();});
+svg.addEventListener("click",click);
+function render(){if(showSol){svg.innerHTML=GRID+drawFig(solObjs.filter(o=>o.step<=solStep),{newStep:solStep});return;}
+  let extra="";const Fg=F();
+  if(hover&&hover.sn){const s=hover.sn;
+    if(pend&&pend.id!=null){const a=Fg.P(pend.id);
+      if(tool==="seg")extra+=`<line class="pv" x1="${r3(a.x)}" y1="${r3(a.y)}" x2="${r3(s.x)}" y2="${r3(s.y)}"/>`;
+      else if(tool==="line"||tool==="ray"){const d=unit(sub(s,a));const [lo,hi]=tRange(a,d);const p1=addv(a,mul(d,tool==="ray"?0:lo)),p2=addv(a,mul(d,hi));extra+=`<line class="pv" x1="${r3(p1.x)}" y1="${r3(p1.y)}" x2="${r3(p2.x)}" y2="${r3(p2.y)}"/>`;}
+      else if(tool==="circ")extra+=`<circle class="pv" cx="${r3(a.x)}" cy="${r3(a.y)}" r="${r3(dist(a,s))}"/>`;}
+    if((tool==="perp"||tool==="para")&&pend){const d=Fg.geo(pend.ref).d;const dd=tool==="perp"?V(-d.y,d.x):d;const [lo,hi]=tRange(s,dd);const p1=addv(s,mul(dd,lo)),p2=addv(s,mul(dd,hi));extra+=`<line class="pv" x1="${r3(p1.x)}" y1="${r3(p1.y)}" x2="${r3(p2.x)}" y2="${r3(p2.y)}"/>`;}
+    if(tool==="circ"&&!pend){const rv=parseFloat(String($("rayon").value).replace(",","."));if(rv>0)extra+=`<circle class="pv" cx="${r3(s.x)}" cy="${r3(s.y)}" r="${rv}"/>`;}
+    extra+=`<circle class="snap${s.k==="pt"?" on":""}" cx="${r3(s.x)}" cy="${r3(s.y)}" r="0.16"/>`;}
+  const hl=(hover&&hover.hl)||(pend&&pend.ref)||null;
+  svg.innerHTML=GRID+drawFig(objs,{hl})+extra;}
+/* --- renommer --- */
+let renaming=null;
+function openRename(o){renaming=o;$("renameBox").hidden=false;$("renameLbl").textContent=o.t==="pt"?"Nom du point :":"Nom de la droite (ex. d, d', xy) :";$("renameIn").value=o.name||"";$("renameIn").focus();$("renameIn").select();}
+function doRename(){if(!renaming)return;const o=renaming;const v=$("renameIn").value;
+  if(o.t==="pt"){const n=normPt(v);if(!n){msg("Un point se nomme avec une lettre majuscule.",true);return;}if(n!==o.name&&usedNames().has(n)){msg(`Le nom ${n} est déjà utilisé.`,true);return;}save();o.name=n;suggestName();}
+  else{const n=normLine(v);if(!n){msg("Une droite se nomme avec une lettre minuscule (d, d') ou deux lettres minuscules (xy). Les parenthèses sont ajoutées toutes seules.",true);return;}save();o.name=n;}
+  renaming=null;$("renameBox").hidden=true;afterChange();}
+$("renameOk").addEventListener("click",doRename);$("renameIn").addEventListener("keydown",e=>{if(e.key==="Enter")doRename();if(e.key==="Escape"){renaming=null;$("renameBox").hidden=true;}});
+$("renameNo").addEventListener("click",()=>{renaming=null;$("renameBox").hidden=true;});
+/* --- outils --- */
+$("tools").addEventListener("click",e=>{const b=e.target.closest("[data-tool]");if(!b)return;
+  if(pend&&pend.id!=null&&(tool==="seg"||tool==="ray"||tool==="line"||tool==="circ")){const p=F().P(pend.id);const used=objs.some(o=>o.a===pend.id||o.b===pend.id||o.c===pend.id||o.th===pend.id);if(p&&p.hid&&!used)objs=objs.filter(o=>o!==p);}
+  tool=b.dataset.tool;pend=null;document.querySelectorAll(".tool").forEach(x=>x.setAttribute("aria-pressed",x===b));$("rayonBox").hidden=tool!=="circ";render();aide();});
+$("undo").addEventListener("click",()=>{const s=undo.pop();if(!s)return;const o=JSON.parse(s);objs=o.objs;nextId=o.nextId;pend=null;suggestName();afterChange();});
+$("clear").addEventListener("click",()=>{if(!objs.length)return;save();objs=[];pend=null;suggestName();afterChange();});
+/* --- programmes --- */
+let solObjs=[];
+function lettersOf(pr,p){const s=new Set();buildSol(pr,p).forEach(o=>{if(o.t==="pt"&&o.name)s.add(o.name);});return [...s];}
+function loadProg(pr,keepFig){prog=pr;params=pr.params();prog.letters=lettersOf(pr,params);solObjs=buildSol(pr,params);if(!keepFig){objs=[];undo=[];}pend=null;result=null;showSol=false;solStep=0;
+  document.querySelectorAll(".prog").forEach(b=>b.setAttribute("aria-pressed",b.dataset.prog===pr.id));$("solBar").hidden=true;$("plan").classList.remove("sol");
+  $("progTitle").textContent=pr.title;suggestName();renderSteps();render();aide();try{history.replaceState(null,"","#"+pr.id);}catch(e){}}
+function renderSteps(){const st=prog.steps(params);const Fg=F();
+  $("steps").innerHTML=st.map((s,i)=>{const r=result?result[i]:null;const cls=r?(r[0]?"ok":"bad"):"";
+    return `<li class="${cls}"><span class="sn">${r?(r[0]?"✓":"✗"):i+1}</span><div><div>${s.txt}</div>${r&&!r[0]?`<div class="sm">${r[1]}</div>`:""}${showSol&&i===solStep?`<div class="how">${s.how}</div>`:""}</div></li>`;}).join("");
+  if(result){const n=result.filter(r=>r[0]).length;$("bilan").innerHTML=n===st.length?`<span class="okc">Bravo ! Les ${n} étapes sont réussies.</span>`:`${n} / ${st.length} étapes réussies.`;}else $("bilan").textContent="";}
+$("verif").addEventListener("click",()=>{if(showSol)toggleSol();const Fg=F();result=prog.steps(params).map(s=>{try{return s.check(Fg);}catch(e){return no();}});renderSteps();});
+function toggleSol(){showSol=!showSol;$("solBar").hidden=!showSol;$("plan").classList.toggle("sol",showSol);$("showSol").textContent=showSol?"Revenir à ma figure":"Voir la correction";
+  if(showSol){solStep=0;msg("Correction : avance étape par étape.");}else aide();updSol();}
+function updSol(){$("solInfo").textContent=`Étape ${solStep+1} / ${prog.steps(params).length}`;renderSteps();render();}
+$("showSol").addEventListener("click",toggleSol);
+$("solPrev").addEventListener("click",()=>{if(solStep>0){solStep--;updSol();}});
+$("solNext").addEventListener("click",()=>{if(solStep<prog.steps(params).length-1){solStep++;updSol();}});
+$("solAll").addEventListener("click",()=>{solStep=prog.steps(params).length-1;updSol();});
+$("newProg").addEventListener("click",()=>loadProg(prog));
+$("rayon").addEventListener("input",()=>render());
+const progsHTML=th=>PROGS.filter(p=>p.theme===th).map(p=>`<button class="prog" data-prog="${p.id}" aria-pressed="false">${p.title}</button>`).join("");
+$("progD").innerHTML=progsHTML("droites");$("progC").innerHTML=progsHTML("cercles");
+document.querySelector(".progs").addEventListener("click",e=>{const b=e.target.closest("[data-prog]");if(!b)return;loadProg(PROGS.find(p=>p.id===b.dataset.prog));});
+const qs=new URLSearchParams(location.search);const h=location.hash.slice(1);
+let first=PROGS.find(p=>p.id===h)||(qs.get("theme")==="cercles"?PROGS.find(p=>p.theme==="cercles"):PROGS[0]);
+loadProg(first);
+window.__cons={PROGS,Fig,buildSol,inter,snap,get objs(){return objs;},set objs(v){objs=v;},setTool:t=>document.querySelector(`[data-tool="${t}"]`).click(),loadProg,params:()=>params,prog:()=>prog};
+})();
+</script>
+</body>
+</html>

@@ -5,7 +5,7 @@ Page du site : [6eme.html](../6eme.html)
 | N° | Séquence | Thème | Contenu |
 |---|---|---|---|
 | 01 | [Nombres entiers](01-nombres-entiers/README.md) | Nombres et calculs | en préparation |
-| 02 | [Droites et cercles](02-droites-et-cercles/README.md) | Géométrie | 6 ressources |
+| 02 | [Droites et cercles](02-droites-et-cercles/README.md) | Géométrie | 10 ressources |
 | 03 | [Nombres décimaux](03-nombres-decimaux/README.md) | Nombres et calculs | 4 ressources |
 | 04 | [Angles](04-angles/README.md) | Géométrie | 9 ressources |
 | 05 | [Comparer, additionner et soustraire des nombres décimaux](05-comparer-additionner-et-soustraire-des-nombres-decimaux/README.md) | Nombres et calculs | 19 ressources |

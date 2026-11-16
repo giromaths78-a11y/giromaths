@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Droites et cercles : traduire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--acc:#2563eb;--acc2:#1e40af;--soft:#e6eeff;--bg:#f7f9ff;--card:#fff;--ink:#15203a;--muted:#5b6782;--line:#d6e0f5;
+  --ok:#15803d;--oksoft:#dcfce7;--bad:#b91c1c;--badsoft:#fee2e2;--hint:#7c3aed;--pad:#94a3b8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--acc:#7aa5ff;--acc2:#a9c4ff;--soft:#1b2a47;--bg:#0f1522;--card:#172033;--ink:#e8eefb;--muted:#a3b0c8;--line:#2c3a55;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;--pad:#64748b;color-scheme:dark}}
+:root[data-theme="dark"]{--acc:#7aa5ff;--acc2:#a9c4ff;--soft:#1b2a47;--bg:#0f1522;--card:#172033;--ink:#e8eefb;--muted:#a3b0c8;--line:#2c3a55;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;--pad:#64748b;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+header.hero{background:linear-gradient(135deg,#2563eb,#1e3a8a);color:#fff;border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
+header.hero::after{content:"[AB)  (d) ⊥";position:absolute;right:14px;bottom:-12px;font:700 54px/1 "Space Grotesk",sans-serif;opacity:.15;white-space:nowrap}
+.eyebrow{font:600 .8rem "Space Grotesk",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+h1{font:700 clamp(1.6rem,4.5vw,2.3rem)/1.1 "Space Grotesk",sans-serif;margin:4px 0 6px}
+header.hero p{margin:0;max-width:60ch;opacity:.95;position:relative;z-index:1}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 10px}
+.tab{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font:600 .9rem Inter,sans-serif;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+.tab .n{font-variant-numeric:tabular-nums;opacity:.8;font-weight:500;margin-left:4px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);margin-bottom:12px}
+.score{font:700 1rem "Space Grotesk",sans-serif;font-variant-numeric:tabular-nums}
+.progress{flex:1 1 160px;height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:120px}
+.progress span{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.btn{border:1.5px solid var(--acc);background:var(--card);color:var(--acc);border-radius:8px;padding:5px 12px;font:600 .88rem Inter,sans-serif;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--acc);color:var(--bg)}
+.btn:focus-visible,input:focus-visible,.tab:focus-visible,.choice:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.rappel{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.95rem}
+.rappel b{color:var(--acc2)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.q.ok{border-color:var(--ok);box-shadow:inset 4px 0 0 var(--ok)}
+.q.bad{border-color:var(--bad);box-shadow:inset 4px 0 0 var(--bad)}
+.qhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.num{font:700 .85rem "Space Grotesk",sans-serif;background:var(--soft);color:var(--acc2);border-radius:6px;padding:1px 8px}
+.consigne{color:var(--muted);font-size:.9rem}
+.expr{font-size:1.15rem;margin:6px 0 8px}
+.expr.txt{font-size:1rem}
+.m{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;white-space:nowrap}
+.ans{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ans input{font:1.1rem "Cambria Math","Times New Roman",serif;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:8.5em;max-width:100%;text-align:center}
+.ans .lbl{font-size:1.15rem}
+.ans input.sm{width:5.2em}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choice{border:1.5px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 14px;cursor:pointer;font:600 1rem Inter,sans-serif;color:var(--ink);min-width:44px}
+.choice.big{font:700 1.25rem "Cambria Math","Times New Roman",serif;min-width:52px}
+.choice.sel{border-color:var(--acc);background:var(--soft)}
+.choice .rk{display:inline-block;min-width:1.4em;margin-right:4px;border-radius:50%;background:var(--acc);color:var(--bg);font:700 .8rem/1.4em Inter,sans-serif;text-align:center}
+.seq{font-size:1.15rem;min-height:1.6em;margin:2px 0}
+.fb{margin-top:6px;font-size:.92rem}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}.fb.hint{color:var(--hint)}
+.corr{margin-top:8px;background:var(--soft);border-radius:8px;padding:8px 12px;font-size:1rem}
+.corr .line{display:block;margin:2px 0}
+.corr .why{display:block;font:italic .88rem Inter,sans-serif;color:var(--muted);margin-top:4px}
+.ai{display:contents}
+.ans input.ok{border-color:var(--ok);background:var(--oksoft)}
+.ans input.bad{border-color:var(--bad);background:var(--badsoft)}
+.etoiles{color:#f59e0b;letter-spacing:2px;font-size:1rem;margin-left:4px}
+.aide{font-size:.85rem;color:var(--muted);margin:0 0 10px}
+footer{margin-top:28px;color:var(--muted);font-size:.82rem;text-align:center}
+.ans input.xs{width:2.6em;padding:6px 4px}
+.ans input.md{width:6.5em}
+.ans input.wd{width:7.6em;font:600 .9rem Inter,sans-serif;padding:5px 4px}
+table.numt th input.wd{width:7em}
+table.numt th.pe{background:var(--card)}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.15}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px 2px}
+.fr>span:last-child{padding:2px 3px 0}
+.fr input{margin:1px 0}
+.tpl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font:1.15rem "Cambria Math","STIX Two Math","Times New Roman",serif}
+.tpl .t{white-space:nowrap}
+.tw{overflow-x:auto;max-width:100%}
+table.numt{border-collapse:collapse;font-size:.85rem;text-align:center}
+table.numt th{background:var(--soft);color:var(--acc2);border:1px solid var(--line);padding:4px 3px;font-weight:600;min-width:3.4em;line-height:1.15}
+table.numt th.vg,table.numt td.vg{min-width:1em;width:1em;border-left:2px solid var(--acc);border-right:2px solid var(--acc)}
+table.numt td{border:1px solid var(--line);padding:3px;font:1.2rem "Cambria Math","Times New Roman",serif;height:2.1em}
+table.numt td input.xs{width:2.2em}
+table.numt td.vg{font-weight:700;color:var(--acc2)}
+svg.gl{width:100%;max-width:820px;height:auto;display:block;margin:4px 0;touch-action:manipulation}
+svg.gl .ax{stroke:var(--ink);stroke-width:2}
+svg.gl .tk{stroke:var(--ink);stroke-width:1.3}
+svg.gl text{fill:var(--ink);font:15px "Cambria Math","Times New Roman",serif;text-anchor:middle}
+svg.gl .pt{stroke:#e11d48;stroke-width:3.5}
+svg.gl text.pl{fill:#e11d48;font:700 16px Inter,sans-serif}
+svg.gl .hit{fill:transparent;cursor:pointer}
+svg.gl .hit:hover{fill:var(--soft);fill-opacity:.8}
+svg.gl .sel{stroke:var(--acc);stroke-width:3.5}
+svg.gl text.sl{fill:var(--acc);font:700 16px Inter,sans-serif}
+svg.gl .sol{stroke:var(--ok);stroke-width:3.5}
+svg.gl text.so{fill:var(--ok);font:700 15px Inter,sans-serif}
+svg.band rect{stroke:var(--ink);stroke-width:1.2}
+svg.band .on{fill:#facc15}svg.band .off{fill:var(--card)}
+.placehint{font-size:.88rem;color:var(--muted)}
+
+svg.fg{width:100%;max-width:360px;height:auto;display:block;margin:2px 0}
+svg.fg .o{stroke:var(--ink);stroke-width:1.8;fill:none;stroke-linecap:round}
+svg.fg .o.r{stroke:#e11d48;stroke-width:2.6}
+svg.fg .o.f{stroke:var(--muted);stroke-width:1.4}
+svg.fg .o.b{stroke:#2563eb;stroke-width:2.4}
+svg.fg .o.g{stroke:#059669;stroke-width:2.4}
+svg.fg .x{stroke:var(--ink);stroke-width:1.8;fill:none}
+svg.fg .cd{stroke:var(--acc);stroke-width:1.8}
+svg.fg .ra{stroke:var(--ink);stroke-width:1.4;fill:none}
+svg.fg text{fill:var(--ink);text-anchor:middle;font:italic 16px "Cambria Math","Times New Roman",serif}
+svg.fg text.nm{fill:#e11d48;font:italic 15px "Cambria Math","Times New Roman",serif}
+svg.fg text.ct{fill:var(--acc2);font:600 12px Inter,sans-serif}
+.pvg{font-size:.8rem;color:var(--muted);font-style:italic}
+.choices.figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px;width:100%}
+.choice.fig{padding:4px;background:var(--card)}
+.choice.fig svg.fg{max-width:100%}
+.choices .choice{text-align:left;font-weight:500}
+.choice.big{text-align:center}
+.vfl{display:flex;flex-direction:column;gap:6px;width:100%}
+.vfi{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;border:1px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--bg)}
+.vfi.ok{border-color:var(--ok);background:var(--oksoft)}.vfi.bad{border-color:var(--bad);background:var(--badsoft)}
+.vfb{display:flex;gap:6px}
+.wr{display:flex;flex-direction:column;gap:6px}
+.wr input.wd2{font:1.2rem "Cambria Math","Times New Roman",serif;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:14em;max-width:100%}
+.keys{display:flex;flex-wrap:wrap;gap:4px}
+.key{border:1px solid var(--line);background:var(--soft);color:var(--acc2);border-radius:6px;min-width:34px;padding:3px 7px;font:600 1rem "Cambria Math","Times New Roman",serif;cursor:pointer}
+.key:hover{border-color:var(--acc)}
+.expr{font-size:1.05rem}
+.choice.fig svg.fg text{font-size:24px}
+.choice.fig svg.fg text.nm{font-size:22px}
+.choice.fig svg.fg .x,.choice.fig svg.fg .o{stroke-width:2.6}
+.choice.fig svg.fg .o.r{stroke-width:3.4}
+.choice.fig svg.fg .cd{stroke-width:2.6}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">6ème · S2 · Droites et cercles</div>
+  <h1>Schéma, phrase, notation</h1>
+  <p>Une même information se dit de trois façons : un schéma, une phrase en français, une notation mathématique. Entraîne-toi à passer de l'une à l'autre. Les séries changent à chaque fois.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<div class="bar">
+  <span class="score" id="score">0 / 0</span>
+  <div class="progress"><span id="prog"></span></div>
+  <button class="btn" id="newSerie">Nouvelle série</button>
+  <button class="btn primary" id="checkAll">Tout vérifier</button>
+</div>
+<div class="rappel" id="rappel"></div>
+<p class="aide">Pour écrire une notation, utilise le clavier et les touches sous la case : <b>[ ] ( ) ∈ ∉ // ⊥</b>. Les points se notent avec des lettres <b>majuscules</b>.</p>
+<div id="list"></div>
+<footer>GiroMaths · 6ème S2 · Droites et cercles · © 2026</footer>
+</div>
+<script>
+(function(){
+"use strict";
+/* ================= outils ================= */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const M=s=>'<span class="m">'+s+'</span>';
+const LET="ABCDEFGHJKLMNPRSTUV".split("");
+const lettres=(k,...ex)=>shuffle(LET.filter(l=>!ex.includes(l))).slice(0,k);
+// nombres en dixièmes (entiers) : 45 -> "4,5"
+const f1=n=>(n%10===0?String(n/10):Math.floor(n/10)+","+(n%10));
+const esc=s=>String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+
+/* ---------- notations ---------- */
+const NOT={seg:(a,b)=>`[${a}${b}]`,line:(a,b)=>`(${a}${b})`,ray:(a,b)=>`[${a}${b})`};
+const PHR={seg:(a,b)=>`le segment d'extrémités ${M(a)} et ${M(b)}`,line:(a,b)=>`la droite qui passe par les points ${M(a)} et ${M(b)}`,
+  ray:(a,b)=>`la demi-droite d'origine ${M(a)} qui passe par le point ${M(b)}`};
+const ACC={seg:(a,b)=>[`[${a}${b}]`,`[${b}${a}]`],line:(a,b)=>[`(${a}${b})`,`(${b}${a})`],ray:(a,b)=>[`[${a}${b})`]};
+const NOM={seg:"segment",line:"droite",ray:"demi-droite"};
+const cap=s=>s.charAt(0).toUpperCase()+s.slice(1);
+// nom d'une droite : {k:"d",s:"d"} | {k:"d",s:"d'"} | {k:"pts",a,b} | {k:"xy",s:"xy"}
+const dn=n=>n.k==="pts"?`(${n.a}${n.b})`:`(${n.s})`;
+const dnAcc=n=>n.k==="pts"?[`(${n.a}${n.b})`,`(${n.b}${n.a})`]:n.k==="xy"?[`(${n.s})`,`(${n.s[1]}${n.s[0]})`]:[`(${n.s})`,n.s];
+// réponse écrite : forme canonique
+function canon(s){return String(s).replace(/[\s  ]+/g,"").replace(/[’‘`´]/g,"'").replace(/∥|\|\|/g,"//").replace(/⟂/g,"⊥")
+  .replace(/\./g,",").replace(/𝒞|ℭ/g,"C").replace(/\(c\)/g,"(C)");}
+// description d'une notation pour expliquer une erreur
+function decrit(s){let m;
+  if(m=s.match(/^\[([A-Z])([A-Z])\]$/))return `le segment d'extrémités ${M(m[1])} et ${M(m[2])}`;
+  if(m=s.match(/^\(([A-Z])([A-Z])\)$/))return `la droite qui passe par ${M(m[1])} et ${M(m[2])}`;
+  if(m=s.match(/^\[([A-Z])([A-Z])\)$/))return `la demi-droite d'origine ${M(m[1])} qui passe par ${M(m[2])}`;
+  if(m=s.match(/^\(([A-Z])([A-Z])\]$/))return `une demi-droite mal écrite : l'origine se met du côté du crochet, en premier, comme ${M("["+m[2]+m[1]+")")}`;
+  return null;}
+
+/* ================= figures SVG ================= */
+const W=300,H=150,BX=8;
+const V=(x,y)=>({x,y});
+const add=(p,u,k)=>V(p.x+k*u.x,p.y+k*u.y);
+const r2=n=>Math.round(n*10)/10;
+function dirU(deg){const a=deg*Math.PI/180;return V(Math.cos(a),Math.sin(a));}
+const nor=u=>u.y>0||(u.y===0&&u.x<0)?V(u.y,-u.x):V(-u.y,u.x); // normale tournée vers le haut (y < 0)
+// paramètres t tels que p + t·u reste dans la boîte
+function tRange(p,u){let lo=-1e9,hi=1e9;
+  [[p.x,u.x,BX,W-BX],[p.y,u.y,BX,H-BX]].forEach(([c,d,a,b])=>{if(Math.abs(d)<1e-9)return;let t1=(a-c)/d,t2=(b-c)/d;if(t1>t2)[t1,t2]=[t2,t1];lo=Math.max(lo,t1);hi=Math.min(hi,t2);});
+  return [lo,hi];}
+const ln=(p,q,c)=>`<line x1="${r2(p.x)}" y1="${r2(p.y)}" x2="${r2(q.x)}" y2="${r2(q.y)}" class="${c||"o"}"/>`;
+const uv=(a,b)=>{const d=Math.hypot(b.x-a.x,b.y-a.y);return V((b.x-a.x)/d,(b.y-a.y)/d);};
+const G={
+  seg:(a,b,c)=>ln(a,b,c),
+  line:(a,b,c)=>{const u=uv(a,b),[lo,hi]=tRange(a,u);return ln(add(a,u,lo),add(a,u,hi),c);},
+  ray:(a,b,c)=>{const u=uv(a,b),[,hi]=tRange(a,u);return ln(a,add(a,u,hi),c);},
+  pt:(p,n,off)=>{off=off||V(0,-11);const s=4;return `<path class="x" d="M${r2(p.x-s)} ${r2(p.y-s)}L${r2(p.x+s)} ${r2(p.y+s)}M${r2(p.x-s)} ${r2(p.y+s)}L${r2(p.x+s)} ${r2(p.y-s)}"/>`+
+    (n?`<text x="${r2(p.x+off.x)}" y="${r2(p.y+off.y+5)}" class="pl">${n}</text>`:"");},
+  txt:(p,t,c)=>`<text x="${r2(p.x)}" y="${r2(p.y+5)}" class="${c||"nm"}">${t}</text>`,
+  // codage : k petits traits au milieu de [ab]
+  code:(a,b,k)=>{const m=V((a.x+b.x)/2,(a.y+b.y)/2),u=uv(a,b),n=V(-u.y,u.x);let s="";
+    for(let i=0;i<k;i++){const c=add(m,u,(i-(k-1)/2)*4);s+=ln(add(add(c,n,-5),u,-1.5),add(add(c,n,5),u,1.5),"cd");}return s;},
+  // angle droit en o entre les directions u et v
+  ra:(o,u,v)=>{const s=9,p1=add(o,u,s),p3=add(o,v,s),p2=add(p1,v,s);return `<path class="ra" d="M${r2(p1.x)} ${r2(p1.y)}L${r2(p2.x)} ${r2(p2.y)}L${r2(p3.x)} ${r2(p3.y)}"/>`;},
+  circ:(c,r,cl)=>`<circle cx="${r2(c.x)}" cy="${r2(c.y)}" r="${r2(r)}" class="${cl||"o"}"/>`,
+  cote:(a,b,t)=>{const m=V((a.x+b.x)/2,(a.y+b.y)/2),u=uv(a,b),n=nor(u);const p=add(m,n,-12);return `<text x="${r2(p.x)}" y="${r2(p.y+5)}" class="ct">${t}</text>`;}
+};
+const svg=(inner,lab)=>`<svg class="fg" viewBox="0 0 ${W} ${H}" role="img" aria-label="${esc(lab||"figure")}">${inner}</svg>`;
+// base aléatoire : centre c, direction u (angle entre -a et a degrés), normale n vers le haut
+function base(a){const u=dirU(R(-(a==null?22:a),a==null?22:a));return {c:V(150+R(-12,12),80+R(-8,8)),u,n:nor(u)};}
+// étiquette d'un point posé sur une droite de direction u : au-dessus
+const offN=(b,k)=>add(V(0,0),b.n,k||12);
+
+// figure d'un objet (segment / droite / demi-droite) passant par A et B ; extra : point C sur l'objet
+function figObjet(T,A,B,opt){opt=opt||{};const b=base();const L=opt.L||58;
+  const pa=add(b.c,b.u,-L),pb=add(b.c,b.u,L);let s="";
+  if(T==="seg")s+=G.seg(pa,pb,"o r");else if(T==="line")s+=G.line(pa,pb,"o r");else if(T==="ray")s+=G.ray(pa,pb,"o r");else if(T==="rayBA")s+=G.ray(pb,pa,"o r");
+  s+=G.pt(pa,A,offN(b))+(opt.noB?"":G.pt(pb,B,offN(b)));
+  if(opt.C){const pc=add(b.c,b.u,opt.tC);s+=G.pt(pc,opt.C,offN(b));}
+  if(opt.x){const [,hi]=tRange(pa,b.u);s+=G.txt(add(add(pa,b.u,hi-12),b.n,12),opt.x,"nm i");}
+  return svg(s,"figure");}
+
+/* ================= types de questions =================
+ q = {cons, txt, kind:"qcm"|"vf"|"write"|"num", opts:[[val,label]], sol, items:[{t,sol}], acc:[...], unit, steps:[...], why, big, figs}
+*/
+const OUI=[["oui","Oui"],["non","Non"]];
+function qcm(cons,txt,opts,sol,steps,why,extra){return Object.assign({cons,txt,kind:"qcm",opts:shuffle(opts),sol,steps,why},extra||{});}
+function qcmFixe(cons,txt,opts,sol,steps,why,extra){return Object.assign({cons,txt,kind:"qcm",opts,sol,steps,why},extra||{});}
+function ecrire(cons,txt,acc,steps,why,extra){return Object.assign({cons,txt,kind:"write",acc,steps,why},extra||{});}
+function vf(cons,txt,items,steps,why){return {cons,txt,kind:"vf",items:shuffle(items),steps,why};}
+function num(cons,txt,sol,steps,why){return {cons,txt,kind:"num",sol,steps,why};} // sol en dixièmes
+const accHTML=acc=>acc.map(a=>M(esc(a))).join(" ou ");
+
+/* ================= 1 à 3 : segment, droite, demi-droite ================= */
+function phraseOpts(A,B,T){const o=[["seg",cap(PHR.seg(A,B))],["line",cap(PHR.line(A,B))],["ray",cap(PHR.ray(A,B))]];
+  o.push(T==="ray"?["rayBA",cap(PHR.ray(B,A))]:["lg",`La longueur du segment ${M(NOT.seg(A,B))}`]);return o;}
+const EXPL={seg:(A,B)=>`Les crochets « [ ] » des deux côtés : le segment s'arrête en ${M(A)} et en ${M(B)}.`,
+  line:(A,B)=>`Les parenthèses « ( ) » : la droite est illimitée des deux côtés.`,
+  ray:(A,B)=>`Le crochet « [ » du côté de ${M(A)} : ${M(A)} est l'origine ; la parenthèse « ) » : la demi-droite continue après ${M(B)}.`};
+function figChoix(A,B){return [["seg",figObjet("seg",A,B)],["line",figObjet("line",A,B)],["ray",figObjet("ray",A,B)],["rayBA",figObjet("rayBA",A,B)]];}
+function modesObjet(T){
+  return [
+    ()=>{const [A,B]=lettres(2);const n=NOT[T](A,B);
+      return qcm(`Que désigne l'écriture ${M(n)} ?`,"",phraseOpts(A,B,T),T,[`${M(n)} désigne ${PHR[T](A,B)}.`],EXPL[T](A,B));},
+    ()=>{const [A,B]=lettres(2);
+      return ecrire(`Écris avec la notation mathématique :`,`« ${cap(PHR[T](A,B))} »`,ACC[T](A,B),[`${cap(PHR[T](A,B))} : ${accHTML(ACC[T](A,B))}.`],EXPL[T](A,B));},
+    ()=>{const [A,B,C]=lettres(3);const avecC=Math.random()<.5;let acc=ACC[T](A,B),why=EXPL[T](A,B),opt={};
+      if(avecC){if(T==="seg"){opt={C,tC:R(-25,25)};why=`${M(C)} est sur le segment mais ce n'est pas une extrémité : le segment rouge est ${M(NOT.seg(A,B))}, pas ${M(NOT.seg(A,C))}.`;}
+        else if(T==="line"){opt={C,tC:pick([R(-25,25),R(85,110)])};acc=[...ACC.line(A,B),...ACC.line(A,C),...ACC.line(B,C)];why="Deux points quelconques de la droite suffisent pour la nommer.";}
+        else{opt={C,tC:R(80,105)};acc=[...ACC.ray(A,B),...ACC.ray(A,C)];why=`L'origine est ${M(A)} ; on peut utiliser n'importe quel autre point de la demi-droite : ${M(B)} ou ${M(C)}.`;}}
+      return ecrire(`Écris la notation de l'objet tracé en rouge.`,figObjet(T,A,B,opt),acc,[`L'objet rouge est ${T==="seg"?"un segment":T==="line"?"une droite":"une demi-droite"} : ${accHTML(acc)}.`],why);},
+    ()=>{const [A,B]=lettres(2);const n=NOT[T](A,B);
+      return qcm(`Sur quelle figure a-t-on tracé ${M(n)} ?`,"",figChoix(A,B),T,[`${M(n)} est ${PHR[T](A,B)}.`],EXPL[T](A,B),{figs:true});},
+    ()=>{const [A,B]=lettres(2);
+      return qcm(`Quelle phrase décrit l'objet tracé en rouge ?`,figObjet(T,A,B),phraseOpts(A,B,T),T,[`C'est ${PHR[T](A,B)} : ${accHTML(ACC[T](A,B))}.`],EXPL[T](A,B));}
+  ];}
+const EXTRA={
+  seg:[
+    ()=>{const [A,B]=lettres(2);return qcmFixe(`Les écritures ${M(NOT.seg(A,B))} et ${M(NOT.seg(B,A))} désignent-elles le même segment ?`,"",OUI,"oui",
+      [`Oui : ${M(NOT.seg(A,B))} = ${M(NOT.seg(B,A))}. Les deux extrémités sont ${M(A)} et ${M(B)}, dans n'importe quel ordre.`]);},
+    ()=>qcmFixe(`Combien un segment a-t-il d'extrémités ?`,"",[["0","0"],["1","1"],["2","2"]],"2",[`Un segment a 2 extrémités : il est limité des deux côtés.`]),
+    ()=>{const [A,B]=lettres(2);return qcm(`Lequel de ces objets est limité des deux côtés ?`,"",[["seg",`le segment ${M(NOT.seg(A,B))}`],["line",`la droite ${M(NOT.line(A,B))}`],["ray",`la demi-droite ${M(NOT.ray(A,B))}`]],"seg",
+      [`Le segment ${M(NOT.seg(A,B))} s'arrête en ${M(A)} et en ${M(B)}. La droite est illimitée des deux côtés ; la demi-droite est limitée d'un seul côté (son origine).`]);}
+  ],
+  line:[
+    ()=>{const b=base(),nm=pick(["d","d'"]);const p=add(b.c,b.u,-40);const [lo,hi]=tRange(b.c,b.u);
+      const s=G.line(add(b.c,b.u,-50),add(b.c,b.u,50),"o r")+G.txt(add(add(b.c,b.u,hi-16),b.n,13),`(${nm})`,"nm");
+      return ecrire(`Écris le nom de cette droite.`,svg(s),[`(${nm})`,nm],[`C'est la droite ${M("("+nm+")")} ; on écrit aussi ${M(nm)}.`],`Une droite peut être nommée par une seule lettre.`);},
+    ()=>{const b=base();const [lo,hi]=tRange(b.c,b.u);const [x,y]=pick([["x","y"],["u","v"],["x","x'"],["s","t"]]);
+      const s=G.line(add(b.c,b.u,-50),add(b.c,b.u,50),"o r")+G.txt(add(add(b.c,b.u,lo+12),b.n,12),x,"nm i")+G.txt(add(add(b.c,b.u,hi-12),b.n,12),y,"nm i");
+      const acc=[`(${x}${y})`,`(${y}${x})`];
+      return ecrire(`Écris le nom de cette droite.`,svg(s),acc,[`Les deux lettres minuscules placées aux bouts du tracé : ${accHTML(acc)}.`],`${M(x)} et ${M(y)} ne sont pas des points : ce sont des lettres qui servent seulement à nommer la droite.`);},
+    ()=>{const [A,B,C]=lettres(3);const b=base();const pa=add(b.c,b.u,-70),pc=add(b.c,b.u,-5),pb=add(b.c,b.u,65);
+      const s=G.line(pa,pb,"o r")+G.pt(pa,A,offN(b))+G.pt(pc,C,offN(b))+G.pt(pb,B,offN(b));
+      const bad=pick([NOT.seg(A,B),NOT.ray(C,A),NOT.seg(A,C)]);
+      return qcm(`Quelle écriture ne désigne <b>pas</b> la droite rouge ?`,svg(s),[["ok1",M(NOT.line(A,B))],["ok2",M(NOT.line(C,A))],["ok3",M(NOT.line(B,C))],["bad",M(bad)]],"bad",
+        [`${M(NOT.line(A,B))}, ${M(NOT.line(C,A))} et ${M(NOT.line(B,C))} désignent la même droite ; ${M(bad)} désigne ${decrit(bad)}.`]);},
+    ()=>qcm(`Dans le nom de la droite ${M("(xy)")}, que sont ${M("x")} et ${M("y")} ?`,"",[["l","Deux lettres qui servent à nommer la droite (ce ne sont pas des points)"],["p","Deux points de la droite"],["e","Les deux extrémités de la droite"]],"l",
+      [`${M("x")} et ${M("y")} ne sont pas des points : on ne peut donc pas écrire ${M("[xy]")}. Une droite n'a pas d'extrémités.`]),
+    ()=>qcm(`Une droite a-t-elle des extrémités ?`,"",[["n","Non : elle est illimitée des deux côtés"],["1","Oui, une seule : son origine"],["2","Oui, deux"]],"n",[`Une droite est illimitée des deux côtés : elle n'a pas d'extrémités (on n'en trace qu'une partie).`])
+  ],
+  ray:[
+    ()=>{const [A,B]=lettres(2);return qcm(`Quelle est l'origine de la demi-droite ${M(NOT.ray(A,B))} ?`,"",[[A,`Le point ${M(A)}`],[B,`Le point ${M(B)}`],["0","Elle n'a pas d'origine"]],A,
+      [`L'origine est la première lettre, du côté du crochet « [ » : c'est ${M(A)}.`]);},
+    ()=>{const A=pick(LET),x=pick(["x","y","t","u"]);
+      return ecrire(`Écris le nom de cette demi-droite.`,figObjet("ray",A,"",{x,L:50,noB:true}),[`[${A}${x})`],
+        [`Origine ${M(A)}, et la lettre ${M(x)} au bout du tracé : ${M(`[${A}${x})`)}.`],`On écrit d'abord l'origine, du côté du crochet.`);},
+    ()=>{const [A,B]=lettres(2);return qcmFixe(`Les écritures ${M(NOT.ray(A,B))} et ${M(NOT.ray(B,A))} désignent-elles la même demi-droite ?`,"",OUI,"non",
+      [`Non : ${M(NOT.ray(A,B))} a pour origine ${M(A)}, alors que ${M(NOT.ray(B,A))} a pour origine ${M(B)}. Elles partent dans des sens opposés.`]);}
+  ]
+};
+function genObjet(T){const modes=[...modesObjet(T),...EXTRA[T]];return k=>modes[ordre(T,modes.length,k)]();}
+// ordre des types de questions : mélangé à chaque nouvelle série
+const ORD={};function ordre(key,n,k){if(k===0||!ORD[key])ORD[key]=[...shuffle([...Array(n).keys()]),...shuffle([...Array(n).keys()])];return ORD[key][k%ORD[key].length];}
+
+/* ================= 4. Milieu ================= */
+function figMilieu(A,B,I,cas){const b=base(14);const pa=add(b.c,b.u,-62),pb=add(b.c,b.u,62);let s="",pi;
+  if(cas==="ok"){pi=b.c;s+=G.seg(pa,pb)+G.code(pa,pi,2)+G.code(pi,pb,2);}
+  else if(cas==="hors"){pi=add(b.c,b.n,R(28,40));s+=G.seg(pa,pb)+G.seg(pa,pi,"o f")+G.seg(pi,pb,"o f")+G.code(pa,pi,2)+G.code(pi,pb,2);}
+  else if(cas==="diff"){pi=add(b.c,b.u,R(-14,14)||8);s+=G.seg(pa,pb)+G.code(pa,pi,1)+G.code(pi,pb,2);}
+  else{pi=add(pb,b.u,40);s+=G.line(pa,pb)+G.code(pa,pb,2)+G.code(pb,pi,2);}
+  s+=G.pt(pa,A,offN(b))+G.pt(pb,B,offN(b))+G.pt(pi,I,cas==="hors"?offN(b,13):offN(b,-14));return svg(s);}
+const MIL=["I","M","K","J"];
+const modesMilieu=[
+  ()=>{const I=pick(MIL),[A,B]=lettres(2,I);return qcm(`Quelle écriture traduit « ${M(I)} est le milieu du segment ${M(NOT.seg(A,B))} » ?`,"",
+    [["ok",M(`${I} ∈ [${A}${B}] et ${I}${A} = ${I}${B}`)],["eq",M(`${I}${A} = ${I}${B}`)],["in",M(`${I} ∈ [${A}${B}]`)],["ab",M(`${I} ∈ [${A}${B}] et ${A}${I} = ${A}${B}`)]],"ok",
+    [M(`${I} ∈ [${A}${B}] et ${I}${A} = ${I}${B}`)],`Il faut les deux conditions : ${M(I)} est sur le segment ET à la même distance de ${M(A)} et de ${M(B)}.`);},
+  ()=>{const I=pick(MIL),[A,B]=lettres(2,I);
+    return qcm(`Sur quelle figure le point ${M(I)} est-il le milieu du segment ${M(NOT.seg(A,B))} ?`,"",[["ok",figMilieu(A,B,I,"ok")],["hors",figMilieu(A,B,I,"hors")],["diff",figMilieu(A,B,I,"diff")],["ext",figMilieu(A,B,I,"ext")]],"ok",
+      [`Sur la bonne figure, ${M(I)} appartient à ${M(NOT.seg(A,B))} et le codage (mêmes petits traits) montre ${M(`${I}${A} = ${I}${B}`)}.`],
+      `Les autres figures : ${M(I)} hors du segment, ou codages différents (longueurs différentes), ou ${M(I)} en dehors de ${M(NOT.seg(A,B))}.`,{figs:true});},
+  ()=>{const I=pick(MIL),[A,B]=lettres(2,I);const ab=pick([R(3,15)*10,R(3,15)*10,R(15,60)*2]);
+    return num(`${M(I)} est le milieu du segment ${M(NOT.seg(A,B))} et ${M(`${A}${B} = ${f1(ab)} cm`)}. Calcule la longueur ${M(A+I)} (en cm).`,"",ab/2,
+      [`${M(I)} est le milieu de ${M(NOT.seg(A,B))}, donc ${M(`${A}${I} = ${A}${B} ÷ 2`)}.`,M(`${A}${I} = ${f1(ab)} ÷ 2 = ${f1(ab/2)} cm`)]);},
+  ()=>{const I=pick(MIL),[A,B]=lettres(2,I);const ai=pick([R(2,9)*10,R(11,49)]);
+    return num(`${M(I)} est le milieu du segment ${M(NOT.seg(A,B))} et ${M(`${A}${I} = ${f1(ai)} cm`)}. Calcule la longueur ${M(A+B)} (en cm).`,"",ai*2,
+      [`${M(I)} est le milieu de ${M(NOT.seg(A,B))}, donc ${M(`${A}${B} = 2 × ${A}${I}`)}.`,M(`${A}${B} = 2 × ${f1(ai)} = ${f1(ai*2)} cm`)]);},
+  ()=>{const I=pick(MIL),[A,B]=lettres(2,I);const S=NOT.seg(A,B);
+    return vf(`Vrai ou faux ?`,"",[
+      {t:`Si ${M(`${I}${A} = ${I}${B}`)}, alors ${M(I)} est le milieu de ${M(S)}.`,sol:false},
+      {t:`Le milieu de ${M(S)} appartient au segment ${M(S)}.`,sol:true},
+      {t:`Si ${M(`${I} ∈ ${S}`)} et ${M(`${I}${A} = ${I}${B}`)}, alors ${M(I)} est le milieu de ${M(S)}.`,sol:true},
+      {t:`Un segment a deux milieux.`,sol:false}],
+      [`1) Faux : ${M(I)} peut être à la même distance de ${M(A)} et ${M(B)} sans être sur le segment.`,`2) Vrai. 3) Vrai : ce sont les deux conditions. 4) Faux : un segment a un seul milieu.`]);},
+  ()=>{const I=pick(MIL),[A,B]=lettres(2,I);
+    return qcm(`Sur cette figure codée, que peut-on dire du point ${M(I)} ?`,figMilieu(A,B,I,"ok"),
+      [["ok",`${M(I)} est le milieu du segment ${M(NOT.seg(A,B))}`],["d",`${M(I)} est le milieu de la droite ${M(NOT.line(A,B))}`],["e",`${M(I)} est une extrémité du segment ${M(NOT.seg(A,B))}`],["l",M(`${A}${I} = ${A}${B}`)]],"ok",
+      [`${M(I)} ∈ ${M(NOT.seg(A,B))} et le codage montre ${M(`${I}${A} = ${I}${B}`)} : ${M(I)} est le milieu de ${M(NOT.seg(A,B))}.`],`Une droite n'a pas de milieu : elle est illimitée.`);},
+  ()=>{const I=pick(MIL),[A,B]=lettres(2,I);const acc=[];[[I,A],[A,I]].forEach(([p,q])=>[[I,B],[B,I]].forEach(([r,s])=>{acc.push(p+q+"="+r+s,r+s+"="+p+q);}));
+    return ecrire(`Écris l'égalité de longueurs que montre le codage.`,figMilieu(A,B,I,"ok"),acc,[M(`${I}${A} = ${I}${B}`)+` (ou ${M(`${A}${I} = ${B}${I}`)}…)`],`Les mêmes petits traits signifient : même longueur. Une longueur s'écrit sans crochets.`);}
+];
+
+/* ================= 5. Points alignés ================= */
+function figAlignes(P,D){// P : 3 points alignés (ordre aléatoire), D : point hors de la droite
+  const b=base(18);const ts=shuffle([-70,-5,62]);let s=G.line(add(b.c,b.u,-70),add(b.c,b.u,62),"o f");
+  P.forEach((n,i)=>{s+=G.pt(add(b.c,b.u,ts[i]),n,offN(b));});const pd=add(add(b.c,b.u,R(-40,40)),b.n,pick([-1,1])*R(30,42));s+=G.pt(pd,D,V(0,-11));return svg(s);}
+function figTrois(A,B,C,ok){const b=base(30);const pa=add(b.c,b.u,-80),pb=add(b.c,b.u,R(-15,15)),pc=add(b.c,b.u,80);
+  const pbb=ok?pb:add(pb,b.n,pick([-1,1])*R(24,34));return svg(G.pt(pa,A,V(0,-11))+G.pt(pbb,B,V(0,-11))+G.pt(pc,C,V(0,-11)));}
+const permIn=(X,Y,Z)=>{const r=[];[[X,Y,Z],[Y,X,Z],[Z,X,Y]].forEach(([p,a,b])=>{r.push(`${p}∈(${a}${b})`,`${p}∈(${b}${a})`);});return r;};
+const modesAlignes=[
+  ()=>{const [A,B,C,D]=lettres(4);const it=shuffle([
+      {t:`Les points ${M(A)}, ${M(B)} et ${M(C)} sont alignés.`,sol:true},{t:`Les points ${M(A)}, ${M(B)} et ${M(D)} sont alignés.`,sol:false},
+      {t:M(`${C} ∈ (${A}${B})`),sol:true},{t:M(`${D} ∈ (${A}${B})`),sol:false},{t:M(`${A} ∈ (${B}${C})`),sol:true},{t:M(`${D} ∉ (${A}${C})`),sol:true}]).slice(0,4);
+    return vf(`Vrai ou faux ? Regarde bien la figure.`,figAlignes([A,B,C],D),it,[`${M(A)}, ${M(B)}, ${M(C)} sont sur la même droite : ils sont alignés. ${M(D)} n'est pas sur cette droite.`]);},
+  ()=>{const [X,Y,Z]=lettres(3);return ecrire(`Traduis avec le symbole ${M("∈")} :`,`« Les points ${M(X)}, ${M(Y)} et ${M(Z)} sont alignés. »`,permIn(X,Y,Z),
+      [M(`${Z} ∈ (${X}${Y})`)+` (ou ${M(`${X} ∈ (${Y}${Z})`)}, ${M(`${Y} ∈ (${X}${Z})`)}…)`],`Trois points sont alignés quand l'un appartient à la droite qui passe par les deux autres.`);},
+  ()=>{const [A,B,D]=lettres(3);return qcm(`Que signifie l'écriture ${M(`${D} ∉ (${A}${B})`)} ?`,"",
+      [["ok",`Les points ${M(A)}, ${M(B)} et ${M(D)} ne sont pas alignés.`],["al",`Les points ${M(A)}, ${M(B)} et ${M(D)} sont alignés.`],["in",`Le point ${M(D)} appartient à la droite ${M(`(${A}${B})`)}.`],["mi",`Le point ${M(D)} est le milieu de ${M(`[${A}${B}]`)}.`]],"ok",
+      [`${M("∉")} se lit « n'appartient pas à » : ${M(D)} n'est pas sur la droite ${M(`(${A}${B})`)}, donc ${M(A)}, ${M(B)} et ${M(D)} ne sont pas alignés.`]);},
+  ()=>qcm(`Deux points distincts ${M("A")} et ${M("B")} sont-ils toujours alignés ?`,"",[["oui","Oui : on peut toujours tracer une droite qui passe par deux points"],["non","Non, jamais"],["pr","Seulement s'ils sont proches"]],"oui",
+      [`Par deux points distincts passe toujours une droite : la notion d'alignement a de l'intérêt à partir de trois points.`]),
+  ()=>{const [A,B,C]=lettres(3);return qcm(`Sur quelle figure les points ${M(A)}, ${M(B)} et ${M(C)} sont-ils alignés ?`,"",[["ok",figTrois(A,B,C,true)],["n1",figTrois(A,B,C,false)],["n2",figTrois(A,B,C,false)]],"ok",
+      [`On place la règle sur deux des points : sur la bonne figure, le troisième point est aussi sur le bord de la règle.`],"",{figs:true});}
+];
+
+/* ================= 6. Appartenance (demi-droites…) ================= */
+function scene(){// 4 points sur une droite (abscisses t), 1 point hors de la droite
+  const b=base(15);const L=lettres(5);const ts=[-100,-38,25,92].map(t=>t+R(-6,6));const P={};
+  L.slice(0,4).forEach((n,i)=>P[n]=ts[i]);const E=L[4];
+  let s=G.line(add(b.c,b.u,-100),add(b.c,b.u,92),"o f");L.slice(0,4).forEach(n=>{s+=G.pt(add(b.c,b.u,P[n]),n,offN(b));});
+  s+=G.pt(add(add(b.c,b.u,R(-60,40)),b.n,-R(30,40)),E,V(0,14));
+  return {P,E,on:L.slice(0,4),svg:svg(s)};}
+// appartenance d'un point Z à l'objet T défini par X, Y
+function app(sc,T,X,Y,Z){if(Z===sc.E)return false;const x=sc.P[X],y=sc.P[Y],z=sc.P[Z];
+  if(T==="line")return true;if(T==="seg")return (z-x)*(z-y)<=0;return (z-x)*(y-x)>=0;}
+function enonceApp(sc,T){// choisit X, Y, Z ; privilégie les demi-droites
+  const [X,Y]=shuffle(sc.on).slice(0,2);const Z=pick([...sc.on.filter(n=>n!==X&&n!==Y),...sc.on.filter(n=>n!==X&&n!==Y),sc.E,X]);return {X,Y,Z,v:app(sc,T,X,Y,Z)};}
+function pourquoiApp(sc,T,X,Y,Z,v){
+  if(Z===sc.E)return `${M(Z)} n'est pas sur la droite, donc il n'appartient à aucun des objets tracés sur cette droite.`;
+  if(T==="line")return `${M(Z)} est sur la droite ${M(NOT.line(X,Y))}.`;
+  if(T==="seg")return v?`${M(Z)} est entre ${M(X)} et ${M(Y)} (ou c'est une extrémité).`:`${M(Z)} n'est pas entre ${M(X)} et ${M(Y)}.`;
+  if(Z===X)return `${M(X)} est l'origine de ${M(NOT.ray(X,Y))} : l'origine appartient à la demi-droite.`;
+  return v?`En partant de ${M(X)} dans la direction de ${M(Y)}, on rencontre ${M(Z)}.`:`${M(Z)} est de l'autre côté de l'origine ${M(X)} : il n'est pas sur ${M(NOT.ray(X,Y))}.`;}
+const sym=v=>v?"∈":"∉";
+const modesApp=[
+  ()=>{const sc=scene();const T=pick(["ray","ray","ray","seg","line"]);const {X,Y,Z,v}=enonceApp(sc,T);
+    return qcmFixe(`Complète avec ${M("∈")} ou ${M("∉")} : ${M(`${Z} … ${NOT[T](X,Y)}`)}`,sc.svg,[["∈",M("∈")],["∉",M("∉")]],sym(v),[M(`${Z} ${sym(v)} ${NOT[T](X,Y)}`)],pourquoiApp(sc,T,X,Y,Z,v),{big:true});},
+  ()=>{const sc=scene();const it=[];const seen=new Set();let g=0;
+    while(it.length<4&&g++<50){const T=pick(["ray","ray","seg","line"]);const {X,Y,Z,v}=enonceApp(sc,T);const w=Math.random()<.5;const key=Z+T+X+Y;if(seen.has(key))continue;seen.add(key);
+      it.push({t:M(`${Z} ${w?"∈":"∉"} ${NOT[T](X,Y)}`),sol:w===v,why:pourquoiApp(sc,T,X,Y,Z,v)});}
+    return vf(`Vrai ou faux ? Regarde bien l'ordre des points sur la droite.`,sc.svg,it,it.map((x,i)=>`${i+1}) ${x.sol?"Vrai":"Faux"} : ${x.why}`));},
+  ()=>{const sc=scene();let r,g=0;do r=enonceApp(sc,"ray");while(r.v&&g++<30);const {X,Y,Z,v}=r;
+    const phr=`Le point ${M(Z)} ${v?"appartient":"n'appartient pas"} à la demi-droite ${M(NOT.ray(X,Y))}.`;
+    return ecrire(`Traduis avec un symbole :`,`« ${phr} »`,[`${Z}${sym(v)}[${X}${Y})`],[M(`${Z} ${sym(v)} ${NOT.ray(X,Y)}`)],`${M("∈")} : « appartient à » ; ${M("∉")} : « n'appartient pas à ».`);},
+  ()=>{const sc=scene();const T=pick(["ray","seg"]);const {X,Y,Z,v}=enonceApp(sc,T);
+    return qcm(`Que signifie l'écriture ${M(`${Z} ${sym(v)} ${NOT[T](X,Y)}`)} ?`,"",
+      [["ok",`Le point ${M(Z)} ${v?"appartient":"n'appartient pas"} ${T==="ray"?"à la demi-droite":"au segment"} ${M(NOT[T](X,Y))}.`],
+       ["no",`Le point ${M(Z)} ${v?"n'appartient pas":"appartient"} ${T==="ray"?"à la demi-droite":"au segment"} ${M(NOT[T](X,Y))}.`],
+       ["ot",`Le point ${M(Z)} ${v?"appartient":"n'appartient pas"} à la droite ${M(NOT.line(X,Y))}.`]],"ok",
+      [`${M(sym(v))} se lit « ${v?"appartient à":"n'appartient pas à"} », et ${M(NOT[T](X,Y))} est ${PHR[T](X,Y)}.`]);}
+];
+
+/* ================= 7. Longueur ================= */
+function lgAcc(A,B,n){return [`${A}${B}=${f1(n)}cm`,`${B}${A}=${f1(n)}cm`,`${f1(n)}cm=${A}${B}`];}
+const longueurAuHasard=()=>pick([R(2,12)*10,R(21,99)]);
+const modesLongueur=[
+  ()=>{const [A,B]=lettres(2);const n=longueurAuHasard();
+    return ecrire(`Écris avec la notation mathématique :`,`« Le segment ${M(NOT.seg(A,B))} mesure ${f1(n)} cm. »`,lgAcc(A,B,n),[M(`${A}${B} = ${f1(n)} cm`)],`Une longueur s'écrit sans crochets ni parenthèses : ${M(A+B)} est un nombre.`);},
+  ()=>{const [A,B]=lettres(2);const n=longueurAuHasard();const ok=pick([`Le segment ${M(NOT.seg(A,B))} mesure ${f1(n)} cm.`,`La distance entre les points ${M(A)} et ${M(B)} est égale à ${f1(n)} cm.`]);
+    return qcm(`Que signifie ${M(`${A}${B} = ${f1(n)} cm`)} ?`,"",[["ok",ok],["d",`La droite ${M(NOT.line(A,B))} mesure ${f1(n)} cm.`],["r",`La demi-droite ${M(NOT.ray(A,B))} mesure ${f1(n)} cm.`],["p",`Le point ${M(A)} est à ${f1(n)} cm de la droite ${M(NOT.line(A,B))}.`]],"ok",
+      [`${M(A+B)} est la longueur du segment ${M(NOT.seg(A,B))}, c'est-à-dire la distance entre ${M(A)} et ${M(B)}.`],`Une droite et une demi-droite sont illimitées : elles n'ont pas de longueur.`);},
+  ()=>{const [A,B]=lettres(2);const n=longueurAuHasard();
+    return qcm(`Quelle écriture est correcte ?`,"",[["ok",M(`${A}${B} = ${f1(n)} cm`)],["s",M(`[${A}${B}] = ${f1(n)} cm`)],["d",M(`(${A}${B}) = ${f1(n)} cm`)],["r",M(`[${A}${B}) = ${f1(n)} cm`)]],"ok",
+      [M(`${A}${B} = ${f1(n)} cm`)+` : la longueur s'écrit sans crochets.`],`${M(`[${A}${B}]`)} est un segment (un objet), pas un nombre : on ne peut pas écrire qu'il est égal à ${f1(n)} cm.`);},
+  ()=>{const [A,B]=lettres(2);return qcm(`Lequel de ces objets a une longueur ?`,"",[["s",`le segment ${M(NOT.seg(A,B))}`],["d",`la droite ${M(NOT.line(A,B))}`],["r",`la demi-droite ${M(NOT.ray(A,B))}`]],"s",
+      [`Seul le segment est limité des deux côtés : sa longueur est ${M(A+B)}.`]);},
+  ()=>{const [A,B,C]=lettres(3);const a=R(15,60),c=R(15,60);const b=base(10);const pa=add(b.c,b.u,-95),pc=add(b.c,b.u,95),pb=add(pa,b.u,190*a/(a+c));
+    const s=G.seg(pa,pc)+G.pt(pa,A,offN(b))+G.pt(pb,B,offN(b))+G.pt(pc,C,offN(b))+G.cote(pa,pb,`${f1(a)} cm`)+G.cote(pb,pc,`${f1(c)} cm`);
+    return num(`${M(`${B} ∈ [${A}${C}]`)}, ${M(`${A}${B} = ${f1(a)} cm`)} et ${M(`${B}${C} = ${f1(c)} cm`)}. Calcule ${M(A+C)} (en cm).`,svg(s)+`<div class="pvg">La figure n'est pas en vraie grandeur.</div>`,a+c,
+      [`${M(B)} appartient au segment ${M(`[${A}${C}]`)}, donc ${M(`${A}${C} = ${A}${B} + ${B}${C}`)}.`,M(`${A}${C} = ${f1(a)} + ${f1(c)} = ${f1(a+c)} cm`)]);},
+  ()=>{const [A,B,C]=lettres(3);const a=R(15,60),c=R(15,60);
+    return num(`${M(`${B} ∈ [${A}${C}]`)}, ${M(`${A}${C} = ${f1(a+c)} cm`)} et ${M(`${A}${B} = ${f1(a)} cm`)}. Calcule ${M(B+C)} (en cm).`,"",c,
+      [`${M(B)} appartient au segment ${M(`[${A}${C}]`)}, donc ${M(`${B}${C} = ${A}${C} − ${A}${B}`)}.`,M(`${B}${C} = ${f1(a+c)} − ${f1(a)} = ${f1(c)} cm`)]);},
+  ()=>{const [A,B]=lettres(2);const n=longueurAuHasard();const b=base(18);const pa=add(b.c,b.u,-60),pb=add(b.c,b.u,60);
+    const s=G.seg(pa,pb)+G.pt(pa,A,offN(b,-14))+G.pt(pb,B,offN(b,-14))+G.cote(pa,pb,`${f1(n)} cm`);
+    return ecrire(`Traduis l'information de la figure avec la notation mathématique.`,svg(s)+`<div class="pvg">La figure n'est pas en vraie grandeur.</div>`,lgAcc(A,B,n),[M(`${A}${B} = ${f1(n)} cm`)],`On n'oublie pas l'unité (cm).`);}
+];
+
+/* ================= 8 et 9. Parallèles, perpendiculaires ================= */
+function deuxNoms(){const t=R(1,4);
+  if(t===1)return [{k:"d",s:"d"},{k:"d",s:"d'"}];
+  if(t===2){const [a,b,c,d]=lettres(4);return [{k:"pts",a,b},{k:"pts",a:c,b:d}];}
+  if(t===3)return [{k:"xy",s:"xy"},{k:"xy",s:"uv"}];
+  const [a,b]=lettres(2);return [{k:"d",s:"d"},{k:"pts",a,b}];}
+// dessine une droite de direction u passant par p avec son nom
+function droiteNom(p,u,nm,cote){const n=nor(u);const [lo,hi]=tRange(p,u);let s=G.line(add(p,u,-10),add(p,u,10),"o r");
+  if(nm.k==="d")s+=G.txt(add(add(p,u,hi-16),n,cote||12),`(${nm.s})`,"nm");
+  else if(nm.k==="xy")s+=G.txt(add(add(p,u,lo+10),n,cote||12),nm.s[0],"nm i")+G.txt(add(add(p,u,hi-10),n,cote||12),nm.s[1],"nm i");
+  else{const ta=-R(55,75),tb=R(32,55);s+=G.pt(add(p,u,ta),nm.a,add(V(0,0),n,cote||12))+G.pt(add(p,u,Math.min(tb,hi-20)),nm.b,add(V(0,0),n,cote||12));}
+  return s;}
+function figPos(n1,n2,pos){const u=dirU(R(-25,25));const c=V(150,76);let s="";
+  if(pos==="par"){const n=nor(u);s=droiteNom(add(c,n,24),u,n1,12)+droiteNom(add(c,n,-24),u,n2,-12);}
+  else if(pos==="perp"){const v=nor(u);s=droiteNom(c,u,n1,12)+droiteNom(c,v,n2,-12)+G.ra(c,u,v);}
+  else{const v=dirU(R(-25,25)+pick([1,-1])*R(48,62));s=droiteNom(c,u,n1,12)+droiteNom(c,v,n2,-12);}
+  return svg(s);}
+const opP={par:"//",perp:"⊥"};const motP={par:"parallèles",perp:"perpendiculaires"};
+function accPos(n1,n2,op){const r=[];dnAcc(n1).forEach(a=>dnAcc(n2).forEach(b=>{r.push(a+op+b,b+op+a);}));return r;}
+const notPos=(n1,n2,P)=>`${dn(n1)} ${opP[P]==="//"?"//":"⊥"} ${dn(n2)}`;
+function modesPos(P){const Q=P==="par"?"perp":"par";return [
+  ()=>{const [n1,n2]=deuxNoms();return ecrire(`Écris avec la notation mathématique :`,`« Les droites ${M(dn(n1))} et ${M(dn(n2))} sont ${motP[P]}. »`,accPos(n1,n2,opP[P]),
+    [M(notPos(n1,n2,P))],P==="par"?`Le symbole ${M("//")} se lit « est parallèle à ».`:`Le symbole ${M("⊥")} se lit « est perpendiculaire à ».`);},
+  ()=>{const [n1,n2]=deuxNoms();return qcm(`Que signifie ${M(notPos(n1,n2,P))} ?`,"",[["ok",`Les droites ${M(dn(n1))} et ${M(dn(n2))} sont ${motP[P]}.`],["q",`Les droites ${M(dn(n1))} et ${M(dn(n2))} sont ${motP[Q]}.`],
+      ["s",`Les droites ${M(dn(n1))} et ${M(dn(n2))} sont sécantes${P==="perp"?" sans former d'angle droit":""}.`]],"ok",[`${M(P==="par"?"//":"⊥")} se lit « est ${P==="par"?"parallèle":"perpendiculaire"} à ».`]);},
+  ()=>{const [n1,n2]=deuxNoms();return qcm(`Sur quelle figure les droites ${M(dn(n1))} et ${M(dn(n2))} sont-elles ${motP[P]} ?`,"",[["par",figPos(n1,n2,"par")],["perp",figPos(n1,n2,"perp")],["sec",figPos(n1,n2,"sec")]],P,
+      [P==="par"?`Les droites parallèles ne se coupent pas.`:`Les droites perpendiculaires se coupent en formant un angle droit (le petit carré est le codage de l'angle droit).`],"",{figs:true});},
+  ()=>{const [n1,n2]=deuxNoms();return ecrire(`Traduis la figure avec la notation mathématique.`,figPos(n1,n2,P),accPos(n1,n2,opP[P]),[M(notPos(n1,n2,P))],
+      P==="perp"?`Le petit carré code l'angle droit : les droites sont perpendiculaires.`:`Les droites ne se coupent pas : elles sont parallèles.`);},
+  ()=>P==="par"?qcm(`Deux droites sont parallèles lorsque…`,"",[["ok","elles ne sont pas sécantes"],["p","elles se coupent en formant un angle droit"],["s","elles se coupent en un seul point"]],"ok",[`Définition : deux droites sont parallèles si elles ne sont pas sécantes.`]):
+      qcm(`Deux droites sont perpendiculaires lorsque…`,"",[["ok","elles se coupent en formant un angle droit"],["p","elles ne se coupent pas"],["s","elles se coupent en un seul point, quel que soit l'angle"]],"ok",[`Définition : deux droites sont perpendiculaires si elles sont sécantes en formant un angle droit.`]),
+  ()=>P==="par"?vf(`Vrai ou faux ?`,"",[{t:"Deux droites parallèles distinctes n'ont aucun point commun.",sol:true},{t:"Deux droites sécantes ont un seul point commun.",sol:true},{t:"Deux droites parallèles se coupent en formant un angle droit.",sol:false},{t:`Le symbole ${M("//")} se lit « est parallèle à ».`,sol:true}],
+      [`1) Vrai. 2) Vrai : ce point est leur point d'intersection. 3) Faux : des droites parallèles ne se coupent pas. 4) Vrai.`]):
+      vf(`Vrai ou faux ?`,"",[{t:"Deux droites perpendiculaires sont sécantes.",sol:true},{t:"Deux droites sécantes sont toujours perpendiculaires.",sol:false},{t:`Le symbole ${M("⊥")} se lit « est perpendiculaire à ».`,sol:true},{t:"Sur une figure, le petit carré est le codage d'un angle droit.",sol:true}],
+      [`1) Vrai : elles se coupent. 2) Faux : elles peuvent se couper sans former d'angle droit. 3) Vrai. 4) Vrai.`])
+];}
+
+/* ================= 10. Vocabulaire du cercle ================= */
+function figCercle(){const c=V(150,75),r=58;const a0=R(0,359)*Math.PI/180;const at=k=>V(c.x+r*Math.cos(a0+k),c.y+r*Math.sin(a0+k));
+  const L=lettres(5);const [A,E,F,Mn,N]=L;const pA=at(0),pE=at(2.2),pF=at(2.2+Math.PI),pM=at(3.9),pN=at(4.9);
+  const lab=(p,k)=>{const u=uv(c,p);return add(V(0,0),u,k||12);};
+  let s=G.circ(c,r)+G.seg(c,pA,"o r")+G.seg(pE,pF,"o b")+G.seg(pM,pN,"o g");
+  s+=G.pt(c,"O",V(13*Math.cos(a0+3.77),13*Math.sin(a0+3.77)))+G.pt(pA,A,lab(pA))+G.pt(pE,E,lab(pE))+G.pt(pF,F,lab(pF))+G.pt(pM,Mn,lab(pM))+G.pt(pN,N,lab(pN));
+  return {svg:svg(s,"cercle"),A,E,F,Mn,N};}
+const modesCercle=[
+  ()=>{const f=figCercle();const w=R(1,4);let cons,opts,sol,st;
+    if(w===1){cons=`Sur la figure, le segment ${M(`[O${f.A}]`)} est…`;opts=[["r","un rayon du cercle"],["d","un diamètre du cercle"],["c","une corde du cercle"],["a","un arc de cercle"]];sol="r";
+      st=`${M(`[O${f.A}]`)} relie le centre ${M("O")} à un point du cercle : c'est un rayon (ce n'est pas une corde, car ${M("O")} n'est pas sur le cercle).`;}
+    else if(w===2){cons=`Sur la figure, le segment ${M(`[${f.E}${f.F}]`)} est…`;opts=[["r","un rayon du cercle"],["d","un diamètre du cercle"],["o","le centre du cercle"],["a","un arc de cercle"]];sol="d";
+      st=`${M(`[${f.E}${f.F}]`)} relie deux points du cercle et passe par le centre ${M("O")} : c'est un diamètre.`;}
+    else if(w===3){cons=`Sur la figure, le segment ${M(`[${f.Mn}${f.N}]`)} est…`;opts=[["r","un rayon du cercle"],["d","un diamètre du cercle"],["c","une corde du cercle"],["a","un arc de cercle"]];sol="c";
+      st=`${M(`[${f.Mn}${f.N}]`)} relie deux points du cercle sans passer par le centre : c'est une corde (pas un diamètre).`;}
+    else{cons=`Sur la figure, le point ${M("O")} est…`;opts=[["o","le centre du cercle"],["r","un rayon du cercle"],["p","un point du cercle"]];sol="o";
+      st=`${M("O")} est à la même distance de tous les points du cercle : c'est le centre. Il n'appartient pas au cercle.`;}
+    return qcm(cons,f.svg,opts,sol,[st]);},
+  ()=>{const r=pick([R(2,12)*10,R(11,60)]);return num(`Un cercle a pour rayon ${f1(r)} cm. Quel est son diamètre (en cm) ?`,"",2*r,[`Le diamètre est le double du rayon :`,M(`d = 2 × r = 2 × ${f1(r)} = ${f1(2*r)} cm`)]);},
+  ()=>{const d=pick([R(2,12)*20,R(11,60)*2,R(3,15)*10]);return num(`Un cercle a pour diamètre ${f1(d)} cm. Quel est son rayon (en cm) ?`,"",d/2,[`Le rayon est la moitié du diamètre :`,M(`r = d ÷ 2 = ${f1(d)} ÷ 2 = ${f1(d/2)} cm`)]);},
+  ()=>{const it=shuffle([{t:"Un diamètre est une corde.",sol:true},{t:"Une corde passe toujours par le centre du cercle.",sol:false},{t:"Tous les rayons d'un même cercle ont la même longueur.",sol:true},
+      {t:"Le centre d'un cercle appartient à ce cercle.",sol:false},{t:"Le diamètre est la plus longue corde du cercle.",sol:true},{t:"Un rayon est une corde.",sol:false},{t:"Le centre d'un cercle est le milieu de chacun de ses diamètres.",sol:true}]).slice(0,4);
+    return vf(`Vrai ou faux ?`,"",it,[`Un diamètre est une corde particulière : celle qui passe par le centre ; c'est la plus longue. Un rayon n'est pas une corde (le centre n'est pas sur le cercle). Tous les rayons ont la même longueur.`]);},
+  ()=>{const [P]=lettres(1);const r=R(2,6)*10;return num(`Le point ${M(P)} appartient au cercle de centre ${M("O")} et de rayon ${f1(r)} cm. Combien mesure ${M("O"+P)} (en cm) ?`,"",r,
+      [`Tous les points du cercle sont à ${f1(r)} cm du centre : ${M(`O${P} = ${f1(r)} cm`)}.`]);},
+  ()=>{const [P]=lettres(1);const r=R(2,6)*10;const w=R(1,3);const op=w===1?r:w===2?r-R(1,9):r+R(1,9);
+    return qcm(`Le cercle ${M("𝒞")} a pour centre ${M("O")} et pour rayon ${f1(r)} cm. On sait que ${M(`O${P} = ${f1(op)} cm`)}. Où est le point ${M(P)} ?`,"",
+      [["s",`${M(P)} appartient au cercle ${M("𝒞")}`],["i",`${M(P)} est à l'intérieur du cercle : il appartient au disque, mais pas au cercle`],["e",`${M(P)} est à l'extérieur du cercle (et du disque)`]],w===1?"s":w===2?"i":"e",
+      [w===1?`${M(`O${P} = ${f1(r)} cm`)} : ${M(P)} est exactement à ${f1(r)} cm de ${M("O")}, il appartient au cercle.`:w===2?`${f1(op)} < ${f1(r)} : ${M(P)} est à moins de ${f1(r)} cm de ${M("O")}, il est dans le disque mais pas sur le cercle.`:`${f1(op)} > ${f1(r)} : ${M(P)} est à plus de ${f1(r)} cm de ${M("O")}, il est à l'extérieur.`]);},
+  ()=>{const r=R(2,6);return qcm(`Que désigne l'écriture ${M(`𝒞 (O ; ${r} cm)`)} ?`,"",[["ok",`Le cercle ${M("𝒞")} de centre ${M("O")} et de rayon ${r} cm`],["d",`Le cercle ${M("𝒞")} de centre ${M("O")} et de diamètre ${r} cm`],["p",`Le cercle ${M("𝒞")} qui passe par le point ${M("O")}, de rayon ${r} cm`]],"ok",
+      [`Dans ${M(`𝒞 (O ; ${r} cm)`)}, on écrit d'abord le centre, puis le rayon.`]);},
+  ()=>{const [A]=lettres(1);return ecrire(`Traduis avec un symbole :`,`« Le point ${M(A)} appartient au cercle ${M("𝒞")}. »`,[`${A}∈𝒞`,`${A}∈(𝒞)`],[M(`${A} ∈ 𝒞`)],`Utilise la touche ${M("𝒞")} du clavier ci-dessous.`);}
+];
+
+/* ================= onglets ================= */
+const TABS=[
+ {id:"segment",name:"Segment",gen:genObjet("seg"),n:8,rappel:`${M("[AB]")} : <b>le segment</b> d'extrémités ${M("A")} et ${M("B")}. Les crochets « [ ] » montrent que le segment s'arrête en ${M("A")} et en ${M("B")}. ${M("[AB]")} = ${M("[BA]")}.`},
+ {id:"droite",name:"Droite",gen:genObjet("line"),n:8,rappel:`${M("(AB)")} : <b>la droite</b> qui passe par ${M("A")} et ${M("B")}, illimitée des deux côtés. Autres noms : une lettre ${M("(d)")} ou ${M("d")}, ou deux lettres minuscules aux bouts du tracé ${M("(xy)")}.`},
+ {id:"demi-droite",name:"Demi-droite",gen:genObjet("ray"),n:8,rappel:`${M("[AB)")} : <b>la demi-droite</b> d'origine ${M("A")} qui passe par ${M("B")}. L'origine s'écrit en premier, du côté du crochet. ${M("[AB)")} ≠ ${M("[BA)")}.`},
+ {id:"milieu",name:"Milieu",gen:k=>modesMilieu[ordre("mil",modesMilieu.length,k)](),n:7,rappel:`${M("I")} est <b>le milieu</b> de ${M("[AB]")} : ${M("I ∈ [AB] et IA = IB")}. Il faut les <b>deux</b> conditions. Alors ${M("AI = AB ÷ 2")}.`},
+ {id:"alignes",name:"Points alignés",gen:k=>modesAlignes[ordre("ali",modesAlignes.length,k)](),n:6,rappel:`Des points sont <b>alignés</b> s'ils appartiennent à une même droite. « ${M("A")}, ${M("B")}, ${M("C")} sont alignés » s'écrit ${M("C ∈ (AB)")}.`},
+ {id:"appartenance",name:"Appartient / n'appartient pas",gen:k=>modesApp[ordre("app",modesApp.length,k)](),n:8,rappel:`${M("∈")} : « appartient à », ${M("∉")} : « n'appartient pas à ». Pour une demi-droite ${M("[AB)")}, on part de l'origine ${M("A")} vers ${M("B")} : les points situés de l'autre côté de ${M("A")} n'appartiennent pas à ${M("[AB)")}.`},
+ {id:"longueur",name:"Longueur",gen:k=>modesLongueur[ordre("lg",modesLongueur.length,k)](),n:7,rappel:`« Le segment ${M("[AB]")} mesure 3 cm » s'écrit ${M("AB = 3 cm")} : la longueur s'écrit <b>sans crochets</b>. Seul un segment a une longueur.`},
+ {id:"paralleles",name:"Parallèles",gen:(()=>{const m=modesPos("par");return k=>m[ordre("par",m.length,k)]();})(),n:7,rappel:`Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes : ${M("(d) // (d')")} se lit « la droite ${M("(d)")} est parallèle à la droite ${M("(d')")} ».`},
+ {id:"perpendiculaires",name:"Perpendiculaires",gen:(()=>{const m=modesPos("perp");return k=>m[ordre("perp",m.length,k)]();})(),n:7,rappel:`Deux droites sont <b>perpendiculaires</b> si elles se coupent en formant un angle droit : ${M("(d) ⊥ (d')")}. Le petit carré code l'angle droit.`},
+ {id:"cercle",name:"Vocabulaire du cercle",gen:k=>modesCercle[ordre("cer",modesCercle.length,k)](),n:8,rappel:`<b>Rayon</b> : segment qui relie le centre à un point du cercle. <b>Corde</b> : segment qui relie deux points du cercle. <b>Diamètre</b> : corde qui passe par le centre. Diamètre = 2 × rayon.`},
+ {id:"melange",name:"Mélange",gen:()=>{const t=pick(TABS.slice(0,10));return t.gen(R(0,15));},n:10,rappel:`Toutes les notions mélangées. Rappel : ${M("[AB]")} segment, ${M("(AB)")} droite, ${M("[AB)")} demi-droite, ${M("AB")} longueur ; ${M("∈")}, ${M("∉")}, ${M("//")}, ${M("⊥")}.`}
+];
+
+/* ================= interface ================= */
+let cur=0;const state=TABS.map(()=>null);
+const list=document.getElementById("list"),tabs=document.getElementById("tabs");
+(function(){const p=new URLSearchParams(location.search).get("onglet")||location.hash.slice(1);const i=TABS.findIndex(t=>t.id===p);if(i>=0)cur=i;})();
+function serie(i){const t=TABS[i];const qs=[];const seen=new Set();let g=0;
+  while(qs.length<t.n&&g++<400){const q=t.gen(qs.length+(g>t.n*3?g:0));const key=q.cons+q.txt+(q.items?q.items.map(x=>x.t).join():"");if(seen.has(key))continue;seen.add(key);
+    q.st=null;q.val=q.kind==="vf"?q.items.map(()=>null):"";qs.push(q);}return qs;}
+function renderTabs(){tabs.innerHTML=TABS.map((t,i)=>{const s=state[i];const ok=s?s.filter(q=>q.st==="ok").length:0;
+  return `<button class="tab" role="tab" aria-selected="${i===cur}" data-tab="${i}">${t.name}<span class="n">${s?ok+"/"+s.length:""}</span></button>`;}).join("");}
+const KEYS=["[","]","(",")","∈","∉","//","⊥","=","cm","𝒞"];
+function ansHTML(q,j){
+  if(q.kind==="qcm")return `<div class="choices${q.figs?" figs":""}">${q.opts.map(([v,l])=>`<button class="choice${q.big?" big":""}${q.figs?" fig":""}${q.val===v?" sel":""}" data-ch="${j}" data-o="${esc(v)}">${l}</button>`).join("")}</div>`;
+  if(q.kind==="vf")return `<div class="vfl">${q.items.map((it,k)=>`<div class="vfi" id="vf${j}_${k}"><span class="vft">${it.t}</span><span class="vfb"><button class="choice${q.val[k]===true?" sel":""}" data-vf="${j}" data-k="${k}" data-o="1">Vrai</button><button class="choice${q.val[k]===false?" sel":""}" data-vf="${j}" data-k="${k}" data-o="0">Faux</button></span></div>`).join("")}</div>`;
+  if(q.kind==="num")return `<input class="md" id="in${j}" data-j="${j}" autocomplete="off" inputmode="decimal" value="${esc(q.val)}" aria-label="Réponse"><span class="lbl">cm</span>`;
+  return `<div class="wr"><input class="wd2" id="in${j}" data-j="${j}" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(q.val)}" aria-label="Réponse"><div class="keys">${KEYS.map(k=>`<button class="key" data-key="${esc(k)}" data-j="${j}" tabindex="-1">${k}</button>`).join("")}</div></div>`;}
+function render(){
+  if(!state[cur])state[cur]=serie(cur);
+  document.getElementById("rappel").innerHTML=TABS[cur].rappel;
+  try{history.replaceState(null,"","#"+TABS[cur].id);}catch(e){}
+  const qs=state[cur];
+  list.innerHTML=qs.map((q,j)=>{const auto=q.kind==="qcm";
+    return `<div class="q ${q.st==="ok"?"ok":q.st==="bad"?"bad":""}" id="q${j}">
+      <div class="qhead"><span class="num">${j+1}</span><span class="consigne">${q.cons}</span></div>
+      ${q.txt?`<div class="expr">${q.txt}</div>`:""}
+      <div class="ans"><div class="ai" id="ai${j}">${ansHTML(q,j)}</div>${auto?"":`<button class="btn" data-check="${j}">Vérifier</button>`}<button class="btn" data-corr="${j}">Correction</button></div>
+      <div class="fb" id="fb${j}"></div><div class="corr" id="co${j}" hidden></div></div>`;}).join("");
+  qs.forEach((q,j)=>{if(q.fb)setFb(j,q.fb[0],q.fb[1]);if(q.kind==="vf"&&q.marks)markVF(q,j);});
+  renderTabs();tally();
+}
+function setFb(j,cls,msg){const f=document.getElementById("fb"+j);if(!f)return;f.className="fb "+cls;f.innerHTML=msg;}
+function markVF(q,j){q.items.forEach((it,k)=>{const el=document.getElementById(`vf${j}_${k}`);if(!el)return;el.classList.remove("ok","bad");if(q.marks[k])el.classList.add(q.marks[k]);});}
+function lireNombre(s){s=String(s).replace(/[\s  ]/g,"").replace(/cm$/i,"").replace(".",",");if(!/^\d+(,\d+)?$/.test(s))return null;const [i,d=""]=s.split(",");
+  if(d.length>1&&/[^0]/.test(d.slice(1)))return -1;return (+i)*10+(d?+d[0]:0);}
+// vérifie une réponse écrite : [statut, message]
+function verifEcrit(q,v){const c=canon(v);if(!c)return ["empty"];const acc=q.acc.map(canon);if(acc.includes(c))return ["ok"];
+  if(acc.includes(c+"cm"))return ["bad","Presque ! N'oublie pas l'unité : cm."];
+  if(acc.some(a=>a.toLowerCase()===c.toLowerCase()))return ["bad","Attention aux majuscules et minuscules : les points se notent avec des lettres majuscules."];
+  if(/^[\[\(][A-Z][A-Z][\]\)]=/.test(c)&&acc.some(a=>/^[A-Z][A-Z]=/.test(a)))return ["bad","Une longueur s'écrit sans crochets ni parenthèses."];
+  if(acc.some(a=>a.includes("//"))&&c.includes("⊥")||acc.some(a=>a.includes("⊥"))&&c.includes("//"))return ["bad",`Attention au symbole : ${M("//")} « est parallèle à », ${M("⊥")} « est perpendiculaire à ».`];
+  if(acc.some(a=>a.includes("∈"))&&c.includes("∉")||acc.some(a=>a.includes("∉"))&&c.includes("∈"))return ["bad",`Attention : ${M("∈")} « appartient à », ${M("∉")} « n'appartient pas à ».`];
+  const d=decrit(c);if(d)return ["bad",`Tu as écrit ${M(esc(c))} : c'est ${d}.`];
+  return ["bad"];}
+function check(j,silent){const q=state[cur][j];let st="bad",fb;
+  if(q.kind==="qcm"){if(!q.val){if(!silent)setFb(j,"hint","Choisis une réponse.");return;}
+    st=q.val===q.sol?"ok":"bad";fb=st==="ok"?["ok","Bravo !"]:["bad","Ce n'est pas la bonne réponse (regarde la correction)."];}
+  else if(q.kind==="vf"){if(q.val.every(x=>x===null)){if(!silent)setFb(j,"hint","Réponds Vrai ou Faux à chaque phrase.");return;}
+    q.marks=q.val.map((x,k)=>x===null?null:x===q.items[k].sol?"ok":"bad");markVF(q,j);
+    const nb=q.marks.filter(m=>m==="bad").length;
+    if(nb){fb=["bad",nb===1?"Une réponse est fausse (en rouge).":nb+" réponses sont fausses (en rouge)."];}
+    else if(q.val.some(x=>x===null)){fb=["hint","C'est juste pour l'instant : réponds aux autres phrases."];st=null;}
+    else{st="ok";fb=["ok","Bravo !"];}}
+  else if(q.kind==="num"){const s=String(q.val).trim();if(!s){if(!silent)setFb(j,"hint","Écris ta réponse.");return;}
+    const n=lireNombre(s);if(n===null){st=null;fb=["hint","Écris seulement un nombre (avec une virgule si besoin)."];}else{st=n===q.sol?"ok":"bad";fb=st==="ok"?["ok","Bravo !"]:["bad","Ce n'est pas le bon résultat."];}}
+  else{const r=verifEcrit(q,q.val);if(r[0]==="empty"){if(!silent)setFb(j,"hint","Écris ta réponse (tu peux utiliser les touches sous la case).");return;}
+    st=r[0];fb=st==="ok"?["ok","Bravo !"]:["bad",r[1]||"Ce n'est pas la bonne écriture."];}
+  q.st=st;q.fb=fb;const box=document.getElementById("q"+j);box.classList.toggle("ok",st==="ok");box.classList.toggle("bad",st==="bad");setFb(j,fb[0],fb[1]);renderTabs();tally();}
+function corr(j){const q=state[cur][j];const c=document.getElementById("co"+j);if(!c.hidden){c.hidden=true;return;}
+  let h="";if(q.kind==="qcm"&&!q.figs){const o=q.opts.find(x=>x[0]===q.sol);h=`<span class="line"><b>Réponse :</b> ${o[1]}</span>`;}
+  if(q.kind==="vf")h=`<span class="line"><b>Réponses :</b> ${q.items.map((it,k)=>`${k+1}) ${it.sol?"Vrai":"Faux"}`).join(" ; ")}</span>`;
+  if(q.kind==="num")h=`<span class="line"><b>Réponse :</b> ${M(f1(q.sol)+" cm")}</span>`;
+  c.innerHTML=h+q.steps.map(s=>`<span class="line">${s}</span>`).join("")+(q.why?`<span class="why">${q.why}</span>`:"");c.hidden=false;}
+function tally(){let tot=0,ok=0;state.forEach(s=>{if(s)s.forEach(q=>{tot++;if(q.st==="ok")ok++;});});
+  document.getElementById("score").textContent=`${ok} / ${tot} réussies`;document.getElementById("prog").style.width=(tot?100*ok/tot:0)+"%";}
+function reset(j){const q=state[cur][j];q.st=null;q.fb=null;const box=document.getElementById("q"+j);box.classList.remove("ok","bad");setFb(j,"","");}
+tabs.addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;cur=+b.dataset.tab;render();});
+list.addEventListener("click",e=>{
+  const c=e.target.closest("[data-check]");if(c){check(+c.dataset.check);return;}
+  const r=e.target.closest("[data-corr]");if(r){corr(+r.dataset.corr);return;}
+  const ch=e.target.closest("[data-ch]");if(ch){const j=+ch.dataset.ch;state[cur][j].val=ch.dataset.o;ch.parentNode.querySelectorAll(".choice").forEach(x=>x.classList.toggle("sel",x===ch));check(j);return;}
+  const v=e.target.closest("[data-vf]");if(v){const j=+v.dataset.vf,k=+v.dataset.k,q=state[cur][j];q.val[k]=v.dataset.o==="1";v.parentNode.querySelectorAll(".choice").forEach(x=>x.classList.toggle("sel",x===v));
+    if(q.marks){q.marks[k]=null;markVF(q,j);}reset(j);renderTabs();tally();return;}
+  const key=e.target.closest("[data-key]");if(key){const j=+key.dataset.j,inp=document.getElementById("in"+j);const t=key.dataset.key;
+    const a=inp.selectionStart??inp.value.length,b=inp.selectionEnd??inp.value.length;inp.value=inp.value.slice(0,a)+t+inp.value.slice(b);inp.focus();inp.setSelectionRange(a+t.length,a+t.length);
+    inp.dispatchEvent(new Event("input",{bubbles:true}));}
+});
+list.addEventListener("mousedown",e=>{if(e.target.closest("[data-key]"))e.preventDefault();});
+list.addEventListener("input",e=>{const d=e.target.dataset;if(d.j==null||e.target.tagName!=="INPUT")return;const j=+d.j;state[cur][j].val=e.target.value;reset(j);renderTabs();tally();});
+list.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.tagName==="INPUT")check(+e.target.dataset.j);});
+document.getElementById("newSerie").addEventListener("click",()=>{state[cur]=serie(cur);render();});
+document.getElementById("checkAll").addEventListener("click",()=>{state[cur].forEach((q,j)=>check(j,true));});
+render();
+window.__s2={TABS,state,serie,check,canon,verifEcrit,lireNombre,setCur:i=>{cur=i;render();},cur:()=>cur};
+})();
+</script>
+</body>
+</html>
