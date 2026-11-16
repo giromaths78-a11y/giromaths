@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Calcul mental · GiroMaths</title>
+<meta name="description" content="Entraînement au calcul mental : choisis ton niveau, le nombre de questions et le type de calcul. Correction immédiate.">
+<link rel="icon" href="../../favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Outil de calcul mental GiroMaths (2026-11-14, demande de sg). Page autonome, aucun envoi de données. */
+:root{--ink:#151831;--text:#23263d;--muted:#62677f;--bg:#fbfaf7;--card:#fff;--line:#e7e5df;
+  --c:#2563eb;--cl:#e6eeff;--ok:#15803d;--ok-l:#dcfce7;--ko:#dc2626;--ko-l:#fee2e2;
+  --ft:"Space Grotesk",system-ui,sans-serif;--f:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --m:"Cambria Math","STIX Two Math","Times New Roman",serif}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--f);color:var(--text);line-height:1.5;background:var(--bg);
+  background-image:linear-gradient(rgba(21,24,49,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(21,24,49,.05) 1px,transparent 1px);background-size:24px 24px}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+a{color:inherit}
+header.top{background:var(--c);color:#fff;padding:16px 0 22px;position:relative;overflow:hidden;transition:background .3s}
+header.top .crumbs{margin:0;font-size:.9rem;opacity:.9}
+header.top .crumbs a{color:#fff}
+header.top h1{font-family:var(--ft);font-size:clamp(1.8rem,5vw,2.6rem);margin:6px 0 2px;position:relative;z-index:1}
+header.top p.sub{margin:0;color:rgba(255,255,255,.88);position:relative;z-index:1}
+header.top .bolt{position:absolute;right:4%;top:50%;transform:translateY(-50%) rotate(-8deg);font-size:clamp(4.5rem,13vw,8rem);color:rgba(255,255,255,.18);font-family:var(--ft);font-weight:700;pointer-events:none;line-height:1}
+main.wrap{padding-top:22px;padding-bottom:40px}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--c);padding:16px 18px;margin-bottom:18px}
+h2{font-family:var(--ft);font-size:1.1rem;margin:0 0 10px;color:var(--ink);display:flex;align-items:center;gap:8px}
+h2 .n{width:26px;height:26px;border-radius:8px;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:.9rem;flex:none}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{font:600 .95rem var(--ft);padding:7px 14px;border-radius:999px;border:2px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer}
+.chip:hover{background:var(--cl)}
+.chip[aria-pressed="true"]{background:var(--c);border-color:var(--c);color:#fff}
+.chip.niv[aria-pressed="true"]{background:var(--nc);border-color:var(--nc)}
+.types{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px}
+.type{display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:1px;padding:9px 12px;border-radius:12px;border:2px solid var(--line);background:#fff;cursor:pointer;font:inherit;color:var(--text)}
+.type b{font-family:var(--ft);color:var(--ink)}
+.type span{font-size:.85rem;color:var(--muted);font-family:var(--m)}
+.type:hover{border-color:var(--c)}
+.type[aria-pressed="true"]{border-color:var(--c);background:var(--cl);box-shadow:inset 0 0 0 1px var(--c)}
+.type[aria-pressed="true"] b::before{content:"✓ ";color:var(--c)}
+.tables{margin-top:12px;padding:10px 12px;border-radius:12px;background:var(--cl)}
+.tables p{margin:0 0 8px;font-weight:600}
+.tables .chip{min-width:46px;text-align:center;padding:6px 10px}
+.tables .mini{font:500 .85rem var(--f);background:none;border:none;color:var(--c);text-decoration:underline;cursor:pointer;padding:4px 6px}
+.row{display:flex;flex-wrap:wrap;gap:22px}
+.row>div{flex:1 1 240px}
+.hint{font-size:.88rem;color:var(--muted);margin:8px 0 0}
+.warn{color:var(--ko);font-weight:600;min-height:1.4em;margin:8px 0 0}
+.go{font:700 1.15rem var(--ft);padding:12px 26px;border-radius:14px;border:2px solid var(--ink);background:var(--c);color:#fff;cursor:pointer;box-shadow:4px 4px 0 var(--ink)}
+.go:hover{transform:translate(1px,1px);box-shadow:3px 3px 0 var(--ink)}
+.go.alt{background:#fff;color:var(--ink)}
+.btns{display:flex;flex-wrap:wrap;gap:12px;margin-top:6px}
+/* Quiz */
+.bar{display:flex;justify-content:space-between;align-items:center;gap:10px;font:600 .95rem var(--ft);color:var(--muted);margin-bottom:8px}
+.prog{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-bottom:14px}
+.prog i{display:block;height:100%;background:var(--c);width:0;transition:width .25s}
+.timer{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin:-6px 0 14px}
+.timer i{display:block;height:100%;background:var(--ko);width:100%}
+.qbox{text-align:center;padding:18px 8px 6px}
+.qtype{font-size:.85rem;color:var(--muted);margin:0 0 6px}
+.q{font-family:var(--m);font-size:clamp(2rem,8vw,3.2rem);color:var(--ink);margin:0;line-height:1.3}
+.q sup{font-size:.6em}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 4px;line-height:1.1;font-size:.85em}
+.fr>span:first-child{border-bottom:2px solid currentColor;padding:0 4px}
+.ansrow{display:flex;justify-content:center;align-items:center;gap:10px;margin:16px 0 4px;flex-wrap:wrap}
+#rep{font:600 1.8rem var(--m);width:min(260px,70vw);text-align:center;padding:8px 10px;border:2px solid var(--ink);border-radius:12px;outline:none;background:#fff;color:var(--ink)}
+#rep:focus{box-shadow:0 0 0 4px var(--cl)}
+#rep.ok{border-color:var(--ok);background:var(--ok-l)}#rep.ko{border-color:var(--ko);background:var(--ko-l)}
+.fb{min-height:2.6em;text-align:center;font-weight:600;margin:6px 0 0}
+.fb.ok{color:var(--ok)}.fb.ko{color:var(--ko)}
+.fb .good{font-family:var(--m);font-size:1.25rem;color:var(--ink);background:var(--ok-l);padding:1px 8px;border-radius:8px}
+.pad{display:none;grid-template-columns:repeat(4,1fr);gap:8px;max-width:340px;margin:12px auto 0}
+.pad.on{display:grid}
+.pad button{font:600 1.35rem var(--ft);padding:10px 0;border-radius:12px;border:2px solid var(--ink);background:#fff;color:var(--ink);cursor:pointer;touch-action:manipulation}
+.pad button:active{background:var(--cl)}
+.pad .ok{background:var(--c);color:#fff;grid-row:span 2}
+.padtoggle{display:block;margin:10px auto 0;font:500 .85rem var(--f);background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer}
+.stop{font:500 .85rem var(--f);background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;padding:0}
+/* Résultats */
+.score{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.big{font:700 clamp(2.6rem,9vw,3.6rem) var(--ft);color:var(--c);line-height:1}
+.big small{font-size:.45em;color:var(--muted)}
+.msg{font-weight:600;font-size:1.1rem;margin:0}
+.stats{color:var(--muted);margin:2px 0 0}
+table{width:100%;border-collapse:collapse;margin-top:6px;font-size:1rem}
+th,td{padding:7px 8px;border-bottom:1px solid var(--line);text-align:left}
+th{font:600 .85rem var(--ft);color:var(--muted)}
+td.m{font-family:var(--m);font-size:1.12rem}
+td.bad{color:var(--ko);text-decoration:line-through}
+td.good{color:var(--ok);font-weight:700}
+.tstat{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+.tstat span{padding:4px 10px;border-radius:999px;font:600 .9rem var(--ft);border:2px solid var(--ok);color:var(--ok);background:var(--ok-l)}
+.tstat span.ko{border-color:var(--ko);color:var(--ko);background:var(--ko-l)}
+.perfect{font-size:1.05rem;margin:4px 0 0}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 0 30px}
+[hidden]{display:none!important}
+@media (max-width:560px){.card{padding:14px 12px}.types{grid-template-columns:1fr}}
+@media print{.go,.btns,header .bolt{display:none}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <p class="crumbs"><a href="../../index.html">GiroMaths</a> / <a id="lienNiv" href="../../6eme.html">6ème</a> / Calcul mental</p>
+  <h1>Calcul mental</h1>
+  <p class="sub">Choisis ton niveau, ton type de calcul et le nombre de questions. Réponds de tête !</p>
+</div><span class="bolt" aria-hidden="true">7×8</span></header>
+
+<main class="wrap">
+<!-- ===== Réglages ===== -->
+<section id="reglages">
+  <div class="card">
+    <h2><span class="n">1</span> Mon niveau</h2>
+    <div class="chips" id="niveaux" role="group" aria-label="Niveau"></div>
+  </div>
+  <div class="card">
+    <h2><span class="n">2</span> Le type de calcul <small style="font:500 .85rem var(--f);color:var(--muted)">(un ou plusieurs)</small></h2>
+    <div class="types" id="types" role="group" aria-label="Types de calcul"></div>
+    <div class="tables" id="blocTables">
+      <p>Quelles tables ?</p>
+      <div class="chips" id="tables" role="group" aria-label="Tables"></div>
+      <div style="margin-top:6px"><button type="button" class="mini" id="toutes">Toutes</button><button type="button" class="mini" id="aucune">Aucune</button></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2><span class="n">3</span> Ma série</h2>
+    <div class="row">
+      <div><p style="margin:0 0 6px;font-weight:600">Nombre de questions</p><div class="chips" id="nbq" role="group" aria-label="Nombre de questions"></div></div>
+      <div><p style="margin:0 0 6px;font-weight:600">Temps par question</p><div class="chips" id="chrono" role="group" aria-label="Temps par question"></div></div>
+    </div>
+    <p class="hint">Écris ta réponse puis appuie sur <b>Entrée</b>. Pour les nombres décimaux, utilise la virgule (ou le point).</p>
+    <p class="warn" id="warn" role="alert"></p>
+    <div class="btns"><button type="button" class="go" id="start">C'est parti !</button></div>
+  </div>
+</section>
+
+<!-- ===== Questions ===== -->
+<section id="quiz" hidden>
+  <div class="card">
+    <div class="bar"><span id="compteur">Question 1 / 10</span><span id="temps">0 s</span><button type="button" class="stop" id="stop">Arrêter</button></div>
+    <div class="prog"><i id="progbar"></i></div>
+    <div class="timer" id="timerBox" hidden><i id="timerbar"></i></div>
+    <div class="qbox">
+      <p class="qtype" id="qtype"></p>
+      <p class="q" id="q" aria-live="polite"></p>
+      <div class="ansrow"><input id="rep" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="decimal" aria-label="Ta réponse"></div>
+      <p class="fb" id="fb" aria-live="polite"></p>
+    </div>
+    <div class="pad" id="pad">
+      <button type="button">7</button><button type="button">8</button><button type="button">9</button><button type="button" data-k="del" aria-label="Effacer">⌫</button>
+      <button type="button">4</button><button type="button">5</button><button type="button">6</button><button type="button" data-k="ok" class="ok">OK</button>
+      <button type="button">1</button><button type="button">2</button><button type="button">3</button>
+      <button type="button" data-k="-">−</button><button type="button">0</button><button type="button" data-k=",">,</button>
+    </div>
+    <button type="button" class="padtoggle" id="padtoggle">Afficher le pavé numérique</button>
+  </div>
+</section>
+
+<!-- ===== Résultats ===== -->
+<section id="resultats" hidden>
+  <div class="card">
+    <div class="score"><div class="big" id="score"></div><div><p class="msg" id="msg"></p><p class="stats" id="stats"></p></div></div>
+  </div>
+  <div class="card" id="carteTables" hidden>
+    <h2>Mes tables</h2>
+    <div class="tstat" id="tstat"></div>
+  </div>
+  <div class="card" id="carteErreurs">
+    <h2 id="titreErreurs">Mes erreurs</h2>
+    <div id="erreurs"></div>
+  </div>
+  <div class="btns">
+    <button type="button" class="go" id="refaireErreurs">Retravailler mes erreurs</button>
+    <button type="button" class="go" id="rejouer">Nouvelle série</button>
+    <button type="button" class="go alt" id="changer">Changer les réglages</button>
+  </div>
+</section>
+</main>
+<footer>GiroMaths · Calcul mental · Rien n'est enregistré ni envoyé : l'entraînement reste sur ton appareil.</footer>
+
+<script>
+"use strict";
+/* ---------- Niveaux ---------- */
+const NIVEAUX = {
+  "6eme": {nom: "6ème", c: "#2563eb", l: "#e6eeff"},
+  "5eme": {nom: "5ème", c: "#0d9488", l: "#e0f5f2"},
+  "4eme": {nom: "4ème", c: "#ea580c", l: "#ffeddf"},
+  "3eme": {nom: "3ème", c: "#c026d3", l: "#fbe6fd"},
+};
+const NUM = {"6eme": 6, "5eme": 5, "4eme": 4, "3eme": 3};
+
+/* ---------- Outils ---------- */
+const ri = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const pick = a => a[Math.floor(Math.random() * a.length)];
+const pgcd = (a, b) => b ? pgcd(b, a % b) : Math.abs(a);
+const MOINS = "−", NB = " ";
+/* Écriture française d'un nombre : virgule décimale, espace fine pour les milliers, vrai signe moins. */
+function fmt(x) {
+  let s = String(+x.toFixed(8));
+  if (/e/.test(s)) s = x.toFixed(8).replace(/0+$/, "");
+  let neg = s[0] === "-"; if (neg) s = s.slice(1);
+  let [e, d] = s.split(".");
+  if (e.length > 3) e = e.replace(/\B(?=(\d{3})+(?!\d))/g, NB);
+  return (neg ? MOINS : "") + e + (d ? "," + d : "");
+}
+const rel = n => n < 0 ? "(" + fmt(n) + ")" : fmt(n);           // relatif entre parenthèses s'il est négatif
+const sup = n => "<sup>" + fmt(n) + "</sup>";
+const frac = (a, b) => `<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+/* Nombre décimal exact : numérateur entier / 10^k (une seule division → arrondi correct) */
+const dec = (N, k) => k > 0 ? N / Math.pow(10, k) : N * Math.pow(10, -k);
+function lire(s) {
+  s = s.trim().replace(/[\s  ]/g, "").replace(/,/g, ".").replace(/[−–—]/g, "-");
+  if (!/^[+-]?(\d+\.?\d*|\.\d+)$/.test(s)) return null;
+  return parseFloat(s);
+}
+const egal = (a, b) => Math.abs(a - b) < 1e-9 * Math.max(1, Math.abs(b));
+
+/* ---------- Types de calcul ----------
+   g(niv, tables) renvoie {h: énoncé HTML, a: réponse, k: clé anti-doublon, tab: n° de table éventuel, blanc: true si l'énoncé contient déjà le trou} */
+const TYPES = [
+ {id: "tables", nom: "Tables de multiplication", ex: "7 × 8", niv: [6,5,4,3], tables: true,
+  g(n, tb) { const a = pick(tb), b = ri(2, 10); const h = Math.random() < .5 ? `${a} × ${b}` : `${b} × ${a}`;
+    return {h, a: a * b, k: "x" + Math.min(a,b) + "-" + Math.max(a,b), tab: a}; }},
+ {id: "trous", nom: "Multiplications à trous", ex: "7 × … = 56", niv: [6,5,4,3], tables: true,
+  g(n, tb) { const a = pick(tb), b = ri(2, 10), p = a * b;
+    const h = Math.random() < .5 ? `${a} × … = ${p}` : `… × ${a} = ${p}`;
+    return {h, a: b, k: "t" + a + "-" + b, tab: a, blanc: true}; }},
+ {id: "divisions", nom: "Divisions", ex: "56 ÷ 7", niv: [6,5,4,3], tables: true,
+  g(n, tb) { const a = pick(tb), b = ri(2, 10);
+    return {h: `${fmt(a * b)} ÷ ${a}`, a: b, k: "d" + a + "-" + b, tab: a}; }},
+ {id: "addsous", nom: "Additions et soustractions", ex: "47 + 38 ; 125 − 48", niv: [6,5,4,3],
+  g(n) { let a, b;
+    if (Math.random() < .5) {                     // addition
+      if (n === 6) { a = ri(12, 89); b = ri(12, 89); } else { a = ri(101, 899); b = ri(12, 99); }
+      return {h: `${fmt(a)} + ${fmt(b)}`, a: a + b, k: "a" + a + "+" + b}; }
+    if (n === 6) { a = ri(40, 199); b = ri(12, Math.min(99, a - 11)); } else { a = ri(110, 999); b = ri(12, 99); }
+    return {h: `${fmt(a)} ${MOINS} ${fmt(b)}`, a: a - b, k: "a" + a + "-" + b}; }},
+ {id: "complements", nom: "Compléments", ex: "63 + … = 100", niv: [6,5],
+  g(n) { const f = ri(1, 4);
+    if (f === 1) { const A = ri(11, 99); return {h: `${A} + … = 100`, a: 100 - A, k: "c100-" + A, blanc: true}; }
+    if (f === 2) { const A = ri(11, 99) * 10; return {h: `${fmt(A)} + … = ${fmt(1000)}`, a: 1000 - A, k: "c1000-" + A, blanc: true}; }
+    if (f === 3) { let A; do A = ri(11, 99); while (A % 10 === 0); return {h: `${fmt(dec(A,1))} + … = 10`, a: dec(100 - A, 1), k: "c10-" + A, blanc: true}; }
+    let A; do A = ri(5, 95); while (A % 10 === 0); return {h: `${fmt(dec(A,2))} + … = 1`, a: dec(100 - A, 2), k: "c1-" + A, blanc: true}; }},
+ {id: "doubles", nom: "Doubles et moitiés", ex: "double de 37 ; moitié de 58", niv: [6,5],
+  g(n) {
+    if (Math.random() < .5) {
+      if (Math.random() < .7) { const A = ri(13, 99); return {h: `Le double de ${A}`, a: 2 * A, k: "db" + A, blanc: true}; }
+      let A; do A = ri(11, 99); while (A % 10 === 0); return {h: `Le double de ${fmt(dec(A,1))}`, a: dec(2 * A, 1), k: "dbd" + A, blanc: true}; }
+    const A = Math.random() < .7 ? 2 * ri(10, 99) : 2 * ri(5, 49) + 1;
+    return {h: `La moitié de ${A}`, a: A / 2, k: "mo" + A, blanc: true}; }},
+ {id: "p10", nom: "× et ÷ par 10, 100, 1 000", ex: "4,7 × 100 ; 35 ÷ 1 000", niv: [6,5,4,3],
+  g(n) { let N, k, m, div;
+    do { k = ri(0, 2); N = k ? ri(11, 999) : ri(1, 999); m = ri(1, 3); div = Math.random() < .5; }
+    while ((k && N % 10 === 0) || (div && m + k > 4));
+    const x = dec(N, k), p = Math.pow(10, m);
+    return div ? {h: `${fmt(x)} ÷ ${fmt(p)}`, a: dec(N, k + m), k: "p" + N + "/" + k + "d" + m}
+               : {h: `${fmt(x)} × ${fmt(p)}`, a: dec(N, k - m), k: "p" + N + "/" + k + "x" + m}; }},
+ {id: "decimaux", nom: "Calculs avec des décimaux", ex: "2,7 + 1,5 ; 0,6 × 4", niv: [6,5,4,3],
+  g(n) { const f = ri(1, 3), k = (n < 6 && Math.random() < .4) ? 2 : 1;
+    const nd = () => { let A; do A = ri(k === 1 ? 11 : 101, k === 1 ? 99 : 999); while (A % 10 === 0); return A; };
+    if (f === 1) { const A = nd(), B = nd(); return {h: `${fmt(dec(A,k))} + ${fmt(dec(B,k))}`, a: dec(A + B, k), k: "e" + A + "+" + B + "/" + k}; }
+    if (f === 2) { let A = nd(), B = nd(); if (A < B) [A, B] = [B, A]; if (A === B) A += 1;
+      return {h: `${fmt(dec(A,k))} ${MOINS} ${fmt(dec(B,k))}`, a: dec(A - B, k), k: "e" + A + "-" + B + "/" + k}; }
+    let A; do A = (n < 6 && Math.random() < .5) ? ri(11, 49) : ri(1, 9); while (A % 10 === 0);  // 0,7 × 6 ; en 5e et + aussi 1,2 × 4
+    const b = ri(2, 9);
+    return {h: `${fmt(dec(A,1))} × ${b}`, a: dec(A * b, 1), k: "e" + A + "x" + b}; }},
+ {id: "fractionq", nom: "Fraction d'une quantité", ex: "¾ de 20", niv: [6,5],
+  g(n) { let a, b; do { b = ri(2, 10); a = ri(1, b - 1); } while (pgcd(a, b) !== 1);
+    const q = b * ri(2, 10);
+    return {h: `${frac(a, b)} de ${q}`, a: a * q / b, k: "f" + a + "/" + b + "-" + q}; }},
+ {id: "pourcent", nom: "Pourcentages", ex: "25 % de 80", niv: [6,5,4,3],
+  g(n) { const P = n === 6 ? [10, 25, 50, 75] : [1, 5, 10, 20, 25, 50, 75, 200];
+    const MAX = {1: 900, 5: 200, 10: 500, 20: 300, 25: 200, 50: 300, 75: 120, 200: 150};  // reste faisable de tête
+    const p = pick(P), pas = 100 / pgcd(p, 100), q = pas * ri(1, Math.floor(MAX[p] / pas));
+    return {h: `${p} ${"%"} de ${fmt(q)}`, a: p * q / 100, k: "%" + p + "-" + q}; }},
+ {id: "priorites", nom: "Priorités opératoires", ex: "3 + 4 × 5", niv: [5,4,3],
+  g(n) { const f = ri(1, 5), b = ri(2, 9), c = ri(2, 9); let a, h, r;
+    if (f === 1) { a = ri(1, 20); h = `${a} + ${b} × ${c}`; r = a + b * c; }
+    else if (f === 2) { a = ri(2, 9); const d = ri(1, 20); h = `${a} × ${b} + ${d}`; r = a * b + d; a = a * 100 + d; }
+    else if (f === 3) { a = b * c + ri(1, 20); h = `${a} ${MOINS} ${b} × ${c}`; r = a - b * c; }
+    else if (f === 4) { a = ri(1, 9); h = `(${a} + ${b}) × ${c}`; r = (a + b) * c; }
+    else { a = ri(1, 20); const p = b * c; h = `${a} + ${p} ÷ ${b}`; r = a + c; }
+    return {h, a: r, k: "o" + f + "-" + a + "-" + b + "-" + c}; }},
+ {id: "relatifsAdd", nom: "Nombres relatifs : + et −", ex: "(−7) + 4 ; 3 − (−5)", niv: [5,4,3],
+  g(n) { const M = n === 5 ? 15 : 25; const nz = () => { let v; do v = ri(-M, M); while (v === 0); return v; };
+    let a, b; do { a = nz(); b = nz(); } while (a > 0 && b > 0);
+    return Math.random() < .5 ? {h: `${rel(a)} + ${rel(b)}`, a: a + b, k: "r" + a + "+" + b}
+                              : {h: `${rel(a)} ${MOINS} ${rel(b)}`, a: a - b, k: "r" + a + "-" + b}; }},
+ {id: "relatifsMul", nom: "Nombres relatifs : × et ÷", ex: "(−6) × 7 ; (−42) ÷ (−6)", niv: [4,3],
+  g(n) { const nz = () => ri(2, 10) * (Math.random() < .5 ? -1 : 1);
+    let a, b; do { a = nz(); b = nz(); } while (a > 0 && b > 0);
+    return Math.random() < .5 ? {h: `${rel(a)} × ${rel(b)}`, a: a * b, k: "m" + a + "x" + b}
+                              : {h: `${rel(a * b)} ÷ ${rel(b)}`, a: a, k: "m" + a * b + "/" + b}; }},
+ {id: "carres", nom: "Carrés et racines carrées", ex: "9² ; √64", niv: [4,3],
+  g(n) { const v = ri(1, n === 3 ? 15 : 12), f = ri(1, 5);
+    if (f <= 2) return {h: `${v}${sup(2)}`, a: v * v, k: "s" + v};
+    if (f === 3) return {h: `(${MOINS}${v})${sup(2)}`, a: v * v, k: "sn" + v};
+    return {h: `√<span style="text-decoration:overline">${v * v}</span>`, a: v, k: "rc" + v}; }},
+ {id: "puiss10", nom: "Puissances de 10", ex: "10³ × 10⁴ = 10^… ; 10⁻²", niv: [4,3],
+  g(n) { const f = ri(1, n === 3 ? 4 : 3);
+    if (f === 1) { const a = ri(-5, 6), b = ri(-5, 6); return {h: `10${sup(a)} × 10${sup(b)} = 10<sup>…</sup>`, a: a + b, k: "q" + a + "x" + b, blanc: true, expo: true}; }
+    if (f === 2) { const a = ri(-4, 7), b = ri(-4, 6); return {h: `${frac("10" + sup(a), "10" + sup(b))} = 10<sup>…</sup>`, a: a - b, k: "q" + a + "/" + b, blanc: true, expo: true}; }
+    if (f === 3) { const e = pick([-4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 6]); return {h: `10${sup(e)}`, a: e >= 0 ? Math.pow(10, e) : 1 / Math.pow(10, -e), k: "q=" + e}; }
+    const a = pick([-3, -2, -1, 2, 3, 4]), b = ri(2, 3); return {h: `(10${sup(a)})${sup(b)} = 10<sup>…</sup>`, a: a * b, k: "q" + a + "^" + b, blanc: true, expo: true}; }},
+];
+
+/* ---------- Réglages ---------- */
+const TABLES = [2, 3, 4, 5, 6, 7, 8, 9, 10];
+const NBQ = [10, 20, 30, 50];
+const CHRONO = [[0, "Sans limite"], [20, "20 s"], [10, "10 s"], [6, "6 s"]];
+let R = {niv: "6eme", types: ["tables"], tables: TABLES.slice(0, 8), nbq: 10, chrono: 0};
+try { const s = JSON.parse(localStorage.getItem("giromaths-calcul-mental") || "null"); if (s) Object.assign(R, s); } catch (e) {}
+const qp = new URLSearchParams(location.search).get("niveau");
+const verrou = !!(qp && NIVEAUX[qp]);   // ouvert depuis une page de niveau : niveau imposé (demande de sg, 2026-11-14)
+if (verrou) R.niv = qp;
+if (!NIVEAUX[R.niv]) R.niv = "6eme";
+R.types = R.types.filter(id => TYPES.some(t => t.id === id && t.niv.includes(NUM[R.niv]))); if (!R.types.length) R.types = ["tables"];
+function sauver() { try { localStorage.setItem("giromaths-calcul-mental", JSON.stringify(R)); } catch (e) {} }
+
+const $ = id => document.getElementById(id);
+function chip(txt, on, fn, cls) { const b = document.createElement("button"); b.type = "button"; b.className = "chip" + (cls ? " " + cls : ""); b.innerHTML = txt; b.setAttribute("aria-pressed", on); b.onclick = fn; return b; }
+function typesDuNiveau() { return TYPES.filter(t => t.niv.includes(NUM[R.niv])); }
+
+function dessiner() {
+  const N = NIVEAUX[R.niv]; document.documentElement.style.setProperty("--c", N.c); document.documentElement.style.setProperty("--cl", N.l);
+  $("lienNiv").textContent = N.nom; $("lienNiv").href = "../../" + R.niv + ".html";
+  const nv = $("niveaux"); nv.innerHTML = "";
+  if (verrou) nv.innerHTML = `<span class="chip niv" aria-pressed="true" style="--nc:${N.c};cursor:default">${N.nom}</span>`;
+  else for (const k in NIVEAUX) { const b = chip(NIVEAUX[k].nom, k === R.niv, () => { R.niv = k; R.types = R.types.filter(id => typesDuNiveau().some(t => t.id === id)); if (!R.types.length) R.types = ["tables"]; dessiner(); }, "niv"); b.style.setProperty("--nc", NIVEAUX[k].c); nv.appendChild(b); }
+  const ty = $("types"); ty.innerHTML = "";
+  for (const t of typesDuNiveau()) { const b = document.createElement("button"); b.type = "button"; b.className = "type";
+    b.setAttribute("aria-pressed", R.types.includes(t.id)); b.innerHTML = `<b>${t.nom}</b><span>${t.ex}</span>`;
+    b.onclick = () => { R.types = R.types.includes(t.id) ? R.types.filter(x => x !== t.id) : R.types.concat(t.id); dessiner(); }; ty.appendChild(b); }
+  $("blocTables").hidden = !R.types.some(id => TYPES.find(t => t.id === id).tables);
+  const tb = $("tables"); tb.innerHTML = "";
+  for (const n of TABLES) tb.appendChild(chip(String(n), R.tables.includes(n), () => { R.tables = R.tables.includes(n) ? R.tables.filter(x => x !== n) : R.tables.concat(n).sort((a, b) => a - b); dessiner(); }));
+  const nq = $("nbq"); nq.innerHTML = ""; for (const n of NBQ) nq.appendChild(chip(String(n), R.nbq === n, () => { R.nbq = n; dessiner(); }));
+  const ch = $("chrono"); ch.innerHTML = ""; for (const [s, l] of CHRONO) ch.appendChild(chip(l, R.chrono === s, () => { R.chrono = s; dessiner(); }));
+  $("warn").textContent = ""; sauver();
+}
+$("toutes").onclick = () => { R.tables = TABLES.slice(); dessiner(); };
+$("aucune").onclick = () => { R.tables = []; dessiner(); };
+
+/* ---------- Série ---------- */
+let serie = [], i = 0, debut = 0, tick = null, qDebut = 0, etat = "", rejeu = false;
+function fabriquer() {
+  const types = R.types.map(id => TYPES.find(t => t.id === id)), vus = new Set(), L = [];
+  const n = NUM[R.niv];
+  for (let j = 0; j < R.nbq; j++) {
+    let q, essai = 0;
+    const t = types[j % types.length];          // types mélangés à parts égales
+    do { q = t.g(n, R.tables); q.type = t.nom; }
+    while (vus.has(q.k) && ++essai < 60);
+    vus.add(q.k); L.push(q);
+  }
+  for (let j = L.length - 1; j > 0; j--) { const k = Math.floor(Math.random() * (j + 1)); [L[j], L[k]] = [L[k], L[j]]; }
+  return L;
+}
+function demarrer(liste) {
+  serie = liste.map(q => Object.assign({}, q, {rep: null, juste: false, duree: 0}));
+  i = 0; debut = Date.now();
+  $("reglages").hidden = true; $("resultats").hidden = true; $("quiz").hidden = false;
+  $("timerBox").hidden = !R.chrono;
+  clearInterval(tick); tick = setInterval(majTemps, 200);
+  poser(); window.scrollTo(0, 0);
+}
+$("start").onclick = () => {
+  if (!R.types.length) { $("warn").textContent = "Choisis au moins un type de calcul."; return; }
+  if (R.types.some(id => TYPES.find(t => t.id === id).tables) && !R.tables.length) { $("warn").textContent = "Choisis au moins une table."; return; }
+  rejeu = false; demarrer(fabriquer());
+};
+function poser() {
+  const q = serie[i]; etat = "q";
+  $("compteur").textContent = `Question ${i + 1} / ${serie.length}`;
+  $("progbar").style.width = (100 * i / serie.length) + "%";
+  $("qtype").textContent = q.type + (q.expo ? " · donne l'exposant" : "");
+  $("q").innerHTML = q.h + (q.blanc ? "" : " = ?");
+  const r = $("rep"); r.value = ""; r.className = ""; r.readOnly = false; $("fb").textContent = ""; $("fb").className = "fb";
+  if (!padActif) r.focus({preventScroll: true});
+  qDebut = Date.now();
+}
+function majTemps() {
+  const s = Math.floor((Date.now() - debut) / 1000);
+  $("temps").textContent = s < 60 ? s + " s" : Math.floor(s / 60) + " min " + String(s % 60).padStart(2, "0") + " s";
+  if (R.chrono && etat === "q") {
+    const reste = R.chrono * 1000 - (Date.now() - qDebut);
+    $("timerbar").style.width = Math.max(0, 100 * reste / (R.chrono * 1000)) + "%";
+    if (reste <= 0) valider(true);
+  }
+}
+function valider(tempsEcoule) {
+  if (etat !== "q") { if (etat === "fb") suivante(); return; }
+  const q = serie[i], r = $("rep"), v = lire(r.value);
+  if (!tempsEcoule) {
+    if (r.value.trim() === "") return;
+    if (v === null) { $("fb").className = "fb ko"; $("fb").textContent = "Écris seulement un nombre (exemple : 12 ou 3,5)."; return; }
+  }
+  q.rep = r.value.trim(); q.duree = Date.now() - qDebut;
+  q.juste = v !== null && egal(v, q.a);
+  r.readOnly = true; r.className = q.juste ? "ok" : "ko";
+  if (q.juste) { $("fb").className = "fb ok"; $("fb").textContent = "Bravo !"; etat = "attente"; setTimeout(suivante, 550); }
+  else { etat = "fb"; $("fb").className = "fb ko";
+    $("fb").innerHTML = (tempsEcoule && !q.rep ? "Temps écoulé ! " : "Pas tout à fait… ") + `La réponse est <span class="good">${fmt(q.a)}</span><br><small style="color:var(--muted);font-weight:500">Appuie sur Entrée (ou OK) pour continuer.</small>`; }
+}
+function suivante() { i++; if (i < serie.length) poser(); else finir(); }
+$("rep").addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); valider(false); } });
+document.addEventListener("keydown", e => { if (e.key === "Enter" && etat === "fb" && document.activeElement !== $("rep")) { e.preventDefault(); suivante(); } });
+$("stop").onclick = () => { clearInterval(tick); etat = ""; serie = serie.slice(0, i); if (serie.length) finir(); else { $("quiz").hidden = true; $("reglages").hidden = false; } };
+
+/* Pavé numérique (tablettes et téléphones) */
+let padActif = window.matchMedia && matchMedia("(pointer: coarse)").matches;
+function majPad() { $("pad").classList.toggle("on", padActif); $("rep").inputMode = padActif ? "none" : "decimal"; $("padtoggle").textContent = padActif ? "Masquer le pavé numérique" : "Afficher le pavé numérique"; }
+$("padtoggle").onclick = () => { padActif = !padActif; majPad(); if (!padActif) $("rep").focus(); };
+$("pad").addEventListener("click", e => { const b = e.target.closest("button"); if (!b) return; const r = $("rep"), k = b.dataset.k;
+  if (k === "ok") return valider(false);
+  if (etat !== "q") return;
+  if (k === "del") r.value = r.value.slice(0, -1);
+  else if (k === "-") r.value = r.value.startsWith("-") ? r.value.slice(1) : "-" + r.value;
+  else if (k === ",") { if (!r.value.includes(",")) r.value += (r.value === "" || r.value === "-" ? "0," : ","); }
+  else r.value += b.textContent; });
+majPad();
+
+/* ---------- Résultats ---------- */
+function esc(s) { return String(s).replace(/[&<>"]/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c])); }
+function finir() {
+  clearInterval(tick); etat = "";
+  $("quiz").hidden = true; $("resultats").hidden = false; window.scrollTo(0, 0);
+  const n = serie.length, ok = serie.filter(q => q.juste).length, s = Math.round((Date.now() - debut) / 1000);
+  $("score").innerHTML = `${ok}<small> / ${n}</small>`;
+  const p = ok / n;
+  $("msg").textContent = p === 1 ? "Parfait ! Tu peux essayer plus de questions ou moins de temps." : p >= .8 ? "Très bien ! Encore un petit effort sur les erreurs." : p >= .5 ? "C'est un bon début. Retravaille tes erreurs et recommence." : "Courage ! Revois les calculs ci-dessous et refais une série.";
+  const duree = s < 60 ? s + " s" : Math.floor(s / 60) + " min " + String(s % 60).padStart(2, "0") + " s";
+  $("stats").textContent = `Temps total : ${duree} · environ ${(s / n).toFixed(1).replace(".", ",")} s par question${rejeu ? " · série de rattrapage" : ""}`;
+  // Bilan par table
+  const parTable = {};
+  for (const q of serie) if (q.tab) { const t = parTable[q.tab] || (parTable[q.tab] = [0, 0]); t[1]++; if (q.juste) t[0]++; }
+  const ks = Object.keys(parTable).map(Number).sort((a, b) => a - b);
+  $("carteTables").hidden = !ks.length;
+  $("tstat").innerHTML = ks.map(k => `<span class="${parTable[k][0] < parTable[k][1] ? "ko" : ""}">Table de ${k} : ${parTable[k][0]}/${parTable[k][1]}</span>`).join("");
+  // Erreurs
+  const err = serie.filter(q => !q.juste);
+  $("titreErreurs").textContent = err.length ? `Mes erreurs (${err.length})` : "Aucune erreur";
+  $("erreurs").innerHTML = err.length
+    ? `<table><thead><tr><th>Calcul</th><th>Ma réponse</th><th>Bonne réponse</th></tr></thead><tbody>${err.map(q => `<tr><td class="m">${q.h}${q.blanc ? "" : " = ?"}</td><td class="m bad">${q.rep ? esc(q.rep) : "—"}</td><td class="m good">${fmt(q.a)}</td></tr>`).join("")}</tbody></table>`
+    : `<p class="perfect">Toutes tes réponses sont justes. 🎉</p>`;
+  $("refaireErreurs").hidden = !err.length;
+}
+$("refaireErreurs").onclick = () => { const e = serie.filter(q => !q.juste); for (let j = e.length - 1; j > 0; j--) { const k = Math.floor(Math.random() * (j + 1)); [e[j], e[k]] = [e[k], e[j]]; } rejeu = true; demarrer(e); };
+$("rejouer").onclick = () => { rejeu = false; demarrer(fabriquer()); };
+$("changer").onclick = () => { $("resultats").hidden = true; $("reglages").hidden = false; window.scrollTo(0, 0); };
+
+dessiner();
+</script>
+</body>
+</html>

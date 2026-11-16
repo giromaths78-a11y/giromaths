@@ -1,0 +1,459 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Révisions fonctions 3e</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Crimson+Pro:ital,wght@0,500;1,500;1,600&display=swap">
+<style>
+/* Layout : même cahier à petits carreaux que « La machine à fonctions » ; un exercice à la fois,
+   pastilles d'avancement en haut. Vert = antécédent, rouge = image, bleu = fonction. */
+:root{
+  --paper:#f7f9fc; --grid:#dfe7f2; --ink:#18202e; --muted:#5b6678; --card:#ffffff; --line:#c9d3e1;
+  --ant:#1b8a3a; --ant-soft:#e3f4e7; --img:#cf2f2b; --img-soft:#fbe6e4; --fn:#1f4e9c; --fn-soft:#e6edf8;
+  --warn:#b26a00; --warn-soft:#fff2dc; --focus:#f2a900; --on-fn:#ffffff; --blue-curve:#1f5fd6; --red-curve:#e0211b;
+  --f-display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-math:"Crimson Pro", "Cambria Math", Georgia, serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#121722; --grid:#1d2533; --ink:#e8edf5; --muted:#9aa6b8; --card:#1a2130; --line:#2f3a4d;
+  --ant:#4cc372; --ant-soft:#173324; --img:#ff6b63; --img-soft:#3a1d1d; --fn:#7aa5ff; --fn-soft:#1b2a47;
+  --warn:#ffb547; --warn-soft:#3a2a12; --focus:#ffc94d; --on-fn:#0d1526; --blue-curve:#6ea0ff; --red-curve:#ff6b63; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#121722; --grid:#1d2533; --ink:#e8edf5; --muted:#9aa6b8; --card:#1a2130; --line:#2f3a4d;
+  --ant:#4cc372; --ant-soft:#173324; --img:#ff6b63; --img-soft:#3a1d1d; --fn:#7aa5ff; --fn-soft:#1b2a47;
+  --warn:#ffb547; --warn-soft:#3a2a12; --focus:#ffc94d; --on-fn:#0d1526; --blue-curve:#6ea0ff; --red-curve:#ff6b63; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--paper); color:var(--ink); font:17px/1.55 var(--f-body);
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px),linear-gradient(90deg,var(--grid) 1px, transparent 1px);
+  background-size:24px 24px;}
+.wrap{max-width:1040px; margin:0 auto; padding-block:18px 28px;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));
+  display:flex; flex-direction:column; gap:14px}
+header{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:10px 20px}
+h1{font:800 clamp(26px,4vw,38px)/1.05 var(--f-display); margin:0; letter-spacing:-.01em}
+.sub{color:var(--muted); font-size:15px}
+.prog{font:700 15px var(--f-body); color:var(--muted); font-variant-numeric:tabular-nums}
+.prog b{color:var(--ant); font-size:20px}
+nav.exs{display:flex; flex-wrap:wrap; gap:6px}
+nav.exs button{font:700 15px var(--f-body); width:42px; height:42px; border-radius:50%; border:2px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; font-variant-numeric:tabular-nums}
+nav.exs button.done{border-color:var(--ant); background:var(--ant-soft); color:var(--ant)}
+nav.exs button.part{border-color:var(--warn); background:var(--warn-soft); color:var(--warn)}
+nav.exs button[aria-current="step"]{outline:3px solid var(--fn); outline-offset:2px}
+button:focus-visible, input:focus-visible, select:focus-visible{outline:3px solid var(--focus); outline-offset:2px}
+
+.stage{background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:22px clamp(16px,3vw,30px);
+  display:flex; flex-direction:column; gap:16px; box-shadow:0 10px 30px -18px rgba(20,40,80,.35)}
+.stage h2{font:800 clamp(22px,3vw,28px)/1.15 var(--f-display); margin:0}
+.stage h2 small{display:block; font:700 13px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px}
+.stage p{margin:0}
+.q{display:flex; flex-direction:column; gap:8px; padding-top:12px; border-top:1px dashed var(--line)}
+.q > .lbl{font-weight:700}
+.cols{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; align-items:start}
+@media (max-width:780px){ .cols{grid-template-columns:1fr} }
+.panel{display:flex; flex-direction:column; gap:12px; min-width:0}
+.m{font-family:var(--f-math); font-style:italic; font-size:1.17em}
+.ant{color:var(--ant); font-weight:700}
+.img{color:var(--img); font-weight:700}
+.line{display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px}
+.eq{display:inline-flex; align-items:center; gap:4px; font-family:var(--f-math); font-style:italic; font-size:1.17em; white-space:nowrap}
+
+input.num{font:600 17px var(--f-body); width:5.2em; padding:5px 8px; border:2px solid var(--line); border-radius:8px; background:var(--paper); color:var(--ink); text-align:center; font-variant-numeric:tabular-nums}
+input.num.wide{width:9em}
+input.num.ok, .tbl input.num.ok{border-color:var(--ant); background:var(--ant-soft)}
+input.num.bad{border-color:var(--img); background:var(--img-soft)}
+.mcq{display:flex; flex-wrap:wrap; gap:6px}
+.mcq button{font:600 16px var(--f-body); border:2px solid var(--line); background:var(--card); color:var(--ink); border-radius:9px; padding:6px 12px; cursor:pointer; text-align:left}
+.mcq button .m{font-size:1.1em}
+.mcq button[aria-pressed="true"]{border-color:var(--fn); background:var(--fn-soft)}
+.mcq.ok button[aria-pressed="true"]{border-color:var(--ant); background:var(--ant-soft)}
+.mcq.bad button[aria-pressed="true"]{border-color:var(--img); background:var(--img-soft)}
+.mcq.vf button{min-width:64px; text-align:center}
+
+.tblwrap{overflow-x:auto}
+table.tbl{border-collapse:collapse; font-variant-numeric:tabular-nums}
+table.tbl th, table.tbl td{border:1.5px solid var(--line); padding:5px 7px; text-align:center; min-width:52px}
+table.tbl th{font-family:var(--f-math); font-style:italic; font-size:18px; background:var(--ant-soft); color:var(--ant); white-space:nowrap}
+table.tbl tr.ri th{background:var(--img-soft); color:var(--img)}
+table.tbl tr.ri2 th{background:var(--fn-soft); color:var(--fn)}
+table.tbl input.num{width:4.2em; padding:4px; font-size:16px}
+table.vf td:first-child{text-align:left}
+
+.actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding-top:6px}
+.btn{font:700 16px var(--f-body); border:0; border-radius:10px; padding:10px 18px; cursor:pointer; background:var(--fn); color:var(--on-fn)}
+.btn.ghost{background:transparent; color:var(--fn); border:1.5px solid var(--fn)}
+.btn:disabled{opacity:.45; cursor:default}
+.result{font-weight:700}
+.result.ok{color:var(--ant)} .result.part{color:var(--warn)}
+.corr{border:1.5px solid var(--fn); background:var(--fn-soft); border-radius:12px; padding:14px 16px; display:flex; flex-direction:column; gap:6px}
+.corr .t{font:800 13px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--fn)}
+.hint{color:var(--muted); font-size:14px}
+svg{display:block; width:100%; height:auto; max-width:100%}
+svg text{font-family:var(--f-body)}
+svg.clickable{cursor:crosshair; touch-action:manipulation}
+.chips{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.chips button{font:700 16px var(--f-body); min-width:44px; border:2px solid var(--line); background:var(--card); color:var(--ink); border-radius:9px; padding:5px 10px; cursor:pointer}
+.chips button[aria-pressed="true"]{border-color:var(--fn); background:var(--fn-soft); color:var(--fn)}
+.chips button.ok{border-color:var(--ant); color:var(--ant)}
+.chips button.bad{border-color:var(--img); color:var(--img)}
+footer.nav{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Révisions fonctions</h1>
+      <div class="sub">3<sup>e</sup> — 13 exercices interactifs. Réponds, puis clique sur « Vérifier ».</div>
+    </div>
+    <div class="prog" id="prog"></div>
+  </header>
+  <nav class="exs" id="exNav" aria-label="Exercices"></nav>
+  <main class="stage" id="stage"></main>
+  <footer class="nav">
+    <button class="btn ghost" id="prev">← Exercice précédent</button>
+    <button class="btn" id="next">Exercice suivant →</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const sv=(t,a={})=>{const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); return e;};
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function fmt(v,d=2){ if(Math.abs(v)<1e-9) v=0; return (Math.round(v*10**d)/10**d).toString().replace(".",",").replace("-","−"); }
+function parseNum(s){
+  if(s==null) return NaN; s=String(s).trim().replace(/\s/g,"").replace(/[−–]/g,"-").replace(",",".");
+  if(s==="") return NaN;
+  if(/^-?\d+(\.\d+)?\/-?\d+(\.\d+)?$/.test(s)){ const [a,b]=s.split("/").map(Number); return b? a/b : NaN; }
+  return /^-?\d*\.?\d+$/.test(s)? Number(s) : NaN;
+}
+const store={ get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
+
+/* ---------- petits constructeurs ---------- */
+// champ numérique : ans = nombre, ou "set:a;b;c" pour une liste sans ordre
+const N=(ans,tol=0.001,cls="")=>`<input class="num ${cls}" inputmode="decimal" autocomplete="off" data-ans="${ans}" data-tol="${tol}" aria-label="réponse">`;
+// QCM : opts = tableau de textes HTML, good = index correct
+const Q=(opts,good,cls="")=>`<div class="mcq ${cls}" data-good="${good}" role="group">${opts.map((o,i)=>`<button type="button" aria-pressed="false" data-i="${i}">${o}</button>`).join("")}</div>`;
+const VF=good=>Q(["Vrai","Faux"],good,"vf");
+const M=s=>`<span class="m">${s}</span>`;
+
+/* ---------- repère SVG ---------- */
+function axes(svg,o){
+  const {W,H,pad}=o; svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.innerHTML="";
+  const X=x=>pad.l+(x-o.xmin)/(o.xmax-o.xmin)*(W-pad.l-pad.r), Y=y=>H-pad.b-(y-o.ymin)/(o.ymax-o.ymin)*(H-pad.t-pad.b);
+  const Xi=px=>o.xmin+(px-pad.l)/(W-pad.l-pad.r)*(o.xmax-o.xmin), Yi=py=>o.ymin+(H-pad.b-py)/(H-pad.t-pad.b)*(o.ymax-o.ymin);
+  const line=css("--line"), ink=css("--ink"), mut=css("--muted"), g=sv("g");
+  for(let x=Math.ceil(o.xmin/o.xs)*o.xs;x<=o.xmax+1e-9;x+=o.xs) g.appendChild(sv("line",{x1:X(x),y1:Y(o.ymin),x2:X(x),y2:Y(o.ymax),stroke:line,"stroke-width":.9}));
+  for(let y=Math.ceil(o.ymin/o.ys)*o.ys;y<=o.ymax+1e-9;y+=o.ys) g.appendChild(sv("line",{x1:X(o.xmin),y1:Y(y),x2:X(o.xmax),y2:Y(y),stroke:line,"stroke-width":.9}));
+  const x0=Math.max(o.xmin,Math.min(o.xmax,0)), y0=Math.max(o.ymin,Math.min(o.ymax,0));
+  g.appendChild(sv("line",{x1:X(o.xmin),y1:Y(y0),x2:X(o.xmax),y2:Y(y0),stroke:ink,"stroke-width":1.8}));
+  g.appendChild(sv("line",{x1:X(x0),y1:Y(o.ymin),x2:X(x0),y2:Y(o.ymax),stroke:ink,"stroke-width":1.8}));
+  if(!o.noArrows){ g.appendChild(sv("path",{d:`M${X(o.xmax)} ${Y(y0)} l-9 -5 v10 z`,fill:ink})); g.appendChild(sv("path",{d:`M${X(x0)} ${Y(o.ymax)} l-5 9 h10 z`,fill:ink})); }
+  const lx=o.lx||o.xs, ly=o.ly||o.ys;
+  for(let x=Math.ceil(o.xmin/lx)*lx;x<=o.xmax+1e-9;x+=lx){ if(Math.abs(x)<1e-9&&!o.zero) continue; const t=sv("text",{x:X(x),y:Y(y0)+17,"text-anchor":"middle","font-size":13,fill:mut}); t.textContent=o.xlabels?o.xlabels(x):fmt(x); g.appendChild(t); }
+  for(let y=Math.ceil(o.ymin/ly)*ly;y<=o.ymax+1e-9;y+=ly){ if(Math.abs(y)<1e-9&&!o.zero) continue; const t=sv("text",{x:X(x0)-6,y:Y(y)+4,"text-anchor":"end","font-size":13,fill:mut}); t.textContent=fmt(y); g.appendChild(t); }
+  if(o.xlab){ const t=sv("text",{x:X(o.xmax)-2,y:Y(y0)-8,"text-anchor":"end","font-size":13,"font-weight":700,fill:ink}); t.textContent=o.xlab; g.appendChild(t); }
+  if(o.ylab){ const t=sv("text",{x:X(x0)+8,y:Y(o.ymax)+13,"font-size":13,"font-weight":700,fill:ink}); t.textContent=o.ylab; g.appendChild(t); }
+  svg.appendChild(g); return {X,Y,Xi,Yi};
+}
+function svgPoint(svg,evt){ const p=svg.createSVGPoint(); p.x=evt.clientX; p.y=evt.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+function smooth(pts,X,Y){ // Catmull-Rom → Bézier
+  let d=`M${X(pts[0][0])} ${Y(pts[0][1])}`;
+  for(let i=0;i<pts.length-1;i++){ const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(pts.length-1,i+2)];
+    const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6], c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+    d+=` C${X(c1[0])} ${Y(c1[1])} ${X(c2[0])} ${Y(c2[1])} ${X(p2[0])} ${Y(p2[1])}`; }
+  return d;
+}
+
+/* =========================================================
+   Les exercices
+   ========================================================= */
+const FBLUE=[[-5.000,-2.000],[-4.950,-1.260],[-4.900,-0.557],[-4.850,0.000],[-4.800,0.447],[-4.750,0.890],[-4.700,1.325],[-4.650,1.750],[-4.600,2.161],[-4.550,2.556],[-4.500,2.932],[-4.450,3.286],[-4.400,3.615],[-4.350,3.916],[-4.300,4.186],[-4.250,4.423],[-4.200,4.623],[-4.150,4.783],[-4.100,4.902],[-4.050,4.975],[-4.000,5.000],[-3.950,4.950],[-3.900,4.807],[-3.850,4.583],[-3.800,4.289],[-3.750,3.936],[-3.700,3.536],[-3.650,3.101],[-3.600,2.640],[-3.550,2.167],[-3.500,1.692],[-3.450,1.226],[-3.400,0.781],[-3.350,0.369],[-3.300,0.000],[-3.250,-0.367],[-3.200,-0.760],[-3.150,-1.151],[-3.100,-1.507],[-3.050,-1.801],[-3.000,-2.000],[-2.950,-2.137],[-2.900,-2.263],[-2.850,-2.377],[-2.800,-2.480],[-2.750,-2.571],[-2.700,-2.651],[-2.650,-2.719],[-2.600,-2.775],[-2.550,-2.818],[-2.500,-2.850],[-2.450,-2.873],[-2.400,-2.890],[-2.350,-2.904],[-2.300,-2.916],[-2.250,-2.926],[-2.200,-2.936],[-2.150,-2.947],[-2.100,-2.961],[-2.050,-2.978],[-2.000,-3.000],[-1.950,-3.038],[-1.900,-3.098],[-1.850,-3.175],[-1.800,-3.264],[-1.750,-3.359],[-1.700,-3.456],[-1.650,-3.549],[-1.600,-3.632],[-1.550,-3.701],[-1.500,-3.750],[-1.450,-3.787],[-1.400,-3.824],[-1.350,-3.859],[-1.300,-3.892],[-1.250,-3.922],[-1.200,-3.948],[-1.150,-3.970],[-1.100,-3.986],[-1.050,-3.996],[-1.000,-4.000],[-0.950,-3.999],[-0.900,-3.995],[-0.850,-3.990],[-0.800,-3.983],[-0.750,-3.974],[-0.700,-3.963],[-0.650,-3.951],[-0.600,-3.938],[-0.550,-3.924],[-0.500,-3.909],[-0.450,-3.893],[-0.400,-3.877],[-0.350,-3.861],[-0.300,-3.844],[-0.250,-3.827],[-0.200,-3.811],[-0.150,-3.795],[-0.100,-3.779],[-0.050,-3.764],[0.000,-3.750],[0.050,-3.736],[0.100,-3.723],[0.150,-3.709],[0.200,-3.695],[0.250,-3.682],[0.300,-3.668],[0.350,-3.654],[0.400,-3.640],[0.450,-3.625],[0.500,-3.611],[0.550,-3.596],[0.600,-3.581],[0.650,-3.566],[0.700,-3.551],[0.750,-3.535],[0.800,-3.519],[0.850,-3.502],[0.900,-3.485],[0.950,-3.468],[1.000,-3.450],[1.050,-3.432],[1.100,-3.413],[1.150,-3.394],[1.200,-3.375],[1.250,-3.355],[1.300,-3.334],[1.350,-3.313],[1.400,-3.292],[1.450,-3.270],[1.500,-3.248],[1.550,-3.226],[1.600,-3.202],[1.650,-3.179],[1.700,-3.155],[1.750,-3.130],[1.800,-3.105],[1.850,-3.080],[1.900,-3.054],[1.950,-3.027],[2.000,-3.000],[2.050,-2.973],[2.100,-2.946],[2.150,-2.918],[2.200,-2.890],[2.250,-2.861],[2.300,-2.830],[2.350,-2.798],[2.400,-2.764],[2.450,-2.727],[2.500,-2.688],[2.550,-2.646],[2.600,-2.600],[2.650,-2.549],[2.700,-2.491],[2.750,-2.426],[2.800,-2.354],[2.850,-2.276],[2.900,-2.190],[2.950,-2.098],[3.000,-2.000],[3.050,-1.888],[3.100,-1.756],[3.150,-1.608],[3.200,-1.448],[3.250,-1.277],[3.300,-1.100],[3.350,-0.920],[3.400,-0.730],[3.450,-0.521],[3.500,-0.281],[3.550,0.000],[3.600,0.387],[3.650,0.895],[3.700,1.460],[3.750,2.016],[3.800,2.500],[3.850,2.974],[3.900,3.463],[3.950,3.846],[4.000,4.000],[4.050,3.974],[4.100,3.905],[4.150,3.802],[4.200,3.676],[4.250,3.539],[4.300,3.400],[4.350,3.245],[4.400,3.058],[4.450,2.843],[4.500,2.609],[4.550,2.361],[4.600,2.106],[4.650,1.850],[4.700,1.600],[4.750,1.351],[4.800,1.094],[4.850,0.830],[4.900,0.559],[4.950,0.282],[5.000,-0.000]];
+const EX=[
+/* ---------- 1 ---------- */
+{ html:`<h2><small>Exercice 1</small>Placer des points dans un repère</h2>
+  <div class="cols"><div class="panel">
+    <p>Dans le repère, place les points ${M("A(−1 ; 2)")}, ${M("B(5 ; 3)")}, ${M("C(3 ; −2)")} et ${M("D(−3 ; −3)")}.</p>
+    <div class="chips" id="p1sel"><span class="hint">Point à placer :</span></div>
+    <p class="hint">Choisis une lettre, puis clique sur le repère. Quand les 4 points sont placés, le quadrilatère et ses diagonales apparaissent.</p>
+    <div class="q"><span class="lbl">Coordonnées du point E, intersection des diagonales de ABCD :</span>
+      <span class="eq">E( ${N(1)} ; ${N(0)} )</span></div>
+    <div class="q"><div class="line"><span>L'abscisse du point A est</span>${N(-1)}</div>
+      <div class="line"><span>L'ordonnée du point A est</span>${N(2)}</div></div>
+  </div><div><svg id="p1svg" class="clickable" role="img" aria-label="Repère pour placer les points"></svg></div></div>`,
+  corr:`Les diagonales [AC] et [BD] se coupent en <b>E(1 ; 0)</b>. L'abscisse de A est <b>−1</b>, son ordonnée est <b>2</b> : on écrit toujours A(abscisse ; ordonnée).`,
+  mount(st,state){
+    const target={A:[-1,2],B:[5,3],C:[3,-2],D:[-3,-3]}; state.pts=state.pts||{}; let cur="A";
+    const sel=$("#p1sel",st), svg=$("#p1svg",st);
+    ["A","B","C","D"].forEach(k=>{ const b=document.createElement("button"); b.type="button"; b.textContent=k; b.dataset.k=k; b.onclick=()=>{cur=k; upd();}; sel.appendChild(b); });
+    let A;
+    function draw(){
+      A=axes(svg,{W:460,H:420,pad:{l:24,r:16,t:14,b:24},xmin:-5.6,xmax:5.6,ymin:-4.6,ymax:5.6,xs:1,ys:1,xlab:"x",ylab:"y"});
+      const {X,Y}=A, fn=css("--fn"), img=css("--img"), ink=css("--ink");
+      const P=state.pts, all=["A","B","C","D"].every(k=>P[k]);
+      if(all){
+        svg.appendChild(sv("polygon",{points:["A","B","C","D"].map(k=>X(P[k][0])+","+Y(P[k][1])).join(" "),fill:"none",stroke:fn,"stroke-width":2.5}));
+        svg.appendChild(sv("line",{x1:X(P.A[0]),y1:Y(P.A[1]),x2:X(P.C[0]),y2:Y(P.C[1]),stroke:fn,"stroke-width":1.8,"stroke-dasharray":"6 5"}));
+        svg.appendChild(sv("line",{x1:X(P.B[0]),y1:Y(P.B[1]),x2:X(P.D[0]),y2:Y(P.D[1]),stroke:fn,"stroke-width":1.8,"stroke-dasharray":"6 5"}));
+      }
+      for(const k in P){ const [x,y]=P[k];
+        svg.appendChild(sv("circle",{cx:X(x),cy:Y(y),r:6,fill:img}));
+        const t=sv("text",{x:X(x)+8,y:Y(y)-8,"font-size":17,"font-weight":700,fill:ink}); t.textContent=k; svg.appendChild(t); }
+    }
+    function upd(){ $$("button",sel).forEach(b=>b.setAttribute("aria-pressed",b.dataset.k===cur)); draw(); }
+    svg.addEventListener("click",e=>{ const p=svgPoint(svg,e); const x=Math.round(A.Xi(p.x)), y=Math.round(A.Yi(p.y));
+      if(x<-5||x>5||y<-4||y>5) return; state.pts[cur]=[x,y];
+      const nxt=["A","B","C","D"].find(k=>!state.pts[k]); if(nxt) cur=nxt;
+      $$("button",sel).forEach(b=>b.classList.remove("ok","bad")); upd(); save(); });
+    upd();
+    return { check(){ let ok=0; $$("button",sel).forEach(b=>{ const k=b.dataset.k, p=state.pts[k]; const good=p&&p[0]===target[k][0]&&p[1]===target[k][1]; b.classList.toggle("ok",good); b.classList.toggle("bad",!good); if(good) ok++; }); return [ok,4]; }, redraw:draw };
+  }},
+/* ---------- 2 ---------- */
+{ html:`<h2><small>Exercice 2</small>Traduire des égalités</h2>
+  <p>On sait que : ${M("f(3) = 8")} et ${M("f(−5) = −6")}.</p>
+  <div class="q"><span class="lbl">a) Avec le mot <span class="img">image</span> : ${M("f(3) = 8")} se traduit par…</span>
+    ${Q(["L'image de 3 par <i>f</i> est 8.","L'image de 8 par <i>f</i> est 3.","3 est l'image de 8 par <i>f</i>."],0)}
+    <span class="lbl">… et ${M("f(−5) = −6")} par :</span>
+    ${Q(["L'image de −6 par <i>f</i> est −5.","−6 est l'image de −5 par <i>f</i>.","−5 est l'image de −6 par <i>f</i>."],1)}</div>
+  <div class="q"><span class="lbl">b) Avec le mot <span class="ant">antécédent</span> : ${M("f(3) = 8")} se traduit par…</span>
+    ${Q(["8 est un antécédent de 3 par <i>f</i>.","3 est un antécédent de 8 par <i>f</i>.","3 a pour antécédent 8 par <i>f</i>."],1)}
+    <span class="lbl">… et ${M("f(−5) = −6")} par :</span>
+    ${Q(["−5 est un antécédent de −6 par <i>f</i>.","−6 est un antécédent de −5 par <i>f</i>.","−5 a pour antécédent −6 par <i>f</i>."],0)}</div>
+  <div class="q"><span class="lbl">c) Traduire par une égalité :</span>
+    <div class="line"><span>L'image de 3 par la fonction <i>g</i> est −5.</span><span class="eq">g( ${N(3)} ) = ${N(-5)}</span></div>
+    <div class="line"><span>−8 est l'image de 7 par la fonction <i>h</i>.</span><span class="eq">h( ${N(7)} ) = ${N(-8)}</span></div>
+    <div class="line"><span>−5 a pour image 9 par la fonction <i>w</i>.</span><span class="eq">w( ${N(-5)} ) = ${N(9)}</span></div>
+    <div class="line"><span><b>Un</b> antécédent de 9 par la fonction <i>g</i> est −8.</span><span class="eq">g( ${N(-8)} ) = ${N(9)}</span></div>
+    <div class="line"><span>3 a pour antécédent 8 par la fonction <i>w</i>.</span><span class="eq">w( ${N(8)} ) = ${N(3)}</span></div>
+    <div class="line"><span>−12 est <b>un</b> antécédent de 12 par la fonction <i>h</i>.</span><span class="eq">h( ${N(-12)} ) = ${N(12)}</span></div></div>`,
+  corr:`Dans ${M("f(a) = b")}, le nombre <span class="ant">a</span> entre parenthèses est l'antécédent, le résultat <span class="img">b</span> est l'image.<br>c) ${M("g(3) = −5")} ; ${M("h(7) = −8")} ; ${M("w(−5) = 9")} ; ${M("g(−8) = 9")} ; ${M("w(8) = 3")} ; ${M("h(−12) = 12")}.` },
+/* ---------- 3 ---------- */
+{ html:`<h2><small>Exercice 3</small>Vrai ou faux ?</h2>
+  <p>Soit la fonction <i>f</i> telle que ${M("f(−3) = −4")}, ${M("f(−1) = 6")}, ${M("f(2) = 5")} et ${M("f(4) = 7")}.</p>
+  <div class="tblwrap"><table class="tbl vf"><tbody>
+  ${[["L'image de −4 par la fonction <i>f</i> est −3.",1],["L'image de −1 par la fonction <i>f</i> est −6.",1],["Un antécédent de 5 par la fonction <i>f</i> est 2.",0],["Un antécédent de 4 par la fonction <i>f</i> est 7.",1],["−1 est l'image de 6 par la fonction <i>f</i>.",1],["−1 a pour image 6 par la fonction <i>f</i>.",0],["7 est l'image de 4 par la fonction <i>f</i>.",0],["7 a pour antécédent 4 par la fonction <i>f</i>.",0],["−3 a pour antécédent −4 par la fonction <i>f</i>.",1]].map(([t,g])=>`<tr><td>${t}</td><td>${VF(g)}</td></tr>`).join("")}
+  </tbody></table></div>`,
+  corr:`Vrai : « un antécédent de 5 est 2 », « −1 a pour image 6 », « 7 est l'image de 4 », « 7 a pour antécédent 4 ». Toutes les autres sont fausses.<br>Exemple : ${M("f(−3) = −4")} signifie que −4 est l'<b>image</b> de −3 (et non l'inverse), donc « −3 a pour antécédent −4 » est faux.` },
+/* ---------- 4 ---------- */
+{ html:`<h2><small>Exercice 4</small>Fonction ${M("f : x ⟼ −4x")}</h2>
+  <div class="q"><span class="lbl">a) Compléter</span>
+    <div class="line"><span class="eq">f(x) =</span>${Q([M("−4x"),M("x − 4"),M("−4 + x")],0)}</div>
+    <div class="line"><span class="eq">f(−3) = ${N(12)}</span><span class="eq">f(5) = ${N(-20)}</span></div></div>
+  <div class="q"><div class="line"><span class="lbl">b) Quelle est l'image de −3 ?</span>${N(12)}</div>
+    <div class="line"><span class="lbl">c) Quel est l'antécédent de −20 ?</span>${N(5)}</div>
+    <div class="line"><span class="lbl">d) Calculer l'image de −10.</span>${N(40)}</div>
+    <div class="line"><span class="lbl">e) Calculer l'antécédent de −10.</span>${N(2.5)}</div></div>`,
+  corr:`${M("f(−3) = −4 × (−3) = 12")} ; ${M("f(5) = −20")} ; ${M("f(−10) = 40")}.<br>e) On résout ${M("−4x = −10")}, donc ${M("x = −10 ÷ (−4) = 2,5")}.` },
+/* ---------- 5 ---------- */
+{ html:`<h2><small>Exercice 5</small>Fonction ${M("k : x ⟼ x² + 2")}</h2>
+  <div class="q"><span class="lbl">a) Compléter</span>
+    <div class="line"><span class="eq">k(x) =</span>${Q([M("2x + 2"),M("x² + 2"),M("(x + 2)²")],1)}</div>
+    <div class="line"><span class="eq">k(3) = ${N(11)}</span><span class="eq">k(−5) = ${N(27)}</span></div></div>
+  <div class="q"><div class="line"><span class="lbl">b) Calculer l'image de 10.</span>${N(102)}</div>
+    <div class="line"><span class="lbl">c) Calculer l'image de −4.</span>${N(18)}</div>
+    <div class="line"><span class="lbl">d) Calculer les antécédents de 38.</span>${N("set:-6;6",0.001,"wide")}<span class="hint">sépare les nombres par « ; »</span></div></div>`,
+  corr:`${M("k(3) = 9 + 2 = 11")} ; ${M("k(−5) = 25 + 2 = 27")} ; ${M("k(10) = 102")} ; ${M("k(−4) = 18")}.<br>d) ${M("x² + 2 = 38")} donne ${M("x² = 36")}, donc ${M("x = 6")} ou ${M("x = −6")}.` },
+/* ---------- 6 ---------- */
+{ html:`<h2><small>Exercice 6</small>Tableau de valeurs de la fonction <i>g</i></h2>
+  <div class="tblwrap"><table class="tbl"><tr><th>x</th><td>4</td><td>−3</td><td>12</td><td>2</td><td>5</td><td>8</td></tr>
+  <tr class="ri"><th>g(x)</th><td>12</td><td>−6</td><td>5</td><td>4</td><td>−3</td><td>17</td></tr></table></div>
+  <div class="q"><span class="lbl">a) Compléter</span><div class="line">
+    <span class="eq">g(−3) = ${N(-6)}</span><span class="eq">g(5) = ${N(-3)}</span><span class="eq">g( ${N(2)} ) = 4</span><span class="eq">g( ${N(12)} ) = 5</span></div></div>
+  <div class="q"><div class="line"><span class="lbl">b) Quelle est l'image de 8 ?</span>${N(17)}</div>
+    <div class="line"><span class="lbl">c) Quel est un antécédent de 12 ?</span>${N(4)}</div></div>`,
+  corr:`On cherche l'image sur la <b>2<sup>e</sup> ligne</b> (sous le nombre de départ) et l'antécédent sur la <b>1<sup>re</sup> ligne</b> (au-dessus de l'image).<br>${M("g(−3) = −6")} ; ${M("g(5) = −3")} ; ${M("g(2) = 4")} ; ${M("g(12) = 5")} ; ${M("g(8) = 17")} ; ${M("g(4) = 12")}.` },
+/* ---------- 7 ---------- */
+{ html:`<h2><small>Exercice 7</small>Tableau de valeurs de la fonction <i>k</i></h2>
+  <div class="tblwrap"><table class="tbl"><tr><th>x</th><td>−8</td><td>−3</td><td>−1</td><td>6</td><td>3</td><td>10</td></tr>
+  <tr class="ri"><th>k(x)</th><td>−4</td><td>10</td><td>12</td><td>8</td><td>6</td><td>4</td></tr></table></div>
+  <div class="q"><span class="lbl">a) Compléter</span><div class="line">
+    <span class="eq">k(−1) = ${N(12)}</span><span class="eq">k(10) = ${N(4)}</span><span class="eq">k( ${N(-3)} ) = 10</span><span class="eq">k( ${N(6)} ) = 8</span></div></div>
+  <div class="q"><div class="line"><span class="lbl">b) Quelle est l'image de −8 ?</span>${N(-4)}</div>
+    <span class="lbl">c) Quelle est l'image de −4 ?</span>
+    ${Q(["−8","4","On ne peut pas la lire dans le tableau"],2)}
+    <div class="line"><span class="lbl">d) Quel est un antécédent de 6 ?</span>${N(3)}</div></div>`,
+  corr:`c) <b>Piège</b> : −4 n'est pas sur la 1<sup>re</sup> ligne, on ne peut donc pas lire son image. En revanche, −4 est l'<i>image</i> de −8.<br>${M("k(−1) = 12")} ; ${M("k(10) = 4")} ; ${M("k(−3) = 10")} ; ${M("k(6) = 8")} ; ${M("k(−8) = −4")} ; ${M("k(3) = 6")}.` },
+/* ---------- 8 ---------- */
+{ html:`<h2><small>Exercice 8</small>Fonction ${M("f(x) = 2x − 7")}</h2>
+  <p>Compléter le tableau de valeurs suivant :</p>
+  <div class="tblwrap"><table class="tbl"><tr><th>x</th><td>−4</td><td>−3</td><td>${N(-1)}</td><td>3</td><td>${N(4)}</td></tr>
+  <tr class="ri"><th>f(x)</th><td>${N(-15)}</td><td>${N(-13)}</td><td>−9</td><td>${N(-1)}</td><td>1</td></tr></table></div>`,
+  corr:`${M("f(−4) = 2 × (−4) − 7 = −15")} ; ${M("f(−3) = −13")} ; ${M("f(3) = −1")}.<br>${M("2x − 7 = −9")} donne ${M("2x = −2")}, donc ${M("x = −1")} ; ${M("2x − 7 = 1")} donne ${M("2x = 8")}, donc ${M("x = 4")}.` },
+/* ---------- 9 ---------- */
+{ html:`<h2><small>Exercice 9</small>Fonction ${M("g(x) = 2x² + 3")}</h2>
+  <p>Compléter le tableau de valeurs suivant :</p>
+  <div class="tblwrap"><table class="tbl"><tr><th>x</th><td>−3</td><td>−1</td><td>${N(0)}</td><td>5</td><td>10</td></tr>
+  <tr class="ri"><th>g(x)</th><td>${N(21)}</td><td>${N(5)}</td><td>3</td><td>${N(53)}</td><td>${N(203)}</td></tr></table></div>`,
+  corr:`${M("g(−3) = 2 × 9 + 3 = 21")} ; ${M("g(−1) = 5")} ; ${M("g(5) = 2 × 25 + 3 = 53")} ; ${M("g(10) = 203")}.<br>${M("2x² + 3 = 3")} donne ${M("x² = 0")}, donc ${M("x = 0")}. Attention : on calcule le carré <b>avant</b> de multiplier par 2.` },
+/* ---------- 10 ---------- */
+{ html:`<h2><small>Exercice 10</small>Lecture graphique avec deux courbes</h2>
+  <div class="cols"><div><svg id="p10svg" role="img" aria-label="Courbes des fonctions f et g"></svg>
+    <p class="hint">Courbe <b style="color:var(--blue-curve)">bleue</b> : fonction <i>f</i>. Courbe <b style="color:var(--red-curve)">rouge</b> : fonction <i>g</i>.</p></div>
+  <div class="panel">
+    <div class="q"><div class="line"><span class="eq">f(−4) = ${N(5)}</span><span class="eq">f(3) = ${N(-2)}</span><span class="eq">f(4) = ${N(4)}</span></div>
+      <div class="line"><span class="eq">f( … ) = −2 pour <i>x</i> = </span>${N("set:-5;-3;3",0.001,"wide")}<span class="hint">trois valeurs, séparées par « ; »</span></div></div>
+    <div class="q"><div class="line"><span class="eq">g(−2) = ${N(-3)}</span><span class="eq">g(3) = ${N(5)}</span></div>
+      <div class="line"><span class="eq">g( ${N(1)} ) = 2</span><span class="eq">g( ${N(-5)} ) = −4</span></div></div>
+    <div class="q"><div class="line"><span class="lbl">Pour quelle valeur de <i>x</i> a-t-on ${M("f(x) = g(x)")} ?</span>${N(-2)}</div>
+      <span class="lbl">Comment la détermine-t-on sur le graphique ?</span>
+      ${Q(["On lit l'abscisse du point d'intersection des deux courbes","On lit l'ordonnée du point d'intersection des deux courbes","On regarde où la courbe bleue coupe l'axe des abscisses"],0)}</div>
+  </div></div>`,
+  corr:`${M("f(−4) = 5")} ; ${M("f(3) = −2")} ; ${M("f(4) = 4")} ; les antécédents de −2 par <i>f</i> sont −5, −3 et 3.<br>${M("g(−2) = −3")} ; ${M("g(3) = 5")} ; ${M("g(1) = 2")} ; ${M("g(−5) = −4")}.<br>Les courbes se coupent au point (−2 ; −3) : ${M("f(x) = g(x)")} pour ${M("x = −2")}, l'<b>abscisse</b> du point d'intersection.`,
+  mount(st){ const svg=$("#p10svg",st);
+    function draw(){ const {X,Y}=axes(svg,{W:440,H:440,pad:{l:24,r:14,t:12,b:24},xmin:-5.5,xmax:5.6,ymin:-4.6,ymax:5.6,xs:1,ys:1,xlab:"x",ylab:"y"});
+      svg.appendChild(sv("path",{d:"M"+FBLUE.map(([x,y])=>X(x).toFixed(1)+" "+Y(y).toFixed(1)).join(" L"),fill:"none",stroke:css("--blue-curve"),"stroke-width":3}));
+      svg.appendChild(sv("polyline",{points:[[-5,-4],[-2,-3],[0,1],[2,3],[3,5]].map(([x,y])=>X(x)+","+Y(y)).join(" "),fill:"none",stroke:css("--red-curve"),"stroke-width":3})); }
+    draw(); return {redraw:draw}; }},
+/* ---------- 11 ---------- */
+{ html:`<h2><small>Exercice 11</small>Périmètres et aires en fonction de <i>x</i></h2>
+  <div class="cols"><div class="panel">
+    <svg viewBox="0 0 300 130" role="img" aria-label="Triangle rectangle de côtés 3x, 4x et 5x"><path d="M40 110 H200 L40 20 Z" fill="var(--fn-soft)" stroke="var(--fn)" stroke-width="2.5"/><path d="M40 98 h12 v12" fill="none" stroke="var(--ink)"/><text x="22" y="70" font-size="16" font-style="italic" fill="var(--ink)">3x</text><text x="110" y="127" font-size="16" font-style="italic" fill="var(--ink)">4x</text><text x="128" y="58" font-size="16" font-style="italic" fill="var(--ink)">5x</text></svg>
+    <div class="q"><span class="lbl">a) Triangle rectangle</span>
+      <div class="line"><span class="eq">p(x) =</span>${Q([M("12x"),M("60x"),M("12x²")],0)}</div>
+      <div class="line"><span class="eq">A(x) =</span>${Q([M("12x²"),M("6x²"),M("7x")],1)}</div>
+      <div class="line"><span class="lbl">b)</span><span class="eq">p(3) = ${N(36)}</span><span class="eq">A(3) = ${N(54)}</span></div></div>
+  </div><div class="panel">
+    <svg viewBox="0 0 300 130" role="img" aria-label="Disque de rayon x"><circle cx="150" cy="65" r="55" fill="var(--fn-soft)" stroke="var(--fn)" stroke-width="2.5"/><circle cx="150" cy="65" r="3" fill="var(--ink)"/><line x1="150" y1="65" x2="205" y2="65" stroke="var(--ink)" stroke-width="2"/><text x="172" y="58" font-size="16" font-style="italic" fill="var(--ink)">x</text></svg>
+    <div class="q"><span class="lbl">c) Disque de rayon <i>x</i></span>
+      <div class="line"><span class="eq">q(x) =</span>${Q([M("πx²"),M("2πx"),M("πx")],1)}</div>
+      <div class="line"><span class="eq">B(x) =</span>${Q([M("2πx"),M("πx²"),M("2πx²")],1)}</div>
+      <span class="lbl">d) Valeurs exactes</span>
+      <div class="line"><span class="eq">q(3) =</span>${Q([M("9π"),M("6π"),M("3π")],1)}</div>
+      <div class="line"><span class="eq">B(3) =</span>${Q([M("9π"),M("6π"),M("18π")],0)}</div></div>
+  </div></div>
+  <div class="cols"><div><svg viewBox="0 0 320 110" role="img" aria-label="Rectangle de longueur 3x + 2 et de largeur 2, partagé en deux"><rect x="40" y="25" width="250" height="70" fill="var(--fn-soft)" stroke="var(--fn)" stroke-width="2.5"/><line x1="215" y1="25" x2="215" y2="95" stroke="var(--fn)" stroke-width="2.5"/><text x="120" y="18" font-size="16" font-style="italic" fill="var(--ink)">3x</text><text x="248" y="18" font-size="16" fill="var(--ink)">2</text><text x="22" y="66" font-size="16" fill="var(--ink)">2</text></svg></div>
+  <div class="q"><span class="lbl">e) Rectangle</span>
+    <div class="line"><span class="eq">r(x) =</span>${Q([M("6x + 12"),M("6x + 8"),M("3x + 4")],1)}</div>
+    <div class="line"><span class="eq">C(x) =</span>${Q([M("6x + 4"),M("3x + 2"),M("6x + 8")],0)}</div>
+    <div class="line"><span class="lbl">f)</span><span class="eq">r(3) = ${N(26)}</span><span class="eq">C(3) = ${N(22)}</span></div></div></div>`,
+  corr:`a) ${M("p(x) = 3x + 4x + 5x = 12x")} ; ${M("A(x) = (3x × 4x) ÷ 2 = 6x²")}. b) ${M("p(3) = 36")} ; ${M("A(3) = 6 × 9 = 54")}.<br>c) ${M("q(x) = 2πx")} ; ${M("B(x) = πx²")}. d) ${M("q(3) = 6π")} ; ${M("B(3) = 9π")}.<br>e) Le grand rectangle mesure ${M("3x + 2")} sur 2 ; le trait intérieur ne compte pas dans le périmètre : ${M("r(x) = 2(3x + 2) + 2 × 2 = 6x + 8")} ; ${M("C(x) = 2(3x + 2) = 6x + 4")}. f) ${M("r(3) = 26")} ; ${M("C(3) = 22")}.` },
+/* ---------- 12 ---------- */
+{ html:`<h2><small>Exercice 12</small>Carnet de santé</h2>
+  <p><i>f</i> associe à un âge (en mois) le poids <b>minimum</b> en kg, et <i>g</i> le poids <b>maximum</b>. Un enfant doit a priori se situer entre les deux courbes.</p>
+  <svg id="p12svg" class="clickable" role="img" aria-label="Courbes de poids minimum et maximum"></svg>
+  <div class="q"><span class="lbl">a. Compléter par des valeurs approchées lues sur le graphique</span>
+    <div class="tblwrap"><table class="tbl">
+      <tr><th>x</th><td>3</td><td>12</td><td>${N(15,1)}</td><td>24</td><td>${N(30,1)}</td><td>34,5</td></tr>
+      <tr class="ri2"><th>f(x)</th><td>${N(4,.5)}</td><td>${N(7.4,.5)}</td><td>8</td><td>${N(9.4,.5)}</td><td>${N(10.4,.5)}</td><td>${N(10.8,.5)}</td></tr>
+      <tr class="ri"><th>g(x)</th><td>${N(6.8,.5)}</td><td>${N(11.8,.5)}</td><td>${N(12.8,.5)}</td><td>${N(14.8,.5)}</td><td>16</td><td>${N(16.9,.5)}</td></tr></table></div></div>
+  <div class="q"><span class="lbl">b. La colonne <i>x</i> = 12 signifie :</span>
+    ${Q(["À 12 mois, un enfant doit peser entre environ 7,4 kg et 11,8 kg","À 12 mois, un enfant pèse exactement 12 kg","Un enfant de 7,4 kg a 12 ans"],0)}</div>
+  <div class="q"><span class="lbl">c. Poids d'Ahmed</span>
+    <div class="tblwrap"><table class="tbl"><tr><th>x</th><td>0</td><td>3</td><td>6</td><td>9</td><td>12</td><td>18</td><td>24</td><td>36</td></tr>
+    <tr class="ri"><th>p(x)</th><td>3,5</td><td>6</td><td>8</td><td>8,5</td><td>9</td><td>9,5</td><td>10</td><td>12</td></tr></table></div>
+    <p class="hint">Clique sur le graphique pour placer les 8 points d'Ahmed (clique sur un point pour l'effacer). <span id="p12n"></span></p>
+    <span class="lbl">Commenter la courbe obtenue :</span>
+    ${Q(["Le poids d'Ahmed reste toujours entre les deux courbes : il est normal","Ahmed est en dessous du poids minimum dès 6 mois","Ahmed dépasse le poids maximum à 36 mois"],0)}</div>`,
+  corr:`a. Lectures (à 0,5 près) : ${M("f(3) ≈ 4")}, ${M("g(3) ≈ 6,8")} ; ${M("f(12) ≈ 7,4")}, ${M("g(12) ≈ 11,8")} ; ${M("f(15) = 8")}, ${M("g(15) ≈ 12,8")} ; ${M("f(24) ≈ 9,4")}, ${M("g(24) ≈ 14,8")} ; ${M("g(30) = 16")}, ${M("f(30) ≈ 10,4")} ; ${M("f(34,5) ≈ 10,8")}, ${M("g(34,5) ≈ 16,9")}.<br>c. La courbe d'Ahmed reste entre les deux courbes ; elle se rapproche du minimum entre 18 et 24 mois, puis s'en éloigne.`,
+  mount(st,state){
+    const svg=$("#p12svg",st), F=[[0,2.4],[3,4],[6,5.6],[9,6.6],[12,7.4],[15,8],[18,8.4],[21,9],[24,9.4],[27,9.8],[30,10.4],[33,10.6],[36,11]],
+      G=[[0,4.2],[3,6.8],[6,9.2],[9,10.6],[12,11.8],[15,12.8],[18,13.4],[21,14.2],[24,14.8],[27,15.4],[30,16],[33,16.6],[36,17.2]],
+      AH=[[0,3.5],[3,6],[6,8],[9,8.5],[12,9],[18,9.5],[24,10],[36,12]];
+    state.ah=state.ah||[]; let A;
+    function draw(){
+      A=axes(svg,{W:640,H:380,pad:{l:36,r:16,t:14,b:26},xmin:0,xmax:36,ymin:0,ymax:20,xs:3,ys:2,zero:true,noArrows:true,xlabels:x=>x===0?"N":fmt(x),xlab:"âge (mois)",ylab:"poids (kg)"});
+      const {X,Y}=A, ink=css("--ink"), img=css("--img");
+      svg.appendChild(sv("path",{d:smooth(G,X,Y),fill:"none",stroke:ink,"stroke-width":3}));
+      svg.appendChild(sv("path",{d:smooth(F,X,Y),fill:"none",stroke:ink,"stroke-width":3}));
+      const t1=sv("text",{x:X(30.5),y:Y(17.8),"font-size":14,"font-weight":700,fill:ink}); t1.textContent="g (maximum)"; svg.appendChild(t1);
+      const t2=sv("text",{x:X(30.5),y:Y(8.6),"font-size":14,"font-weight":700,fill:ink}); t2.textContent="f (minimum)"; svg.appendChild(t2);
+      const pts=[...state.ah].sort((a,b)=>a[0]-b[0]);
+      if(pts.length>1) svg.appendChild(sv("polyline",{points:pts.map(([x,y])=>X(x)+","+Y(y)).join(" "),fill:"none",stroke:img,"stroke-width":2.5}));
+      pts.forEach(([x,y])=>svg.appendChild(sv("circle",{cx:X(x),cy:Y(y),r:6,fill:img})));
+      $("#p12n",st).textContent=`${state.ah.length} / 8 points placés.`;
+    }
+    svg.addEventListener("click",e=>{ const p=svgPoint(svg,e); const x=Math.round(A.Xi(p.x)/3)*3, y=Math.round(A.Yi(p.y)*2)/2;
+      if(x<0||x>36||y<0||y>20) return;
+      const k=state.ah.findIndex(q=>q[0]===x);
+      if(k>=0 && state.ah[k][1]===y) state.ah.splice(k,1); else if(k>=0) state.ah[k]=[x,y]; else state.ah.push([x,y]);
+      draw(); save(); });
+    draw();
+    return { redraw:draw, check(){ let ok=0; AH.forEach(([x,y])=>{ if(state.ah.some(q=>q[0]===x&&Math.abs(q[1]-y)<0.3)) ok++; }); const extra=state.ah.filter(q=>!AH.some(([x,y])=>q[0]===x&&Math.abs(q[1]-y)<0.3)).length; return [Math.max(0,ok-extra),8]; } };
+  }},
+/* ---------- 13 ---------- */
+{ html:`<h2><small>Exercice 13</small>Un peu de football</h2>
+  <p>${M("h(x) = −5x² + 20x")}. Lors d'un dégagement, ${M("h(t)")} est la hauteur en mètres du ballon au-dessus du sol, <i>t</i> secondes après le tir.</p>
+  <div class="q"><span class="lbl">a. Hauteur du ballon</span><div class="line">
+    <span>au bout d'une seconde :</span>${N(15)}<span>m</span><span>au bout de deux secondes :</span>${N(20)}<span>m</span></div></div>
+  <div class="q"><div class="line"><span class="lbl">b.</span><span class="eq">h(4) = ${N(0)}</span></div>
+    <span class="lbl">Interprétation :</span>${Q(["Au bout de 4 s, le ballon est retombé au sol","Le ballon monte à 4 m","Au bout de 4 s, le ballon est au plus haut"],0)}</div>
+  <div class="q"><span class="lbl">c. Compléter le tableau de valeurs</span>
+    <div class="tblwrap"><table class="tbl"><tr><th>x</th><td>−5</td><td>0</td><td>1</td><td>1,5</td><td>2</td><td>2,5</td><td>3</td><td>5</td></tr>
+    <tr class="ri"><th>h(x)</th><td>${N(-225)}</td><td>${N(0)}</td><td>${N(15)}</td><td>${N(18.75)}</td><td>${N(20)}</td><td>${N(18.75)}</td><td>${N(15)}</td><td>${N(-25)}</td></tr></table></div></div>
+  <div class="q"><span class="lbl">d. Quelles interprétations sont correctes ? (plusieurs réponses)</span>
+    <div class="mcq multi" data-good="0,1,3">
+      <button type="button" aria-pressed="false" data-i="0">Au moment du tir (t = 0), le ballon est au sol.</button>
+      <button type="button" aria-pressed="false" data-i="1">La hauteur maximale est 20 m, atteinte au bout de 2 s.</button>
+      <button type="button" aria-pressed="false" data-i="2">Au bout de 5 s, le ballon est à 25 m sous terre.</button>
+      <button type="button" aria-pressed="false" data-i="3">Les valeurs pour t = −5 et t = 5 n'ont pas de sens dans la situation.</button>
+    </div></div>`,
+  corr:`a. ${M("h(1) = −5 + 20 = 15")} m ; ${M("h(2) = −20 + 40 = 20")} m. b. ${M("h(4) = −80 + 80 = 0")} : le ballon touche le sol au bout de 4 s.<br>c. Par exemple ${M("h(1,5) = −5 × 2,25 + 30 = 18,75")} et ${M("h(−5) = −125 − 100 = −225")}.<br>d. Le ballon monte jusqu'à 20 m (à 2 s) puis redescend ; un temps négatif n'existe pas et après 4 s le ballon est au sol, donc ${M("h(−5)")} et ${M("h(5)")} n'ont pas de sens ici.` },
+];
+
+/* =========================================================
+   Moteur
+   ========================================================= */
+const saved=store.get("revfonctions")||{status:{},state:{}};
+function save(){ store.set("revfonctions",saved); }
+let cur=0, api=null;
+const nav=$("#exNav");
+EX.forEach((e,i)=>{ const b=document.createElement("button"); b.type="button"; b.textContent=i+1; b.setAttribute("aria-label","Exercice "+(i+1)); b.onclick=()=>go(i); nav.appendChild(b); });
+function paintNav(){
+  [...nav.children].forEach((b,i)=>{ const s=saved.status[i]; b.classList.toggle("done",s==="done"); b.classList.toggle("part",s==="part"); i===cur?b.setAttribute("aria-current","step"):b.removeAttribute("aria-current"); });
+  const done=Object.values(saved.status).filter(s=>s==="done").length;
+  $("#prog").innerHTML=`<b>${done}</b> / ${EX.length} exercices réussis`;
+}
+function go(i){
+  cur=Math.max(0,Math.min(EX.length-1,i)); const E=EX[cur], st=$("#stage");
+  st.innerHTML=E.html+`<div class="actions"><button class="btn" id="chk">Vérifier</button><button class="btn ghost" id="sol">Voir la correction</button><button class="btn ghost" id="rst">Effacer mes réponses</button><span class="result" id="res" aria-live="polite"></span></div><div class="corr" id="corr" hidden><div class="t">Correction</div><div>${E.corr}</div></div>`;
+  saved.state[cur]=saved.state[cur]||{}; const S=saved.state[cur];
+  // QCM
+  $$(".mcq",st).forEach((g,gi)=>{ g.dataset.gi=gi; $$("button",g).forEach(b=>b.onclick=()=>{
+    if(g.classList.contains("multi")) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")!=="true");
+    else $$("button",g).forEach(c=>c.setAttribute("aria-pressed",c===b));
+    g.classList.remove("ok","bad"); S.q=S.q||{}; S.q[gi]=$$("button",g).filter(c=>c.getAttribute("aria-pressed")==="true").map(c=>+c.dataset.i); save(); }); });
+  // champs
+  $$("input.num",st).forEach((inp,ii)=>{ inp.dataset.ii=ii; inp.addEventListener("input",()=>{ inp.classList.remove("ok","bad"); S.n=S.n||{}; S.n[ii]=inp.value; save(); });
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter") check(); }); });
+  // restauration
+  if(S.n) $$("input.num",st).forEach(inp=>{ const v=S.n[inp.dataset.ii]; if(v!=null) inp.value=v; });
+  if(S.q) $$(".mcq",st).forEach(g=>{ const v=S.q[g.dataset.gi]; if(v) $$("button",g).forEach(b=>b.setAttribute("aria-pressed",v.includes(+b.dataset.i))); });
+  api = E.mount ? E.mount(st,S) : null;
+  $("#chk",st).onclick=check;
+  $("#sol",st).onclick=()=>{ const c=$("#corr",st); c.hidden=!c.hidden; $("#sol",st).textContent=c.hidden?"Voir la correction":"Masquer la correction"; };
+  $("#rst",st).onclick=()=>{ saved.state[cur]={}; delete saved.status[cur]; save(); paintNav(); go(cur); };
+  $("#prev").disabled=cur===0; $("#next").disabled=cur===EX.length-1;
+  if(location.hash!=="#exercice-"+(cur+1)) history.replaceState(null,"","#exercice-"+(cur+1));
+  paintNav();
+}
+function check(){
+  const st=$("#stage"); let ok=0, tot=0;
+  $$("input.num",st).forEach(inp=>{ tot++; const a=inp.dataset.ans, tol=+inp.dataset.tol; let good=false;
+    if(a.startsWith("set:")){ const want=a.slice(4).split(";").map(Number).sort((p,q)=>p-q);
+      const got=inp.value.split(/;|\bet\b/).map(parseNum).filter(v=>!isNaN(v)).sort((p,q)=>p-q);
+      good=got.length===want.length && got.every((v,i)=>Math.abs(v-want[i])<=tol); }
+    else { const v=parseNum(inp.value); good=!isNaN(v) && Math.abs(v-Number(a))<=tol; }
+    inp.classList.toggle("ok",good); inp.classList.toggle("bad",!good); if(good) ok++; });
+  $$(".mcq",st).forEach(g=>{ tot++; const want=g.dataset.good.split(",").map(Number).sort().join(",");
+    const got=$$("button",g).filter(b=>b.getAttribute("aria-pressed")==="true").map(b=>+b.dataset.i).sort().join(",");
+    const good=got===want; g.classList.toggle("ok",good); g.classList.toggle("bad",!good); if(good) ok++; });
+  if(api && api.check){ const [a,b]=api.check(); ok+=a; tot+=b; }
+  const res=$("#res",st);
+  if(ok===tot){ res.className="result ok"; res.textContent=`Bravo, tout est juste ! (${ok} / ${tot})`; saved.status[cur]="done"; }
+  else { res.className="result part"; res.textContent=`${ok} / ${tot} réponses justes. Corrige les cases en rouge.`; if(saved.status[cur]!=="done") saved.status[cur]="part"; }
+  save(); paintNav();
+}
+$("#prev").onclick=()=>go(cur-1); $("#next").onclick=()=>go(cur+1);
+window.addEventListener("hashchange",()=>{ const m=location.hash.match(/^#exercice-(\d+)$/); if(m && +m[1]-1!==cur) go(+m[1]-1); });
+const redraw=()=>{ if(api && api.redraw) api.redraw(); };
+const mq=window.matchMedia("(prefers-color-scheme: dark)"); mq.addEventListener && mq.addEventListener("change",redraw);
+new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+const m=location.hash.match(/^#exercice-(\d+)$/); go(m?+m[1]-1:0);
+})();
+</script>
+
+</body></html>

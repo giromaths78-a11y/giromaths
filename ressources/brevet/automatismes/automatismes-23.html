@@ -1,0 +1,1007 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automatismes 23 · GiroMaths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--ink:#1e293b;--gold:#fbbf24;--gold-l:#fdf0c8;--text:#23263d;--muted:#62677f;--bg:#fbfaf7;--card:#fff;--line:#e7e5df;--ok:#15803d;--ok-l:#dcfce7;--ko:#dc2626;--ko-l:#fee2e2;
+  --ft:"Space Grotesk",system-ui,sans-serif;--f:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+*{box-sizing:border-box}
+body{margin:0;font-family:var(--f);color:var(--text);line-height:1.5;background:var(--bg);
+  background-image:linear-gradient(rgba(21,24,49,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(21,24,49,.05) 1px,transparent 1px);background-size:24px 24px}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px}
+header.top{background:var(--ink);color:#fff;padding:22px 0 26px;position:relative;overflow:hidden}
+header.top .brand{font-family:var(--ft);font-size:.95rem;color:var(--gold);letter-spacing:.04em;margin:0}
+header.top h1{font-family:var(--ft);font-size:clamp(1.9rem,5vw,2.8rem);margin:4px 0 2px}
+header.top p.sub{margin:0;color:rgba(255,255,255,.8)}
+header.top .rules{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+header.top .rules span{font-size:.85rem;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.2);padding:3px 10px;border-radius:999px}
+header.top .bolt{position:absolute;right:4%;top:50%;transform:translateY(-50%) rotate(-8deg);font-size:clamp(5rem,15vw,9rem);color:rgba(251,191,36,.25);font-family:var(--ft);font-weight:700;pointer-events:none}
+main{padding:24px 0 40px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;align-items:start}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:16px;box-shadow:5px 5px 0 var(--gold);display:flex;flex-direction:column;overflow:hidden;transition:box-shadow .2s}
+.card.good{box-shadow:5px 5px 0 var(--ok)}.card.bad{box-shadow:5px 5px 0 var(--ko)}
+.card header{display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--gold-l);border-bottom:2px solid var(--ink)}
+.card .num{flex:none;width:30px;height:30px;border-radius:8px;background:var(--ink);color:var(--gold);display:grid;place-items:center;font-family:var(--ft);font-weight:700}
+.card h2{font-family:var(--ft);font-size:1.05rem;margin:0;color:var(--ink)}
+.statement{padding:12px 16px 4px;flex:1}
+.given{margin:6px 0 0;font-weight:500}
+.math{font-size:1.25rem;text-align:center;margin:10px 0;font-family:"Cambria Math","STIX Two Math","Times New Roman",serif}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 2px;line-height:1.15}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
+.fr>span{font-size:.92em}
+.fig{display:block;width:100%;max-width:440px;margin:8px auto;height:auto}
+.fig .tri{fill:rgba(251,191,36,.12);stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round}
+.fig .par{stroke:#2563eb;stroke-width:3}
+.fig .right{fill:none;stroke:var(--ink);stroke-width:1.5}
+.fig .arc{stroke:#e11d48;stroke-width:2.5}
+.fig .pt{font:700 19px var(--f);fill:var(--ink)}
+.fig .len{font:600 17px var(--f);fill:#b45309;paint-order:stroke;stroke:#fff;stroke-width:4px}
+.fig .grid{stroke:#e5e7eb;stroke-width:1}.fig .axis{stroke:#64748b;stroke-width:1.5}.fig .tick{font:600 15px var(--f);fill:#475569}
+.fig .curve{stroke:#c026d3;stroke-width:2.5}.fig .cname{font:italic 700 20px serif;fill:#c026d3}
+table.tv{border-collapse:collapse;margin:10px auto}
+table.tv th,table.tv td{border:1.5px solid var(--ink);padding:4px 12px;text-align:center}
+table.tv th{background:var(--gold-l);font-style:italic}
+.answer{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 14px;background:#f7f6f2;border-top:1px dashed var(--line)}
+.rlabel{font-family:var(--ft);font-weight:700;color:var(--ink)}
+.field{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.flabel{font-weight:600;color:var(--ink)}
+.field input{width:150px;max-width:100%;font:500 1.05rem var(--f);padding:7px 10px;border:2px solid #cbd5e1;border-radius:10px;background:#fff;outline:none}
+.ten{font:600 1.15rem var(--f);color:var(--ink);margin-left:-4px}
+input.expo{width:64px;font:600 .95rem var(--f);padding:4px 6px;border:2px solid #cbd5e1;border-radius:8px;background:#fff;outline:none;align-self:flex-start;margin:-14px 0 0 -8px;text-align:center}
+input.expo:focus{border-color:var(--ink)}
+.field input.mant{width:96px}
+.field input.wide{width:200px}
+.field input:focus{border-color:var(--ink)}
+input.ok{border-color:var(--ok)!important;background:var(--ok-l)!important}
+input.ko{border-color:var(--ko)!important;background:var(--ko-l)!important}
+.unit{color:var(--muted)}
+.keys{display:inline-flex;gap:4px}
+.keys button{font:600 .85rem var(--f);border:1px solid #cbd5e1;background:#fff;border-radius:7px;padding:5px 8px;cursor:pointer}
+.choices{display:flex;flex-wrap:wrap;gap:6px;border-radius:12px;padding:2px}
+.choices.ok{outline:2px solid var(--ok);background:var(--ok-l)}.choices.ko{outline:2px solid var(--ko);background:var(--ko-l)}
+.chip{display:inline-flex;align-items:center;cursor:pointer}
+.chip input{position:absolute;opacity:0;pointer-events:none}
+.chip>span{display:inline-block;border:2px solid #cbd5e1;border-radius:10px;padding:6px 14px;font-size:1.05rem;background:#fff;font-weight:600}
+.chip input:checked+span{border-color:var(--ink);background:var(--ink);color:#fff}
+.chip input:focus-visible+span{outline:2px solid var(--gold)}
+.hint{margin:0;padding:0 14px;color:#b45309;font-size:.9rem;min-height:0}
+.hint:not(:empty){padding:6px 14px 0}
+details.corr{padding:6px 14px 10px}
+details.corr summary{cursor:pointer;font-weight:600;color:var(--muted);font-size:.9rem}
+details.corr div{margin-top:6px;padding:8px 12px;border-left:4px solid var(--gold);background:var(--gold-l);border-radius:6px}
+.actions{position:sticky;bottom:0;z-index:5;margin-top:22px;display:flex;flex-wrap:wrap;gap:10px;justify-content:center;padding:12px;background:rgba(251,250,247,.92);backdrop-filter:blur(8px);border-top:1px solid var(--line)}
+.btn{font:700 1rem var(--ft);border:2px solid var(--ink);border-radius:12px;padding:10px 18px;cursor:pointer;background:#fff;color:var(--ink)}
+.btn.main{background:var(--ink);color:var(--gold);box-shadow:3px 3px 0 var(--gold)}
+.btn.gold{background:var(--gold);color:var(--ink)}
+.btn:hover{transform:translateY(-1px)}
+#result{margin:22px auto 0;max-width:520px;text-align:center;background:#fff;border:2px solid var(--ink);border-radius:16px;padding:16px;box-shadow:5px 5px 0 var(--gold)}
+#score{font-family:var(--ft);font-size:2.2rem;color:var(--ink)}#score b{color:#b45309}
+.bar{height:10px;border-radius:5px;background:#eee;overflow:hidden;margin:8px 0}#scorebar{height:100%;background:linear-gradient(90deg,var(--gold),var(--ok));width:0;transition:width .6s}
+.msg{margin:0;color:var(--muted)}
+.modal{position:fixed;inset:0;z-index:50;background:rgba(30,41,59,.72);display:grid;place-items:center;padding:16px}
+.modal[hidden]{display:none}
+.modal .box{background:#fff;border:2px solid var(--ink);border-radius:18px;box-shadow:6px 6px 0 var(--gold);padding:22px;max-width:380px;width:100%;display:flex;flex-direction:column;gap:12px}
+.modal h2{font-family:var(--ft);margin:0;color:var(--ink)}
+.modal .small{margin:0;color:var(--muted);font-size:.95rem}
+.modal label{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--ink)}
+.modal input{font:500 1.1rem var(--f);padding:9px 12px;border:2px solid #cbd5e1;border-radius:10px;text-transform:uppercase}
+.modal input::placeholder{text-transform:none}
+.modal input:focus{border-color:var(--ink);outline:none}
+.modal .err{margin:0;color:var(--ko);font-size:.9rem;min-height:1em}
+.profbox{display:flex;gap:8px;align-items:flex-end}.profbox label{flex:1}.profbox input{text-transform:none}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+.field input:disabled{background:#f8fafc;color:var(--text)}
+#retry{margin-top:10px}
+.linkbtn{background:none;border:none;color:var(--muted);text-decoration:underline;cursor:pointer;font:500 .9rem var(--f)}
+#chrono{font-variant-numeric:tabular-nums}
+.countdown{align-self:center;font-weight:700;font-size:1.05rem;font-variant-numeric:tabular-nums;padding:8px 14px;border-radius:999px;background:#1e293b;color:#fbbf24;border:2px solid #1e293b}
+.countdown.warn{background:#fff7ed;color:#c2410c;border-color:#f97316;animation:cdpulse 1s ease-in-out infinite}
+.countdown.end{background:#fee2e2;color:#b91c1c;border-color:#ef4444}
+@keyframes cdpulse{50%{transform:scale(1.06)}}
+@media (prefers-reduced-motion:reduce){.countdown.warn{animation:none}}
+.sent{margin:8px 0 0;font-weight:600;font-size:.95rem}.sent.ok{color:var(--ok)}.sent.ko{color:#b45309}
+footer{text-align:center;color:var(--muted);font-size:.85rem;padding:10px 0 80px}
+/* Scratch */
+.scratch{margin:10px auto;display:flex;flex-direction:column;align-items:flex-start;gap:2px;width:fit-content;max-width:100%;font:600 .95rem var(--f)}
+.sb{color:#fff;padding:7px 12px;border-radius:6px;box-shadow:inset 0 -2px 0 rgba(0,0,0,.15);display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.sb.ev{background:#e6a800;border-radius:16px 16px 6px 6px;padding-top:10px}.sb.se{background:#3fa7d6}.sb.va{background:#ff8c1a}.sb.lo{background:#9966ff}.sb.mo{background:#4c97ff}.sb.pe{background:#0fbd8c}
+.sb.ct{background:#ffab19;flex-direction:column;align-items:flex-start;padding-bottom:12px}.sb.ct .ctl{display:flex;align-items:center;gap:6px}.sb.ct .inner{margin-left:14px;display:flex;flex-direction:column;gap:2px}
+.sn{background:#fff;color:#333;border-radius:12px;padding:1px 9px;font-weight:600}
+.sv{background:#ffa64d;color:#fff;border:1px solid rgba(0,0,0,.15);border-radius:12px;padding:1px 9px}
+.sse{background:#5cb1d6;color:#fff;border:1px solid rgba(0,0,0,.15);border-radius:12px;padding:1px 9px}
+.sop{background:#59c059;border-radius:14px;padding:3px 8px;display:inline-flex;gap:5px;align-items:center}
+.flag{color:#4cbf56;font-size:1.1rem}
+/* Tableur */
+table.sheet{border-collapse:collapse;margin:10px auto;font:500 .9rem var(--f);max-width:100%}
+table.sheet th{background:#eef0f3;color:#475569;font-weight:600;padding:3px 8px;border:1px solid #cbd5e1}
+table.sheet td{border:1px solid #cbd5e1;padding:4px 8px;background:#fff;min-width:44px}
+table.sheet td.n{text-align:right}table.sheet td.sel{outline:2.5px solid #15803d;outline-offset:-2px}
+.fbar{display:flex;gap:8px;align-items:center;justify-content:center;margin:6px 0}.fbar span{background:#eef0f3;border:1px solid #cbd5e1;padding:2px 8px;border-radius:4px;font-weight:600}
+code{font:600 .95rem ui-monospace,Menlo,Consolas,monospace;background:#f1f5f9;padding:2px 6px;border-radius:5px}
+.statement{overflow-x:auto}
+@media (max-width:760px){.grid{grid-template-columns:1fr}}
+@media print{
+  .modal{display:none!important}
+  @page{size:A4;margin:10mm}
+  body{background:#fff;font-size:11pt}
+  header.top{background:#fff;color:var(--ink);padding:0 0 6px;border-bottom:2px solid var(--ink)}header.top p.sub{color:var(--muted)}header.top .bolt,header.top .rules span:not(#version),.actions,#result,details.corr,.keys,.hint{display:none!important}
+  main{padding-top:8px}.grid{grid-template-columns:1fr 1fr;gap:8px}.card{box-shadow:none;break-inside:avoid;border-width:1.5px}
+  .field input{width:120px}.chip>span{padding:2px 8px}footer{padding:4px 0}
+}
+</style>
+<script src="../../../visibilite.js"></script>
+</head>
+<body data-seq="auto-23">
+<div class="vis-locked" style="display:none;max-width:520px;margin:12vh auto;padding:32px 24px;text-align:center;background:#fff;border:2px solid #151831;border-radius:20px;box-shadow:6px 6px 0 #fbbf24;font-family:system-ui,sans-serif"><div style="font-size:2.6rem">⏳</div><h2 style="margin:8px 0">Bientôt disponible</h2><p>Cette fiche d'automatismes n'est pas encore ouverte.</p><p><a href="../../../brevet.html">← Retour au Brevet</a></p></div>
+<p class="vis-admin-bar" style="display:none;margin:0;padding:8px 16px;background:#151831;color:#fff;font:600 .95rem system-ui,sans-serif">👁 Fiche masquée aux élèves (réglage dans admin.html).</p>
+<header class="top vis-cache"><div class="wrap">
+  <p class="brand">GiroMaths · Brevet · Automatismes</p>
+  <h1 id="title">Automatismes 23</h1>
+  <p class="sub" id="subtitle"></p>
+  <div class="rules"><span id="who" hidden></span><span id="chrono" hidden>⏱️ 00:00</span><span id="version"></span><span>🧮 Sans calculatrice</span><span>✍️ Réponse seule, sans détail</span><span>⏱️ 10 questions</span><span>⏳ 15 minutes</span></div>
+</div><span class="bolt" aria-hidden="true">⚡</span></header>
+<main class="wrap vis-cache">
+  <div class="grid" id="grid"></div>
+  <div id="result" hidden><div id="score"></div><div class="bar"><div id="scorebar"></div></div><p class="msg"></p><p class="sent" id="sent"></p><button class="btn" id="retry" hidden>↻ Réessayer l'envoi</button></div>
+</main>
+<div class="actions vis-cache">
+  <span id="countdown" class="countdown" hidden role="timer" aria-live="off">⏳ 15:00</span>
+  <button class="btn main" id="verify">✓ Vérifier mes réponses</button>
+  <button class="btn" id="showall">Voir toute la correction</button>
+  <button class="btn" id="reset">Recommencer</button>
+  <button class="btn gold" id="newfiche">🎲 Nouvelle fiche</button>
+  <button class="btn" id="print">Imprimer</button>
+</div>
+<footer>GiroMaths · 4<sup>e</sup> / 3<sup>e</sup> · 2026-2027<br>© 2026 Stéphane GIROLD - Professeur Certifié de Mathématiques - Collège Claude DEBUSSY - ST. GERMAIN-EN-LAYE. Tous droits réservés.</footer>
+<div id="start" class="modal vis-cache" role="dialog" aria-modal="true" aria-labelledby="startTitle">
+  <form class="box" id="startForm" autocomplete="off">
+    <h2 id="startTitle">Avant de commencer</h2>
+    <p class="small">Écris ton <b>numéro d'élève</b> (donné par ton professeur). <b>N'écris pas ton nom.</b></p>
+    <label>Numéro d'élève<input id="numero" maxlength="2" placeholder="ex. : 07" inputmode="numeric"></label>
+    <label>Classe<input id="classe" maxlength="8" placeholder="ex. : 3B1"></label>
+    <p class="err" id="startErr"></p>
+    <button class="btn main" type="submit">C'est parti ⏱️</button>
+    <button class="linkbtn" type="button" id="freeMode">Mode professeur (sans enregistrement)</button>
+    <div id="profBox" class="profbox" hidden><label>Code professeur<input id="codeProf" type="password" autocomplete="off"></label><button class="btn" type="button" id="profGo">Entrer</button></div>
+  </form>
+</div>
+<script src="config.js"></script>
+<script>window.FICHE={"num": 23, "title": "Automatismes 23", "subtitle": "4ème + séquences 1 à 10 · Factorisation", "gens": ["factCommon", "factCommon", "factId", "kScale", "linAnte", "statPond", "dev", "reduce", "eqTest", "tableur"]};</script>
+<script>/* GiroMaths – générateurs de questions d'automatismes (valeurs aléatoires, calculables sans calculatrice) */
+(function(){
+let R=Math.random;
+const ri=(a,b)=>a+Math.floor(R()*(b-a+1));            // entier entre a et b
+const pick=a=>a[Math.floor(R()*a.length)];
+const nz=(a,b)=>{let v;do{v=ri(a,b)}while(v===0);return v};
+const sgn=()=>R()<.5?-1:1;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a};
+const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b)[a,b]=[b,a%b];return a};
+const red=(p,q)=>{if(q<0){p=-p;q=-q}const g=gcd(p,q)||1;return[p/g,q/g]};
+const fmt=n=>{n=Math.round(n*1e6)/1e6;return (n<0?'−':'')+String(Math.abs(n)).replace('.',',')};
+const par=n=>n<0?'('+fmt(n)+')':fmt(n);
+const F=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const Fs=(p,q)=>q===1?fmt(p):(p<0?'−':'')+F(Math.abs(p),q);   // fraction signée
+const M=s=>`<p class="math">${s}</p>`;
+const NUM=(ans,unit='',label='')=>({type:'num',ans,unit,label});
+const FRAC=(p,q,label='')=>({type:'num',ans:[p,q],irreducible:true,label});
+const EXPR=(ans,label='')=>({type:'expr',ans,label});
+const CH=(options,ans,label='')=>({type:'choice',options,ans,label});
+/* Erreurs-types (pour la page d'analyse des erreurs) : avant « return Q(...) », un générateur peut remplir ERRS
+   avec des triplets [n° du champ, réponse fausse typique, libellé]. Réponse = nombre, ou expression en x (texte),
+   ou n° d'option pour un QCM. Ces calculs n'utilisent pas le hasard : les fiches restent identiques pour un même n° de version. */
+let ERRS=[];
+const Q=(topic,html,fields,correction)=>{const q={topic,html,fields:Array.isArray(fields)?fields:[fields],correction,errs:ERRS};ERRS=[];return q;};
+// polynôme a x² + b x + c : affichage et forme machine
+function poly(a,b,c){
+  const t=[];
+  const term=(k,s)=>{if(k===0)return;const abs=Math.abs(k);const coef=(abs===1&&s)?'':fmt(abs);t.push({neg:k<0,txt:coef+s});};
+  term(a,'x²');term(b,'x');term(c,'');
+  if(!t.length)return{disp:'0',raw:'0'};
+  const disp=t.map((x,i)=>i===0?(x.neg?'−':'')+x.txt:(x.neg?' − ':' + ')+x.txt).join('');
+  return{disp,raw:`${a}*x^2+(${b})*x+(${c})`};
+}
+const lin=(a,b)=>poly(0,a,b);
+const signed=(k,s)=>(k<0?' − ':' + ')+(Math.abs(k)===1&&s?'':fmt(Math.abs(k)))+s;   // « + 3x » / « − 3x »
+const opnd=(k)=>k<0?`(${fmt(k)})`:fmt(k);
+const LETTERS=[['A','B','C'],['D','E','F'],['R','S','T'],['M','N','P'],['E','F','G'],['I','J','K']];
+// calcul mental : aucun carré au-delà de 12² (demande de sg)
+const TRIPLES=[[3,4,5],[6,8,10],[1.5,2,2.5],[0.6,0.8,1],[0.3,0.4,0.5],[1.2,1.6,2]];
+const NOT_RIGHT=[[4,5,6],[5,6,8],[6,7,9],[2,3,4],[5,7,9],[6,8,9],[3,4,6],[7,8,11],[8,9,12],[4,6,7],[6,8,11],[3,4,4]];
+
+/* ---------- figures (SVG vectoriel) ---------- */
+function thalesFig(lab,ratio){
+  const A=[150,18],B=[30,170],C=[270,170];
+  const Mp=[A[0]+(B[0]-A[0])*ratio,A[1]+(B[1]-A[1])*ratio],Np=[A[0]+(C[0]-A[0])*ratio,A[1]+(C[1]-A[1])*ratio];
+  const mid=(p,q,dx,dy)=>[(p[0]+q[0])/2+dx,(p[1]+q[1])/2+dy];
+  const pos={AM:mid(A,Mp,-32,0),MB:mid(Mp,B,-32,0),AN:mid(A,Np,32,0),NC:mid(Np,C,32,0),MN:mid(Mp,Np,0,-8),BC:mid(B,C,0,24)};
+  let t='';for(const k in lab){if(!pos[k])continue;const[x,y]=pos[k];t+=`<text x="${x.toFixed(0)}" y="${y.toFixed(0)}" text-anchor="middle" class="len">${lab[k]}</text>`;}
+  const given=Object.keys(lab).length?`<p class="given">On donne : ${Object.entries(lab).map(([k,v])=>`${k} = ${v}`).join(', ')}.</p>`:'';
+  return given+`<svg class="fig" viewBox="-40 -6 380 212" role="img" aria-label="Triangle ABC, M sur [AB], N sur [AC]"><polygon points="${A} ${B} ${C}" class="tri"/><line x1="${Mp[0].toFixed(0)}" y1="${Mp[1].toFixed(0)}" x2="${Np[0].toFixed(0)}" y2="${Np[1].toFixed(0)}" class="par"/>`+
+  `<text x="${A[0]}" y="${A[1]-5}" text-anchor="middle" class="pt">A</text><text x="${B[0]-18}" y="${B[1]+6}" class="pt">B</text><text x="${C[0]+5}" y="${C[1]+6}" class="pt">C</text><text x="${(Mp[0]-20).toFixed(0)}" y="${(Mp[1]+6).toFixed(0)}" class="pt">M</text><text x="${(Np[0]+7).toFixed(0)}" y="${(Np[1]+6).toFixed(0)}" class="pt">N</text>${t}</svg>`;
+}
+function pythFig(R0,P,Qn,lab){
+  let t=`<polygon points="40,20 40,150 230,150" class="tri"/><rect x="40" y="134" width="16" height="16" class="right"/>`+
+  `<text x="30" y="166" class="pt" text-anchor="end">${R0}</text><text x="34" y="18" class="pt" text-anchor="end">${P}</text><text x="238" y="166" class="pt">${Qn}</text>`;
+  if(lab.h)t+=`<text x="32" y="90" class="len" text-anchor="end">${lab.h}</text>`;
+  if(lab.b)t+=`<text x="135" y="176" class="len" text-anchor="middle">${lab.b}</text>`;
+  if(lab.hyp)t+=`<text x="148" y="78" class="len">${lab.hyp}</text>`;
+  return `<svg class="fig" viewBox="-30 -4 300 190" role="img" aria-label="Triangle rectangle">${t}</svg>`;
+}
+function graphFig(f){
+  const u=26,ox=4*u+10,oy=5*u+10;let g='';
+  for(let i=-4;i<=6;i++)g+=`<line x1="${ox+i*u}" y1="${oy-5*u}" x2="${ox+i*u}" y2="${oy+3*u}" class="grid"/>`;
+  for(let j=-3;j<=5;j++)g+=`<line x1="${ox-4*u}" y1="${oy-j*u}" x2="${ox+6*u}" y2="${oy-j*u}" class="grid"/>`;
+  g+=`<line x1="${ox-4*u}" y1="${oy}" x2="${ox+6*u}" y2="${oy}" class="axis"/><line x1="${ox}" y1="${oy+3*u}" x2="${ox}" y2="${oy-5*u}" class="axis"/>`;
+  g+=`<text x="${ox+u}" y="${oy+18}" class="tick" text-anchor="middle">1</text><text x="${ox-6}" y="${oy+18}" class="tick" text-anchor="end">0</text><text x="${ox+7}" y="${oy-u+5}" class="tick">1</text>`;
+  // tracé limité au cadre
+  const pts=[];for(let x=-4;x<=6;x+=0.05){const y=f(x);if(y>=-3&&y<=5)pts.push(`${(ox+x*u).toFixed(1)},${(oy-y*u).toFixed(1)}`);}
+  g+=`<polyline points="${pts.join(' ')}" class="curve" fill="none"/>`;
+  return `<svg class="fig" viewBox="0 0 ${10*u+20} ${8*u+20}" role="img" aria-label="Courbe de la fonction f">${g}</svg>`;
+}
+
+/* Qf : comme Q, mais retire les erreurs-types qui coïncideraient avec la bonne réponse (ajout fiches 11 à 35) */
+const H=o=>o.replace('<','&lt;').replace('>','&gt;');
+const Qf=(topic,html,fields,corr)=>{const fs=Array.isArray(fields)?fields:[fields];
+  ERRS=ERRS.filter(e=>{const f=fs[e[0]];if(!f||e[1]==null)return false;if(f.type==='choice')return e[1]>=0&&e[1]!==f.ans;if(f.type==='expr')return true;
+    if(typeof e[1]!=='number'||!isFinite(e[1]))return false;const t=Array.isArray(f.ans)?f.ans[0]/f.ans[1]:f.ans;return Math.abs(e[1]-t)>1e-9;});
+  return Q(topic,html,fs,corr);};
+/* triangle rectangle en R0 avec l'angle marqué en Qn (trigonométrie) */
+function trigFig(R0,P,Qn,lab){
+  return pythFig(R0,P,Qn,lab).replace('</svg>','<path d="M202,150 A28,28 0 0 1 206.9,134.2" class="arc" fill="none"/></svg>');
+}
+
+/* ---------- générateurs ---------- */
+const G={
+ relSum(){ let v,ops; do{ v=[nz(-9,9),nz(-9,9),nz(-9,9),nz(-9,9)]; ops=[pick(['+','−']),pick(['+','−']),pick(['+','−'])]; }while(v.filter(x=>x<0).length+ops.filter(o=>o==='−').length<3);
+   let s=fmt(v[0]),r=v[0],c=fmt(v[0]);
+   ops.forEach((o,i)=>{const x=v[i+1];s+=` ${o} ${opnd(x)}`;const e=o==='+'?x:-x;r+=e;c+=(e<0?' − ':' + ')+fmt(Math.abs(e));});
+   ERRS=[[0,v[0]+ops.reduce((t,o,i)=>t+(o==='+'||v[i+1]<0?v[i+1]:-v[i+1]),0),'« − (−a) » calculé comme « − a »'],[0,v.reduce((x,y)=>x+y),'Signes « − » des opérations ignorés']];
+   return Q('Nombres relatifs','Calculer :'+M('A = '+s),NUM(r,'','A ='),`A = ${c} = <b>${fmt(r)}</b>`); },
+ relPrio(){ const a=nz(-9,9),b=sgn()*ri(2,6),c=sgn()*ri(2,6),d=nz(-9,9); const r=a+b*c-d;
+   ERRS=[[0,(a+b)*c-d,'Calcul de gauche à droite (multiplication pas prioritaire)'],[0,a-b*c-d,'Signe du produit faux'],[0,a+b*c+d,'« − (−d) » ou « − d » mal traité']];
+   return Q('Relatifs (priorités)','Calculer :'+M(`B = ${fmt(a)} ${b<0?'−':'+'} ${Math.abs(b)} × ${opnd(c)} − ${opnd(d)}`),NUM(r,'','B ='),
+   `Multiplication d'abord : ${fmt(b)} × ${opnd(c)} = ${fmt(b*c)}. B = ${fmt(a)}${signed(b*c,'')}${signed(-d,'')} = <b>${fmt(r)}</b>`); },
+ relMul(){ const a=sgn()*ri(2,5),b=sgn()*ri(2,4),c=ri(2,9),d=sgn()*ri(2,8); const r=a*b-c*d;
+   ERRS=[[0,(a*b-c)*d,'Calcul de gauche à droite (multiplication pas prioritaire)'],[0,a*b+c*d,'Signe du second produit faux'],[0,-a*b-c*d,'Signe du premier produit faux']];
+   return Q('Relatifs (priorités)','Calculer :'+M(`A = ${opnd(a)} × ${opnd(b)} − ${fmt(c)} × ${opnd(d)}`),NUM(r,'','A ='),`A = ${fmt(a*b)}${signed(-c*d,'')} = <b>${fmt(r)}</b>`); },
+ relProd(){ let a,b,c,d;do{a=sgn()*ri(2,6);b=sgn()*ri(2,6);c=sgn()*ri(2,6);d=sgn()*pick([2,3,4,5,6]);}while((a*b*c)%d!==0);
+   const r=a*b*c/d; const neg=[a,b,c,d].filter(x=>x<0).length;
+   ERRS=[[0,-r,'Règle des signes mal appliquée (nombre de facteurs négatifs)'],[0,a*b*c*d,'Division remplacée par une multiplication']];
+   return Q('Produit de relatifs','Calculer :'+M(`C = ${opnd(a)} × ${opnd(b)} × ${opnd(c)} ÷ ${opnd(d)}`),NUM(r,'','C ='),
+   `${neg} facteur${neg>1?'s':''} négatif${neg>1?'s':''} : le résultat est ${neg%2?'négatif':'positif'}. ${Math.abs(a)} × ${Math.abs(b)} × ${Math.abs(c)} ÷ ${Math.abs(d)} = ${Math.abs(r)}, donc C = <b>${fmt(r)}</b>`); },
+ fracSum(three=true){ let p,q,dens,nums,ops;
+   do{ dens=three?pick([[2,3,6],[3,4,12],[2,5,10],[4,6,12],[3,6,4],[2,4,8],[6,4,3],[5,2,10]]):pick([[6,3],[4,2],[8,4],[10,5],[12,4],[6,4],[9,3]]);
+     dens=shuffle(dens).slice(0,three?3:2); nums=dens.map(d=>{let n;do{n=ri(1,d+1)}while(gcd(n,d)!==1);return n});
+     ops=three?[pick(['+','−']),pick(['+','−'])]:[pick(['+','−'])];
+     const L=dens.reduce((l,d)=>l*d/gcd(l,d)); let s=nums[0]*L/dens[0]; ops.forEach((o,i)=>{const t=nums[i+1]*L/dens[i+1];s+=o==='+'?t:-t;});
+     [p,q]=red(s,L); }while(p===0||Math.abs(p)>40);
+   const L=dens.reduce((l,d)=>l*d/gcd(l,d)); let expr=F(nums[0],dens[0]),co=F(nums[0]*L/dens[0],L),num=nums[0]*L/dens[0];
+   ops.forEach((o,i)=>{expr+=` ${o} ${F(nums[i+1],dens[i+1])}`;co+=` ${o} ${F(nums[i+1]*L/dens[i+1],L)}`;num+=(o==='+'?1:-1)*nums[i+1]*L/dens[i+1];});
+   const fin=(L!==q||num!==p)?` = <b>${Fs(p,q)}</b>`:'';
+   {let n0=nums[0];ops.forEach((o,i)=>{n0+=(o==='+'?1:-1)*nums[i+1];});ERRS=[[0,n0/dens.reduce((x,y)=>x+y),'Numérateurs entre eux et dénominateurs entre eux additionnés'],[0,n0/L,'Même dénominateur, mais numérateurs non multipliés']];}
+   return Q(three?'Fractions (somme)':'Fractions','Calculer et donner le résultat sous forme de fraction irréductible :'+M('D = '+expr),FRAC(p,q,'D ='),
+   `Dénominateur commun ${L} : ${co} = ${fin?Fs(num,L):'<b>'+Fs(num,L)+'</b>'}${fin}`); },
+ fracProd(signedV=false){ let a,b,c,d,p,q;do{a=ri(1,9);b=ri(2,9);c=ri(1,9);d=ri(2,9);[p,q]=red(a*c,b*d);}while(gcd(a,b)!==1||gcd(c,d)!==1||q===1||a*c===b*d||(a*c)/gcd(a*c,b*d)===a*c);
+   const s=signedV?-1:1; [p,q]=red(s*a*c,b*d);
+   ERRS=[[0,s*a*d/(b*c),'Confusion avec la division (produit en croix)'],[0,s*(a+c)/(b+d),'Numérateurs et dénominateurs additionnés']];
+   return Q(signedV?'Fractions et relatifs':'Fractions (produit)','Calculer et donner le résultat sous forme de fraction irréductible :'+M(`E = ${signedV?'−':''}${F(a,b)} × ${F(c,d)}`),FRAC(p,q,'E ='),
+   `E = ${signedV?'−':''}${F(`${a} × ${c}`,`${b} × ${d}`)} = ${signedV?'−':''}${F(a*c,b*d)} = <b>${Fs(p,q)}</b>`); },
+ fracQuot(){ let a,b,c,d,p,q;do{a=ri(1,9);b=ri(2,9);c=ri(1,9);d=ri(2,9);[p,q]=red(a*d,b*c);}while(gcd(a,b)!==1||gcd(c,d)!==1||q===1||gcd(a*d,b*c)===1||a*d===b*c);
+   ERRS=[[0,a*c/(b*d),'Multiplié sans prendre l’inverse de la 2e fraction'],[0,b*c/(a*d),'Inverse de la 1re fraction pris au lieu de la 2e']];
+   return Q('Fractions (quotient)','Calculer et donner le résultat sous forme de fraction irréductible :'+M(`G = ${F(a,b)} ÷ ${F(c,d)}`),FRAC(p,q,'G ='),
+   `Diviser, c'est multiplier par l'inverse : ${F(a,b)} × ${F(d,c)} = ${F(a*d,b*c)} = <b>${Fs(p,q)}</b>`); },
+ fracPrio(){ let a,b,c,d,e,p,q;do{b=pick([2,3,4,5]);a=ri(1,b-1);c=ri(1,4);d=ri(2,5);e=pick([b,2*b]);if(gcd(c,e)!==1||c===e)continue;[p,q]=red(a*e+c*b,b*e);}while(!p||q===1||gcd(c,e)!==1||c===e||gcd(a,b)!==1);
+   ERRS=[[0,(a/b+c/d)*d/e,'Calcul de gauche à droite (multiplication pas prioritaire)'],[0,(a+c*d)/(b+d*e),'Numérateurs et dénominateurs additionnés']];
+   return Q('Fractions et priorités','Calculer et donner le résultat sous forme de fraction irréductible :'+M(`C = ${F(a,b)} + ${F(c,d)} × ${F(d,e)}`),FRAC(p,q,'C ='),
+   `Multiplication d'abord : ${F(c,d)} × ${F(d,e)} = ${F(c,e)}. C = ${F(a,b)} + ${F(c,e)} = <b>${Fs(p,q)}</b>`); },
+ fracOf(){ const n=ri(2,6),k=pick([...Array(n-1).keys()].map(i=>i+1).filter(i=>gcd(i,n)===1)),m=n*ri(2,12);
+   ERRS=[[0,m*n/k,'Numérateur et dénominateur inversés'],[0,m/n,'Divisé par le dénominateur seulement'],[0,m*k,'Multiplié par le numérateur seulement']];
+   return Q("Fraction d'une quantité",`Calculer les ${F(k,n)} de ${m}.`,NUM(m/n*k),`${m} ÷ ${n} × ${k} = ${m/n} × ${k} = <b>${m/n*k}</b>`); },
+ pythHyp(fig=true){ const[t,k]=[pick(TRIPLES),1]; const L=pick(LETTERS),order=shuffle([0,1,2]); const R0=L[order[0]],P=L[order[1]],Qn=L[order[2]];
+   let [a,b,c]=t; if(R()<.5)[a,b]=[b,a]; const html=`Le triangle ${L.join('')} est rectangle en ${R0}, avec ${R0}${P} = ${fmt(a)} cm et ${R0}${Qn} = ${fmt(b)} cm. Calculer ${P}${Qn}.`+(fig?pythFig(R0,P,Qn,{h:fmt(a)+' cm',b:fmt(b)+' cm',hyp:'?'}):'');
+   ERRS=[[0,a+b,'Longueurs additionnées (au lieu des carrés)'],[0,a*a+b*b,'Racine carrée oubliée'],[0,Math.sqrt(Math.abs(b*b-a*a)),'Différence des carrés au lieu de la somme']];
+   return Q(fig?'Pythagore (hypoténuse)':'Pythagore',html,NUM(c,'cm',`${P}${Qn} =`),`${P}${Qn}² = ${fmt(a)}² + ${fmt(b)}² = ${fmt(a*a)} + ${fmt(b*b)} = ${fmt(c*c)}, donc ${P}${Qn} = <b>${fmt(c)} cm</b>`); },
+ pythSide(){ let[a,b,c]=pick(TRIPLES); if(R()<.5)[a,b]=[b,a]; const L=pick(LETTERS),o=shuffle([0,1,2]);const R0=L[o[0]],P=L[o[1]],Qn=L[o[2]];
+   ERRS=[[0,Math.sqrt(c*c+a*a),'Somme des carrés au lieu de la différence (hypoténuse mal repérée)'],[0,c-a,'Longueurs soustraites (au lieu des carrés)'],[0,c*c-a*a,'Racine carrée oubliée'],[0,c+a,'Longueurs additionnées']];
+   return Q('Pythagore (côté)',`Le triangle ${L.join('')} est rectangle en ${R0}, avec ${P}${Qn} = ${fmt(c)} cm et ${R0}${P} = ${fmt(a)} cm. Calculer ${R0}${Qn}.`,NUM(b,'cm',`${R0}${Qn} =`),
+   `${R0}${Qn}² = ${P}${Qn}² − ${R0}${P}² = ${fmt(c*c)} − ${fmt(a*a)} = ${fmt(b*b)}, donc ${R0}${Qn} = <b>${fmt(b)} cm</b>`); },
+ pythRecip(mode){ const yes=mode==='no'?false:mode==='yes'?true:R()<.6; let[a,b,c]=pick(yes?TRIPLES:NOT_RIGHT);
+   const L=pick(LETTERS),o=shuffle([0,1,2]);const X=L[o[0]],Y=L[o[1]],Z=L[o[2]]; // X sommet opposé au plus grand côté [YZ]
+   const sides=shuffle([[`${X}${Y}`,a],[`${X}${Z}`,b],[`${Y}${Z}`,c]]);
+   const opts=[...L.map(v=>`Oui, en ${v}`),'Non']; const ans=yes?L.indexOf(X):3;
+   ERRS=yes?[[0,3,'Conclut « non rectangle » alors que l’égalité est vraie'],...L.filter(v=>v!==X).map(v=>[0,L.indexOf(v),'Mauvais sommet (l’angle droit est en face du plus grand côté)'])]:[0,1,2].map(i=>[0,i,'Conclut « rectangle » alors que l’égalité est fausse']);
+   return Q('Réciproque de Pythagore',`Le triangle ${L.join('')} est tel que ${sides.map(([n,v])=>`${n} = ${fmt(v)} cm`).join(', ')}. Est-il rectangle ?`,CH(opts,ans),
+   `Plus grand côté : ${Y}${Z}. ${Y}${Z}² = ${fmt(c*c)} et ${X}${Y}² + ${X}${Z}² = ${fmt(a*a)} + ${fmt(b*b)} = ${fmt(a*a+b*b)}. `+(yes?`Égalité : le triangle est <b>rectangle en ${X}</b>.`:`${fmt(c*c)} ≠ ${fmt(a*a+b*b)} : le triangle <b>n'est pas rectangle</b>.`)); },
+ pct(){ const p=pick([10,20,25,50,75,5,1]); const base={10:10,20:5,25:4,50:2,75:4,5:20,1:100}[p]; const n=base*ri(2,15)*(p===1?1:1); const r=n*p/100;
+   const hint={10:'10 % = un dixième',20:'20 % = un cinquième',25:'25 % = un quart',50:'50 % = la moitié',75:'75 % = trois quarts',5:'5 % = la moitié de 10 %',1:'1 % = un centième'}[p];
+   ERRS=[[0,n*p,'Division par 100 oubliée'],[0,n/p,'Divisé par le pourcentage'],[0,n-r,'Retranché à la quantité (calcul d’une baisse)']];
+   return Q('Pourcentage',`Calculer ${p} % de ${n}.`,NUM(r),`${hint} : ${p} % de ${n} = <b>${fmt(r)}</b>`); },
+ pctEvol(){ const up=R()<.5,t=pick([5,10,15,20,25,30,50]); const P=20*ri(2,12); const d=P*t/100; const r=up?P+d:P-d;
+   ERRS=[[0,d,'Seulement la variation calculée (pas le nouveau prix)'],[0,up?P+t:P-t,'Pourcentage ajouté ou retranché comme des euros'],[0,up?P-d:P+d,'Sens de l’évolution inversé']];
+   return Q('Pourcentage',`Un article coûte ${P} €. Son prix ${up?'augmente':'baisse'} de ${t} %. Quel est son nouveau prix ?`,NUM(r,'€'),`${t} % de ${P} = ${fmt(d)}, donc ${P} ${up?'+':'−'} ${fmt(d)} = <b>${fmt(r)} €</b>`); },
+ thalesLen(target){ target=target||pick(['MN','AC','BC','AM']); const s=ri(2,5),r=pick([...Array(s-1).keys()].map(i=>i+1)),u=ri(1,4),v=ri(1,4),w=ri(1,4);
+   const L={AM:r*u,AB:s*u,AN:r*w,AC:s*w,MN:r*v,BC:s*v}; let lab,eq,res;
+   if(target==='MN'){lab={AM:L.AM,AB:L.AB,BC:L.BC};eq=`${F('AM','AB')} = ${F('MN','BC')} donc ${F(L.AM,L.AB)} = ${F('MN',L.BC)}, MN = ${L.BC} × ${L.AM} ÷ ${L.AB}`;}
+   if(target==='AC'){lab={AM:L.AM,AB:L.AB,AN:L.AN};eq=`${F('AM','AB')} = ${F('AN','AC')} donc ${F(L.AM,L.AB)} = ${F(L.AN,'AC')}, AC = ${L.AN} × ${L.AB} ÷ ${L.AM}`;}
+   if(target==='BC'){lab={AM:L.AM,AB:L.AB,MN:L.MN};eq=`${F('AM','AB')} = ${F('MN','BC')} donc ${F(L.AM,L.AB)} = ${F(L.MN,'BC')}, BC = ${L.MN} × ${L.AB} ÷ ${L.AM}`;}
+   if(target==='AM'){lab={AB:L.AB,MN:L.MN,BC:L.BC};eq=`${F('AM','AB')} = ${F('MN','BC')} donc ${F('AM',L.AB)} = ${F(L.MN,L.BC)}, AM = ${L.AB} × ${L.MN} ÷ ${L.BC}`;}
+   {const inv={MN:L.BC*L.AB/L.AM,AC:L.AN*L.AM/L.AB,BC:L.MN*L.AM/L.AB,AM:L.AB*L.BC/L.MN}[target];const mb={MN:L.BC*L.AM/(L.AB-L.AM),AC:L.AN*(L.AB-L.AM)/L.AM,BC:L.MN*(L.AB-L.AM)/L.AM,AM:null}[target];
+     ERRS=[[0,inv,'Rapport inversé (produit en croix mal posé)']];if(mb!=null)ERRS.push([0,mb,'MB utilisé à la place de AB']);}
+   const labcm={};for(const k in lab)labcm[k]=lab[k]+' cm';
+   return Q('Thalès (calcul de longueur)',`Les droites (MN) et (BC) sont parallèles. Calculer ${target}.`+thalesFig(labcm,r/s),NUM(L[target],'cm',target+' ='),`${eq} = <b>${L[target]} cm</b>`); },
+ thalesEq(){ const good=`${F('AM','AB')} = ${F('AN','AC')} = ${F('MN','BC')}`; const bad=[`${F('AM','MB')} = ${F('AN','AC')} = ${F('MN','BC')}`,`${F('AB','AM')} = ${F('AN','AC')} = ${F('BC','MN')}`,`${F('AM','AB')} = ${F('AN','NC')} = ${F('MN','BC')}`,`${F('AM','AN')} = ${F('AB','AC')} = ${F('MN','BC')}`];
+   const opts=shuffle([good,...shuffle(bad).slice(0,2)]);
+   {const lab=['MB utilisé à la place de AB','Rapports écrits dans des sens différents','NC utilisé à la place de AC','Côtés non correspondants (mélange des deux triangles)'];ERRS=bad.map((x,i)=>[0,opts.indexOf(x),lab[i]]).filter(e=>e[1]>=0);}
+   return Q('Thalès (égalité)','Dans la figure, (MN) // (BC). Quelle égalité est vraie ?'+thalesFig({},pick([.35,.4,.5])),CH(opts,opts.indexOf(good)),`On compare le petit triangle AMN au grand triangle ABC : <b>${good}</b>`); },
+ thalesRecip(mode){ const yes=mode==='yes'?true:mode==='no'?false:R()<.5; const s=ri(3,6),r=ri(1,s-1),u=ri(1,3),w=ri(1,3);
+   const AM=r*u,AB=s*u,AC=s*w; let AN=r*w; if(!yes){AN=AN+pick([-1,1]);if(AN<=0||AN>=AC)AN=r*w+1;}
+   const [p1,q1]=red(AM,AB),[p2,q2]=red(AN,AC);
+   ERRS=yes?[[0,1,'Conclut « non parallèles » alors que les rapports sont égaux']]:[[0,0,'Conclut « parallèles » alors que les rapports sont différents']];
+   return Q('Droites parallèles ?',`Les points A, M, B et A, N, C sont alignés dans le même ordre, avec AM = ${AM} cm, AB = ${AB} cm, AN = ${AN} cm et AC = ${AC} cm. Les droites (MN) et (BC) sont-elles parallèles ?`,CH(['Oui','Non'],yes?0:1),
+   `${F('AM','AB')} = ${F(AM,AB)}${(p1!==AM)?' = '+F(p1,q1):''} et ${F('AN','AC')} = ${F(AN,AC)}${(p2!==AN)?' = '+F(p2,q2):''}. `+(yes?`Rapports égaux : d'après la réciproque du théorème de Thalès, <b>oui</b>, (MN) // (BC).`:`Rapports différents : d'après la contraposée du théorème de Thalès, <b>non</b>.`)); },
+ conv(){ const c=pick([
+     ()=>{const v=pick([1.5,2.5,3.2,0.8,4.75,0.35]);return['m','cm',v,v*100]},()=>{const v=pick([2.4,0.5,3.25,1.8,0.06]);return['km','m',v,v*1000]},
+     ()=>{const v=pick([350,48,1250,5]);return['cm','m',v,v/100]},()=>{const v=pick([1.5,0.75,2.3,0.4]);return['L','cL',v,v*100]},
+     ()=>{const v=pick([2.5,0.8,1.25,3.6]);return['kg','g',v,v*1000]},()=>{const v=pick([1.5,2.25,0.75,3.5]);return['h','min',v,v*60]},
+     ()=>{const v=pick([2,3.5,0.5,1.2]);return['m²','dm²',v,v*100]},()=>{const v=pick([1.5,0.25,3]);return['dm³','L',v,v]} ])();
+   {const [u1,u2,v,r]=c;ERRS=[[0,v*v/r,'Conversion dans le mauvais sens']];if(u1==='h')ERRS.push([0,v*100,'1 h compté comme 100 min'],[0,Math.floor(v)*60+Math.round((v%1)*100),'Partie décimale lue comme des minutes (1,5 h ≠ 1 h 50)']);
+     if(u1==='m²')ERRS.push([0,v*10,'Aire convertie comme une longueur (×10 au lieu de ×100)']);if(u1==='dm³')ERRS.push([0,v*1000,'1 dm³ = 1 L non su'],[0,v/1000,'1 dm³ = 1 L non su']);}
+   const [u1,u2,v,r]=c; return Q('Conversion',`Convertir ${fmt(v)} ${u1} en ${u2}.`,NUM(Math.round(r*1e6)/1e6,u2),`${fmt(v)} ${u1} = <b>${fmt(r)} ${u2}</b>`); },
+ sci(){ const m=ri(11,99)/10; let e=pick([-6,-5,-4,-3,-2,3,4,5,6,7]); if(Number.isInteger(m))e=e;
+   const digits=String(Math.round(m*10)); let dec; if(e<0){dec='0,'+'0'.repeat(-e-1)+digits;} else {dec=digits+'0'.repeat(e-1);}
+   const pretty=e<0?('0,'+dec.slice(2).replace(/(\d{3})(?=\d)/g,'$1 ')):dec.replace(/\B(?=(\d{3})+(?!\d))/g,' ');
+   ERRS=[[1,-e,'Signe de l’exposant faux'],[1,e+1,'Exposant décalé de 1 (virgule mal comptée)'],[1,e-1,'Exposant décalé de 1 (virgule mal comptée)'],[0,m*10,'Nombre devant 10ⁿ hors de [1 ; 10['],[0,m/10,'Nombre devant 10ⁿ hors de [1 ; 10['],[0,Math.round(m*10),'Nombre devant 10ⁿ hors de [1 ; 10[']];
+   return Q('Notation scientifique',`Écrire ${pretty} en notation scientifique.`,[Object.assign(NUM(m),{sciM:true}),Object.assign(NUM(e),{sup:true})],`${pretty} = <b>${fmt(m)} × 10<sup>${fmt(e)}</sup></b>`); },
+ eq(){ const a=ri(2,9),x=nz(-9,9),b=nz(-15,15),c=a*x+b;
+   ERRS=[[0,(c+b)/a,'Signe de b non changé en le passant de l’autre côté'],[0,c-b-a,'Soustrait a au lieu de diviser par a'],[0,a*(c-b),'Multiplié par a au lieu de diviser'],[0,a/(c-b),'Division dans le mauvais sens']];
+   return Q('Équation','Résoudre l\'équation :'+M(`${a}x${signed(b,'')} = ${fmt(c)}`),NUM(x,'','x ='),`${a}x = ${fmt(c)} ${b<0?'+':'−'} ${Math.abs(b)} = ${fmt(a*x)}, donc x = ${fmt(a*x)} ÷ ${a} = <b>${fmt(x)}</b>`); },
+ dev(){ const k=nz(-6,6)||2,a=ri(1,5),b=nz(-9,9); const k2=Math.abs(k)===1?(k*2):k; const p=lin(k2*a,k2*b);
+   ERRS=[[0,`${k2*a}*x+(${b})`,'Seul le premier terme est multiplié'],[0,`${k2*a}*x+(${-k2*b})`,'Erreur de signe sur le second terme'],[0,`${a}*x+(${k2*b})`,'Seul le second terme est multiplié']];
+   return Q('Développer','Développer :'+M(`A = ${fmt(k2)}(${a===1?'':a}x${signed(b,'')})`),EXPR(p.raw,'A ='),`A = ${fmt(k2)} × ${a===1?'':a}x ${b<0?'−':'+'} ${fmt(k2)} × ${Math.abs(b)} = <b>${p.disp}</b>`); },
+ devRed(){ if(R()<.5){const k=nz(-5,5),a=nz(-9,9);let m;do{m=nz(-5,5)}while(m===-(Math.abs(k)===1?2*k:k)); const kk=Math.abs(k)===1?2*k:k; const p=lin(kk+m,kk*a);
+     ERRS=[[0,`${1+m}*x+(${kk*a})`,'x non multiplié par le facteur'],[0,`${kk+m}*x+(${a})`,'Le nombre de la parenthèse non multiplié'],[0,`${kk-m}*x+(${kk*a})`,'Erreur de signe en réduisant les termes en x']];
+     return Q('Développer et réduire','Développer et réduire :'+M(`B = ${fmt(kk)}(x${signed(a,'')})${signed(m,'x')}`),EXPR(p.raw,'B ='),`B = ${lin(kk,kk*a).disp}${signed(m,'x')} = <b>${p.disp}</b>`);}
+   const k=ri(2,5),a=nz(-9,9),b=nz(-9,9); const p=lin(k-1,k*a-b);
+   ERRS=[[0,`${k-1}*x+(${k*a+b})`,'« − (x + b) » : le signe de b n’est pas changé'],[0,`${k+1}*x+(${k*a+b})`,'Signe « − » devant la parenthèse ignoré'],[0,`${k-1}*x+(${a-b})`,'Le nombre de la 1re parenthèse non multiplié']];
+   return Q('Développer et réduire','Développer et réduire :'+M(`B = ${k}(x${signed(a,'')}) − (x${signed(b,'')})`),EXPR(p.raw,'B ='),`B = ${lin(k,k*a).disp} − x${signed(-b,'')} = <b>${p.disp}</b>`); },
+ dbl(){ const a=nz(-9,9),b=nz(-9,9); const p=poly(1,a+b,a*b);
+   ERRS=[[0,`x^2+(${a*b})`,'Seulement « premier × premier » et « dernier × dernier »'],[0,`x^2+(${a+b})*x+(${-a*b})`,'Signe du produit des constantes faux'],[0,`x^2+(${a+b})*x+(${a+b})`,'Constantes additionnées au lieu d’être multipliées']];
+   return Q('Double distributivité','Développer et réduire :'+M(`C = (x${signed(a,'')})(x${signed(b,'')})`),EXPR(p.raw,'C ='),`C = x²${signed(b,'x')}${signed(a,'x')}${signed(a*b,'')} = <b>${p.disp}</b>`); },
+ idPlus(){ const a=ri(1,3),b=ri(1,7); const p=poly(a*a,2*a*b,b*b); const ax=(a===1?'':a)+'x';
+   ERRS=[[0,`${a*a}*x^2+(${b*b})`,'Double produit oublié'],[0,`${a*a}*x^2+(${a*b})*x+(${b*b})`,'Double produit non doublé (ab au lieu de 2ab)'],[0,`${a*a}*x^2+(${2*b})*x+(${b*b})`,'Double produit mal calculé']];if(a>1)ERRS.push([0,`${a}*x^2+(${2*a*b})*x+(${b*b})`,'(ax)² écrit ax² (coefficient non élevé au carré)']);
+   return Q('Identité remarquable','Développer :'+M(`D = (${ax} + ${b})²`),EXPR(p.raw,'D ='),`(a + b)² = a² + 2ab + b² : D = ${a===1?'x²':`(${ax})²`} + 2 × ${ax} × ${b} + ${b}² = <b>${p.disp}</b>`); },
+ idMinus(){ const a=ri(1,3),b=ri(1,7); const p=poly(a*a,-2*a*b,b*b); const ax=(a===1?'':a)+'x';
+   ERRS=[[0,`${a*a}*x^2-(${b*b})`,'(a − b)² confondu avec a² − b²'],[0,`${a*a}*x^2+(${b*b})`,'Double produit oublié'],[0,`${a*a}*x^2-(${2*a*b})*x-(${b*b})`,'Carré de −b compté négatif'],[0,`${a*a}*x^2+(${2*a*b})*x+(${b*b})`,'Signe du double produit faux'],[0,`${a*a}*x^2-(${a*b})*x+(${b*b})`,'Double produit non doublé (ab au lieu de 2ab)']];if(a>1)ERRS.push([0,`${a}*x^2-(${2*a*b})*x+(${b*b})`,'(ax)² écrit ax² (coefficient non élevé au carré)']);
+   return Q('Identité remarquable','Développer :'+M(`E = (${ax} − ${b})²`),EXPR(p.raw,'E ='),`(a − b)² = a² − 2ab + b² : D = ${a===1?'x²':`(${ax})²`} − 2 × ${ax} × ${b} + ${b}² = <b>${p.disp}</b>`.replace(': D',': E')); },
+ idDiff(){ const a=ri(1,3),b=ri(1,9); const p=poly(a*a,0,-b*b); const ax=(a===1?'':a)+'x'; const [x1,x2]=shuffle([`(${ax} − ${b})`,`(${ax} + ${b})`]);
+   ERRS=[[0,`${a*a}*x^2+(${b*b})`,'Signe de b² faux'],[0,`${a*a}*x^2-(${2*a*b})*x+(${b*b})`,'Confusion avec (a − b)²'],[0,`${a*a}*x^2+(${2*a*b})*x+(${b*b})`,'Confusion avec (a + b)²']];if(a>1)ERRS.push([0,`${a}*x^2-(${b*b})`,'(ax)² écrit ax² (coefficient non élevé au carré)']);
+   return Q('Identité remarquable','Développer :'+M(`G = ${x1}${x2}`),EXPR(p.raw,'G ='),`(a − b)(a + b) = a² − b² : G = <b>${p.disp}</b>`); },
+ evalE(){ const a=nz(-3,3),b=nz(-5,5),c=nz(-9,9),x=nz(-3,3); const r=a*x*x+b*x+c; const p=poly(a,b,c);
+   ERRS=[[0,2*a*x+b*x+c,'x² calculé comme 2x'],[0,(a*x)**2+b*x+c,'ax² calculé comme (ax)²']];if(x<0)ERRS.unshift([0,-a*x*x+b*x+c,'(−x)² calculé comme −x² (carré d’un négatif)']);
+   return Q("Valeur d'une expression",`Calculer ${p.disp} pour x = ${fmt(x)}.`,NUM(r),`${fmt(a)} × ${opnd(x)}² ${b<0?'−':'+'} ${Math.abs(b)} × ${opnd(x)}${signed(c,'')} = ${fmt(a*x*x)}${signed(b*x,'')}${signed(c,'')} = <b>${fmt(r)}</b>`); },
+ fLin(notation){ const a=nz(-6,6),b=nz(-9,9),t=nz(-5,5); const r=a*t+b; const def=notation?`f : x ↦ ${fmt(b)}${signed(a,'x')}`:`f(x) = ${lin(a,b).disp}`;
+   ERRS=[[0,a+t+b,'a × t calculé comme a + t'],[0,-a*t+b,'Signe du produit a × t faux'],[0,(t-b)/a,'Antécédent calculé au lieu de l’image']];
+   return Q(notation?'Notation':'Image',`Soit ${def}. Calculer f(${fmt(t)}).`,NUM(r,'',`f(${fmt(t)}) =`),`f(${fmt(t)}) = ${notation?`${fmt(b)} ${a<0?'−':'+'} ${Math.abs(a)} × ${opnd(t)}`:`${fmt(a)} × ${opnd(t)}${signed(b,'')}`} = <b>${fmt(r)}</b>`); },
+ fQuad(){ const b=nz(-5,5),c=R()<.5?0:nz(-9,9),t=-ri(1,4); const real_b=c===0?b:0; const p=poly(1,real_b,c); const r=t*t+real_b*t+c;
+   ERRS=[[0,-t*t+real_b*t+c,'(−t)² calculé comme −t² (carré d’un négatif)'],[0,2*t+real_b*t+c,'t² calculé comme 2t']];
+   return Q('Image',`Soit f(x) = ${p.disp}. Calculer l'image de ${fmt(t)}.`,NUM(r,'',`f(${fmt(t)}) =`),`f(${fmt(t)}) = ${opnd(t)}²${real_b?` ${real_b<0?'−':'+'} ${Math.abs(real_b)} × ${opnd(t)}`:''}${c?signed(c,''):''} = ${t*t}${real_b?signed(real_b*t,''):''}${c?signed(c,''):''} = <b>${fmt(r)}</b>`); },
+ fAnte(){ const a=nz(-6,6),b=nz(-9,9),x=nz(-6,6); const y=a*x+b;
+   ERRS=[[0,a*y+b,'Image calculée au lieu de l’antécédent'],[0,(y+b)/a,'Signe de b non changé en isolant x'],[0,(y-b)*a,'Multiplié par a au lieu de diviser']];
+   return Q('Antécédent',`Soit g(x) = ${lin(a,b).disp}. Déterminer l'antécédent de ${fmt(y)} par g.`,NUM(x),`${lin(a,b).disp} = ${fmt(y)}, donc ${fmt(a)}x = ${fmt(y-b)} et x = <b>${fmt(x)}</b>`); },
+ table(){ let xs,ys,i,j; do{ xs=shuffle([-3,-2,-1,0,1,2,3,4,5]).slice(0,5).sort((a,b)=>a-b); ys=xs.map(()=>ri(-6,9)); i=ri(0,4); j=ri(0,4); }while(i===j||ys.filter(y=>y===ys[j]).length!==1);
+   ERRS=[];if(ys.indexOf(xs[i])>=0)ERRS.push([0,xs[ys.indexOf(xs[i])],'Image et antécédent confondus']);if(xs.indexOf(ys[j])>=0)ERRS.push([1,ys[xs.indexOf(ys[j])],'Image et antécédent confondus']);
+   return Q('Tableau de valeurs',`Voici un tableau de valeurs d'une fonction f.<table class="tv"><tr><th>x</th>${xs.map(x=>`<td>${fmt(x)}</td>`).join('')}</tr><tr><th>f(x)</th>${ys.map(y=>`<td>${fmt(y)}</td>`).join('')}</tr></table>1. Donner l'image de ${fmt(xs[i])}.<br>2. Donner l'antécédent de ${fmt(ys[j])}.`,
+   [NUM(ys[i],'','1.'),NUM(xs[j],'','2.')],`1. L'image de ${fmt(xs[i])} est <b>${fmt(ys[i])}</b>. 2. L'antécédent de ${fmt(ys[j])} est <b>${fmt(xs[j])}</b>.`); },
+ graph(){ let m,c,x0,y0,x1; do{ m=pick([0.5,1,-0.5,-1,2,1.5]); c=ri(-2,3); x0=ri(-3,5); y0=m*x0+c; x1=ri(-3,5); }while(!Number.isInteger(y0)||y0<-3||y0>5||x1===x0||!Number.isInteger(m*x1+c)||m*x1+c<-3||m*x1+c>5||x0===0);
+   const y1=m*x1+c;
+   ERRS=[[0,(x0-c)/m,'Abscisse et ordonnée confondues'],[1,m*y1+c,'Abscisse et ordonnée confondues']];
+   return Q('Lecture graphique','Voici la courbe d\'une fonction f.'+graphFig(x=>m*x+c)+`1. Lire l'image de ${fmt(x0)}.<br>2. Lire l'antécédent de ${fmt(y1)}.`,[NUM(y0,'','1.'),NUM(x1,'','2.')],
+   `1. Le point de la courbe d'abscisse ${fmt(x0)} a pour ordonnée <b>${fmt(y0)}</b>. 2. Le point de la courbe d'ordonnée ${fmt(y1)} a pour abscisse <b>${fmt(x1)}</b>.`); },
+ /* ---------- Scratch ---------- */
+ scratchCalc(literal){ const ops=[];const nOps=ri(2,3);
+   for(let i=0;i<nOps;i++){ const t=pick(i===0&&!literal&&R()<.3?['sq','add','mul','sub']:['add','mul','sub']); ops.push([t,t==='mul'?ri(2,5):ri(1,9)]); }
+   if(literal&&ops.every(o=>o[0]!=='mul'))ops[ri(0,ops.length-1)]=['mul',ri(2,5)];
+   const n=literal?null:ri(-5,9);
+   const lbl={add:k=>`ajouter <span class="sn">${k}</span> à <span class="sv">nombre</span>`,sub:k=>`ajouter <span class="sn">${-k}</span> à <span class="sv">nombre</span>`,
+     mul:k=>`mettre <span class="sv">nombre</span> à <span class="sop"><span class="sv">nombre</span> * <span class="sn">${k}</span></span>`,sq:()=>`mettre <span class="sv">nombre</span> à <span class="sop"><span class="sv">nombre</span> * <span class="sv">nombre</span></span>`};
+   let html=`<div class="scratch"><div class="sb ev">quand <span class="flag">⚑</span> est cliqué</div><div class="sb se">demander <span class="sn">Choisis un nombre</span> et attendre</div><div class="sb va">mettre <span class="sv">nombre</span> à <span class="sse">réponse</span></div>`;
+   ops.forEach(([t,k])=>{html+=`<div class="sb va">${lbl[t](k)}</div>`;});
+   html+=`<div class="sb lo">dire <span class="sv">nombre</span></div></div>`;
+   if(!literal){ let v=n,steps=[fmt(n)];ops.forEach(([t,k])=>{v=t==='add'?v+k:t==='sub'?v-k:t==='mul'?v*k:v*v;steps.push(fmt(v));});
+     {let v1=n,v2=n;ops.forEach(([t,k])=>{v1=t==='add'||t==='sub'?v1+k:t==='mul'?v1*k:v1*v1;v2=t==='add'?v2+k:t==='sub'?v2-k:t==='mul'?v2*k:2*v2;});
+       ERRS=[[0,v1,'« ajouter −k » calculé comme « ajouter k »'],[0,v2,'« nombre * nombre » calculé comme le double']];}
+     return Q('Programme Scratch',`On exécute ce programme et on répond <b>${fmt(n)}</b>. Quel nombre le lutin dit-il ?`+html,NUM(v),`Valeurs successives de nombre : ${steps.join(' → ')}. Le lutin dit <b>${fmt(v)}</b>.`); }
+   let e='x',a=1,b=0; ops.forEach(([t,k])=>{if(t==='add')b+=k;if(t==='sub')b-=k;if(t==='mul'){a*=k;b*=k;}}); const p=lin(a,b);
+   {let a1=1,b1=0;ops.forEach(([t,k])=>{if(t==='add'||t==='sub')b1+=k;if(t==='mul'){a1*=k;b1*=k;}});let a2=1,b2=0;ops.forEach(([t,k])=>{if(t==='add')b2+=k;if(t==='sub')b2-=k;if(t==='mul'){a2*=k;}});
+     ERRS=[[0,`${a1}*x+(${b1})`,'« ajouter −k » calculé comme « ajouter k »'],[0,`${a2}*x+(${b2})`,'Le nombre déjà ajouté n’est pas multiplié (oubli des parenthèses)']];}
+   return Q('Programme Scratch (littéral)',`On choisit le nombre x au départ. Exprimer, en fonction de x, le nombre dit par le lutin (forme réduite).`+html,EXPR(p.raw,'Résultat ='),`On suit les étapes avec x : le lutin dit <b>${p.disp}</b>.`); },
+ scratchPoly(){ const P=pick([[3,'un triangle équilatéral'],[4,'un carré'],[5,'un pentagone régulier'],[6,'un hexagone régulier'],[8,'un octogone régulier']]); const n=P[0],L=pick([20,25,30,40,50,60,80,100]);
+   const html=`<div class="scratch"><div class="sb ev">quand <span class="flag">⚑</span> est cliqué</div><div class="sb pe">stylo en position d'écriture</div><div class="sb ct"><div class="ctl">répéter <span class="sn">${n}</span> fois</div><div class="inner"><div class="sb mo">avancer de <span class="sn">${L}</span> pas</div><div class="sb mo">tourner ↻ de <span class="sn">${360/n}</span> degrés</div></div></div></div>`;
+   const opts=['un triangle équilatéral','un carré','un pentagone régulier','un hexagone régulier','un octogone régulier'];
+   ERRS=[...opts.map((o,i)=>[0,i,'Nombre de côtés mal relié au nombre de répétitions']).filter(e=>e[1]!==opts.indexOf(P[1])),[1,L,'Longueur d’un seul côté'],[1,360,'Somme des angles au lieu du périmètre'],[1,n+L,'Répétitions et longueur additionnées']];
+   return Q('Programme Scratch (déplacement)','Le lutin exécute ce programme.'+html+'1. Quelle figure trace-t-il ?<br>2. Quel est son périmètre (en pas) ?',[CH(opts.map(o=>o[0].toUpperCase()+o.slice(1)),opts.indexOf(P[1]),'1.'),NUM(n*L,'pas','2.')],
+   `Le lutin répète ${n} fois un côté de ${L} pas en tournant de 360° ÷ ${n} = ${360/n}° : c'est <b>${P[1]}</b>, de périmètre ${n} × ${L} = <b>${n*L} pas</b>.`); },
+ /* ---------- Tableur ---------- */
+ tableur(){ const vals=[ri(2,15),ri(2,15),ri(2,15),ri(2,15)]; const kind=pick(['somme','moyenne','calc','calc2']); let f,r;
+   if(kind==='moyenne'){const s=vals.slice(0,3).reduce((a,b)=>a+b);vals[3]=4*ri(3,12)-s; if(vals[3]<1||vals[3]>20){vals[3]=4*Math.ceil((s+1)/4)-s;}}
+   const s=vals.reduce((a,b)=>a+b);
+   if(kind==='somme'){f='=SOMME(B2:E2)';r=s;} else if(kind==='moyenne'){f='=MOYENNE(B2:E2)';r=s/4;} else if(kind==='calc'){const k=ri(2,5);f=`=B2*${k}-C2`;r=vals[0]*k-vals[1];} else {f='=(D2+E2)*2';r=(vals[2]+vals[3])*2;}
+   const grid=`<table class="sheet"><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr><tr><th>1</th><td>Valeurs</td><td>Lundi</td><td>Mardi</td><td>Mercredi</td><td>Jeudi</td><td>Résultat</td></tr><tr><th>2</th><td>Points</td>${vals.map(v=>`<td class="n">${v}</td>`).join('')}<td class="sel"></td></tr></table><p class="fbar"><span>F2</span> <code>${f}</code></p>`;
+   ERRS=kind==='moyenne'?[[0,s,'Somme au lieu de la moyenne']]:kind==='somme'?[[0,vals[0]+vals[3],'B2:E2 lu comme B2 + E2 seulement']]:kind==='calc2'?[[0,vals[2]+vals[3]*2,'Parenthèses ignorées']]:[];
+   return Q('Tableur',`On saisit dans la cellule F2 la formule ci-dessous. Quel nombre s'affiche ?`+grid,NUM(r,'','F2 ='),
+     kind==='somme'?`${vals.join(' + ')} = <b>${r}</b>`:kind==='moyenne'?`(${vals.join(' + ')}) ÷ 4 = ${s} ÷ 4 = <b>${fmt(r)}</b>`:kind==='calc'?`B2 = ${vals[0]} et C2 = ${vals[1]} : ${vals[0]} × ${f.split('*')[1].split('-')[0]} − ${vals[1]} = <b>${fmt(r)}</b>`:`(${vals[2]} + ${vals[3]}) × 2 = <b>${r}</b>`); },
+ tableurFormule(){ const a=nz(-4,5)||2,b=nz(-9,9); const xs=[-2,-1,0,1,2]; const ys=xs.map(x=>a*x+b);
+   const good=`=${a}*B1${b<0?'':'+'}${b}`; const bad=[`=${a}*B2${b<0?'':'+'}${b}`,`=${b}*B1${a<0?'':'+'}${a}`,`=${a}+B1${b<0?'':'+'}${b}`,`=${a}*1${b<0?'':'+'}${b}`];
+   const opts=shuffle([good,...shuffle(bad).slice(0,2)]);
+   const grid=`<table class="sheet"><tr><th></th><th>A</th><th>B</th><th>C</th><th>D</th><th>E</th><th>F</th></tr><tr><th>1</th><td>x</td>${xs.map(v=>`<td class="n">${fmt(v)}</td>`).join('')}</tr><tr><th>2</th><td>f(x)</td>${ys.map((v,i)=>`<td class="n${i===0?' sel':''}">${fmt(v)}</td>`).join('')}</tr></table>`;
+   {const lab=['Mauvaise ligne (B2 au lieu de B1, la cellule de x)','Coefficient et constante inversés','Multiplication remplacée par une addition','Valeur de x écrite à la place de la cellule'];ERRS=bad.map((x,i)=>[0,opts.indexOf(x),lab[i]]).filter(e=>e[1]>=0);}
+   return Q('Tableur (formule)',`On a saisi une formule dans la cellule B2, puis on l'a étirée vers la droite. Quelle formule a été saisie ?`+grid,CH(opts.map(o=>`<code>${o}</code>`),opts.indexOf(good)),
+   `Pour x = B1, f(x) = ${lin(a,b).disp}. La formule est <b><code>${good}</code></b> (vérification pour x = −2 : ${fmt(a)} × (−2)${signed(b,'')} = ${fmt(ys[0])}).`); },
+ /* ---------- autres automatismes de la liste officielle ---------- */
+ carres(){ const a=ri(4,12),b=ri(4,12); ERRS=[[0,2*a,'Carré confondu avec le double'],[1,b*b/2,'Racine carrée confondue avec la moitié']]; return Q('Carrés parfaits',`Compléter :`+M(`${a}² = … &nbsp;&nbsp;&nbsp; … ² = ${b*b}`),[NUM(a*a,'',`${a}² =`),NUM(b,'',`… = `)],`${a}² = <b>${a*a}</b> et <b>${b}</b>² = ${b*b} (on cherche un nombre positif).`); },
+ divis(){ let N;do{N=ri(100,999)*(R()<.5?1:1);}while(false); if(R()<.5)N=9*ri(12,111); const s=String(N).split('').reduce((x,y)=>x+ +y,0);
+   ERRS=[[0,s%3===0?1:0,'Critère de divisibilité par 3 mal appliqué'],[1,s%9===0?1:0,'Critère de divisibilité par 9 mal appliqué'],[2,N%5===0?1:0,'Critère de divisibilité par 5 mal appliqué']];
+   return Q('Critères de divisibilité',`On considère le nombre ${N}.`,[CH(['Oui','Non'],s%3===0?0:1,'Divisible par 3 ?'),CH(['Oui','Non'],s%9===0?0:1,'Divisible par 9 ?'),CH(['Oui','Non'],N%5===0?0:1,'Divisible par 5 ?')],
+   `Somme des chiffres : ${String(N).split('').join(' + ')} = ${s}. Divisible par 3 : <b>${s%3===0?'oui':'non'}</b> ; par 9 : <b>${s%9===0?'oui':'non'}</b> ; par 5 : <b>${N%5===0?'oui':'non'}</b> (chiffre des unités ${N%10}).`); },
+ moyenne(){ const n=pick([4,5]); let v;do{v=Array.from({length:n},()=>ri(6,19));}while(v.reduce((a,b)=>a+b)%n!==0); const s=v.reduce((a,b)=>a+b);
+   ERRS=[[0,s,'Somme sans division par l’effectif'],[0,(Math.min(...v)+Math.max(...v))/2,'Milieu entre la plus petite et la plus grande valeur'],[0,v.slice().sort((x,y)=>x-y)[(n-1)/2]??null,'Médiane au lieu de la moyenne']].filter(e=>e[1]!=null);
+   return Q('Moyenne',`Voici les notes de Léa : ${v.join(' ; ')}. Calculer sa moyenne.`,NUM(s/n),`(${v.join(' + ')}) ÷ ${n} = ${s} ÷ ${n} = <b>${s/n}</b>`); },
+ mediane(){ const n=pick([5,7]); const v=Array.from({length:n},()=>ri(1,30)); const so=v.slice().sort((a,b)=>a-b); const m=so[(n-1)/2];
+   ERRS=[[0,v[(n-1)/2],'Valeur centrale prise sans ranger la série'],[0,v.reduce((x,y)=>x+y)/n,'Moyenne au lieu de la médiane'],[0,(so[0]+so[n-1])/2,'Milieu entre la plus petite et la plus grande valeur']];
+   return Q('Médiane',`Déterminer la médiane de la série : ${v.join(' ; ')}.`,NUM(m),`Série rangée : ${so.join(' ; ')}. ${n} valeurs : la médiane est la ${(n+1)/2}<sup>e</sup>, soit <b>${m}</b>.`); },
+ proba(){ const r=ri(1,8),b=ri(1,8),v=ri(1,6),T=r+b+v; const [p1,q1]=red(r,T),[p2,q2]=red(b+v,T);
+   ERRS=[[0,r/(b+v),'Favorables ÷ défavorables (au lieu du total)'],[1,(b+v)/r,'Favorables ÷ défavorables (au lieu du total)'],[1,b/T,'Seulement les boules bleues comptées'],[1,v/T,'Seulement les boules vertes comptées']];
+   return Q('Probabilités',`Une urne contient ${r} boule${r>1?'s':''} rouge${r>1?'s':''}, ${b} bleue${b>1?'s':''} et ${v} verte${v>1?'s':''}. On tire une boule au hasard.<br>1. P(rouge) ?<br>2. P(bleue ou verte) ?`,[FRAC(p1,q1,'1.'),FRAC(p2,q2,'2.')],
+   `${T} boules au total. 1. P(rouge) = ${F(r,T)}${q1!==T?' = '+Fs(p1,q1):''} → <b>${Fs(p1,q1)}</b> 2. P(bleue ou verte) = ${F(b+v,T)}${q2!==T?' = '+Fs(p2,q2):''} → <b>${Fs(p2,q2)}</b>`); },
+ propor(){ const unit=pick([1.5,2,2.5,3,4,0.5,1.2]); const a=ri(2,6); let b;do{b=ri(2,12)}while(b===a); const obj=pick(['cahiers','stylos','croissants','tickets']);
+   ERRS=[[0,a*unit+(b-a),'Raisonnement additif (au lieu de multiplicatif)'],[0,a*unit*b,'Prix total multiplié par la quantité (prix unitaire non calculé)']];
+   return Q('Proportionnalité',`${a} ${obj} coûtent ${fmt(a*unit)} €. Combien coûtent ${b} ${obj} ?`,NUM(Math.round(b*unit*100)/100,'€'),`Un objet coûte ${fmt(a*unit)} ÷ ${a} = ${fmt(unit)} €, donc ${b} × ${fmt(unit)} = <b>${fmt(b*unit)} €</b>`); },
+ angle(){ const a=ri(20,90),b=ri(20,150-a); const L=pick(LETTERS);
+   ERRS=[[0,360-a-b,'Somme des angles prise égale à 360°'],[0,a+b,'Somme des deux angles donnés'],[0,180-a,'Un seul angle retranché à 180°'],[0,180-b,'Un seul angle retranché à 180°'],[0,90-a-b>0?90-a-b:null,'Somme des angles prise égale à 90°']].filter(e=>e[1]!=null);
+   return Q("Angles d'un triangle",`Dans le triangle ${L.join('')}, l'angle en ${L[0]} mesure ${a}° et l'angle en ${L[1]} mesure ${b}°. Quelle est la mesure de l'angle en ${L[2]} ?`,NUM(180-a-b,'°'),`La somme des angles d'un triangle vaut 180° : 180 − ${a} − ${b} = <b>${180-a-b}°</b>`); },
+ aire(){ const b=2*ri(2,9),h=ri(2,10),L=ri(3,12),l=ri(2,9);
+   ERRS=[[0,2*(L+l),'Périmètre au lieu de l’aire'],[1,b*h,'Division par 2 oubliée (aire du triangle)'],[1,b*h/4,'Divisé par 2 deux fois']];
+   return Q('Aires',`1. Aire d'un rectangle de ${L} cm sur ${l} cm ?<br>2. Aire d'un triangle de base ${b} cm et de hauteur ${h} cm ?`,[NUM(L*l,'cm²','1.'),NUM(b*h/2,'cm²','2.')],`1. ${L} × ${l} = <b>${L*l} cm²</b> 2. ${b} × ${h} ÷ 2 = <b>${b*h/2} cm²</b>`); },
+ volume(){ const a=ri(2,10),b=ri(2,6),c=pick([2,5,10,3,4]);
+   ERRS=[[0,a+b+c,'Dimensions additionnées'],[0,2*(a*b+a*c+b*c),'Aire totale au lieu du volume'],[0,a*b,'Une dimension oubliée'],[0,a*c,'Une dimension oubliée'],[0,b*c,'Une dimension oubliée']];
+   return Q('Volumes',`Calculer le volume d'un pavé droit de dimensions ${a} cm, ${b} cm et ${c} cm.`,NUM(a*b*c,'cm³'),`V = ${a} × ${b} × ${c} = <b>${a*b*c} cm³</b>`); },
+ /* ---------- lectures graphiques sur des courbes non affines ---------- */
+ graphParab(){ let a,h,k,d,x0,y0; do{ a=pick([1,-1,0.5,-0.5]); h=ri(-2,4); k=a>0?ri(-3,1):ri(1,5); d=a===1||a===-1?pick([1,2]):2; x0=ri(-4,6); y0=a*(x0-h)**2+k; }
+     while(!Number.isInteger(y0)||y0<-3||y0>5||x0===h-d||x0===h+d||h-d<-4||h+d>6||Math.abs(a*d*d)>8||k+a*d*d<-3||k+a*d*d>5||Math.abs(a*(h+4)**2)<1);
+   const y1=k+a*d*d, f=x=>a*(x-h)**2+k;
+   ERRS=[[1,h+d,'Les deux antécédents inversés'],[2,h-d,'Les deux antécédents inversés'],[1,-(h+d),'Erreur de signe sur un antécédent'],[2,-(h-d),'Erreur de signe sur un antécédent']];
+   return Q('Lecture graphique (parabole)','Voici la courbe d\'une fonction f.'+graphFig(f)+`1. Lire l'image de ${fmt(x0)} par f.<br>2. Lire les deux antécédents de ${fmt(y1)} par f.`,
+     [NUM(y0,'','1. f('+fmt(x0)+') ='),NUM(h-d,'','2. le plus petit :'),NUM(h+d,'','le plus grand :')],
+     `1. Le point de la courbe d'abscisse ${fmt(x0)} a pour ordonnée <b>${fmt(y0)}</b>. 2. La droite horizontale d'ordonnée ${fmt(y1)} coupe la courbe aux points d'abscisses <b>${fmt(h-d)}</b> et <b>${fmt(h+d)}</b>.`); },
+ graphCurve(){ const xs=[-4,-3,-2,-1,0,1,2,3,4,5,6]; let ys,yq,ants,x0,tries=0;
+   for(;;){ tries++; ys=[ri(-3,5)]; let dir=sgn(); const turns=shuffle([2,3,4,5,6,7,8,9]).slice(0,pick([1,2,2,3]));
+     for(let i=1;i<xs.length;i++){ if(turns.includes(i))dir=-dir; ys.push(ys[i-1]+dir*(R()<.25?2:1)); }
+     if(ys.some(y=>y>5||y<-3))continue;
+     const cands=shuffle([...new Set(ys)]); yq=null;
+     for(const y of cands){ let ok=true; for(let i=0;i<ys.length-1;i++){const lo=Math.min(ys[i],ys[i+1]),hi=Math.max(ys[i],ys[i+1]); if((lo<y&&y<hi)||(ys[i]===y&&ys[i+1]===y))ok=false;}
+       const n=ys.filter(v=>v===y).length; if(ok&&n>=2&&n<=3){yq=y;break;} }
+     if(yq===null)continue;
+     ants=xs.filter((x,i)=>ys[i]===yq); x0=pick(xs.filter((x,i)=>ys[i]!==yq&&x!==0)); break; }
+   // interpolation cubique monotone (aucun dépassement entre deux points entiers)
+   const n=xs.length, dlt=ys.slice(0,-1).map((y,i)=>ys[i+1]-y), m=ys.map((_,i)=>{ if(i===0)return dlt[0]; if(i===n-1)return dlt[n-2]; const a=dlt[i-1],b=dlt[i]; return a*b<=0?0:2/(1/a+1/b); });
+   const f=x=>{ let i=Math.min(n-2,Math.max(0,Math.floor(x+4))); const t=x-xs[i]; const t2=t*t,t3=t2*t;
+     return (2*t3-3*t2+1)*ys[i]+(t3-2*t2+t)*m[i]+(-2*t3+3*t2)*ys[i+1]+(t3-t2)*m[i+1]; };
+   const y0=ys[xs.indexOf(x0)];
+   ERRS=[[2,Math.min(...ants),'Plus petit antécédent donné au lieu du plus grand'],[1,ants.length-1,'Un point d’intersection oublié'],[1,ants.length+1,'Un point d’intersection en trop']];
+   return Q('Lecture graphique (courbe)','Voici la courbe d\'une fonction f.'+graphFig(f)+`1. Lire l'image de ${fmt(x0)} par f.<br>2. Combien le nombre ${fmt(yq)} a-t-il d'antécédents par f ?<br>3. Donner le plus grand de ces antécédents.`,
+     [NUM(y0,'','1. f('+fmt(x0)+') ='),NUM(ants.length,'','2.'),NUM(Math.max(...ants),'','3.')],
+     `1. Le point d'abscisse ${fmt(x0)} a pour ordonnée <b>${fmt(y0)}</b>. 2. La droite horizontale d'ordonnée ${fmt(yq)} coupe la courbe en <b>${ants.length}</b> points, d'abscisses ${ants.map(fmt).join(' ; ')}. 3. Le plus grand antécédent est <b>${fmt(Math.max(...ants))}</b>.`); },
+ /* ================= Fiches 11 à 35 : notions de 4ème puis séquences 1 à 18 de 3ème (ajout 2026-11-15) =================
+    Règles : sans calculatrice, valeurs simples, aucun carré au-delà de 12² en calcul mental. */
+ /* ----- 4ème : puissances ----- */
+ powVal(){ const kind=pick(['pos','pos','neg','negNo','zero','ten']); let disp,r,corr;
+   if(kind==='pos'){const b=pick([2,3,4,5,10]);const n=pick({2:[3,4,5,6],3:[2,3,4],4:[2,3],5:[2,3],10:[3,4,5]}[b]);r=b**n;disp=`${b}<sup>${n}</sup>`;corr=`${b}<sup>${n}</sup> = ${Array(n).fill(b).join(' × ')} = <b>${fmt(r)}</b>`;ERRS=[[0,b*n,'Puissance confondue avec un produit (bⁿ calculé comme b × n)']];}
+   else if(kind==='neg'){const b=pick([-2,-3]);const n=b===-2?pick([2,3,4,5]):pick([2,3]);r=b**n;disp=`(${fmt(b)})<sup>${n}</sup>`;corr=`${n} facteurs (${fmt(b)}) : ${n%2?'nombre impair de facteurs négatifs, résultat négatif':'nombre pair de facteurs négatifs, résultat positif'}. (${fmt(b)})<sup>${n}</sup> = <b>${fmt(r)}</b>`;ERRS=[[0,-r,'Règle des signes mal appliquée'],[0,b*n,'Puissance confondue avec un produit']];}
+   else if(kind==='negNo'){const a=pick([2,3]);const n=a===2?pick([2,4]):2;r=-(a**n);disp=`−${a}<sup>${n}</sup>`;corr=`Sans parenthèses, la puissance ne porte que sur ${a} : −${a}<sup>${n}</sup> = −(${a}<sup>${n}</sup>) = <b>${fmt(r)}</b>`;ERRS=[[0,a**n,'−aⁿ confondu avec (−a)ⁿ']];}
+   else if(kind==='zero'){const b=pick([7,-4,15,'2,5',123]);r=1;disp=(typeof b==='number'&&b<0)?`(${fmt(b)})<sup>0</sup>`:`${typeof b==='number'?fmt(b):b}<sup>0</sup>`;corr=`Tout nombre non nul élevé à la puissance 0 vaut 1 : <b>1</b>`;ERRS=[[0,0,'a⁰ pris égal à 0']];}
+   else {const k=ri(1,4);r=Math.round(1e6/10**k)/1e6;disp=`10<sup>−${k}</sup>`;corr=`10<sup>−${k}</sup> = ${F(1,'10<sup>'+k+'</sup>')} = <b>${fmt(r)}</b>`;ERRS=[[0,-(10**k),'Exposant négatif traduit par un nombre négatif'],[0,10**k,'Signe de l’exposant ignoré']];}
+   return Qf('Puissances','Calculer :'+M('A = '+disp),NUM(r,'','A ='),corr); },
+ powRule(){ const kind=pick(['prod','quot','pow']); let m,n,disp,e,corr;
+   if(kind==='prod'){do{m=nz(-6,8);n=nz(-6,8);}while(m+n===0||m===n);e=m+n;disp=`10<sup>${fmt(m)}</sup> × 10<sup>${fmt(n)}</sup>`;corr=`10<sup>a</sup> × 10<sup>b</sup> = 10<sup>a+b</sup> : ${fmt(m)} + ${opnd(n)} = ${fmt(e)}, donc A = <b>10<sup>${fmt(e)}</sup></b>`;ERRS=[[0,m*n,'Exposants multipliés au lieu d’être additionnés']];}
+   else if(kind==='quot'){do{m=nz(-5,8);n=nz(-5,8);}while(m===n||m-n===0);e=m-n;disp=F(`10<sup>${fmt(m)}</sup>`,`10<sup>${fmt(n)}</sup>`);corr=`${F('10<sup>a</sup>','10<sup>b</sup>')} = 10<sup>a−b</sup> : ${fmt(m)} − ${opnd(n)} = ${fmt(e)}, donc A = <b>10<sup>${fmt(e)}</sup></b>`;ERRS=[[0,m+n,'Exposants additionnés au lieu d’être soustraits'],[0,n-m,'Soustraction dans le mauvais ordre']];}
+   else {m=nz(-4,5);n=pick([2,3,-2]);e=m*n;disp=`(10<sup>${fmt(m)}</sup>)<sup>${fmt(n)}</sup>`;corr=`(10<sup>a</sup>)<sup>b</sup> = 10<sup>a×b</sup> : ${fmt(m)} × ${opnd(n)} = ${fmt(e)}, donc A = <b>10<sup>${fmt(e)}</sup></b>`;ERRS=[[0,m+n,'Exposants additionnés au lieu d’être multipliés']];}
+   return Qf('Puissances de 10',`Écrire A sous la forme 10<sup>n</sup>, puis donner n.`+M('A = '+disp),NUM(e,'','n ='),corr); },
+ /* ----- 4ème : calcul littéral et équations ----- */
+ reduce(){ let a,b,c,d;do{a=nz(-9,9);b=nz(-9,9);c=nz(-9,9);d=nz(-9,9);}while(a+c===0||b+d===0||a===1);
+   const p=lin(a+c,b+d);
+   ERRS=[[0,`${a+c+b+d}*x`,'Termes en x et nombres additionnés ensemble'],[0,`${a-c}*x+(${b+d})`,'Signe devant le 2e terme en x ignoré'],[0,`${a+c}*x+(${b-d})`,'Signe devant le 2e nombre ignoré']];
+   return Qf('Réduire','Réduire l\'expression :'+M(`A = ${lin(a,b).disp}${signed(c,'x')}${signed(d,'')}`),EXPR(p.raw,'A ='),`On regroupe les termes en x et les nombres : (${fmt(a)}${signed(c,'')})x + (${fmt(b)}${signed(d,'')}) = <b>${p.disp}</b>`); },
+ eq2(){ let a,c,x,b,d;do{a=ri(2,9);c=nz(-5,8);x=nz(-7,7);b=nz(-12,12);d=(a-c)*x+b;}while(c===a||d===0||Math.abs(d)>40);
+   ERRS=[[0,a+c!==0?(d-b)/(a+c):null,'Le terme en x passé de l’autre côté sans changer de signe'],[0,(d+b)/(a-c),'Le nombre passé de l’autre côté sans changer de signe']];
+   return Qf('Équation','Résoudre l\'équation :'+M(`${lin(a,b).disp} = ${lin(c,d).disp}`),NUM(x,'','x ='),
+   `${a}x ${c<0?'+':'−'} ${Math.abs(c)===1?'':Math.abs(c)}x = ${fmt(d)} ${b<0?'+':'−'} ${Math.abs(b)}, donc ${fmt(a-c)}x = ${fmt(d-b)} et x = ${fmt(d-b)} ÷ ${opnd(a-c)} = <b>${fmt(x)}</b>`); },
+ eqTest(){ let a,c,x,b,d;do{a=ri(2,6);c=nz(-4,5);x=nz(-5,5);b=nz(-9,9);d=(a-c)*x+b;}while(c===a||Math.abs(d)>30);
+   const yes=R()<.5; const t=yes?x:x+pick([-2,-1,1,2]); const L=a*t+b,Rr=c*t+d;
+   ERRS=[[0,yes?1:0,yes?'Erreur de calcul en remplaçant x':'Erreur de calcul en remplaçant x']];
+   return Qf('Tester une égalité',`Le nombre ${fmt(t)} est-il solution de l'équation ${lin(a,b).disp} = ${lin(c,d).disp} ?`,CH(['Oui','Non'],yes?0:1),
+   `Pour x = ${fmt(t)} : membre de gauche ${a} × ${opnd(t)}${signed(b,'')} = ${fmt(L)} ; membre de droite ${fmt(c)} × ${opnd(t)}${signed(d,'')} = ${fmt(Rr)}. `+(yes?'Égalité : <b>oui</b>, c\'est une solution.':`${fmt(L)} ≠ ${fmt(Rr)} : <b>non</b>.`)); },
+ /* ----- 4ème : proportionnalité, pourcentages, grandeurs ----- */
+ pctFind(){ const N=pick([20,25,40,50,200]); let k;do{k=ri(1,N-1);}while((k*100)%N!==0||k*100/N%5!==0&&N>25);
+   const ctx=pick([['élèves','sont demi-pensionnaires'],['élèves','viennent à vélo'],['pommes','sont abîmées'],['spectateurs','ont moins de 18 ans']]);
+   ERRS=[[0,k/N,'Proportion non convertie en pourcentage (×100 oublié)'],[0,k,'Effectif donné au lieu du pourcentage']];
+   return Qf('Pourcentage',`Sur ${N} ${ctx[0]}, ${k} ${ctx[1]}. Quel pourcentage cela représente-t-il ?`,NUM(k*100/N,'%'),`${F(k,N)} = ${F(k*100/N,100)} = <b>${fmt(k*100/N)} %</b>`); },
+ q4prop(){ const k=pick([1.5,2.5,3,4,0.5,1.2,6,0.8]); const ok=x=>Math.abs(x*k*10-Math.round(x*k*10))<1e-9; let a,b;do{a=ri(2,10);b=ri(2,15);}while(a===b||!ok(a)||!ok(b));
+   const ya=Math.round(a*k*100)/100,yb=Math.round(b*k*100)/100;
+   ERRS=[[0,b+ya-a,'Raisonnement additif (même écart au lieu du même coefficient)'],[0,a*b/ya,'Produit en croix mal posé']];
+   return Qf('Proportionnalité','Ce tableau est un tableau de proportionnalité. Compléter la case manquante.'+`<table class="tv"><tr><th>Quantité</th><td>${a}</td><td>${b}</td></tr><tr><th>Prix (€)</th><td>${fmt(ya)}</td><td>?</td></tr></table>`,NUM(yb,'€'),
+   `Coefficient : ${fmt(ya)} ÷ ${a} = ${fmt(k)}, donc ${b} × ${fmt(k)} = <b>${fmt(yb)} €</b> (ou produit en croix : ${b} × ${fmt(ya)} ÷ ${a}).`); },
+ trigLen(fn){ fn=fn||pick(['cos','sin','tan']); const L=pick(LETTERS),o=shuffle([0,1,2]);const R0=L[o[0]],P=L[o[1]],Qn=L[o[2]]; const A=`${Qn}̂`;
+   const adjN=`${R0}${Qn}`,oppN=`${R0}${P}`,hypN=`${P}${Qn}`; let v,big,small,given,target,lab,corr,ans,err;
+   if(fn==='tan'){const[vv,den]=pick([[0.5,2],[0.75,4],[1.5,2],[2,1],[0.25,4],[1.25,4],[3,1]]);v=vv;let adj;do{adj=den*ri(1,6);}while(adj*v>24||adj>20);const opp=adj*v;
+     if(R()<.5){given=[adjN,adj];target=oppN;ans=opp;lab={b:fmt(adj)+' cm',h:'?'};corr=`tan(${A}) = ${F(oppN,adjN)}, donc ${oppN} = ${adjN} × tan(${A}) = ${fmt(adj)} × ${fmt(v)} = <b>${fmt(opp)} cm</b>`;err=adj/v;}
+     else{given=[oppN,opp];target=adjN;ans=adj;lab={h:fmt(opp)+' cm',b:'?'};corr=`tan(${A}) = ${F(oppN,adjN)}, donc ${adjN} = ${oppN} ÷ tan(${A}) = ${fmt(opp)} ÷ ${fmt(v)} = <b>${fmt(adj)} cm</b>`;err=opp*v;}}
+   else{const[vv,den]=pick([[0.5,2],[0.6,5],[0.8,5],[0.4,5],[0.2,5],[0.25,4],[0.75,4]]);v=vv;let hyp;do{hyp=den*ri(1,10);}while(hyp>20||hyp*v<1);const side=Math.round(hyp*v*1e6)/1e6;
+     const sN=fn==='cos'?adjN:oppN, sK=fn==='cos'?'b':'h';
+     if(R()<.5){given=[hypN,hyp];target=sN;ans=side;lab={hyp:fmt(hyp)+' cm'};lab[sK]='?';corr=`${fn}(${A}) = ${F(sN,hypN)}, donc ${sN} = ${hypN} × ${fn}(${A}) = ${fmt(hyp)} × ${fmt(v)} = <b>${fmt(side)} cm</b>`;err=hyp/v;}
+     else{given=[sN,side];target=hypN;ans=hyp;lab={hyp:'?'};lab[sK]=fmt(side)+' cm';corr=`${fn}(${A}) = ${F(sN,hypN)}, donc ${hypN} = ${sN} ÷ ${fn}(${A}) = ${fmt(side)} ÷ ${fmt(v)} = <b>${fmt(hyp)} cm</b>`;err=side*v;}}
+   ERRS=[[0,err,'Multiplication et division inversées']];
+   return Qf(fn==='cos'?'Cosinus':'Trigonométrie',`Le triangle ${L.join('')} est rectangle en ${R0}. On donne ${given[0]} = ${fmt(given[1])} cm et ${fn}(${A}) = ${fmt(v)}. Calculer ${target}.`+trigFig(R0,P,Qn,lab),NUM(ans,'cm',target+' ='),corr); },
+ vitesse(){ const kind=pick(['d','d','v','t']); let v,t,d; do{v=pick([30,40,45,50,60,80,90,100,120]);t=pick([15,20,30,40,45,90,120,150,180]);d=v*t/60;}while(!Number.isInteger(d)||d>400);
+   const hm=m=>{const h=Math.floor(m/60),mi=m%60;return (h?h+' h':'')+(h&&mi?' ':'')+(mi?mi+' min':'');};
+   if(kind==='d'){ERRS=[[0,v*t,'Durée en minutes non convertie en heures']];if(t%60)ERRS.push([0,v*(Math.floor(t/60)+(t%60)/100),`${hm(t)} écrit ${Math.floor(t/60)},${t%60} h (les minutes ne sont pas des centièmes)`]);
+     return Qf('Vitesse',`Une voiture roule à la vitesse constante de ${v} km/h pendant ${hm(t)}. Quelle distance parcourt-elle ?`,NUM(d,'km'),`${hm(t)} = ${fmt(t/60)} h, donc d = v × t = ${v} × ${fmt(t/60)} = <b>${d} km</b>`);}
+   if(kind==='v'){ERRS=[[0,d/t,'Durée en minutes non convertie en heures'],[0,d*t/60,'Distance multipliée par la durée']];
+     return Qf('Vitesse',`Un train parcourt ${d} km en ${hm(t)}. Quelle est sa vitesse moyenne en km/h ?`,NUM(v,'km/h'),`${hm(t)} = ${fmt(t/60)} h, donc v = d ÷ t = ${d} ÷ ${fmt(t/60)} = <b>${v} km/h</b>`);}
+   ERRS=[[0,d/v,'Durée donnée en heures au lieu de minutes'],[0,v/d*60,'Quotient inversé (v ÷ d)']];
+   return Qf('Vitesse',`Un cycliste roule à ${v} km/h. Combien de minutes met-il pour parcourir ${d} km ?`,NUM(t,'min'),`t = d ÷ v = ${d} ÷ ${v} = ${fmt(t/60)} h = <b>${t} min</b>`); },
+ volPyr(){ let a,b,h,sq;do{sq=R()<.5;a=ri(2,9);b=sq?a:ri(2,9);h=ri(2,12);}while((a*b*h)%3!==0||(!sq&&a===b)||a*b*h/3>400);
+   const V=a*b*h/3;
+   ERRS=[[0,a*b*h,'Division par 3 oubliée'],[0,a*b*h/2,'Divisé par 2 au lieu de 3']];
+   return Qf('Volume d\'une pyramide',`Calculer le volume d'une pyramide de hauteur ${h} cm dont la base est ${sq?`un carré de côté ${a} cm`:`un rectangle de ${a} cm sur ${b} cm`}.`,NUM(V,'cm³'),
+   `V = ${F('aire de la base × hauteur',3)} = ${F(`${a} × ${b} × ${h}`,3)} = ${F(a*b*h,3)} = <b>${fmt(V)} cm³</b>`); },
+ echelle(){ let E,d,km;do{E=pick([25000,50000,100000,200000,250000]);d=pick([2,3,4,5,6,8,10,12,1.5,2.5,3.5,4.5]);km=Math.round(d*E)/100000;}while(Math.round(km*100)!==km*100);
+   ERRS=[[0,km*1000,'Résultat en mètres et non en kilomètres'],[0,km*100,'Conversion cm → km fausse'],[0,km/10,'Conversion cm → km fausse']];
+   return Qf('Échelle',`Sur une carte à l'échelle ${F(1,E.toLocaleString('fr-FR').replace(/ | /g,' '))}, deux villages sont séparés de ${fmt(d)} cm. Quelle est la distance réelle en km ?`,NUM(km,'km'),
+   `${fmt(d)} × ${E.toLocaleString('fr-FR').replace(/ | /g,' ')} = ${(d*E).toLocaleString('fr-FR').replace(/ | /g,' ')} cm = <b>${fmt(km)} km</b> (1 km = 100 000 cm)`); },
+ /* ----- Séquence 6 : statistiques ----- */
+ statEtendue(){ const n=pick([6,8]); let v,so;do{v=Array.from({length:n},()=>ri(2,20));so=v.slice().sort((a,b)=>a-b);}while(so[0]===so[n-1]||v[0]===so[0]&&v[n-1]===so[n-1]);
+   const et=so[n-1]-so[0],me=(so[n/2-1]+so[n/2])/2;
+   ERRS=[[0,Math.abs(v[n-1]-v[0]),'Étendue calculée avec la première et la dernière valeur (série non rangée)'],[1,so[n/2-1],'Une seule des deux valeurs centrales'],[1,so[n/2],'Une seule des deux valeurs centrales'],[1,(v[n/2-1]+v[n/2])/2,'Valeurs centrales prises sans ranger la série']];
+   return Qf('Étendue et médiane',`Voici une série : ${v.join(' ; ')}.<br>1. Calculer son étendue.<br>2. Déterminer sa médiane.`,[NUM(et,'','1.'),NUM(me,'','2.')],
+   `Série rangée : ${so.join(' ; ')}. 1. Étendue : ${so[n-1]} − ${so[0]} = <b>${et}</b>. 2. ${n} valeurs : la médiane est entre la ${n/2}<sup>e</sup> et la ${n/2+1}<sup>e</sup> valeur : (${so[n/2-1]} + ${so[n/2]}) ÷ 2 = <b>${fmt(me)}</b>.`); },
+ statPond(){ let vals,eff,N,S;do{vals=shuffle([8,9,10,11,12,13,14,15,16,17,18]).slice(0,pick([3,4])).sort((a,b)=>a-b);eff=vals.map(()=>ri(1,6));N=eff.reduce((a,b)=>a+b);S=vals.reduce((s,v,i)=>s+v*eff[i],0);}while((S*10)%N!==0||N<5);
+   const m=S/N;
+   ERRS=[[0,vals.reduce((a,b)=>a+b)/vals.length,'Moyenne des valeurs sans tenir compte des effectifs'],[0,S,'Somme sans division par l’effectif total'],[0,S/vals.length,'Divisé par le nombre de valeurs au lieu de l’effectif total']];
+   return Qf('Moyenne pondérée','Voici les notes obtenues à un contrôle.'+`<table class="tv"><tr><th>Note</th>${vals.map(v=>`<td>${v}</td>`).join('')}</tr><tr><th>Effectif</th>${eff.map(e=>`<td>${e}</td>`).join('')}</tr></table>Calculer la note moyenne.`,NUM(m),
+   `(${vals.map((v,i)=>`${v} × ${eff[i]}`).join(' + ')}) ÷ ${N} = ${S} ÷ ${N} = <b>${fmt(m)}</b>`); },
+ statFreq(){ const N=pick([20,25,40,50]); let eff,i;do{eff=Array.from({length:4},()=>ri(1,N/2));eff[3]=N-eff[0]-eff[1]-eff[2];i=ri(0,3);}while(eff[3]<1||(eff[i]*100)%N!==0);
+   const vals=pick([['0','1','2','3 ou plus'],['A','B','C','D'],['Bus','Vélo','Voiture','À pied']]); const lab=vals[0]==='0'?'Nombre de frères et sœurs':vals[0]==='A'?'Groupe sanguin':'Moyen de transport';
+   const f=eff[i]*100/N;
+   ERRS=[[0,eff[i]/N,'Fréquence non convertie en pourcentage'],[0,eff[i],'Effectif donné au lieu de la fréquence']];
+   return Qf('Fréquence',`On a interrogé ${N} élèves.<table class="tv"><tr><th>${lab}</th>${vals.map(v=>`<td>${v}</td>`).join('')}</tr><tr><th>Effectif</th>${eff.map(e=>`<td>${e}</td>`).join('')}</tr></table>Quelle est la fréquence, en pourcentage, de la valeur « ${vals[i]} » ?`,NUM(f,'%'),
+   `${F(eff[i],N)} = ${F(f,100)} = <b>${fmt(f)} %</b>`); },
+ statCum(){ const vals=[8,10,12,14,16]; const eff=vals.map(()=>ri(1,8)); const j=ri(1,3); const c=eff.slice(0,j+1).reduce((a,b)=>a+b); const N=eff.reduce((a,b)=>a+b);
+   ERRS=[[0,eff[j],'Effectif de la seule valeur (non cumulé)'],[0,c-eff[j],'Valeur elle-même non comptée (« inférieure ou égale »)'],[0,N-c+eff[j],'Cumul dans le mauvais sens']];
+   return Qf('Effectifs cumulés','Voici les notes d\'une classe.'+`<table class="tv"><tr><th>Note</th>${vals.map(v=>`<td>${v}</td>`).join('')}</tr><tr><th>Effectif</th>${eff.map(e=>`<td>${e}</td>`).join('')}</tr></table>Combien d'élèves ont une note inférieure ou égale à ${vals[j]} ?`,NUM(c,'élèves'),
+   `On additionne les effectifs des notes jusqu'à ${vals[j]} : ${eff.slice(0,j+1).join(' + ')} = <b>${c}</b>`); },
+ /* ----- Séquences 7 et 12 : trigonométrie ----- */
+ trigFormula(){ const fn=pick(['cos','sin','tan']); const L=pick(LETTERS),o=shuffle([0,1,2]);const R0=L[o[0]],P=L[o[1]],Qn=L[o[2]]; const A=`${Qn}̂`;
+   const adj=`${R0}${Qn}`,opp=`${R0}${P}`,hyp=`${P}${Qn}`; const all=[[F(adj,hyp),'cos'],[F(opp,hyp),'sin'],[F(opp,adj),'tan'],[F(hyp,adj),'inv']]; const opts=shuffle(all);
+   const ans=opts.findIndex(x=>x[1]===fn); ERRS=opts.map((x,i)=>[0,i,x[1]==='inv'?'Rapport inversé':'Confusion entre cosinus, sinus et tangente']);
+   const def={cos:'côté adjacent ÷ hypoténuse',sin:'côté opposé ÷ hypoténuse',tan:'côté opposé ÷ côté adjacent'}[fn];
+   return Qf('Formules de trigonométrie',`Le triangle ${L.join('')} est rectangle en ${R0}. Que vaut ${fn}(${A}) ?`+trigFig(R0,P,Qn,{}),CH(opts.map(x=>x[0]),ans),
+   `${fn} = ${def} (CAH SOH TOA). Pour l'angle ${A}, le côté adjacent est [${adj}], le côté opposé [${opp}] et l'hypoténuse [${hyp}] : ${fn}(${A}) = <b>${opts[ans][0]}</b>`); },
+ trigWhich(){ const L=pick(LETTERS),o=shuffle([0,1,2]);const R0=L[o[0]],P=L[o[1]],Qn=L[o[2]]; const A=`${Qn}̂`;
+   const adj=`${R0}${Qn}`,opp=`${R0}${P}`,hyp=`${P}${Qn}`; const c=pick([[hyp,adj,0],[adj,hyp,0],[hyp,opp,1],[opp,hyp,1],[adj,opp,2],[opp,adj,2]]);
+   const lab={};const key={[adj]:'b',[opp]:'h',[hyp]:'hyp'};lab[key[c[0]]]=ri(3,12)+' cm';lab[key[c[1]]]='?';
+   ERRS=[0,1,2].filter(i=>i!==c[2]).map(i=>[0,i,'Confusion entre cosinus, sinus et tangente']);
+   return Qf('Choisir la formule',`Le triangle ${L.join('')} est rectangle en ${R0}. On connaît la mesure de l'angle ${A} et la longueur ${c[0]}. On veut calculer ${c[1]}. Quelle formule utiliser ?`+trigFig(R0,P,Qn,lab),CH(['Le cosinus','Le sinus','La tangente'],c[2]),
+   `Par rapport à l'angle ${A} : [${adj}] est le côté adjacent, [${opp}] le côté opposé et [${hyp}] l'hypoténuse. Avec ${c[0]} et ${c[1]}, on utilise <b>${['le cosinus (adjacent ÷ hypoténuse)','le sinus (opposé ÷ hypoténuse)','la tangente (opposé ÷ adjacent)'][c[2]]}</b>.`); },
+ trigId(){ const kind=pick(['dec','frac','tan']); const sw=R()<.5;
+   if(kind==='dec'){const c=sw?0.6:0.8,s=sw?0.8:0.6; ERRS=[[0,1-c,'cos x + sin x = 1 (au lieu des carrés)'],[0,1-c*c,'Racine carrée oubliée']];
+     return Qf('Trigonométrie (propriétés)',`x est la mesure d'un angle aigu tel que cos(x) = ${fmt(c)}. Calculer sin(x).`,NUM(s,'','sin(x) ='),`cos²(x) + sin²(x) = 1, donc sin²(x) = 1 − ${fmt(c)}² = 1 − ${fmt(c*c)} = ${fmt(s*s)} et sin(x) = <b>${fmt(s)}</b> (positif car l'angle est aigu).`);}
+   if(kind==='frac'){const[c,s]=sw?[3,4]:[4,3]; ERRS=[[0,(5-c)/5,'cos x + sin x = 1 (au lieu des carrés)'],[0,(25-c*c)/25,'Racine carrée oubliée']];
+     return Qf('Trigonométrie (propriétés)',`x est la mesure d'un angle aigu tel que sin(x) = ${F(c,5)}. Calculer cos(x) (fraction).`,FRAC(s,5,'cos(x) ='),`cos²(x) = 1 − sin²(x) = 1 − ${F(c*c,25)} = ${F(25-c*c,25)}, donc cos(x) = <b>${F(s,5)}</b> (positif car l'angle est aigu).`);}
+   const[s,c]=sw?[3,4]:[4,3]; const [p,q]=red(s,c); ERRS=[[0,c/s,'tan = cos ÷ sin (quotient inversé)'],[0,s*c/25,'sin et cos multipliés']];
+   return Qf('Trigonométrie (propriétés)',`x est la mesure d'un angle aigu tel que sin(x) = ${F(s,5)} et cos(x) = ${F(c,5)}. Calculer tan(x) (fraction irréductible).`,FRAC(p,q,'tan(x) ='),`tan(x) = ${F('sin(x)','cos(x)')} = ${F(s,5)} ÷ ${F(c,5)} = ${F(s,5)} × ${F(5,c)} = <b>${Fs(p,q)}</b>`); },
+ trigCompl(){ const L=pick(LETTERS),o=shuffle([0,1,2]);const R0=L[o[0]],B=L[o[1]],C=L[o[2]]; const b=ri(15,75);
+   const opts=[`sin(${C}̂)`,`sin(${B}̂)`,`cos(${C}̂)`,`tan(${C}̂)`]; const sh=shuffle(opts); const ans=sh.indexOf(opts[0]);
+   ERRS=[[0,180-b,'Somme des angles prise sans retirer l’angle droit'],[1,sh.indexOf(opts[2]),'cos(B̂) = cos(Ĉ) : les deux angles ne sont pas égaux'],[1,sh.indexOf(opts[1]),'Cosinus et sinus du même angle confondus']];
+   return Qf('Angles complémentaires',`Le triangle ${L.join('')} est rectangle en ${R0} et l'angle ${B}̂ mesure ${b}°.<br>1. Quelle est la mesure de l'angle ${C}̂ ?<br>2. cos(${B}̂) est égal à :`,[NUM(90-b,'°','1.'),CH(sh,ans,'2.')],
+   `1. Les deux angles aigus d'un triangle rectangle sont complémentaires : 90 − ${b} = <b>${90-b}°</b>. 2. Le côté adjacent à ${B}̂ est le côté opposé à ${C}̂, donc cos(${B}̂) = <b>sin(${C}̂)</b>.`); },
+ /* ----- Séquence 8 : fonctions linéaires ----- */
+ linCoef(){ let a,t;do{a=nz(-6,6);t=nz(-6,6);}while(Math.abs(t)===1||Math.abs(a)===1);const y=a*t;
+   ERRS=[[0,t/y,'Quotient inversé (x ÷ f(x))'],[0,y-t,'Écart au lieu du coefficient']];
+   return Qf('Fonction linéaire',`f est une fonction linéaire telle que f(${fmt(t)}) = ${fmt(y)}. Déterminer le nombre a tel que f(x) = ax.`,NUM(a,'','a ='),`a = ${F('f('+fmt(t)+')',fmt(t))} = ${fmt(y)} ÷ ${opnd(t)} = <b>${fmt(a)}</b>, donc f(x) = ${fmt(a)}x.`); },
+ linAnte(){ let a,x;do{a=nz(-6,6);x=nz(-9,9);}while(Math.abs(a)===1);const y=a*x;
+   ERRS=[[0,a*y,'Image calculée au lieu de l’antécédent'],[0,-x,'Erreur de signe']];
+   return Qf('Fonction linéaire',`Soit f(x) = ${lin(a,0).disp}. Déterminer l'antécédent de ${fmt(y)} par f.`,NUM(x),`On résout ${fmt(a)}x = ${fmt(y)} : x = ${fmt(y)} ÷ ${opnd(a)} = <b>${fmt(x)}</b>`); },
+ linPct(){ const up=R()<.5,qcm=R()>=.6,t=pick(qcm?[2,3,5,10,15,20,25,30,40,12,8]:[2,3,5,10,15,20,25,30,40,50,12,8]); const k=Math.round((up?100+t:100-t))/100;
+   if(!qcm){ERRS=[[0,t/100,'Seulement le taux (1 + t/100 oublié)'],[0,up?1-t/100:1+t/100,'Sens de l’évolution inversé'],[0,1+t,'Pourcentage ajouté à 1 sans diviser par 100']];
+     return Qf('Pourcentages et coefficient',`${up?'Augmenter':'Diminuer'} une quantité de ${t} % revient à la multiplier par quel nombre ?`,NUM(k),`${up?`1 + ${F(t,100)}`:`1 − ${F(t,100)}`} = <b>${fmt(k)}</b>. La fonction x ↦ ${fmt(k)}x est linéaire.`);}
+   const opts=[`${up?'Augmenter':'Diminuer'} de ${t} %`,`${up?'Diminuer':'Augmenter'} de ${t} %`,`${up?'Augmenter':'Diminuer'} de ${fmt(k)} %`,`${up?'Diminuer':'Augmenter'} de ${100-t} %`]; const sh=shuffle(opts);
+   ERRS=[[0,sh.indexOf(opts[1]),'Sens de l’évolution inversé'],[0,sh.indexOf(opts[2]),'Coefficient lu comme un pourcentage'],[0,sh.indexOf(opts[3]),'Confusion entre le coefficient et la baisse']];
+   return Qf('Pourcentages et coefficient',`Multiplier un prix par ${fmt(k)} revient à :`,CH(sh,sh.indexOf(opts[0])),`${fmt(k)} = 1 ${up?'+':'−'} ${fmt(t/100)} = 1 ${up?'+':'−'} ${F(t,100)} : c'est <b>${opts[0].toLowerCase()}</b>.`); },
+ linGraph(){ const m=pick([-2,-1,-0.5,0.5,1,1.5,2,3]); const f=x=>m*x; const px=Number.isInteger(m)?1:2;
+   ERRS=[[0,1/m,'Rapport inversé (écart horizontal ÷ écart vertical)'],[0,-m,'Erreur de signe sur le coefficient'],[1,m*10+10,'Image mal calculée']];
+   return Qf('Fonction linéaire (graphique)','La droite ci-dessous représente une fonction linéaire f : x ↦ ax.'+graphFig(f)+'1. Lire le coefficient a.<br>2. En déduire f(10).',[NUM(m,'','1. a ='),NUM(10*m,'','2. f(10) =')],
+   `1. La droite passe par l'origine et par le point (${px} ; ${fmt(m*px)}) : a = ${fmt(m*px)} ÷ ${px} = <b>${fmt(m)}</b>. 2. f(10) = ${fmt(m)} × 10 = <b>${fmt(10*m)}</b>.`); },
+ /* ----- Séquence 9 : agrandissement et réduction ----- */
+ kScale(kind){ kind=kind||pick(['len','area','vol']); let k,x,r,corr,unit,what,html;
+   if(kind==='len'){k=pick([2,3,4,0.5,1.5,10]);do{x=ri(2,15);}while(!Number.isInteger(k*x*2));r=k*x;unit='cm';ERRS=[[0,x+k,'k ajouté au lieu de multiplier']];html=`Une figure est ${k>1?'agrandie':'réduite'} à l'échelle k = ${fmt(k)}. Un segment mesure ${x} cm sur la figure de départ. Combien mesure-t-il sur la nouvelle figure ?`;corr=`Les longueurs sont multipliées par k : ${x} × ${fmt(k)} = <b>${fmt(r)} cm</b>`;}
+   else if(kind==='area'){k=pick([2,3,0.5,10,4]);do{x=ri(2,30);}while(!Number.isInteger(k*k*x*4)||k*k*x>1500);r=k*k*x;unit='cm²';ERRS=[[0,k*x,'Aire multipliée par k au lieu de k²'],[0,2*k*x,'k² calculé comme 2k']];html=`Une figure d'aire ${x} cm² est ${k>1?'agrandie':'réduite'} à l'échelle k = ${fmt(k)}. Quelle est l'aire de la nouvelle figure ?`;corr=`Les aires sont multipliées par k² = ${fmt(k*k)} : ${x} × ${fmt(k*k)} = <b>${fmt(r)} cm²</b>`;}
+   else {k=pick([2,3,0.5,10]);do{x=ri(2,40)*(k===0.5?8:1);}while(k**3*x>3000||!Number.isInteger(k**3*x));r=k**3*x;unit='cm³';ERRS=[[0,k*x,'Volume multiplié par k au lieu de k³'],[0,k*k*x,'Volume multiplié par k² au lieu de k³'],[0,3*k*x,'k³ calculé comme 3k']];html=`Un solide de volume ${x} cm³ est ${k>1?'agrandi':'réduit'} à l'échelle k = ${fmt(k)}. Quel est le volume du nouveau solide ?`;corr=`Les volumes sont multipliés par k³ = ${fmt(k**3)} : ${x} × ${fmt(k**3)} = <b>${fmt(r)} cm³</b>`;}
+   return Qf('Agrandissement et réduction',html,NUM(r,unit),corr); },
+ kFind(){ const k=pick([2,3,4,5,10,0.5]);
+   ERRS=[[0,2*k,'k² calculé comme 2k'],[0,k,'Aires multipliées par k (comme les longueurs)'],[1,3*k,'k³ calculé comme 3k'],[1,k*k,'Volumes multipliés par k² au lieu de k³']];
+   return Qf('Agrandissement et réduction',`Dans ${k>1?'un agrandissement':'une réduction'}, les longueurs sont multipliées par ${fmt(k)}.<br>1. Par combien les aires sont-elles multipliées ?<br>2. Par combien les volumes sont-ils multipliés ?`,[NUM(k*k,'','1.'),NUM(k**3,'','2.')],
+   `1. Aires : k² = ${fmt(k)}² = <b>${fmt(k*k)}</b>. 2. Volumes : k³ = ${fmt(k)}³ = <b>${fmt(k**3)}</b>.`); },
+ /* ----- Séquence 10 : factorisation et équation produit nul ----- */
+ factCommon(k0){ const kind=k0||pick(['k','k','x','par']); let disp,raw,corr;
+   if(kind==='k'){let k,a,b;do{k=ri(2,9);a=ri(1,6);b=nz(-9,9);}while(gcd(a,b)!==1||k*a===1);disp=lin(k*a,k*b).disp;raw=`${k}*(${a}*x+(${b}))`;corr=`${k} est un facteur commun : ${disp} = ${k} × ${a===1?'':a}x ${b<0?'−':'+'} ${k} × ${Math.abs(b)} = <b>${k}(${lin(a,b).disp})</b>`;ERRS=[[0,`${k}*(${k*a}*x+(${b}))`,'Seul le 2e terme divisé par le facteur commun'],[0,`${k}*(${a}*x+(${-b}))`,'Erreur de signe dans la parenthèse']];}
+   else if(kind==='x'){let a,b;do{a=nz(-5,6);b=nz(-9,9);}while(Math.abs(a)===1&&false);disp=poly(a,b,0).disp;raw=`x*(${a}*x+(${b}))`;corr=`x est un facteur commun : ${disp} = x × ${a<0?'(':''}${a===1?'':a===-1?'−':fmt(a)}x${a<0?')':''} ${b<0?'−':'+'} x × ${Math.abs(b)} = <b>x(${lin(a,b).disp})</b>`;ERRS=[[0,`x*(${a}*x^2+(${b}))`,'x non retiré du premier terme']];}
+   else {let a,b,c,d;do{a=nz(-6,6);b=ri(1,3);c=nz(-6,6);d=nz(-6,6);}while(c+d===0||c===d);
+     disp=`(x${signed(a,'')})(x${signed(c,'')}) + (x${signed(a,'')})(${b===1?'':b}x${signed(d,'')})`;raw=`(x+(${a}))*(${1+b}*x+(${c+d}))`;
+     corr=`(x${signed(a,'')}) est un facteur commun : (x${signed(a,'')})[(x${signed(c,'')}) + (${b===1?'':b}x${signed(d,'')})] = <b>(x${signed(a,'')})(${lin(1+b,c+d).disp})</b>`;ERRS=[[0,`(x+(${a}))*(${1+b}*x+(${c-d}))`,'Erreur de signe en réduisant la 2e parenthèse']];}
+   return Qf('Factoriser (facteur commun)','Factoriser :'+M('A = '+disp),Object.assign(EXPR(raw,'A ='),{factored:true}),corr); },
+ factId(){ const kind=pick(['diff','diff','plus','minus']); let a=pick([1,1,1,2,3]),b=ri(1,9); if(a>1)b=pick([1,2,4,5,7].filter(v=>gcd(v,a)===1)); const ax=(a===1?'':a)+'x'; let disp,raw,corr;
+   if(kind==='diff'){disp=poly(a*a,0,-b*b).disp;raw=`(${a}*x-${b})*(${a}*x+${b})`;corr=`a² − b² = (a − b)(a + b) avec a = ${ax} et b = ${b} : <b>(${ax} − ${b})(${ax} + ${b})</b>`;ERRS=[[0,`(${a}*x-${b})^2`,'Confusion avec (a − b)²']];}
+   else if(kind==='plus'){disp=poly(a*a,2*a*b,b*b).disp;raw=`(${a}*x+${b})^2`;corr=`a² + 2ab + b² = (a + b)² avec a = ${ax} et b = ${b} : <b>(${ax} + ${b})²</b>`;ERRS=[[0,`(${a}*x-${b})*(${a}*x+${b})`,'Confusion avec (a − b)(a + b)']];}
+   else {disp=poly(a*a,-2*a*b,b*b).disp;raw=`(${a}*x-${b})^2`;corr=`a² − 2ab + b² = (a − b)² avec a = ${ax} et b = ${b} : <b>(${ax} − ${b})²</b>`;ERRS=[[0,`(${a}*x+${b})^2`,'Signe faux dans le carré']];}
+   return Qf('Factoriser (identités remarquables)','Factoriser à l\'aide d\'une identité remarquable :'+M('B = '+disp),Object.assign(EXPR(raw,'B ='),{factored:true}),corr); },
+ prodNul(){ let r1,r2,k;do{r1=nz(-9,9);r2=nz(-6,6);k=pick([1,2,3]);}while(r1===r2);
+   const lo=Math.min(r1,r2),hi=Math.max(r1,r2);
+   ERRS=[[0,Math.min(-r1,-r2),'Signes des solutions inversés'],[1,Math.max(-r1,-r2),'Signes des solutions inversés']];if(k>1&&k*r2>hi)ERRS.push([1,k*r2,'kx = c : division par k oubliée']);
+   const f2=lin(k,-k*r2).disp;
+   return Qf('Équation produit nul','Résoudre l\'équation :'+M(`(x${signed(-r1,'')})(${f2}) = 0`),[NUM(lo,'','plus petite solution :'),NUM(hi,'','plus grande :')],
+   `Un produit est nul si l'un de ses facteurs est nul : x${signed(-r1,'')} = 0 donne x = ${fmt(r1)} ; ${f2} = 0 donne ${k===1?'':k}x = ${fmt(k*r2)}${k===1?'':`, x = ${fmt(r2)}`}. Solutions : <b>${fmt(lo)}</b> et <b>${fmt(hi)}</b>.`); },
+ /* ----- Séquence 11 : arithmétique ----- */
+ pgcd(){ let g,m,n;do{g=ri(2,12);m=ri(1,9);n=ri(2,9);}while(m===n||gcd(m,n)!==1||g*m>120||g*n>120);
+   const a=g*m,b=g*n;
+   ERRS=[[0,g*m*n,'PPCM au lieu du PGCD'],[0,Math.min(a,b)>g?Math.min(a,b):null,'Le plus petit des deux nombres'],[0,g>2&&g%2===0?2:null,'Un diviseur commun, mais pas le plus grand']];
+   return Qf('PGCD',`Déterminer le PGCD de ${a} et ${b} (le plus grand diviseur commun).`,NUM(g),`${a} = ${g} × ${m} et ${b} = ${g} × ${n}, avec ${m} et ${n} sans autre diviseur commun que 1 : PGCD = <b>${g}</b>`); },
+ decomp(){ let a,b,c,N;do{a=ri(0,4);b=ri(0,3);c=ri(0,2);N=2**a*3**b*5**c;}while(N<30||N>1000||[a,b,c].filter(x=>x>0).length<2);
+   ERRS=[];
+   const parts=[];if(a)parts.push(a>1?`2<sup>${a}</sup>`:'2');if(b)parts.push(b>1?`3<sup>${b}</sup>`:'3');if(c)parts.push(c>1?`5<sup>${c}</sup>`:'5');
+   return Qf('Décomposition en facteurs premiers',`On écrit ${N} = 2<sup>a</sup> × 3<sup>b</sup> × 5<sup>c</sup>. Donner a, b et c (0 si le facteur n'apparaît pas).`,[NUM(a,'','a ='),NUM(b,'','b ='),NUM(c,'','c =')],
+   `On divise par 2, puis par 3, puis par 5 tant que c'est possible : ${N} = <b>${parts.join(' × ')}</b>, donc a = ${a}, b = ${b}, c = ${c}.`); },
+ fracIrr(){ let g,m,n;do{g=pick([2,3,4,5,6,7,8,9,10,12,15]);m=ri(1,9);n=ri(2,11);}while(gcd(m,n)!==1||m===n||g*m>150||g*n>150);
+   ERRS=[];
+   return Qf('Fraction irréductible','Rendre la fraction irréductible :'+M(`${F(g*m,g*n)}`),FRAC(m,n,'='),`${g*m} = ${g} × ${m} et ${g*n} = ${g} × ${n} : on simplifie par ${g} (le PGCD), ${F(g*m,g*n)} = <b>${Fs(m,n)}</b>`); },
+ isPrime(){ const P=pick([11,13,17,19,23,29,31,37,41,43,47,53,59,61,67,71,73,79,83,89,97]); const C=shuffle([[21,'3 × 7'],[27,'3³'],[33,'3 × 11'],[39,'3 × 13'],[49,'7 × 7'],[51,'3 × 17'],[57,'3 × 19'],[63,'3² × 7'],[69,'3 × 23'],[77,'7 × 11'],[87,'3 × 29'],[91,'7 × 13'],[93,'3 × 31']]).slice(0,3);
+   const opts=shuffle([P,...C.map(c=>c[0])]); const ans=opts.indexOf(P);
+   ERRS=C.map(c=>[0,opts.indexOf(c[0]),`Nombre composé pris pour premier (${c[0]} = ${c[1]})`]);
+   return Qf('Nombres premiers','Parmi ces nombres, lequel est premier ?',CH(opts.map(String),ans),`${C.map(c=>`${c[0]} = ${c[1]}`).join(' ; ')}. <b>${P}</b> n'a que deux diviseurs, 1 et lui-même : il est premier.`); },
+ pgcdProb(){ let g,m,n;do{g=ri(3,12);m=ri(2,9);n=ri(2,9);}while(m===n||gcd(m,n)!==1||g*m>100||g*n>100);
+   const ctx=pick([['roses','tulipes','bouquets identiques'],['billes rouges','billes bleues','sachets identiques'],['croissants','pains au chocolat','plateaux identiques']]);
+   ERRS=[[0,g*m*n,'PPCM au lieu du PGCD'],[1,g,'Nombre de lots donné au lieu de la composition'],[0,m,'Composition d’un lot donnée au lieu du nombre de lots']];
+   return Qf('Problème (PGCD)',`Avec ${g*m} ${ctx[0]} et ${g*n} ${ctx[1]}, on veut faire le plus grand nombre possible de ${ctx[2]}, en utilisant tout.<br>1. Combien de lots ?<br>2. Combien de ${ctx[0]} dans chaque lot ?`,[NUM(g,'','1.'),NUM(m,'','2.')],
+   `Le nombre de lots divise ${g*m} et ${g*n} et doit être le plus grand possible : c'est le PGCD, <b>${g}</b>. Chaque lot contient ${g*m} ÷ ${g} = <b>${m}</b> ${ctx[0]}.`); },
+ divEucl(){ const b=ri(3,12),q=ri(3,15),r=ri(0,b-1),a=b*q+r;
+   ERRS=[[1,b-r,'Reste mal calculé'],[0,q+1,'Quotient trop grand (reste négatif)']];
+   return Qf('Division euclidienne',`Effectuer la division euclidienne de ${a} par ${b} : ${a} = ${b} × q + r avec 0 ≤ r &lt; ${b}.`,[NUM(q,'','q ='),NUM(r,'','r =')],`${b} × ${q} = ${b*q} et ${a} − ${b*q} = ${r} &lt; ${b} : q = <b>${q}</b> et r = <b>${r}</b>`); },
+ /* ----- Séquence 13 : fonctions affines ----- */
+ affCoef(){ let a,b,x1,x2;do{a=nz(-5,5);b=nz(-9,9);x1=ri(-3,5);x2=ri(-3,5);}while(x1===x2||Math.abs(a*x1+b)>30||Math.abs(a*x2+b)>30);
+   if(x1>x2)[x1,x2]=[x2,x1]; const y1=a*x1+b,y2=a*x2+b;
+   ERRS=[[0,(x2-x1)/(y2-y1),'Rapport inversé (Δx ÷ Δy)'],[0,-a,'Erreur de signe sur a'],[1,y1+a*x1,'Erreur de signe en calculant b']];
+   return Qf('Fonction affine',`f est une fonction affine telle que f(${fmt(x1)}) = ${fmt(y1)} et f(${fmt(x2)}) = ${fmt(y2)}. Déterminer a et b tels que f(x) = ax + b.`,[NUM(a,'','a ='),NUM(b,'','b =')],
+   `a = ${F(`f(${fmt(x2)}) − f(${fmt(x1)})`,`${fmt(x2)} − ${opnd(x1)}`)} = ${F(fmt(y2-y1),fmt(x2-x1))} = <b>${fmt(a)}</b>. Puis f(${fmt(x1)}) = ${fmt(a)} × ${opnd(x1)} + b = ${fmt(y1)}, donc b = ${fmt(y1)} − ${opnd(a*x1)} = <b>${fmt(b)}</b>.`); },
+ affGraph(){ let m,b,ok;do{m=pick([-2,-1,-0.5,0.5,1,2,3]);b=ri(-2,4);ok=b!==0&&[-4,-2,0,2,4,6].filter(x=>{const y=m*x+b;return y>=-3&&y<=5&&Number.isInteger(y);}).length>=2;}while(!ok);
+   ERRS=[[0,1/m,'Rapport inversé (Δx ÷ Δy)'],[0,-m,'Erreur de signe sur a'],[1,-b/m,'Abscisse du point d’intersection avec l’axe des abscisses']];
+   const px=Number.isInteger(m)?1:2;
+   return Qf('Fonction affine (graphique)','La droite ci-dessous représente une fonction affine f : x ↦ ax + b.'+graphFig(x=>m*x+b)+'Lire a et b.',[NUM(m,'','a ='),NUM(b,'','b =')],
+   `b est l'ordonnée à l'origine : la droite coupe l'axe des ordonnées en <b>${fmt(b)}</b>. Quand x augmente de ${px}, y ${m>0?'augmente':'diminue'} de ${fmt(Math.abs(m*px))} : a = ${fmt(m*px)} ÷ ${px} = <b>${fmt(m)}</b>.`); },
+ affSens(){ const pool=[['3x','lin','Elle s\'écrit ax avec a = 3'],[`${F('x',4)}`,'lin','C\'est ¼ × x, donc ax avec a = 0,25'],['−7x','lin','Elle s\'écrit ax avec a = −7'],['5 − 2x','aff','Elle s\'écrit ax + b avec a = −2 et b = 5'],['4x + 1','aff','a = 4 et b = 1'],['2(x + 3)','aff','2(x + 3) = 2x + 6 : a = 2 et b = 6'],['8','aff','Fonction constante : a = 0 et b = 8'],['x² + 1','ni','x² n\'est pas de la forme ax'],['3x² − x','ni','Il y a un terme en x²'],[`${F(2,'x')}`,'ni','x est au dénominateur'],['x(x + 1)','ni','x(x + 1) = x² + x : il y a un terme en x²']];
+   const it=pick(pool); const ans={lin:0,aff:1,ni:2}[it[1]];
+   ERRS=[0,1,2].filter(i=>i!==ans).map(i=>[0,i,i===0&&it[1]==='aff'?'Affine confondue avec linéaire':'Nature de la fonction mal reconnue']);
+   return Qf('Linéaire ou affine ?',`La fonction f définie par f(x) = ${it[0]} est :`,CH(['Linéaire (donc aussi affine)','Affine, mais pas linéaire','Ni affine, ni linéaire'],ans),`${it[2]} : <b>${['linéaire','affine non linéaire','ni affine ni linéaire'][ans]}</b>.`); },
+ /* ----- Séquence 14 : probabilités ----- */
+ probaTwo(){ const kind=pick(['coins','dice','dice','urn']);
+   if(kind==='coins'){const ev=pick([['obtenir deux fois « pile »',1,4,'PP'],['obtenir au moins une fois « face »',3,4,'PF, FP, FF'],['obtenir une fois « pile » et une fois « face »',1,2,'PF et FP']]);
+     ERRS=[[0,1/3,'Issues PP, PF, FF considérées comme équiprobables (PF et FP sont deux issues)']];
+     return Qf('Deux épreuves',`On lance deux fois une pièce équilibrée. Quelle est la probabilité d'${ev[0]} ?`,FRAC(ev[1],ev[2],'P ='),`4 issues équiprobables : PP, PF, FP, FF. Issues favorables : ${ev[3]}. P = <b>${Fs(ev[1],ev[2])}</b>`);}
+   if(kind==='dice'){const s=pick([2,3,4,5,6,7,8,9,10,11,12]);const nb=6-Math.abs(7-s);const[p,q]=red(nb,36);const cases=[];for(let i=1;i<=6;i++){const j=s-i;if(j>=1&&j<=6)cases.push(`(${i} ; ${j})`);}
+     ERRS=[[0,1/11,'Les 11 sommes possibles considérées comme équiprobables'],[0,nb/12,'12 issues au lieu de 36']];
+     return Qf('Deux épreuves',`On lance deux dés équilibrés à 6 faces et on additionne les résultats. Quelle est la probabilité d'obtenir une somme égale à ${s} ?`,FRAC(p,q,'P ='),`Tableau à double entrée : 36 issues équiprobables. Somme ${s} : ${cases.join(', ')}, soit ${nb} issue${nb>1?'s':''}. P = ${q!==36?F(nb,36)+' = ':''}<b>${Fs(p,q)}</b>`);}
+   const r=ri(1,4),b=ri(1,4),T=r+b;const[p,q]=red(r*r,T*T);
+   ERRS=[[0,2*r/T,'Probabilités additionnées au lieu d’être multipliées'],[0,r/T,'Une seule épreuve prise en compte']];
+   return Qf('Deux épreuves',`Une urne contient ${r} boule${r>1?'s':''} rouge${r>1?'s':''} et ${b} boule${b>1?'s':''} bleue${b>1?'s':''}. On tire une boule, on la remet, puis on en tire une seconde. Quelle est la probabilité de tirer deux boules rouges ?`,FRAC(p,q,'P ='),`Sur un arbre, on multiplie les probabilités le long d'un chemin : ${F(r,T)} × ${F(r,T)} = ${F(r*r,T*T)}${q!==T*T?' = '+Fs(p,q):''} → <b>${Fs(p,q)}</b>`); },
+ probaCompl(){ if(R()<.5){const p=pick([0.1,0.15,0.2,0.25,0.3,0.35,0.4,0.45,0.6,0.7,0.75,0.85,0.95]);const r=Math.round((1-p)*100)/100;
+     ERRS=[[0,p,'Probabilité de l’événement au lieu de son contraire'],[0,Math.round((100-p)*100)/100,'1 confondu avec 100']];
+     return Qf('Événement contraire',`La probabilité qu'il pleuve demain est ${fmt(p)}. Quelle est la probabilité qu'il ne pleuve pas ?`,NUM(r),`P(non A) = 1 − P(A) = 1 − ${fmt(p)} = <b>${fmt(r)}</b>`);}
+   let a,b;do{b=pick([4,5,6,7,8,9,10,12]);a=ri(1,b-1);}while(gcd(a,b)!==1); ERRS=[[0,a/b,'Probabilité de l’événement au lieu de son contraire'],[0,b/a,'Fraction inversée']];
+   return Qf('Événement contraire',`On note A un événement de probabilité ${F(a,b)}. Quelle est la probabilité de l'événement contraire « non A » ?`,FRAC(b-a,b,'P(non A) ='),`P(non A) = 1 − ${F(a,b)} = ${F(b,b)} − ${F(a,b)} = <b>${F(b-a,b)}</b>`); },
+ /* ----- Séquence 15 : homothéties ----- */
+ homLen(){ const k=pick([2,3,-2,-3,0.5,-0.5,-1,1.5]); let L,Ar;do{L=ri(2,12);Ar=ri(2,20);}while(!Number.isInteger(Math.abs(k)*L*2)||!Number.isInteger(k*k*Ar*4));
+   const l2=Math.abs(k)*L,a2=k*k*Ar;
+   ERRS=[[0,k*L,'Longueur négative (on prend |k|)'],[1,Math.abs(k)*Ar,'Aire multipliée par |k| au lieu de k²'],[1,k*Ar,'Aire multipliée par k au lieu de k²']];
+   return Qf('Homothétie',`Par une homothétie de rapport ${fmt(k)}, un triangle ABC a pour image A'B'C'. On sait que AB = ${L} cm et que l'aire de ABC est ${Ar} cm².<br>1. Calculer A'B'.<br>2. Calculer l'aire de A'B'C'.`,[NUM(l2,'cm','1.'),NUM(a2,'cm²','2.')],
+   `1. Les longueurs sont multipliées par |k| = ${fmt(Math.abs(k))} : A'B' = <b>${fmt(l2)} cm</b>. 2. Les aires sont multipliées par k² = ${fmt(k*k)} : <b>${fmt(a2)} cm²</b>.`); },
+ homRatio(){ const k=pick([2,3,4,-2,-3,0.5,-0.5,1.5,-1.5]); let OA;do{OA=ri(2,10);}while(!Number.isInteger(Math.abs(k)*OA*2));const OA2=Math.abs(k)*OA;
+   ERRS=[[0,-k,'Signe du rapport faux (même côté → k > 0, de part et d’autre → k < 0)'],[0,1/k,'Rapport inversé (OA ÷ OA′)']];
+   return Qf('Homothétie',`A' est l'image de A par une homothétie de centre O. Les points O, A, A' sont alignés, OA = ${OA} cm et OA' = ${fmt(OA2)} cm, et A' est ${k>0?'du même côté que A par rapport à O':'de l\'autre côté de O par rapport à A'}. Quel est le rapport k ?`,NUM(k,'','k ='),
+   `|k| = ${F("OA'",'OA')} = ${fmt(OA2)} ÷ ${OA} = ${fmt(Math.abs(k))} ; ${k>0?'même côté : k est positif':'de part et d\'autre de O : k est négatif'}. k = <b>${fmt(k)}</b>`); },
+ transfoQCM(){ const pool=[
+     ["Une homothétie de rapport −1 est aussi :",['une symétrie centrale','une symétrie axiale','une translation','une rotation d\'angle 90°'],"L'image de M est le point M' tel que O soit le milieu de [MM']."],
+     ["Une homothétie de rapport 0,5 :",['réduit la figure','agrandit la figure','conserve les longueurs','change les angles'],"0 < k < 1 : c'est une réduction."],
+     ["Une homothétie de rapport −3 :",['agrandit la figure et la place de l\'autre côté du centre','réduit la figure','agrandit la figure du même côté du centre','conserve les longueurs'],"|k| = 3 > 1 : agrandissement ; k < 0 : l'image est de l'autre côté du centre."],
+     ["Quelle transformation ne conserve pas les longueurs ?",['une homothétie de rapport 2','une translation','une rotation','une symétrie axiale'],"Les translations, rotations et symétries conservent les longueurs ; une homothétie de rapport 2 les double."],
+     ["Par une homothétie de rapport 3, les mesures des angles sont :",['conservées','multipliées par 3','multipliées par 9','divisées par 3'],"Une homothétie conserve les angles (et le parallélisme)."],
+     ["Par une homothétie, l'image d'une droite est :",['une droite parallèle (ou confondue)','une droite perpendiculaire','un cercle','un segment de même longueur'],"Une homothétie conserve le parallélisme : l'image d'une droite lui est parallèle."]];
+   const it=pick(pool); const opts=shuffle(it[1]); const ans=opts.indexOf(it[1][0]);
+   ERRS=opts.map((o,i)=>[0,i,'Propriété des transformations mal connue']);
+   return Qf('Transformations',it[0],CH(opts.map(o=>o[0].toUpperCase()+o.slice(1)),ans),`${it[2]} Réponse : <b>${it[1][0]}</b>.`); },
+ /* ----- Séquence 16 : triangles égaux et semblables ----- */
+ semblRatio(){ const T=pick([[3,4,5],[4,5,6],[2,3,4],[5,6,8],[4,6,7],[3,5,7],[6,8,9]]); const k=pick([2,3,1.5,0.5,2.5]);
+   const [a,b,c]=T;
+   ERRS=[[0,b+k*a-a,'Raisonnement additif (même écart)'],[1,c+k*a-a,'Raisonnement additif (même écart)']];
+   return Qf('Triangles semblables',`Les triangles ABC et DEF sont semblables, avec A et D, B et E, C et F homologues. AB = ${a} cm, BC = ${b} cm, AC = ${c} cm et DE = ${fmt(k*a)} cm. Calculer EF et DF.`,[NUM(k*b,'cm','EF ='),NUM(k*c,'cm','DF =')],
+   `Coefficient : ${F('DE','AB')} = ${fmt(k*a)} ÷ ${a} = ${fmt(k)}. EF = ${b} × ${fmt(k)} = <b>${fmt(k*b)} cm</b> et DF = ${c} × ${fmt(k)} = <b>${fmt(k*c)} cm</b>.`); },
+ semblAngles(){ let a,b,c,d,e,f,yes;
+   for(;;){a=5*ri(6,16);b=5*ri(6,18);if(a+b>=170||a===b)continue;c=180-a-b;yes=R()<.5;const abc=[a,b,c];d=pick(abc);e=pick(abc.filter((x,i)=>i!==abc.indexOf(d)));if(!yes)e+=pick([-10,-5,5,10]);f=180-d-e;
+     if(e<=0||f<=0)continue;const s1=[a,b,c].sort((x,y)=>x-y).join(),s2=[d,e,f].sort((x,y)=>x-y).join();if((s1===s2)!==yes)continue;break;}
+   ERRS=[[0,yes?1:0,yes?'Troisième angle non calculé avant de comparer':'Deux angles égaux ne suffisent pas s’ils ne correspondent pas']];
+   return Qf('Triangles semblables',`Dans le triangle ABC, Â = ${a}° et B\u0302 = ${b}°. Dans le triangle DEF, D\u0302 = ${d}° et Ê = ${e}°. Les triangles ABC et DEF sont-ils semblables ?`,CH(['Oui','Non'],yes?0:1),
+   `Troisièmes angles : Ĉ = 180 − ${a} − ${b} = ${c}° et F\u0302 = 180 − ${d} − ${e} = ${f}°. Angles de ABC : ${[a,b,c].sort((x,y)=>x-y).join(', ')} ; angles de DEF : ${[d,e,f].sort((x,y)=>x-y).join(', ')}. `+(yes?'Mêmes angles : <b>oui</b>, ils sont semblables.':'Angles différents : <b>non</b>.')); },
+ egCase(){ const pool=[["leurs trois côtés respectivement égaux",0],["un angle égal compris entre deux côtés respectivement égaux",0],["un côté égal compris entre deux angles respectivement égaux",0],["leurs trois angles respectivement égaux",1],["des côtés respectivement proportionnels, de coefficient 2",1],["seulement deux côtés respectivement égaux",2],["seulement un angle égal",2]];
+   const it=pick(pool); const lab=['Égaux','Semblables, mais pas forcément égaux','On ne peut pas conclure'];
+   ERRS=[0,1,2].filter(i=>i!==it[1]).map(i=>[0,i,'Cas d’égalité ou de similitude mal connu']);
+   return Qf('Triangles égaux',`Deux triangles ont ${it[0]}. Ces triangles sont :`,CH(lab,it[1]),`${['C\'est un cas d\'égalité des triangles','Les angles égaux (ou les côtés proportionnels) donnent des triangles semblables ; ils ne sont égaux que si leurs côtés sont aussi égaux','Ces informations ne suffisent pas'][it[1]]} : <b>${lab[it[1]].toLowerCase()}</b>.`); },
+ /* ----- Séquence 17 : sections de solides ----- */
+ sectQCM(){ const pool=[["un cube","par un plan parallèle à une face",'un carré'],["un pavé droit de dimensions 3 cm × 4 cm × 6 cm","par un plan parallèle à une face",'un rectangle'],["un cylindre","par un plan perpendiculaire à son axe",'un disque'],["un cylindre","par un plan parallèle à son axe",'un rectangle'],["un cône de révolution","par un plan parallèle à sa base",'un disque'],["une pyramide à base carrée","par un plan parallèle à sa base",'un carré'],["une boule","par un plan",'un disque'],["une pyramide à base triangulaire","par un plan parallèle à sa base",'un triangle']];
+   const it=pick(pool); const opts=it[2]==='un carré'?['un carré','un disque','un triangle','un trapèze']:it[2]==='un rectangle'?['un rectangle','un disque','un triangle','un trapèze']:['un carré','un rectangle','un disque','un triangle']; const ans=opts.indexOf(it[2]);
+   ERRS=opts.map((o,i)=>[0,i,'Nature de la section mal identifiée']);
+   return Qf('Sections de solides',`Quelle est la nature de la section d'${it[0]} ${it[1]} ?`,CH(opts.map(o=>o[0].toUpperCase()+o.slice(1)),ans),`La section d'${it[0]} ${it[1]} est <b>${it[2]}</b>${/parallèle à sa base/.test(it[1])?' (une réduction de la base)':''}.`); },
+ sectSphere(){ let [d,r,Rr]=pick(TRIPLES); if(R()<.5)[d,r]=[r,d];
+   ERRS=[[0,Rr-d,'Longueurs soustraites (au lieu des carrés)'],[0,Rr*Rr-d*d,'Racine carrée oubliée'],[0,Math.sqrt(Rr*Rr+d*d),'Somme des carrés au lieu de la différence']];
+   return Qf('Section d\'une sphère',`Une sphère de centre O a pour rayon ${fmt(Rr)} cm. Un plan coupe la sphère à ${fmt(d)} cm du centre O. Quel est le rayon du cercle de section ?`,NUM(r,'cm','rayon ='),
+   `Le triangle formé par O, le centre H de la section et un point M du cercle est rectangle en H, d'hypoténuse OM = ${fmt(Rr)} : HM² = ${fmt(Rr)}² − ${fmt(d)}² = ${fmt(Rr*Rr)} − ${fmt(d*d)} = ${fmt(r*r)}, donc HM = <b>${fmt(r)} cm</b>`); },
+ sectRed(){ const kind=pick(['pyr','cone']); let h,h2,base;do{h=ri(4,15);h2=ri(1,h-1);base=ri(2,15);}while(!Number.isInteger(base*h2/h*2)||base*h2/h<1);
+   const res=base*h2/h; const nm=kind==='pyr'?'le côté de la base carrée':'le rayon de la base';
+   ERRS=[[0,base*(h-h2)/h,'Rapport calculé avec la distance à la base au lieu de la distance au sommet'],[0,base-(h-h2),'Raisonnement additif']];
+   return Qf('Section et réduction',`${kind==='pyr'?'Une pyramide à base carrée':'Un cône de révolution'} a pour hauteur ${h} cm et ${nm} mesure ${base} cm. On ${kind==='pyr'?'la':'le'} coupe par un plan parallèle à la base, à ${h2} cm du sommet. Combien mesure ${kind==='pyr'?'le côté de la section':'le rayon de la section'} ?`,NUM(res,'cm'),
+   `La section est une réduction de la base de rapport k = ${F(h2,h)}. ${base} × ${F(h2,h)} = <b>${fmt(res)} cm</b>`); },
+ /* ----- Séquence 18 : inéquations ----- */
+ ineqTest(){ const a=nz(-5,5),b=nz(-9,9),op=pick(['<','≤','>','≥']),opH=H(op); let t,c,L;do{t=nz(-6,6);c=ri(-15,15);L=a*t+b;}while(Math.abs(L-c)>3);
+   if(R()<.3)c=L; const ok={'<':L<c,'≤':L<=c,'>':L>c,'≥':L>=c}[op];
+   ERRS=[[0,ok?1:0,L===c?'Inégalité stricte et large confondues':'Erreur de calcul ou de comparaison']];
+   return Qf('Inéquation (tester)',`Le nombre ${fmt(t)} est-il solution de l'inéquation ${lin(a,b).disp} ${opH} ${fmt(c)} ?`,CH(['Oui','Non'],ok?0:1),
+   `Pour x = ${fmt(t)} : ${fmt(a)} × ${opnd(t)}${signed(b,'')} = ${fmt(L)}. ${fmt(L)} ${opH} ${fmt(c)} est ${ok?'vrai : <b>oui</b>':'faux : <b>non</b>'}.`); },
+ ineqSolve(){ let a,b,s;do{a=nz(-5,5);b=nz(-9,9);s=nz(-6,6);}while(Math.abs(a)===1&&R()<.5);const c=a*s+b; const op=pick(['<','≤','>','≥']);
+   const flip={'<':'>','>':'<','≤':'≥','≥':'≤'},strict={'<':'≤','≤':'<','>':'≥','≥':'>'}; const res=a>0?op:flip[op]; const wrongB=(c+b)/a;
+   const good=`x ${H(res)} ${fmt(s)}`; const bad=[`x ${H(flip[res])} ${fmt(s)}`,`x ${H(strict[res])} ${fmt(s)}`]; if(Number.isInteger(wrongB)&&wrongB!==s)bad.push(`x ${H(res)} ${fmt(wrongB)}`); else bad.push(`x ${H(res)} ${fmt(-s)}`);
+   const opts=shuffle([good,...bad]);
+   ERRS=[[0,opts.indexOf(bad[0]),a<0?'Sens non changé en divisant par un nombre négatif':'Sens changé alors qu’on divise par un nombre positif'],[0,opts.indexOf(bad[1]),'Inégalité stricte et large confondues'],[0,opts.indexOf(bad[2]),'Erreur en isolant x']];
+   return Qf('Inéquation (résoudre)','Résoudre l\'inéquation :'+M(`${lin(a,b).disp} ${H(op)} ${fmt(c)}`),CH(opts,opts.indexOf(good)),
+   `${lin(a,0).disp} ${H(op)} ${fmt(c)} ${b<0?'+':'−'} ${Math.abs(b)}, soit ${lin(a,0).disp} ${H(op)} ${fmt(c-b)}. `+(Math.abs(a)===1&&a>0?'':`On divise par ${opnd(a)}${a<0?', un nombre négatif : <b>on change le sens</b> de l\'inégalité':''}. `)+`Solutions : <b>${good}</b>`); },
+ volPi(){ const t=pick(['cyl','cyl','cone','boule']); let r,h,k,txt,corr;
+   if(t==='cyl'){r=ri(1,6);h=ri(2,10);k=r*r*h;txt=`un cylindre de rayon ${r} cm et de hauteur ${h} cm`;corr=`V = π × r² × h = π × ${r}² × ${h} = <b>${k}π cm³</b>`;ERRS=[[0,2*r*h,'Formule de l’aire latérale (2πrh)'],[0,r*h,'Rayon non élevé au carré'],[0,4*r*r*h,'Diamètre utilisé au lieu du rayon']];}
+   else if(t==='cone'){do{r=ri(1,6);h=ri(2,12);}while((r*r*h)%3);k=r*r*h/3;txt=`un cône de révolution de rayon ${r} cm et de hauteur ${h} cm`;corr=`V = ${F('π × r² × h',3)} = ${F('π × '+r*r+' × '+h,3)} = <b>${k}π cm³</b>`;ERRS=[[0,r*r*h,'Division par 3 oubliée'],[0,r*h/3,'Rayon non élevé au carré']];}
+   else {r=pick([3,6]);k=4*r**3/3;txt=`une boule de rayon ${r} cm`;corr=`V = ${F(4,3)} × π × r³ = ${F(4,3)} × π × ${r**3} = <b>${k}π cm³</b>`;ERRS=[[0,4*r**3,'Division par 3 oubliée'],[0,4*r*r,'Formule de l’aire de la sphère (4πr²)']];}
+   const formules={cyl:'V = π × r² × h',cone:'V = '+F('π × r² × h',3),boule:'V = '+F(4,3)+' × π × r³'}[t];
+   return Qf('Volume (valeur exacte)',`Donner la valeur exacte du volume d'${txt}, sous la forme d'un multiple de π.<br>(Rappel : ${formules}.)`,NUM(k,'π cm³','V ='),corr); },
+ ppcm(){ let p,q,l; do{p=pick([4,6,8,9,10,12,15,18,20]);q=pick([4,6,8,9,10,12,15,18,20]);l=p*q/gcd(p,q);}while(p===q||l===p||l===q||l>180);
+   const ctx=pick([['Deux phares s’allument en même temps.','L’un s’allume','secondes'],['Deux bus partent ensemble du terminus.','L’un part','minutes']]);
+   ERRS=[[0,p*q,'Produit des deux durées (pas forcément le plus petit multiple commun)'],[0,gcd(p,q),'PGCD au lieu du PPCM']];
+   return Qf('Multiples communs',`${ctx[0]} ${ctx[1]} toutes les ${p} ${ctx[2]}, l'autre toutes les ${q} ${ctx[2]}. Au bout de combien de ${ctx[2]} cela se reproduira-t-il ensemble pour la première fois ?`,NUM(l,ctx[2]),
+   `On cherche le plus petit multiple commun non nul de ${p} et ${q}. Multiples de ${Math.max(p,q)} : ${[1,2,3,4,5,6,7,8,9,10].map(i=>i*Math.max(p,q)).filter(x=>x<=l).join(', ')}. Le premier qui est aussi un multiple de ${Math.min(p,q)} est ${l} : <b>${l} ${ctx[2]}</b>.`); },
+};
+window.GENS=G;
+window.setRng=f=>{R=f};
+})();
+</script>
+<script>(function(){
+let QS = [];
+let STUDENT=null, T0=0, ATTEMPT=0, TIMER=null;
+const pad=n=>String(n).padStart(2,'0');
+const mmss=s=>pad(Math.floor(s/60))+':'+pad(s%60);
+function elapsed(){return T0?Math.round((Date.now()-T0)/1000):0;}
+// Compte à rebours (15 min par défaut, réglable avec dureeMin dans config.js) : à 0, la fiche est vérifiée et envoyée automatiquement
+let DEADLINE=0, CD=null;
+function stopCountdown(){clearInterval(CD);CD=null;}
+function tickCountdown(){const el=document.getElementById('countdown');const left=Math.max(0,Math.ceil((DEADLINE-Date.now())/1000));
+  el.classList.toggle('warn',left<=120&&left>0);
+  if(left>0){el.textContent='⏳ '+mmss(left);return;}
+  stopCountdown();el.classList.add('end');el.textContent='⏳ Temps écoulé';
+  if(!document.getElementById('verify').disabled)verify();}
+function startCountdown(){stopCountdown();const el=document.getElementById('countdown');const min=+((window.GIRO_CONFIG||{}).dureeMin)||15;
+  DEADLINE=Date.now()+min*60000;el.hidden=false;el.classList.remove('end','warn');tickCountdown();CD=setInterval(tickCountdown,1000);}
+function startChrono(){startCountdown();T0=Date.now();ATTEMPT=0;clearInterval(TIMER);const c=document.getElementById('chrono');if(STUDENT){c.hidden=false;TIMER=setInterval(()=>{c.textContent='⏱️ '+mmss(elapsed());},1000);}}
+const QKEY='giromaths-envois-en-attente';
+function queueGet(){try{return JSON.parse(localStorage.getItem(QKEY)||'[]')}catch(e){return[]}}
+function queueSet(a){try{localStorage.setItem(QKEY,JSON.stringify(a.slice(-50)))}catch(e){}}
+function post(p){const url=(window.GIRO_CONFIG||{}).endpoint;if(!url)return Promise.reject('noconf');
+  // envoi par balise <script> (JSONP) : fonctionne même en ouvrant la fiche depuis un fichier, et donne une vraie confirmation
+  return new Promise((resolve,reject)=>{const cb='giroCb'+Date.now()+Math.floor(Math.random()*1000);const s=document.createElement('script');
+    const done=(fn,v)=>{clearTimeout(t);try{delete window[cb]}catch(e){window[cb]=undefined}s.remove();fn(v);};
+    const t=setTimeout(()=>done(reject,'délai dépassé'),20000);
+    window[cb]=r=>r&&r.ok?done(resolve,r):done(reject,(r&&r.erreur)||'refusé');
+    s.onerror=()=>done(reject,'injoignable');
+    s.src=url+(url.includes('?')?'&':'?')+'callback='+cb+'&data='+encodeURIComponent(JSON.stringify(p));
+    document.head.appendChild(s);});}
+function flushQueue(){const q=queueGet();if(!q.length)return;queueSet([]);q.forEach(p=>post(p).catch(()=>queueSet(queueGet().concat([p]))));}
+let LAST=null;
+function lockInputs(){document.querySelectorAll('.card input').forEach(i=>i.disabled=true);document.querySelectorAll('.keys button').forEach(b=>b.disabled=true);$('#verify').disabled=true;}
+function unlockCorrection(){
+  QS.forEach((q,qi)=>{const d=document.querySelector('#q'+qi+' details.corr');d.querySelector('div').innerHTML=q.correction;d.hidden=false;});
+  $('#showall').hidden=false; lockInputs();
+}
+function sendResult(score,detail,reponses){
+  const el=document.getElementById('sent'); el.className='sent'; el.textContent=''; $('#retry').hidden=true;
+  if(!STUDENT){el.textContent='Mode professeur : le résultat n\'est pas enregistré.';unlockCorrection();return;}
+  ATTEMPT++;
+  LAST={numero:STUDENT.numero,classe:STUDENT.classe,fiche:window.FICHE.title,ficheNum:window.FICHE.num,version:SEED,note:score,sur:QS.length,dureeSec:elapsed(),duree:mmss(elapsed()),tentative:ATTEMPT,detail:detail.join(''),reponses:reponses,date:new Date().toISOString()};
+  trySend();
+}
+function trySend(){
+  const el=document.getElementById('sent'), p=LAST; el.className='sent'; $('#retry').hidden=true;
+  if(!(window.GIRO_CONFIG||{}).endpoint){el.classList.add('ko');el.textContent='Enregistrement des résultats non configuré par le professeur : la correction reste masquée.';return;}
+  el.textContent='Envoi du résultat…'; $('#verify').disabled=true;
+  post(p).then(()=>{el.classList.add('ok');el.textContent=`✓ Résultat bien reçu par ton professeur (élève ${p.numero}, ${p.note}/${p.sur}, ${p.duree}). La correction est maintenant disponible.`;clearInterval(TIMER);unlockCorrection();})
+    .catch(err=>{el.classList.add('ko');el.textContent='Le résultat n\'a pas pu être envoyé ('+err+'). La correction s\'affichera dès que l\'envoi aura réussi.';$('#retry').hidden=false;});
+}
+let SEED = 0;
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;}}
+function build(seed){
+  SEED=seed; window.setRng(mulberry(seed*7919+window.FICHE.num*104729));
+  QS = window.FICHE.gens.map(g=>{const [name,...args]=Array.isArray(g)?g:[g];return window.GENS[name](...args);});
+}
+const $ = (s,r=document)=>r.querySelector(s);
+/*CHECK-DEBUT : ce bloc (jusqu'à CHECK-FIN) est aussi recopié par build.py dans la page d'analyse des erreurs */
+const norm = s => s.replace(/\s+/g,'').replace(/−|–/g,'-').replace(/,/g,'.').replace(/×|·/g,'*').replace(/÷/g,'/').replace(/²/g,'^2').replace(/³/g,'^3').replace(/X/g,'x');
+function gcd(a,b){a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a;}
+// Analyse d'une expression (nombres, x, + - * / ^, parenthèses, multiplication implicite)
+function parse(src){
+  const s = norm(src); let i=0;
+  if(!s) throw 0;
+  const peek=()=>s[i];
+  function atom(){
+    const c=peek();
+    if(c==='('){i++;const e=expr();if(s[i++]!==')')throw 0;return e;}
+    if(c==='x'){i++;return x=>x;}
+    const m=/^\d+(\.\d+)?/.exec(s.slice(i));
+    if(m){i+=m[0].length;const v=parseFloat(m[0]);return ()=>v;}
+    throw 0;
+  }
+  function power(){const a=atom();if(peek()==='^'){i++;const b=unary();return x=>Math.pow(a(x),b(x));}return a;}
+  function unary(){const c=peek();if(c==='-'){i++;const f=unary();return x=>-f(x);}if(c==='+'){i++;return unary();}return power();}
+  function term(){let f=unary();for(;;){const c=peek();
+      if(c==='*'||c==='/'){i++;const g=unary();const h=f;f=c==='*'?x=>h(x)*g(x):x=>h(x)/g(x);}
+      else if(c==='x'||c==='('||(c&&/\d/.test(c))){const g=power();const h=f;f=x=>h(x)*g(x);}
+      else return f;}}
+  function expr(){let f=term();for(;;){const c=peek();if(c==='+'||c==='-'){i++;const g=term();const h=f;f=c==='+'?x=>h(x)+g(x):x=>h(x)-g(x);}else return f;}}
+  const e=expr(); if(i!==s.length) throw 0; return e;
+}
+// forme factorisée : pas de + ou − « au premier niveau » (hors parenthèses), sauf un signe en tête
+function isProduct(raw){let s=norm(raw).replace(/^\+/,'').replace(/^-/,'');
+  const wrapped=t=>{if(t[0]!=='(')return false;let d=0;for(let i=0;i<t.length;i++){if(t[i]==='(')d++;else if(t[i]===')'){d--;if(d===0&&i<t.length-1)return false;}}return true;};
+  for(let k=0;k<5;k++){if(/^1\*?\(/.test(s))s=s.replace(/^1\*?/,'');if(wrapped(s))s=s.slice(1,-1).replace(/^\+/,'').replace(/^-/,'');else break;}
+  let d=0;for(let i=0;i<s.length;i++){const c=s[i];if(c==='(')d++;else if(c===')')d--;else if((c==='+'||c==='-')&&d===0&&i>0&&!'*/^('.includes(s[i-1]))return false;}return /[(]/.test(s);}
+const close=(a,b)=>Math.abs(a-b)<1e-7*Math.max(1,Math.abs(b));
+function check(field, raw){
+  raw=(raw||'').trim();
+  if(field.type==='choice') return raw===''?null:(+raw===field.ans?'ok':'ko');
+  if(!raw) return null;
+  try{
+    if(field.type==='expr'){
+      if(!/x/i.test(raw)) { /* expression sans x */ }
+      const f=parse(raw), g=parse(field.ans);
+      for(const x of [-2.5,-1,0,0.5,2,3.7]) if(!close(f(x),g(x))) return 'ko';
+      if(field.factored && !isProduct(raw)) return 'factor';
+      return 'ok';
+    }
+    if(/x/i.test(norm(raw))) return 'ko';
+    const v=parse(raw)(0);
+    const target = Array.isArray(field.ans)? field.ans[0]/field.ans[1] : field.ans;
+    if(!close(v,target)) return 'ko';
+    if(field.irreducible){
+      const m=/^(-?)\(?(-?\d+)\)?\/\(?(-?\d+)\)?$/.exec(norm(raw));
+      if(m && gcd(+m[2],+m[3])!==1) return 'simplify';
+      if(!m && !Number.isInteger(v) && !field.allowDecimal) return 'fraction';
+    }
+    return 'ok';
+  }catch(e){return 'ko';}
+}
+/*CHECK-FIN*/
+function verify(){
+  stopCountdown();
+  let score=0, answered=0; const detail=[], reponses=[];  // reponses : ce que l'élève a saisi (pour l'analyse des erreurs)
+  QS.forEach((q,qi)=>{
+    const card=$('#q'+qi); let all=true, any=false, msg=''; const rq=[];
+    q.fields.forEach((f,fi)=>{
+      const el=$('#q'+qi+'f'+fi);
+      const val = f.type==='choice' ? (($('input[name="q'+qi+'f'+fi+'"]:checked',card)||{}).value||'') : el.value;
+      rq.push(String(val||'').trim().slice(0,30));
+      const r=check(f,val);
+      const box = f.type==='choice'? $('#q'+qi+'f'+fi,card) : el;
+      box.classList.remove('ok','ko');
+      if(r!==null) any=true;
+      if(r==='ok') box.classList.add('ok'); else { all=false; if(r!==null) box.classList.add('ko'); }
+      if(r==='simplify') msg='La valeur est juste, mais la fraction n\'est pas irréductible.';
+      if(r==='factor') msg='L\'expression est juste, mais elle n\'est pas factorisée.';
+      if(r==='fraction') msg='Donne le résultat sous forme de fraction.';
+    });
+    card.classList.remove('good','bad');
+    if(any){answered++; card.classList.add(all?'good':'bad');}
+    if(all) score++; detail.push(all?'1':'0'); reponses.push(rq);
+    $('.hint',card).textContent=msg;
+  });
+  $('#score').innerHTML=`<b>${score}</b> / ${QS.length}`;
+  $('#scorebar').style.width=(score*100/QS.length)+'%';
+  $('#result').hidden=false;
+  $('#result .msg').textContent = score===QS.length?'Parfait, tous tes automatismes sont en place !':score>=7?'Très bien ! Regarde la correction des questions en rouge.':score>=4?'C\'est un bon début. Revois les questions en rouge avec la correction.':'Courage ! Relis la correction, puis recommence la fiche.';
+  sendResult(score,detail,reponses);
+  $('#result').scrollIntoView({behavior:'smooth',block:'center'});
+}
+function renderGrid(){
+  const grid=$('#grid'); grid.innerHTML='';
+  QS.forEach((q,qi)=>{
+    const c=document.createElement('section'); c.className='card'; c.id='q'+qi;
+    let fields='';
+    q.fields.forEach((f,fi)=>{
+      const id='q'+qi+'f'+fi;
+      if(f.type==='choice'){
+        fields+=`<div class="choices" id="${id}">${f.label?`<span class="flabel">${f.label}</span>`:''}${f.options.map((o,oi)=>`<label class="chip"><input type="radio" name="${id}" value="${oi}"><span>${o}</span></label>`).join('')}</div>`;
+      } else if(f.sup){
+        fields+=`<span class="ten">× 10</span><input id="${id}" class="expo" autocomplete="off" inputmode="text" aria-label="exposant" placeholder="n">`;
+      } else {
+        const ph = f.type==='expr'?'ex. : 2x² − 3x + 1':f.irreducible?'ex. : 5/4':f.sciM?'ex. : 3,4':'';
+        fields+=`<div class="field">${f.label?`<span class="flabel">${f.label}</span>`:''}<input id="${id}"${f.type==='expr'?' class="wide"':f.sciM?' class="mant"':''} autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="${ph}">${f.unit?`<span class="unit">${f.unit}</span>`:''}${f.type==='expr'?`<span class="keys"><button type="button" data-k="x">x</button><button type="button" data-k="²">x²</button></span>`:''}</div>`;
+      }
+    });
+    c.innerHTML=`<header><span class="num">${qi+1}</span><h2>${q.topic}</h2></header>
+      <div class="statement">${q.html}</div>
+      <div class="answer"><span class="rlabel">Réponse</span>${fields}</div>
+      <p class="hint" aria-live="polite"></p>
+      <details class="corr" hidden><summary>Correction</summary><div></div></details>`;
+    grid.appendChild(c);
+  });
+  $('#version').textContent='Version n° '+SEED;
+  $('#showall').hidden=true; $('#verify').disabled=false; $('#retry').hidden=true; LAST=null;
+  $('#result').hidden=true;
+  try{history.replaceState(null,'','?v='+SEED);}catch(e){}
+}
+function newSeed(){return 1+Math.floor(Math.random()*9999);}
+function render(){
+  $('#title').textContent=window.FICHE.title;
+  $('#subtitle').textContent=window.FICHE.subtitle;
+  document.title=window.FICHE.title+' · GiroMaths';
+  let s=parseInt(new URLSearchParams(location.search).get('v'),10); if(!(s>0))s=newSeed();
+  build(s); renderGrid();
+  const grid=$('#grid');
+  grid.addEventListener('click',e=>{const b=e.target.closest('button[data-k]');if(!b)return;const inp=b.closest('.field').querySelector('input');const k=b.dataset.k;const p=inp.selectionStart??inp.value.length;inp.value=inp.value.slice(0,p)+k+inp.value.slice(inp.selectionEnd??p);inp.focus();inp.setSelectionRange(p+k.length,p+k.length);});
+  grid.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.tagName==='INPUT'){const all=[...document.querySelectorAll('.card input:not([type=radio])')];const n=all[all.indexOf(e.target)+1];if(n)n.focus();else verify();}});
+  $('#verify').onclick=verify;
+  $('#retry').onclick=trySend;
+  $('#showall').onclick=()=>document.querySelectorAll('details.corr').forEach(d=>d.open=true);
+  $('#reset').onclick=()=>{renderGrid();if(!CD&&DEADLINE)startCountdown();window.scrollTo({top:0,behavior:'smooth'});};
+  $('#newfiche').onclick=()=>{build(newSeed());renderGrid();startChrono();window.scrollTo({top:0,behavior:'smooth'});};
+  $('#print').onclick=()=>window.print();
+  flushQueue();
+  const modal=$('#start');
+  try{const s=JSON.parse(sessionStorage.getItem('giromaths-eleve')||'null');if(s){$('#numero').value=s.numero;$('#classe').value=s.classe;}}catch(e){}
+  $('#startForm').onsubmit=ev=>{ev.preventDefault();
+    let n=$('#numero').value.trim().toUpperCase(); const c=$('#classe').value.trim().toUpperCase();
+    if(/^[0-9]$/.test(n)) n='0'+n;  // 7 -> 07
+    if(!/^[A-Z0-9]{2}$/.test(n)){$('#startErr').textContent='Le numéro d\'élève s\'écrit sur 2 caractères, par exemple 07 (pas de nom).';return;}
+    STUDENT={numero:n,classe:c.replace(/[^A-Z0-9-]/g,'')};
+    try{sessionStorage.setItem('giromaths-eleve',JSON.stringify(STUDENT));}catch(e){}
+    $('#who').hidden=false;$('#who').textContent='👤 Élève '+n+(STUDENT.classe?' · '+STUDENT.classe:'');
+    modal.hidden=true;startChrono();const f=document.querySelector('.card input');if(f)f.focus();};
+  $('#freeMode').onclick=()=>{$('#profBox').hidden=false;$('#codeProf').focus();};
+  async function profOk(v){const C=window.GIRO_CONFIG||{};
+    if(C.codeProfHash&&window.crypto&&crypto.subtle){const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));
+      return [...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join('')===C.codeProfHash;}
+    const code=(C.codeProf||'').trim();return !!code&&v===code;}
+  $('#profGo').onclick=async()=>{
+    if(!(await profOk($('#codeProf').value.trim()))){$('#startErr').textContent='Code professeur incorrect.';return;}
+    STUDENT=null;modal.hidden=true;$('#who').hidden=false;$('#who').textContent='👩‍🏫 Mode professeur';startChrono();};
+  setTimeout(()=>$('#numero').focus(),50);
+}
+window.__build=s=>{build(s);renderGrid();return QS;};
+window.__checkForTests=check; window.__parse=parse;
+render();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,569 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Lire sur une courbe</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Mise en page : courbe à gauche, panneau de lecture / exercice à droite.
+   Couleurs : vert = antécédent (axe horizontal), rouge = image (axe vertical), bleu = la courbe. */
+:root{
+  --bg:#F3F5F9; --panel:#FFFFFF; --ink:#14202E; --muted:#566678; --line:#D3DAE5;
+  --paper:#FBFCFE; --grid:#E0E7F1; --grid2:#B7C4D6;
+  --pt:#B45309;--curve:#1D5BD2; --ant:#0F8456; --img:#D13A3A; --ok:#0F8456; --ko:#B8321F;
+  --okbg:#E3F5EC; --kobg:#FBE9E5; --chip:#E8EDF5;
+  --head:'Space Grotesk','Inter',system-ui,sans-serif; --body:'Inter',system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0E131A; --panel:#161D27; --ink:#E6ECF4; --muted:#92A2B5; --line:#2A3442;
+  --paper:#111923; --grid:#1D2937; --grid2:#344760;
+  --pt:#FFB454;--curve:#74A4FF; --ant:#3ECB93; --img:#FF7F7F; --ok:#3ECB93; --ko:#FF9A86;
+  --okbg:#12322A; --kobg:#3A1E1A; --chip:#222C3A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E131A; --panel:#161D27; --ink:#E6ECF4; --muted:#92A2B5; --line:#2A3442;
+  --paper:#111923; --grid:#1D2937; --grid2:#344760;
+  --pt:#FFB454;--curve:#74A4FF; --ant:#3ECB93; --img:#FF7F7F; --ok:#3ECB93; --ko:#FF9A86;
+  --okbg:#12322A; --kobg:#3A1E1A; --chip:#222C3A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;
+  padding-block:12px 24px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:1500px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+h1{font-family:var(--head);font-size:clamp(20px,3vw,26px);line-height:1.15;margin:0;font-weight:700;text-wrap:balance}
+.sub{color:var(--muted);margin:4px 0 0;max-width:60ch}
+.bar{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center}
+.bar.top h1{margin-right:8px}
+.lbl{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+button,input{font:inherit;color:inherit}
+.chip{background:var(--chip);border:1px solid transparent;border-radius:999px;padding:6px 12px;cursor:pointer;font-size:14px}
+.chip:hover{border-color:var(--grid2)}
+.chip[aria-pressed="true"]{background:var(--curve);color:#fff;font-weight:600}
+:root[data-theme="dark"] .chip[aria-pressed="true"]{color:#08101C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip[aria-pressed="true"]{color:#08101C}}
+.tabs{display:inline-flex;background:var(--chip);border-radius:10px;padding:3px;gap:2px}
+.tab{border:0;background:transparent;padding:7px 16px;border-radius:8px;cursor:pointer;font-weight:500}
+.tab[aria-selected="true"]{background:var(--panel);box-shadow:0 1px 2px rgba(0,0,0,.18);font-weight:600}
+:focus-visible{outline:2px solid var(--curve);outline-offset:2px}
+.main{display:grid;grid-template-columns:max(440px,min(calc(100vh - 110px),100%)) minmax(260px,1fr);gap:16px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+.graph{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:4px}
+svg{display:block;width:100%;height:auto;touch-action:none;user-select:none;-webkit-user-select:none}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.big{font-family:var(--head);font-size:clamp(26px,5vw,34px);font-weight:700;line-height:1.1}
+.ctx{color:var(--img)} .cta{color:var(--ant)}
+.how{color:var(--muted);font-size:14px;margin:0}
+.sent{margin:0;padding:10px 12px;background:var(--chip);border-radius:8px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+input[type=range]{width:100%;accent-color:var(--curve)}
+.ans{flex:1 1 180px;min-width:0;background:var(--paper);border:1.5px solid var(--grid2);border-radius:8px;padding:9px 12px;font-size:17px}
+.btn{border:0;border-radius:8px;padding:9px 16px;cursor:pointer;font-weight:600;background:var(--curve);color:#fff}
+:root[data-theme="dark"] .btn.p{color:#08101C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .btn.p{color:#08101C}}
+.btn.s{background:var(--chip);color:var(--ink);font-weight:500}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{flex:1 1 120px;text-align:left;background:var(--paper);border:1.5px solid var(--grid2);border-radius:8px;padding:10px 12px;cursor:pointer;font-size:15px}
+.opt:hover:not(:disabled){border-color:var(--curve)}.opt:disabled{opacity:.6;cursor:default}
+.stmt{display:block;margin-top:6px;font-weight:700}
+.key{min-width:38px;padding:6px 10px;border-radius:7px;border:1px solid var(--grid2);background:var(--paper);cursor:pointer;font-size:16px}
+.fb{padding:10px 12px;border-radius:8px;font-size:14.5px}
+.fb.ok{background:var(--okbg);color:var(--ok)} .fb.ko{background:var(--kobg);color:var(--ko)} .fb.info{background:var(--chip)}
+.fb b{font-weight:600}
+.score{margin-left:auto;font-size:13px;color:var(--muted)}
+.q{font-family:var(--head);font-size:clamp(18px,3.2vw,22px);font-weight:500;line-height:1.3;margin:0;text-wrap:balance}
+/* svg */
+.gl{stroke:var(--grid);stroke-width:1}.gl.m{stroke:var(--grid2);stroke-width:1}
+.ax{stroke:var(--ink);stroke-width:1.6;fill:none}
+.tk{font:12.5px var(--body);fill:var(--muted)}
+.axn{font:italic 14px var(--head);fill:var(--ink)}
+.cv{fill:none;stroke:var(--curve);stroke-width:3.6;stroke-linejoin:round;stroke-linecap:round}
+.dash{stroke-dasharray:6 5;stroke-width:2;fill:none}
+.sa{stroke:var(--ant)}.si{stroke:var(--img)}.fa{fill:var(--ant)}.fi{fill:var(--img)}
+.dm{font:700 15px var(--body);paint-order:stroke;stroke:var(--paper);stroke-width:4px;stroke-linejoin:round}
+.dm.a{fill:var(--ant)}.dm.i{fill:var(--img)}
+.hand{cursor:grab}
+.hint{font:600 12px var(--body);fill:var(--muted)}
+</style>
+
+<div class="wrap">
+  <div class="bar top">
+    <h1>Lire sur une courbe</h1>
+    <div class="row" id="curves" role="group" aria-label="Choix de la courbe"></div>
+    <div class="tabs" role="tablist" aria-label="Mode">
+      <button class="tab" role="tab" id="tab-explore" aria-selected="true">Explorer</button>
+      <button class="tab" role="tab" id="tab-train" aria-selected="false">S'entraîner</button>
+    </div>
+    <div class="chips" id="subs"></div>
+  </div>
+
+  <div class="main">
+    <div class="graph"><svg id="svg" viewBox="28 28 584 584" role="img" aria-label="Représentation graphique de la fonction"></svg></div>
+    <div class="panel" id="panel" aria-live="polite"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+var U=48,O=320;
+function X(x){return O+U*x} function Y(y){return O-U*y}
+function fmt(v){var r=Math.round(v*100)/100; if(r===0) r=0; return String(r).replace('.',',').replace('-','−')}
+function fmt1(v){var r=Math.round(v*10)/10; if(r===0) r=0; return String(r).replace('.',',').replace('-','−')}
+
+/* ---------- fonctions ---------- */
+function hermite(nodes){
+  var n=nodes.length,h=[],d=[],m=[],k;
+  for(k=0;k<n-1;k++){h[k]=nodes[k+1][0]-nodes[k][0]; d[k]=(nodes[k+1][1]-nodes[k][1])/h[k]}
+  m[0]=d[0]; m[n-1]=d[n-2];
+  for(k=1;k<n-1;k++){
+    if(d[k-1]*d[k]<=0) m[k]=0;
+    else{var w1=2*h[k]+h[k-1],w2=h[k]+2*h[k-1]; m[k]=(w1+w2)/(w1/d[k-1]+w2/d[k])}
+  }
+  return function(x){
+    var i=0; while(i<n-2&&x>nodes[i+1][0]) i++;
+    var t=(x-nodes[i][0])/h[i],t2=t*t,t3=t2*t;
+    return (2*t3-3*t2+1)*nodes[i][1]+(t3-2*t2+t)*h[i]*m[i]+(-2*t3+3*t2)*nodes[i+1][1]+(t3-t2)*h[i]*m[i+1];
+  };
+}
+function poly(pts){
+  return function(x){
+    for(var i=0;i<pts.length-1;i++){
+      if(x<=pts[i+1][0]+1e-12){var a=pts[i],b=pts[i+1]; return a[1]+(b[1]-a[1])*(x-a[0])/(b[0]-a[0])}
+    }
+    return pts[pts.length-1][1];
+  };
+}
+function ri(a,b){return a+Math.floor(Math.random()*(b-a+1))}
+function rp(a){return a[Math.floor(Math.random()*a.length)]}
+function genAny(){
+  for(var t=0;t<500;t++){
+    var n=ri(3,4),xs=[-5],cand=[-4,-3,-2,-1,0,1,2,3,4],i;
+    var inner=[]; while(inner.length<n){var v=rp(cand); if(inner.every(function(w){return Math.abs(w-v)>=2})) inner.push(v); if(Math.random()<0.02) break}
+    if(inner.length<n) continue;
+    inner.sort(function(p,q){return p-q}); xs=xs.concat(inner,[5]);
+    if(xs[1]-xs[0]<1||5-xs[xs.length-2]<1) continue;
+    var up=Math.random()<0.5,y=ri(-4,4),nodes=[[xs[0],y]],ok=true;
+    for(i=1;i<xs.length;i++){
+      var d=ri(2,5),ny=up?y+d:y-d; if(Math.abs(ny)>5){ok=false;break}
+      nodes.push([xs[i],ny]); y=ny; up=!up;
+    }
+    if(!ok) continue;
+    var mn=Math.min.apply(null,nodes.map(function(q){return q[1]})),mx=Math.max.apply(null,nodes.map(function(q){return q[1]}));
+    if(mx-mn<5) continue;
+    return {kind:'any',f:hermite(nodes),dom:[-5,5],exact:false,tol:0.3,plateaus:[]};
+  }
+  return {kind:'any',f:hermite([[-5,3],[-3,-3],[0,0],[2,4],[4,1],[5,2]]),dom:[-5,5],exact:false,tol:0.3,plateaus:[]};
+}
+function genLine(){
+  for(var t=0;t<200;t++){
+    var m=rp([1,2,-1,-2,0.5,-0.5,1.5,-1.5]),b=Math.random()<0.25?0:ri(-3,3);
+    var xa=(-5-b)/m,xb=(5-b)/m,lo=Math.max(-5,Math.ceil(Math.min(xa,xb)*2)/2),hi=Math.min(5,Math.floor(Math.max(xa,xb)*2)/2);
+    if(hi-lo<4||lo>-1.5||hi<1.5) continue;
+    return {kind:'line',f:function(x){return m*x+b},dom:[lo,hi],exact:true,tol:0.12,plateaus:[]};
+  }
+  return {kind:'line',f:function(x){return 2*x+1},dom:[-3,2],exact:true,tol:0.12,plateaus:[]};
+}
+function genPlat(){
+  for(var t=0;t<300;t++){
+    var j1=ri(-1,1),j2=ri(-1,1),b=ri(-4,4),c=ri(-4,4),a=ri(-5,5),d=ri(-5,5);
+    if(Math.abs(b-c)<2||(1+j2)-(-1+j1)<1) continue;
+    if(Math.abs(a-b)<1||Math.abs(d-c)<1) continue;
+    var pts=[[-5,a],[-3+j1,b],[-1+j1,b],[1+j2,c],[3+j2,c],[5,d]];
+    return {kind:'plat',f:poly(pts),dom:[-5,5],exact:true,tol:0.12,plateaus:[{y:b,x0:-3+j1,x1:-1+j1},{y:c,x0:1+j2,x1:3+j2}]};
+  }
+  return null;
+}
+function genCst(){var v=rp([-4,-3,-2,-1,1,2,3,4]); return {kind:'cst',f:function(){return v},dom:[-5,5],exact:true,tol:0.12,plateaus:[{y:v,x0:-5,x1:5}]}}
+var lastKind='';
+function newCurve(){
+  var k,g;
+  for(var t=0;t<4;t++){
+    var r=Math.random(); k=r<0.4?'any':r<0.62?'line':r<0.88?'plat':'cst';
+    if(k!==lastKind||t===3) break;
+  }
+  g=k==='any'?genAny():k==='line'?genLine():k==='plat'?(genPlat()||genAny()):genCst();
+  lastKind=g.kind; return g;
+}
+function solve(c,a){
+  var d0=c.dom[0],d1=c.dom[1],N=Math.round((d1-d0)*160),eps=1e-7,roots=[],ivs=[],k,x,v,prev,i;
+  c.plateaus.forEach(function(p){if(Math.abs(p.y-a)<eps) ivs.push([p.x0,p.x1])});
+  prev=c.f(d0)-a; if(Math.abs(prev)<eps) roots.push(d0);
+  for(k=1;k<=N;k++){
+    x=d0+k/160; v=c.f(x)-a;
+    if(Math.abs(v)<eps) roots.push(x);
+    else if(prev*v<0&&Math.abs(prev)>=eps){
+      var lo=x-1/160,hi=x,flo=prev;
+      for(i=0;i<50;i++){var mid=(lo+hi)/2,fm=c.f(mid)-a; if(fm*flo<=0) hi=mid; else{lo=mid;flo=fm}}
+      roots.push((lo+hi)/2);
+    }
+    prev=v;
+  }
+  roots=roots.filter(function(r){return !ivs.some(function(iv){return r>=iv[0]-0.02&&r<=iv[1]+0.02})});
+  roots.sort(function(p,q){return p-q});
+  var out=[]; roots.forEach(function(r){if(!out.length||r-out[out.length-1]>0.01) out.push(r)});
+  return {pts:out,iv:ivs};
+}
+
+/* ---------- état ---------- */
+var S={cn:1,mode:'explore',sub:'image',xv:-3,yv:1,qtype:'all',fb2:null,q:null,score:0,total:0,state:'ask',fb:null,val:''};
+var svg=document.getElementById('svg'),panel=document.getElementById('panel');
+S.c=null;
+function cur(){return S.c}
+
+/* ---------- dessin ---------- */
+function base(){
+  var s='',i;
+  for(i=-6;i<=6;i++){
+    s+='<line class="gl" x1="'+X(i)+'" y1="'+Y(-6)+'" x2="'+X(i)+'" y2="'+Y(6)+'"/>';
+    s+='<line class="gl" x1="'+X(-6)+'" y1="'+Y(i)+'" x2="'+X(6)+'" y2="'+Y(i)+'"/>';
+  }
+  s+='<line class="ax" x1="'+X(-6)+'" y1="'+O+'" x2="'+(X(6)+6)+'" y2="'+O+'"/><line class="ax" x1="'+O+'" y1="'+Y(-6)+'" x2="'+O+'" y2="'+(Y(6)-6)+'"/>';
+  s+='<path d="M'+(X(6)+10)+','+O+' l-9,-5 v10z" fill="var(--ink)"/><path d="M'+O+','+(Y(6)-10)+' l-5,9 h10z" fill="var(--ink)"/>';
+  for(i=-5;i<=5;i++){ if(i===0) continue;
+    s+='<text class="tk" x="'+X(i)+'" y="'+(O+15)+'" text-anchor="middle">'+fmt(i)+'</text>';
+    s+='<text class="tk" x="'+(O-7)+'" y="'+(Y(i)+4)+'" text-anchor="end">'+fmt(i)+'</text>';
+  }
+  s+='<text class="tk" x="'+(O-7)+'" y="'+(O+15)+'" text-anchor="end">0</text>';
+  s+='<text class="axn" x="'+(X(6)-4)+'" y="'+(O-8)+'" text-anchor="end">x</text><text class="axn" x="'+(O+10)+'" y="'+(Y(6)+8)+'">y</text>';
+  var c=cur(),d='',x,step=0.05,first=true;
+  for(x=c.dom[0];x<=c.dom[1]+1e-9;x+=step){var xx=Math.round(x*1000)/1000; d+=(first?'M':'L')+X(xx).toFixed(1)+','+Y(c.f(xx)).toFixed(1)+' '; first=false}
+  s+='<path class="cv" d="'+d+'"/>';
+  [c.dom[0],c.dom[1]].forEach(function(e){s+='<circle cx="'+X(e)+'" cy="'+Y(c.f(e))+'" r="5" fill="var(--curve)"/>'});
+  return s;
+}
+function dot(cx,cy,cls){return '<circle class="'+cls+'" cx="'+cx+'" cy="'+cy+'" r="5.5" stroke="var(--paper)" stroke-width="2"/>'}
+function guidesImage(x,y){
+  var s='',below=y>=0,left=x>0;
+  s+='<line class="dash sa" x1="'+X(x)+'" y1="'+O+'" x2="'+X(x)+'" y2="'+Y(y)+'"/>';
+  s+='<line class="dash si" x1="'+X(x)+'" y1="'+Y(y)+'" x2="'+O+'" y2="'+Y(y)+'"/>';
+  s+=dot(X(x),O,'fa')+dot(O,Y(y),'fi')+dot(X(x),Y(y),'fa');
+  s+='<text class="dm a" x="'+X(x)+'" y="'+(below?O+30:O-14)+'" text-anchor="middle">'+fmt(x)+'</text>';
+  s+='<text class="dm i" x="'+(left?O-12:O+12)+'" y="'+(Y(y)+(y>0?-8:16))+'" text-anchor="'+(left?'end':'start')+'">'+(cur().exact?fmt(y):fmt1(y))+'</text>';
+  return s;
+}
+function guidesAnt(a,sol,approx){
+  var s='',below=a>=0;
+  s+='<line class="dash si" x1="'+X(-6)+'" y1="'+Y(a)+'" x2="'+X(6)+'" y2="'+Y(a)+'"/>';
+  s+=dot(O,Y(a),'fi');
+  s+='<text class="dm i" x="'+(O+12)+'" y="'+(Y(a)-8)+'">'+fmt(a)+'</text>';
+  sol.iv.forEach(function(iv){
+    s+='<line x1="'+X(iv[0])+'" y1="'+Y(a)+'" x2="'+X(iv[1])+'" y2="'+Y(a)+'" stroke="var(--ant)" stroke-width="6" stroke-linecap="round" opacity=".55"/>';
+    s+='<line x1="'+X(iv[0])+'" y1="'+O+'" x2="'+X(iv[1])+'" y2="'+O+'" stroke="var(--ant)" stroke-width="7" stroke-linecap="round"/>';
+    s+='<line class="dash sa" x1="'+X(iv[0])+'" y1="'+Y(a)+'" x2="'+X(iv[0])+'" y2="'+O+'"/><line class="dash sa" x1="'+X(iv[1])+'" y1="'+Y(a)+'" x2="'+X(iv[1])+'" y2="'+O+'"/>';
+    s+='<text class="dm a" x="'+X((iv[0]+iv[1])/2)+'" y="'+(below?O+30:O-14)+'" text-anchor="middle">['+fmt(iv[0])+' ; '+fmt(iv[1])+']</text>';
+  });
+  sol.pts.forEach(function(r){
+    s+='<line class="dash sa" x1="'+X(r)+'" y1="'+Y(a)+'" x2="'+X(r)+'" y2="'+O+'"/>';
+    s+=dot(X(r),O,'fa')+dot(X(r),Y(a),'fa');
+    s+='<text class="dm a" x="'+X(r)+'" y="'+(below?O+30:O-14)+'" text-anchor="middle">'+(approx?'≈ '+fmt1(r):fmt(r))+'</text>';
+  });
+  return s;
+}
+var G='';
+function draw(){
+  var g=G;
+  svg.innerHTML=base()+g.guides+(g.extra||'')+g.handles;
+}
+/* ---------- explorer ---------- */
+function explorerView(){
+  var c=cur(),guides='',handles='',html='';
+  if(S.sub==='image'){
+    var x=Math.min(c.dom[1],Math.max(c.dom[0],S.xv)); S.xv=x;
+    var y=c.f(x), ap=!c.exact&&Math.abs(y*2-Math.round(y*2))>1e-6;
+    guides=guidesImage(x,y);
+    handles='<g class="hand" id="hd"><circle cx="'+X(x)+'" cy="'+O+'" r="13" fill="var(--ant)" opacity=".18"/><circle cx="'+X(x)+'" cy="'+O+'" r="8" fill="var(--ant)" stroke="var(--paper)" stroke-width="2"/></g><text class="hint" x="'+(X(-6)+6)+'" y="'+(Y(6)+16)+'">Glisse sur le graphique pour changer x</text>';
+    html='<div class="lbl">Lecture d’une image</div><div class="big">f(<span class="cta">'+fmt(x)+'</span>) '+(ap?'≈':'=')+' <span class="ctx">'+(ap?fmt1(y):fmt(y))+'</span></div>'
+      +'<p class="sent">L’image de <b class="cta">'+fmt(x)+'</b> par la fonction f est <b class="ctx">'+(ap?'environ ':'')+(ap?fmt1(y):fmt(y))+'</b>.</p>'
+      +'<p class="how">On part de <b class="cta">'+fmt(x)+'</b> sur l’axe horizontal, on rejoint la courbe, puis on lit la hauteur sur l’axe vertical.</p>'
+      +'<label class="lbl" for="sl">Valeur de x</label><input type="range" id="sl" min="'+c.dom[0]+'" max="'+c.dom[1]+'" step="0.5" value="'+x+'">';
+  }else{
+    var a=Math.min(5,Math.max(-5,S.yv)); S.yv=a;
+    var sol=solve(c,a),n=sol.pts.length,ap2=!c.exact;
+    guides=guidesAnt(a,sol,ap2);
+    handles='<g class="hand" id="hd"><circle cx="'+O+'" cy="'+Y(a)+'" r="13" fill="var(--img)" opacity=".18"/><circle cx="'+O+'" cy="'+Y(a)+'" r="8" fill="var(--img)" stroke="var(--paper)" stroke-width="2"/></g><text class="hint" x="'+(X(-6)+6)+'" y="'+(Y(6)+16)+'">Glisse sur le graphique pour changer la hauteur</text>';
+    html='<div class="lbl">Lecture des antécédents</div><div class="big">f(x) = <span class="ctx">'+fmt(a)+'</span></div>'
+      +'<p class="sent">'+antSentence(a,sol,ap2)+'</p>'
+      +'<p class="how">On part de <b class="ctx">'+fmt(a)+'</b> sur l’axe vertical, on trace l’horizontale, puis on lit chaque abscisse des points d’intersection avec la courbe.</p>'
+      +'<label class="lbl" for="sl">Hauteur y</label><input type="range" id="sl" min="-5" max="5" step="0.5" value="'+a+'">';
+  }
+  G={guides:guides,handles:handles}; panel.innerHTML=html; draw();
+  document.getElementById('sl').addEventListener('input',function(e){var v=parseFloat(e.target.value); if(S.sub==='image') S.xv=v; else S.yv=v; explorerView()});
+}
+function listStr(arr,ap){return arr.map(function(r){return ap?'≈ '+fmt1(r):fmt(r)}).join(' ; ')}
+function antSentence(a,sol,ap){
+  var A='<b class="ctx">'+fmt(a)+'</b>';
+  if(sol.iv.length){var iv=sol.iv[0]; return 'Le nombre '+A+' a <b>une infinité d’antécédents</b> par f : tous les nombres de l’intervalle <b class="cta">['+fmt(iv[0])+' ; '+fmt(iv[1])+']</b>.'}
+  var n=sol.pts.length;
+  if(n===0) return 'Le nombre '+A+' n’a <b>aucun antécédent</b> par f : l’horizontale ne coupe pas la courbe.';
+  if(n===1) return 'Le nombre '+A+' a <b>un seul antécédent</b> par f : <b class="cta">'+listStr(sol.pts,ap)+'</b>.';
+  return 'Le nombre '+A+' a <b>'+['','','deux','trois','quatre','cinq'][n]+' antécédents</b> par f : <b class="cta">'+listStr(sol.pts,ap)+'</b>.';
+}
+function pointerToSvg(e){
+  var r=svg.getBoundingClientRect(); return {x:28+(e.clientX-r.left)*584/r.width,y:28+(e.clientY-r.top)*584/r.height};
+}
+var dragging=false;
+svg.addEventListener('pointerdown',function(e){
+  if(S.mode!=='explore') return; dragging=true; try{svg.setPointerCapture(e.pointerId)}catch(_){} moveTo(e);
+});
+svg.addEventListener('pointermove',function(e){if(dragging) moveTo(e)});
+svg.addEventListener('pointerup',function(){dragging=false});
+svg.addEventListener('pointercancel',function(){dragging=false});
+function moveTo(e){
+  var p=pointerToSvg(e),c=cur();
+  if(S.sub==='image'){var v=Math.round(((p.x-O)/U)*2)/2; S.xv=Math.min(c.dom[1],Math.max(c.dom[0],v))}
+  else{var w=Math.round(((O-p.y)/U)*2)/2; S.yv=Math.min(5,Math.max(-5,w))}
+  explorerView();
+}
+
+/* ---------- entraînement ---------- */
+function nice(v,c){var t=Math.abs(v*2-Math.round(v*2)); return c.exact?t<1e-6:t<0.2}
+function pick(a){return a[Math.floor(Math.random()*a.length)]}
+function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t}return a}
+function intPts(c,intOnly){
+  var cand=[],i,y;
+  for(i=Math.ceil(c.dom[0]);i<=Math.floor(c.dom[1]);i++){
+    y=c.f(i);
+    if(Math.abs(y)<=5.5&&(intOnly?Math.abs(y-Math.round(y))<1e-6:nice(y,c))) cand.push({x:i,y:y});
+  }
+  return cand;
+}
+function antPool(c,strict){
+  var none=[],some=[],inf=[],i,k;
+  for(i=-5;i<=5;i++){
+    var sol=solve(c,i); if(sol.iv.length){inf.push({a:i,sol:sol});continue}
+    var ok=true;
+    for(k=0;k<sol.pts.length;k++){
+      if(strict&&c.exact&&Math.abs(sol.pts[k]*2-Math.round(sol.pts[k]*2))>1e-6) ok=false;
+      if(k>0&&sol.pts[k]-sol.pts[k-1]<0.7) ok=false;
+    }
+    if(ok)(sol.pts.length?some:none).push({a:i,sol:sol});
+  }
+  return {none:none,some:some,inf:inf};
+}
+function pickPool(P){
+  var r=Math.random(),pool;
+  if(P.inf.length&&r<0.4) pool=P.inf; else if(P.none.length&&r<0.62) pool=P.none; else pool=P.some.length?P.some:(P.none.length?P.none:P.inf);
+  return pick(pool);
+}
+function wrongY(b){
+  var l=[b.y+1,b.y-1,b.y+2,b.y-2];
+  if(Math.abs(b.y)>=1) l.push(-b.y);
+  if(Math.abs(b.x-b.y)>=1) l.push(b.x);
+  l=l.filter(function(v){return Math.abs(v)<=5.5&&Math.abs(v-b.y)>=1});
+  return pick(l);
+}
+function build(type,c){
+  var b,P,ch;
+  if(type==='image'){
+    var cand=intPts(c,false); if(!cand.length) return null; b=pick(cand);
+    return {type:'image',x:b.x,y:b.y,ap:!c.exact&&Math.abs(b.y*2-Math.round(b.y*2))>1e-6,
+      qt:pick(['Quelle est l’image de <span class="cta">'+fmt(b.x)+'</span> par la fonction f ?','Lire <b>f('+fmt(b.x)+')</b> sur la courbe.'])};
+  }
+  if(type==='ant'){
+    ch=pickPool(antPool(c,true));
+    return {type:'ant',a:ch.a,sol:ch.sol,
+      qt:pick(['Quels sont les antécédents de <span class="ctx">'+fmt(ch.a)+'</span> par la fonction f ?','Pour quelles valeurs de x a-t-on <b>f(x) = '+fmt(ch.a)+'</b> ?'])};
+  }
+  if(type==='count'){
+    ch=pickPool(antPool(c,false));
+    return {type:'count',a:ch.a,sol:ch.sol,
+      qt:pick(['Combien le nombre <span class="ctx">'+fmt(ch.a)+'</span> a-t-il d’antécédents par la fonction f ?','Combien de points de la courbe ont pour ordonnée <b>'+fmt(ch.a)+'</b> ?'])};
+  }
+  var pts=intPts(c,!c.exact); if(!pts.length) return null; b=pick(pts);
+  var truth=Math.random()<0.5,y0=truth?b.y:wrongY(b);
+  if(type==='tf'){
+    var forms=['f('+fmt(b.x)+') = '+fmt(y0),fmt(y0)+' est l’image de '+fmt(b.x)+' par f.',fmt(b.x)+' est un antécédent de '+fmt(y0)+' par f.'];
+    return {type:'tf',x:b.x,y:b.y,y0:y0,truth:truth,qt:'Vrai ou faux ? <span class="stmt">'+pick(forms)+'</span>'};
+  }
+  return {type:'pt',x:b.x,y:b.y,y0:y0,truth:truth,
+    qt:'Le point <b>M('+fmt(b.x)+' ; '+fmt(y0)+')</b> appartient-il à la courbe C<sub>f</sub> ?'};
+}
+function makeQuestion(){
+  var c=cur(),types=S.qtype==='all'?['image','ant','count','tf','pt']:[S.qtype],q=build(pick(types),c);
+  return q||build('ant',c);
+}
+function newQ(){S.q=makeQuestion(); S.state='ask'; S.fb=null; S.fb2=null; S.val=''; trainView()}
+function parseNum(t){t=t.replace(/−/g,'-').replace(/,/g,'.').replace(/\s+/g,''); return /^-?\d+(\.\d+)?$/.test(t)?parseFloat(t):NaN}
+function parseAnt(txt){
+  var t=txt.trim().toLowerCase().replace(/−/g,'-');
+  if(!t) return {kind:'empty'};
+  if(/^(aucun|aucune|rien|pas d)/.test(t)||/^(∅|\{\s*\})$/.test(t)) return {kind:'none'};
+  var m=t.match(/^[\[\]]\s*([^;\]\[]+)\s*;\s*([^;\]\[]+)\s*[\[\]]$/);
+  if(m){var a=parseNum(m[1]),b=parseNum(m[2]); if(isNaN(a)||isNaN(b)) return {kind:'bad'}; return {kind:'iv',v:[Math.min(a,b),Math.max(a,b)]}}
+  var parts=t.split(/\s*(?:;|\bet\b|\/)\s*/).filter(function(s){return s.length}),vals=[];
+  for(var i=0;i<parts.length;i++){var v=parseNum(parts[i]); if(isNaN(v)) return {kind:'bad'}; vals.push(v)}
+  return {kind:'list',v:vals};
+}
+function matchList(exp,got,tol){
+  var used=[],ok=0;
+  exp.forEach(function(e){for(var j=0;j<got.length;j++){if(!used[j]&&Math.abs(got[j]-e)<=tol){used[j]=true;ok++;return}}});
+  return ok;
+}
+function nth(n){return ['aucun','un','deux','trois','quatre','cinq'][n]}
+function phraseImage(q){var v=q.ap?'environ '+fmt1(q.y):fmt(q.y); return 'L’image de <b class="cta">'+fmt(q.x)+'</b> par f est <b class="ctx">'+v+'</b>, on note f('+fmt(q.x)+') '+(q.ap?'≈':'=')+' '+(q.ap?fmt1(q.y):fmt(q.y))+'.'}
+function eqSentence(q){return q.truth?'f('+fmt(q.x)+') = '+fmt(q.y)+' : l’égalité est <b>vraie</b>, la courbe passe par le point ('+fmt(q.x)+' ; '+fmt(q.y)+').':
+  'L’égalité est <b>fausse</b> : l’image de '+fmt(q.x)+' est '+fmt(q.y)+' et non '+fmt(q.y0)+'. On a f('+fmt(q.x)+') = '+fmt(q.y)+'.'}
+function ptSentence(q){return q.truth?'M('+fmt(q.x)+' ; '+fmt(q.y0)+') <b>appartient</b> à C<sub>f</sub> : la courbe passe par ce point.':
+  'M('+fmt(q.x)+' ; '+fmt(q.y0)+') <b>n’appartient pas</b> à C<sub>f</sub> : au-dessus ou en dessous de l’abscisse '+fmt(q.x)+', la courbe passe par ('+fmt(q.x)+' ; '+fmt(q.y)+').'}
+function meaningOptions(q){
+  var x=fmt(q.x),y=fmt(q.y0);
+  var opts=q.truth?[
+    {t:'f('+x+') = '+y+' : '+y+' est l’image de '+x+' (et '+x+' est un antécédent de '+y+')',good:true},
+    {t:'f('+y+') = '+x+' : '+x+' est l’image de '+y,good:false},
+    {t:x+' = '+y+' : les deux coordonnées sont égales',good:false}
+  ]:[
+    {t:'f('+x+') ≠ '+y+' : '+y+' n’est pas l’image de '+x+' par f',good:true},
+    {t:'f('+x+') = '+y+' : '+y+' est l’image de '+x,good:false},
+    {t:x+' n’a pas d’image par f',good:false}
+  ];
+  return shuffle(opts).map(function(o,i){o.id='m'+i;return o});
+}
+function meaningText(q,good){
+  var x=fmt(q.x),y=fmt(q.y0);
+  return (good?'<b>Bravo.</b> ':'<b>Pas tout à fait.</b> ')+(q.truth?
+   'M('+x+' ; '+y+') ∈ C<sub>f</sub> signifie <b>f('+x+') = '+y+'</b> : l’ordonnée du point est l’image de son abscisse, et son abscisse est un antécédent de son ordonnée.':
+   'M('+x+' ; '+y+') ∉ C<sub>f</sub> signifie <b>f('+x+') ≠ '+y+'</b> : l’ordonnée de M n’est pas l’image de son abscisse.');
+}
+function score(ok){S.total++; if(ok) S.score++}
+function check(){
+  var c=cur(),q=S.q,txt=S.val;
+  if(q.type==='image'){
+    var v=parseNum(txt);
+    if(isNaN(v)){S.fb={k:'ko',t:'Écris un nombre, par exemple 2 ou −3,5.'}; return}
+    var ok=Math.abs(v-q.y)<=c.tol; score(ok); S.state='done';
+    var hint='';
+    if(!ok) hint=(Math.abs(v+q.y)<c.tol&&Math.abs(q.y)>0.3)?' Attention au signe : regarde si la courbe est au-dessus ou en dessous de l’axe horizontal.':(Math.abs(v-q.x)<c.tol?' Tu as donné le nombre de départ. L’image se lit sur l’axe vertical.':'');
+    S.fb={k:ok?'ok':'ko',t:'<b>'+(ok?'Bravo.':'Pas tout à fait.')+'</b>'+hint+' '+phraseImage(q)};
+    return;
+  }
+  var p=parseAnt(txt),sol=q.sol,exp=sol.pts,hasIv=sol.iv.length>0,good=false,why='';
+  if(p.kind==='empty'||p.kind==='bad'){S.fb={k:'ko',t:'Ta réponse n’est pas lisible. Écris des nombres séparés par des points-virgules, « aucun », ou un intervalle comme [−3 ; −1].'}; return}
+  if(hasIv){
+    var iv=sol.iv[0];
+    if(p.kind==='iv'&&Math.abs(p.v[0]-iv[0])<=c.tol&&Math.abs(p.v[1]-iv[1])<=c.tol) good=true;
+    else if(p.kind==='iv') why='Les bornes de l’intervalle ne sont pas les bonnes.';
+    else why='Il y a une infinité d’antécédents : on ne peut pas les écrire un par un. Donne un intervalle entre crochets.';
+  }else if(!exp.length){
+    if(p.kind==='none') good=true; else why='L’horizontale ne coupe pas la courbe : ce nombre n’a aucun antécédent.';
+  }else if(p.kind==='list'){
+    var okc=matchList(exp,p.v,c.tol);
+    if(okc===exp.length&&p.v.length===exp.length) good=true;
+    else if(p.v.length<exp.length) why='Il y a '+nth(exp.length)+' antécédent'+(exp.length>1?'s':'')+', tu en as donné '+nth(p.v.length)+'.';
+    else if(p.v.length>exp.length) why='Il n’y a que '+nth(exp.length)+' antécédent'+(exp.length>1?'s':'')+', tu en as donné '+nth(p.v.length)+'.';
+    else why='Le nombre d’antécédents est bon, mais une valeur est fausse. Relis les abscisses des points d’intersection.';
+  }else if(p.kind==='none') why='Ce nombre a au moins un antécédent : l’horizontale coupe la courbe.';
+  else why='Il y a '+nth(exp.length)+' antécédent'+(exp.length>1?'s':'')+', écris-les séparés par des points-virgules.';
+  score(good); S.state='done';
+  S.fb={k:good?'ok':'ko',t:'<b>'+(good?'Bravo.':'Pas tout à fait.')+'</b> '+(good?'':why+' <br>')+antSentence(q.a,sol,!c.exact)};
+}
+function choose(v){
+  var c=cur(),q=S.q,ok;
+  if(q.type==='count'){
+    ok=(q.sol.iv.length?'inf':String(q.sol.pts.length))===v; score(ok); S.state='done';
+    S.fb={k:ok?'ok':'ko',t:'<b>'+(ok?'Bravo.':'Pas tout à fait.')+'</b> '+antSentence(q.a,q.sol,!c.exact)};
+  }else if(q.type==='tf'){
+    ok=(v==='V')===q.truth; score(ok); S.state='done';
+    S.fb={k:ok?'ok':'ko',t:'<b>'+(ok?'Bravo.':'Pas tout à fait.')+'</b> '+eqSentence(q)};
+  }else if(q.type==='pt'){
+    if(S.state==='ask'){
+      ok=(v==='V')===q.truth; score(ok); S.state='meaning'; q.mc=meaningOptions(q);
+      S.fb={k:ok?'ok':'ko',t:'<b>'+(ok?'Bravo.':'Pas tout à fait.')+'</b> '+ptSentence(q)};
+    }else{
+      var o=q.mc.filter(function(m){return m.id===v})[0];
+      S.state='done'; S.fb2={k:o.good?'ok':'ko',t:meaningText(q,o.good)};
+    }
+  }
+}
+function infoText(q,c){
+  if(q.type==='image') return phraseImage(q);
+  if(q.type==='tf') return eqSentence(q);
+  if(q.type==='pt') return ptSentence(q);
+  return antSentence(q.a,q.sol,!c.exact);
+}
+function choicesFor(q){
+  if(q.type==='count') return [['0','0'],['1','1'],['2','2'],['3','3'],['inf','Une infinité']];
+  if(q.type==='tf') return [['V','Vrai'],['F','Faux']];
+  if(q.type==='pt'&&S.state==='ask') return [['V','Oui'],['F','Non']];
+  if(q.type==='pt'&&S.state==='meaning') return q.mc.map(function(m){return [m.id,m.t]});
+  return null;
+}
+function trainView(){
+  var c=cur(),q=S.q; if(!q){newQ();return}
+  var guides='',extra='',reveal=S.state==='done'||S.state==='shown'||S.state==='meaning';
+  if(reveal){
+    if(q.type==='ant'||q.type==='count') guides=guidesAnt(q.a,q.sol,!c.exact);
+    else guides=guidesImage(q.x,q.y);
+  }
+  if(q.type==='pt') extra='<g><circle cx="'+X(q.x)+'" cy="'+Y(q.y0)+'" r="7" fill="var(--pt)" stroke="var(--paper)" stroke-width="2.5"/><text class="dm" style="fill:var(--pt)" x="'+(X(q.x)+11)+'" y="'+(Y(q.y0)-9)+'">M</text></g>';
+  var html='<div class="row"><span class="lbl">Question</span><span class="score">Score : '+S.score+' / '+S.total+'</span></div><p class="q">'+q.qt+'</p>';
+  var chs=choicesFor(q),locked=S.state==='done'||S.state==='shown';
+  if(q.type==='pt'&&S.state==='meaning') html+='<div class="fb info">'+(q.truth?'Que signifie « M appartient à C<sub>f</sub> » ?':'Que signifie « M n’appartient pas à C<sub>f</sub> » ?')+'</div>';
+  if(chs){
+    html+='<div class="opts">'+chs.map(function(o){return '<button type="button" class="opt" data-v="'+o[0]+'"'+(locked?' disabled':'')+'>'+o[1]+'</button>'}).join('')+'</div>';
+  }else{
+    var ph=q.type==='image'?'ex. −3,5':'ex. −2 ; 4  ·  aucun  ·  [−3 ; −1]';
+    html+='<form id="f" class="row" autocomplete="off"><input class="ans" id="ans" inputmode="text" placeholder="'+ph+'" value="'+S.val.replace(/"/g,'&quot;')+'" '+(locked?'disabled':'')+' aria-label="Ta réponse">'
+      +(locked?'':'<button class="btn p" type="submit">Vérifier</button>')+'</form>';
+    if(!locked) html+='<div class="row">'+['−',',',' ; '].map(function(k){return '<button type="button" class="key" data-k="'+k+'">'+k.trim()+'</button>'}).join('')
+      +(q.type==='ant'?'<button type="button" class="key" data-k="aucun">aucun</button><button type="button" class="key" data-k="[ ; ]">[ ; ]</button>':'')+'</div>';
+  }
+  if(S.fb) html+='<div class="fb '+S.fb.k+'">'+S.fb.t+'</div>';
+  if(S.fb2) html+='<div class="fb '+S.fb2.k+'">'+S.fb2.t+'</div>';
+  if(!S.fb){
+    var tips={image:'Lis l’image sur l’axe vertical.',ant:'Un nombre peut avoir aucun, un ou plusieurs antécédents, parfois une infinité.',count:'Trace l’horizontale à cette hauteur et compte les points d’intersection avec la courbe.',tf:'Cherche le point d’abscisse donnée sur la courbe et compare avec la valeur proposée.',pt:'Le point M est marqué sur le graphique : est-il sur la courbe ?'};
+    html+='<p class="how">'+tips[q.type]+(c.exact?'':' Lecture à 0,3 près.')+'</p>';
+  }
+  html+='<div class="row">'
+    +(S.state==='ask'?'<button class="btn s" id="show" type="button">Voir la lecture</button>':'')
+    +((S.state==='done'||S.state==='shown')?'<button class="btn p" id="next" type="button">Question suivante</button>':'')
+    +'<button class="btn s" id="reset" type="button">Remettre à zéro</button></div>';
+  G={guides:guides,handles:'',extra:extra}; panel.innerHTML=html; draw();
+  var inp=document.getElementById('ans');
+  if(inp){
+    inp.addEventListener('input',function(){S.val=inp.value});
+    document.getElementById('f').addEventListener('submit',function(e){e.preventDefault(); S.val=inp.value; if(S.state!=='ask') return; check(); trainView()});
+    panel.querySelectorAll('.key').forEach(function(b){b.addEventListener('click',function(){
+      var k=b.getAttribute('data-k'),s=inp.selectionStart==null?inp.value.length:inp.selectionStart,e=inp.selectionEnd==null?s:inp.selectionEnd;
+      if(k==='aucun'){inp.value='aucun'}else inp.value=inp.value.slice(0,s)+k+inp.value.slice(e);
+      S.val=inp.value; inp.focus(); var pos=k==='[ ; ]'?s+2:s+k.length; try{inp.setSelectionRange(pos,pos)}catch(_){}
+    })});
+    if(!locked&&!('ontouchstart' in window)) inp.focus();
+  }
+  panel.querySelectorAll('.opt').forEach(function(b){b.addEventListener('click',function(){choose(b.getAttribute('data-v')); trainView()})});
+  var sh=document.getElementById('show'); if(sh) sh.addEventListener('click',function(){S.state='shown'; S.fb={k:'info',t:infoText(q,c)}; trainView()});
+  var nx=document.getElementById('next'); if(nx) nx.addEventListener('click',newQ);
+  document.getElementById('reset').addEventListener('click',function(){S.score=0;S.total=0;newQ()});
+}
+
+/* ---------- commandes ---------- */
+function buildCurves(){
+  var el=document.getElementById('curves');
+  el.innerHTML='<button class="btn p" id="newc" type="button">Nouvelle courbe</button><span class="how" id="cn">Courbe n° '+S.cn+'</span>';
+  document.getElementById('newc').addEventListener('click',function(){
+    S.c=newCurve(); S.cn++; var c=S.c;
+    S.xv=Math.min(c.dom[1],Math.max(c.dom[0],Math.round(S.xv*2)/2)); document.getElementById('cn').textContent='Courbe n° '+S.cn;
+    if(S.mode==='explore') explorerView(); else newQ();
+  });
+}
+function buildSubs(){
+  var el=document.getElementById('subs'),h='';
+  var opts=S.mode==='explore'?[['image','Lire une image'],['ant','Lire des antécédents']]:[['image','Images'],['ant','Antécédents'],['count','Combien'],['tf','Vrai / faux'],['pt','Point M'],['all','Mélange']];
+  var key=S.mode==='explore'?S.sub:S.qtype;
+  opts.forEach(function(o){h+='<button class="chip" data-s="'+o[0]+'" aria-pressed="'+(o[0]===key)+'">'+o[1]+'</button>'});
+  el.innerHTML=h;
+  el.querySelectorAll('.chip').forEach(function(b){b.addEventListener('click',function(){
+    var v=b.getAttribute('data-s');
+    if(S.mode==='explore'){S.sub=v; buildSubs(); explorerView()} else {S.qtype=v; buildSubs(); newQ()}
+  })});
+}
+function setMode(m){
+  S.mode=m;
+  document.getElementById('tab-explore').setAttribute('aria-selected',m==='explore');
+  document.getElementById('tab-train').setAttribute('aria-selected',m==='train');
+  buildSubs(); if(m==='explore') explorerView(); else newQ();
+}
+document.getElementById('tab-explore').addEventListener('click',function(){setMode('explore')});
+document.getElementById('tab-train').addEventListener('click',function(){setMode('train')});
+S.c=newCurve(); buildCurves(); setMode('explore');
+})();
+</script>
+
+</body></html>

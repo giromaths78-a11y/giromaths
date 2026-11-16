@@ -1,0 +1,262 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Agrandir et réduire</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout : cahier quadrillé à gauche (la figure), tableau de mesures à droite ; empilés sur téléphone */
+:root{
+  --paper:#fbfcfe; --ink:#16202e; --muted:#5d6878; --grid:#dde5ef; --grid-strong:#c4d0de;
+  --orig:#1565c0; --orig-fill:rgba(21,101,192,.18);
+  --img:#c62828; --img-fill:rgba(198,40,40,.16);
+  --panel:#eef3f9; --line:#cfd9e5; --ray:#8a94a3;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#121821; --ink:#e7edf5; --muted:#9aa6b6; --grid:#1f2a37; --grid-strong:#2c3a4b;
+  --orig:#64a8f5; --orig-fill:rgba(100,168,245,.2); --img:#f07a72; --img-fill:rgba(240,122,114,.18);
+  --panel:#18212c; --line:#2a3646; --ray:#7d8898; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#121821; --ink:#e7edf5; --muted:#9aa6b6; --grid:#1f2a37; --grid-strong:#2c3a4b;
+  --orig:#64a8f5; --orig-fill:rgba(100,168,245,.2); --img:#f07a72; --img-fill:rgba(240,122,114,.18);
+  --panel:#18212c; --line:#2a3646; --ray:#7d8898; color-scheme:dark }
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-block:20px 32px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,3.4vw,2.3rem);margin:0;text-wrap:balance;letter-spacing:-.01em}
+header p{margin:0;color:var(--muted)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:18px;align-items:start}
+@media (max-width:860px){.main{grid-template-columns:minmax(0,1fr)}}
+.stage{border:1px solid var(--line);border-radius:6px;background:var(--paper);overflow:hidden;min-width:0}
+svg{display:block;width:100%;height:auto;touch-action:none;user-select:none}
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 14px;border-top:1px solid var(--line);background:var(--panel)}
+.kbox{display:flex;align-items:center;gap:10px;flex:1 1 260px;min-width:0}
+.kbox label{font-family:var(--display);font-weight:800;font-size:1.25rem;white-space:nowrap}
+.kbox output{font-variant-numeric:tabular-nums;color:var(--img);min-width:3.2ch;display:inline-block}
+input[type=range]{flex:1;min-width:0;accent-color:var(--img)}
+button{font:inherit;font-weight:700;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:5px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--orig);outline-offset:2px}
+button.play{background:var(--img);color:#fff;border-color:var(--img)}
+.presets{display:flex;gap:6px;flex-wrap:wrap}
+.presets button{padding:4px 9px;font-variant-numeric:tabular-nums}
+.toggles{display:flex;gap:14px;flex-wrap:wrap;color:var(--muted);font-size:.95rem}
+.toggles label{display:flex;gap:6px;align-items:center;cursor:pointer}
+aside{display:grid;gap:14px;min-width:0}
+.verdict{font-family:var(--display);font-weight:800;font-size:1.5rem;padding:10px 14px;border-radius:6px;background:var(--img-fill);color:var(--img);letter-spacing:.02em}
+.verdict small{display:block;font-family:var(--body);font-weight:400;font-size:.9rem;color:var(--muted);letter-spacing:0}
+.card{border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:grid;gap:6px}
+.card h2{margin:0;font-family:var(--display);font-weight:600;font-size:1.05rem;display:flex;justify-content:space-between;gap:8px}
+.card h2 span{color:var(--img);font-variant-numeric:tabular-nums}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:.95rem}
+td{padding:2px 0}
+td:last-child{text-align:right}
+.o{color:var(--orig);font-weight:700}.i{color:var(--img);font-weight:700}
+.eq{color:var(--muted);font-size:.92rem;margin:0}
+.note{color:var(--muted);font-size:.9rem;margin:0}
+.sq-o{fill:var(--orig-fill);stroke:var(--orig)} .sq-i{fill:var(--img-fill);stroke:var(--img)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Agrandir et réduire</h1>
+    <p>Fais varier le rapport <strong>k</strong>, ou déplace les points bleus A, B, C et le centre O.</p>
+  </header>
+
+  <div class="main">
+    <div class="stage">
+      <svg id="fig" viewBox="0 0 660 540" role="img" aria-label="Triangle ABC en bleu et son image A'B'C' en rouge par un agrandissement ou une réduction de rapport k"></svg>
+      <div class="controls">
+        <div class="kbox">
+          <label for="k">k = <output id="kout">1,5</output></label>
+          <input id="k" type="range" min="0.25" max="3" step="0.05" value="1.5">
+        </div>
+        <button id="play" class="play" type="button">▶ Animer</button>
+        <div class="presets" aria-label="Valeurs de k">
+          <button type="button" data-k="0.5">0,5</button>
+          <button type="button" data-k="1">1</button>
+          <button type="button" data-k="1.5">1,5</button>
+          <button type="button" data-k="2">2</button>
+          <button type="button" data-k="3">3</button>
+        </div>
+        <div class="toggles">
+          <label><input id="rays" type="checkbox" checked> Rayons depuis O</label>
+        </div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="verdict" id="verdict">AGRANDISSEMENT<small>k &gt; 1 : la figure grandit</small></div>
+
+      <div class="card">
+        <h2>Longueurs <span>× k</span></h2>
+        <table id="tlen"></table>
+        <p class="eq" id="eqlen"></p>
+      </div>
+
+      <div class="card">
+        <h2>Aires <span>× k²</span></h2>
+        <table id="tarea"></table>
+        <p class="eq" id="eqarea"></p>
+      </div>
+
+      <div class="card" id="unitcard">
+        <h2>Pourquoi k² ? <span>en carreaux</span></h2>
+        <svg id="sq" viewBox="0 0 300 150" role="img" aria-label="Un carré de côté 1 et son image de côté k"></svg>
+        <p class="eq" id="eqsq"></p>
+      </div>
+
+      <div class="card">
+        <h2>Volumes <span>× k³</span></h2>
+        <p class="eq" id="eqvol"></p>
+      </div>
+
+      <div class="card">
+        <h2>Ce qui ne change pas</h2>
+        <p class="eq" id="eqang"></p>
+      </div>
+      <p class="note">Unités : 1 carreau = 1 cm. Triangle de départ : celui de l'exercice 1 de la fiche (2 ; 1,5 ; 2,5).</p>
+    </aside>
+  </div>
+</div>
+
+<script>
+(function(){
+  const S = 60;                       // pixels par unité
+  const X0 = 60, Y0 = 500;            // position de l'origine dans le SVG
+  const W = 660, H = 540;
+  const st = { k:1.5, O:{x:0,y:0}, A:{x:1,y:1}, B:{x:3,y:1}, C:{x:1,y:2.5}, rays:true };
+  const svg = document.getElementById('fig');
+  const NS = 'http://www.w3.org/2000/svg';
+  const px = p => [X0 + p.x*S, Y0 - p.y*S];
+  const fr = (v,d=2) => { const r = Math.round(v*10**d)/10**d; return r.toLocaleString('fr-FR',{maximumFractionDigits:d}); };
+  const dist = (P,Q) => Math.hypot(P.x-Q.x, P.y-Q.y);
+  const dil = P => ({x: st.O.x + st.k*(P.x-st.O.x), y: st.O.y + st.k*(P.y-st.O.y)});
+  const area = (P,Q,R) => Math.abs((Q.x-P.x)*(R.y-P.y)-(R.x-P.x)*(Q.y-P.y))/2;
+  const ang = (V,P,Q) => { const a=Math.atan2(P.y-V.y,P.x-V.x), b=Math.atan2(Q.y-V.y,Q.x-V.x); let d=Math.abs(a-b)*180/Math.PI; return d>180?360-d:d; };
+
+  function el(tag, attrs, parent){ const e=document.createElementNS(NS,tag); let css=''; for(const k in attrs){ const v=String(attrs[k]); if(v.startsWith('var(')) css+=k+':'+v+';'; else e.setAttribute(k,v); } if(css) e.setAttribute('style',(e.getAttribute('style')||'')+css); (parent||svg).appendChild(e); return e; }
+
+  // quadrillage fixe
+  const g = el('g',{});
+  for(let i=-1;i<=10;i++){ const x=X0+i*S; el('line',{x1:x,y1:0,x2:x,y2:H,stroke:'var(--grid)', 'stroke-width':1},g); }
+  for(let j=-1;j<=9;j++){ const y=Y0-j*S; el('line',{x1:0,y1:y,x2:W,y2:y,stroke:'var(--grid)','stroke-width':1},g); }
+
+  const layer = el('g',{});
+  function draw(){
+    layer.innerHTML='';
+    const {A,B,C,O,k} = st;
+    const A2=dil(A), B2=dil(B), C2=dil(C);
+    // rayons
+    if(st.rays){
+      for(const P of [A,B,C]){
+        const far = {x:O.x+(P.x-O.x)*40, y:O.y+(P.y-O.y)*40};
+        const [x1,y1]=px(O),[x2,y2]=px(far);
+        el('line',{x1,y1,x2,y2,stroke:'var(--ray)','stroke-width':1.4,'stroke-dasharray':'6 5'},layer);
+      }
+    }
+    // triangles
+    el('polygon',{points:[A,B,C].map(p=>px(p).join(',')).join(' '),fill:'var(--orig-fill)',stroke:'var(--orig)','stroke-width':3,'stroke-linejoin':'round'},layer);
+    el('polygon',{points:[A2,B2,C2].map(p=>px(p).join(',')).join(' '),fill:'var(--img-fill)',stroke:'var(--img)','stroke-width':3,'stroke-linejoin':'round'},layer);
+    // angle droit / marque d'angle en A et A'
+    rightMark(A,B,C,'var(--orig)'); rightMark(A2,B2,C2,'var(--img)');
+    // points images
+    for(const [P,n] of [[A2,"A'"],[B2,"B'"],[C2,"C'"]]){ const [x,y]=px(P); el('circle',{cx:x,cy:y,r:4.5,fill:'var(--img)'},layer); label(P,n,'var(--img)',[A2,B2,C2]); }
+    // points de départ (déplaçables)
+    for(const [P,n] of [[A,'A'],[B,'B'],[C,'C']]){ handle(P,n,'var(--orig)'); label(P,n,'var(--orig)',[A,B,C]); }
+    handle(O,'O','var(--ink)');
+    const [ox,oy]=px(O); el('text',{x:ox-16,y:oy+20,fill:'var(--ink)','font-size':16,'font-weight':700,'font-family':'var(--body)'},layer).textContent='O';
+    panel(A2,B2,C2);
+    squares();
+  }
+  const sq=document.getElementById('sq');
+  function squares(){
+    sq.innerHTML=''; const k=st.k, u=40, top=10;
+    el('rect',{x:10,y:top,width:u,height:u,class:'sq-o','stroke-width':2},sq);
+    el('text',{x:10,y:top+u+18,fill:'var(--orig)','font-size':13,'font-family':'var(--body)'},sq).textContent='côté 1';
+    const x0=80, s=k*u;
+    el('rect',{x:x0,y:top,width:s,height:s,class:'sq-i','stroke-width':2},sq);
+    for(let t=1;t<k-1e-9;t++){
+      el('line',{x1:x0+t*u,y1:top,x2:x0+t*u,y2:top+s,stroke:'var(--img)','stroke-width':1,'stroke-dasharray':'3 3'},sq);
+      el('line',{x1:x0,y1:top+t*u,x2:x0+s,y2:top+t*u,stroke:'var(--img)','stroke-width':1,'stroke-dasharray':'3 3'},sq);
+    }
+    el('text',{x:x0+s+8,y:top+16,fill:'var(--img)','font-size':13,'font-family':'var(--body)'},sq).textContent='côté '+fr(k);
+    document.getElementById('eqsq').innerHTML=`Le côté est multiplié par ${fr(k)} dans les deux directions : l'aire passe de 1 à ${fr(k)} × ${fr(k)} = <strong class="i">${fr(k*k,4)}</strong>.`;
+  }
+  function rightMark(V,P,Q,col){
+    const a=ang(V,P,Q);
+    const u={x:(P.x-V.x)/dist(V,P), y:(P.y-V.y)/dist(V,P)}, w={x:(Q.x-V.x)/dist(V,Q), y:(Q.y-V.y)/dist(V,Q)};
+    const s=0.22;
+    if(Math.abs(a-90)<0.5){
+      const p1={x:V.x+u.x*s,y:V.y+u.y*s}, p2={x:V.x+(u.x+w.x)*s,y:V.y+(u.y+w.y)*s}, p3={x:V.x+w.x*s,y:V.y+w.y*s};
+      el('polyline',{points:[p1,p2,p3].map(p=>px(p).join(',')).join(' '),fill:'none',stroke:col,'stroke-width':1.6},layer);
+    } else {
+      const r=0.3, p1=px({x:V.x+u.x*r,y:V.y+u.y*r}), p3=px({x:V.x+w.x*r,y:V.y+w.y*r});
+      const cross=u.x*w.y-u.y*w.x;
+      el('path',{d:`M${p1[0]},${p1[1]} A${r*S},${r*S} 0 0 ${cross>0?0:1} ${p3[0]},${p3[1]}`,fill:'none',stroke:col,'stroke-width':1.6},layer);
+    }
+  }
+  function label(P,n,col,tri){
+    const cx=(tri[0].x+tri[1].x+tri[2].x)/3, cy=(tri[0].y+tri[1].y+tri[2].y)/3;
+    let dx=P.x-cx, dy=P.y-cy; const d=Math.hypot(dx,dy)||1; dx/=d; dy/=d;
+    const [x,y]=px(P);
+    el('text',{x:x+dx*20-6,y:y-dy*20+6,fill:col,'font-size':17,'font-weight':700,'font-family':'var(--body)'},layer).textContent=n;
+  }
+  function handle(P,n,col){
+    const [x,y]=px(P);
+    el('circle',{cx:x,cy:y,r:14,fill:'transparent','data-pt':n,style:'cursor:grab'},layer);
+    el('circle',{cx:x,cy:y,r:5.5,fill:col,stroke:'var(--paper)','stroke-width':2,'pointer-events':'none'},layer);
+  }
+  function row(a,b,c){ return `<tr><td>${a}</td><td class="o">${b}</td><td class="i">${c}</td></tr>`; }
+  function panel(A2,B2,C2){
+    const {A,B,C,k}=st;
+    const v=document.getElementById('verdict');
+    if(Math.abs(k-1)<1e-9){ v.innerHTML='MÊME FIGURE<small>k = 1 : rien ne change</small>'; }
+    else if(k<1){ v.innerHTML='RÉDUCTION<small>0 &lt; k &lt; 1 : la figure rétrécit</small>'; }
+    else { v.innerHTML='AGRANDISSEMENT<small>k &gt; 1 : la figure grandit</small>'; }
+    document.getElementById('kout').textContent=fr(k);
+    document.getElementById('tlen').innerHTML =
+      `<tr><td></td><td class="o">ABC</td><td class="i">A'B'C'</td></tr>`+
+      row('AB',fr(dist(A,B)),fr(dist(A2,B2)))+row('BC',fr(dist(B,C)),fr(dist(B2,C2)))+row('AC',fr(dist(A,C)),fr(dist(A2,C2)));
+    document.getElementById('eqlen').innerHTML = `A'B' ÷ AB = ${fr(dist(A2,B2)/dist(A,B))} = k`;
+    const a1=area(A,B,C), a2=area(A2,B2,C2);
+    document.getElementById('tarea').innerHTML = row('Aire (cm²)',fr(a1,3),fr(a2,3));
+    document.getElementById('eqarea').innerHTML = `${fr(a2,3)} ÷ ${fr(a1,3)} = ${fr(a2/a1,4)} = k² = ${fr(k,2)}²`;
+    document.getElementById('eqvol').innerHTML = `Un solide de 10 cm³ agrandi ou réduit de rapport ${fr(k)} a un volume de 10 × ${fr(k)}³ = <strong class="i">${fr(10*k**3,3)} cm³</strong>.`;
+    document.getElementById('eqang').innerHTML = `Angle en A : <span class="o">${fr(ang(A,B,C),1)}°</span>, angle en A' : <span class="i">${fr(ang(A2,B2,C2),1)}°</span>. Les angles, le parallélisme et la forme sont conservés.`;
+  }
+
+  // déplacement des points
+  let drag=null;
+  function toWorld(evt){
+    const r=svg.getBoundingClientRect(), sx=W/r.width, sy=H/r.height;
+    const x=((evt.clientX-r.left)*sx-X0)/S, y=(Y0-(evt.clientY-r.top)*sy)/S;
+    return {x:Math.round(x*4)/4, y:Math.round(y*4)/4};   // aimanté au quart de carreau
+  }
+  svg.addEventListener('pointerdown',e=>{ const n=e.target.getAttribute&&e.target.getAttribute('data-pt'); if(n){ drag=n; svg.setPointerCapture(e.pointerId); stop(); }});
+  svg.addEventListener('pointermove',e=>{ if(!drag) return; const p=toWorld(e); p.x=Math.max(-0.75,Math.min(9.75,p.x)); p.y=Math.max(-0.5,Math.min(8.5,p.y)); st[drag]=p; draw(); });
+  svg.addEventListener('pointerup',()=>{ drag=null; });
+
+  // curseur et boutons
+  const kIn=document.getElementById('k');
+  kIn.addEventListener('input',()=>{ stop(); st.k=+kIn.value; draw(); });
+  document.querySelectorAll('.presets button').forEach(b=>b.addEventListener('click',()=>{ stop(); st.k=+b.dataset.k; kIn.value=st.k; draw(); }));
+  document.getElementById('rays').addEventListener('change',e=>{ st.rays=e.target.checked; draw(); });
+
+  let raf=null, dir=1, last=0;
+  const playBtn=document.getElementById('play');
+  function step(t){
+    if(!last) last=t; const dt=(t-last)/1000; last=t;
+    st.k += dir*0.45*dt;
+    if(st.k>=3){ st.k=3; dir=-1; } if(st.k<=0.25){ st.k=0.25; dir=1; }
+    kIn.value=st.k; draw(); raf=requestAnimationFrame(step);
+  }
+  function stop(){ if(raf){ cancelAnimationFrame(raf); raf=null; playBtn.textContent='▶ Animer'; st.k=Math.round(st.k*20)/20; kIn.value=st.k; draw(); } }
+  playBtn.addEventListener('click',()=>{ if(raf){ stop(); } else { last=0; playBtn.textContent='❚❚ Pause'; raf=requestAnimationFrame(step); } });
+
+  draw();
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,465 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Parallèles ou pas ?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Layout : cahier quadrillé à gauche (figure + saisie des longueurs), diagnostic à droite ; rappel de cours en bas. Empilé sur téléphone. */
+:root{
+  --paper:#fbfcfe; --ink:#16202e; --muted:#5d6878; --grid:#e3e9f1; --line:#cfd9e5; --panel:#eef3f9;
+  --petit:#1e6ec8; --petit-fill:rgba(30,110,200,.13);
+  --grand:#c62828; --grand-fill:rgba(198,40,40,.12);
+  --droite:#7b8696; --piece:#c25e00;
+  --ok:#14703c; --ok-fill:rgba(20,112,60,.12);
+  --no:#b0431a; --no-fill:rgba(176,67,26,.12);
+  --trap:#7a3fb0; --trap-fill:rgba(122,63,176,.12);
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#121821; --ink:#e7edf5; --muted:#9aa6b6; --grid:#1d2733; --line:#2a3646; --panel:#18212c;
+  --petit:#64a8f5; --petit-fill:rgba(100,168,245,.16); --grand:#f07a72; --grand-fill:rgba(240,122,114,.15);
+  --droite:#8792a3; --piece:#f0a050; --ok:#5fcf8c; --ok-fill:rgba(95,207,140,.14);
+  --no:#f08a5a; --no-fill:rgba(240,138,90,.14); --trap:#c49af0; --trap-fill:rgba(196,154,240,.14); color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#121821; --ink:#e7edf5; --muted:#9aa6b6; --grid:#1d2733; --line:#2a3646; --panel:#18212c;
+  --petit:#64a8f5; --petit-fill:rgba(100,168,245,.16); --grand:#f07a72; --grand-fill:rgba(240,122,114,.15);
+  --droite:#8792a3; --piece:#f0a050; --ok:#5fcf8c; --ok-fill:rgba(95,207,140,.14);
+  --no:#f08a5a; --no-fill:rgba(240,138,90,.14); --trap:#c49af0; --trap-fill:rgba(196,154,240,.14); color-scheme:dark }
+[hidden]{display:none!important}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5}
+.wrap{max-width:1200px;margin:0 auto;padding-block:20px 36px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:18px}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px 20px}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,3.4vw,2.3rem);margin:0;letter-spacing:-.01em;text-wrap:balance}
+header p{margin:2px 0 0;color:var(--muted);max-width:62ch}
+.tabs{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.tabs button{border:0;border-radius:0;padding:8px 16px;background:var(--paper);color:var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--paper)}
+.main{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
+@media (max-width:900px){.main{grid-template-columns:minmax(0,1fr)}}
+.stage{border:1px solid var(--line);border-radius:6px;overflow:hidden;min-width:0;background:var(--paper)}
+svg#fig{display:block;width:100%;height:auto;touch-action:none;user-select:none}
+.controls{display:grid;gap:10px;padding:12px 14px;border-top:1px solid var(--line);background:var(--panel)}
+.inputs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 18px}
+@media (max-width:560px){.inputs{grid-template-columns:minmax(0,1fr)}}
+.lgn{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px}
+.lgn label{display:flex;align-items:center;gap:5px;font-weight:700}
+.lgn input[type=number]{width:5.2em;font:inherit;padding:3px 5px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink);font-variant-numeric:tabular-nums}
+.lgn .side{font-weight:400;color:var(--muted);font-size:.92rem}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+.row .lbl{color:var(--muted);font-size:.92rem}
+button{font:inherit;font-weight:700;border:1px solid var(--line);background:var(--paper);color:var(--ink);border-radius:5px;padding:5px 11px;cursor:pointer}
+button:hover{border-color:var(--ink)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--petit);outline-offset:2px}
+select{font:inherit;padding:3px 5px;border:1px solid var(--line);border-radius:4px;background:var(--paper);color:var(--ink)}
+.toggles{display:flex;gap:6px 14px;flex-wrap:wrap;color:var(--muted);font-size:.92rem}
+.toggles label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.p{color:var(--petit);font-weight:700}.g{color:var(--grand);font-weight:700}
+aside{display:grid;gap:12px;min-width:0}
+.verdict{font-family:var(--display);font-weight:800;font-size:1.35rem;line-height:1.2;padding:12px 14px;border-radius:6px;letter-spacing:.01em}
+.verdict small{display:block;font-family:var(--body);font-weight:400;font-size:.92rem;margin-top:4px;color:var(--ink);letter-spacing:0}
+.v-ok{background:var(--ok-fill);color:var(--ok)} .v-no{background:var(--no-fill);color:var(--no)} .v-trap{background:var(--trap-fill);color:var(--trap)} .v-wait{background:var(--panel);color:var(--ink)}
+.card{border:1px solid var(--line);border-radius:6px;padding:12px 14px;display:grid;gap:8px;min-width:0}
+.card h2{margin:0;font-family:var(--display);font-weight:600;font-size:1.05rem}
+.checks{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.checks li{display:grid;grid-template-columns:1.6em minmax(0,1fr);gap:4px;align-items:start}
+.checks .ic{font-weight:800;text-align:center;border-radius:4px}
+.checks .y{color:var(--ok)} .checks .n{color:var(--no)}
+.checks small{display:block;color:var(--muted)}
+.quot{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;font-variant-numeric:tabular-nums}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.15;margin:0 2px}
+.frac>span:last-child{border-top:1.5px solid currentColor;padding-top:1px;min-width:100%;text-align:center}
+.eq{display:inline-flex;align-items:center;gap:5px}
+.muted{color:var(--muted);font-size:.92rem;margin:0}
+.redac{font-size:.95rem;display:grid;gap:5px}
+.redac p{margin:0}
+.redac b.k{color:var(--ok)}
+.defi{display:grid;gap:10px}
+.defi .btns{display:flex;flex-wrap:wrap;gap:8px}
+.defi .btns button{flex:1 1 140px;padding:9px 12px}
+.score{font-variant-numeric:tabular-nums;color:var(--muted)}
+.cours{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:900px){.cours{grid-template-columns:minmax(0,1fr)}}
+.cours .card{align-content:start}
+.cours h2{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.cours h2 span{font-family:var(--body);font-weight:400;font-size:.85rem;color:var(--muted)}
+.cours ul,.cours ol{margin:0;padding-left:1.2em;display:grid;gap:3px}
+.cours p{margin:0}
+.recip{border-top:3px solid var(--ok)} .contra{border-top:3px solid var(--no)} .meth{border-top:3px solid var(--piece)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Parallèles ou pas ?</h1>
+      <p>Réciproque et contraposée du théorème de Thalès. Déplace les points <span class="g">B</span>, <span class="g">C</span>, <span class="p">M</span>, <span class="p">N</span> (ou tape les longueurs), tourne les droites avec les poignées ◇, et regarde quand <span class="p">(MN)</span> et <span class="g">(BC)</span> deviennent parallèles.</p>
+    </div>
+    <div class="tabs" role="tablist" aria-label="Mode">
+      <button id="tab-exp" role="tab" aria-selected="true" type="button">Explorer</button>
+      <button id="tab-defi" role="tab" aria-selected="false" type="button">Défi</button>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="stage">
+      <svg id="fig" viewBox="0 0 660 500" role="img" aria-label="Deux droites sécantes en A ; B et M sur la première, C et N sur la seconde ; droites (BC) en rouge et (MN) en bleu"></svg>
+      <div class="controls" id="ctrl-exp">
+        <div class="inputs">
+          <div class="lgn">
+            <label>AB <input id="iAB" type="number" min="0.1" max="12" step="0.1"></label>
+            <label>AM <input id="iAM" type="number" min="0.1" max="12" step="0.1"></label>
+            <label class="side"><input id="oppM" type="checkbox"> M de l'autre côté de A</label>
+          </div>
+          <div class="lgn">
+            <label>AC <input id="iAC" type="number" min="0.1" max="12" step="0.1"></label>
+            <label>AN <input id="iAN" type="number" min="0.1" max="12" step="0.1"></label>
+            <label class="side"><input id="oppN" type="checkbox"> N de l'autre côté de A</label>
+          </div>
+        </div>
+        <div class="row">
+          <span class="lbl">Exemples :</span>
+          <button type="button" data-ex="contra">Contraposée (cours)</button>
+          <button type="button" data-ex="recip">Réciproque (cours)</button>
+          <button type="button" data-ex="papillon">Papillon</button>
+          <button type="button" data-ex="piege">Piège de l'ordre</button>
+        </div>
+        <div class="row">
+          <label class="lbl" for="pas">Pas du déplacement</label>
+          <select id="pas"><option value="0.1">0,1 cm</option><option value="0.5" selected>0,5 cm</option><option value="1">1 cm</option></select>
+          <div class="toggles">
+            <label><input id="tLong" type="checkbox" checked> Longueurs sur la figure</label>
+            <label><input id="tGhost" type="checkbox"> Parallèle à (BC) passant par M</label>
+          </div>
+        </div>
+      </div>
+      <div class="controls" id="ctrl-defi" hidden>
+        <p class="muted">Les longueurs sont en cm. La figure n'est pas forcément exacte à l'œil : seul le calcul permet de conclure.</p>
+        <div class="row"><button type="button" id="newDefi">Nouveau défi</button><span class="score" id="score">Score : 0 / 0</span></div>
+      </div>
+    </div>
+
+    <aside>
+      <div class="card defi" id="defiCard" hidden>
+        <h2>Les droites (MN) et (BC) sont-elles parallèles ?</h2>
+        <p class="muted">Les points A, B, M sont alignés, ainsi que A, C, N. Calcule séparément AM ÷ AB et AN ÷ AC, puis réponds.</p>
+        <div class="btns">
+          <button type="button" data-rep="oui">Oui, parallèles</button>
+          <button type="button" data-rep="non">Non, pas parallèles</button>
+        </div>
+      </div>
+      <div class="verdict v-ok" id="verdict"></div>
+      <div class="card" id="cardChecks">
+        <h2>Les conditions</h2>
+        <ul class="checks" id="checks"></ul>
+      </div>
+      <div class="card" id="cardQuot">
+        <h2>On calcule séparément</h2>
+        <div class="quot" id="quot"></div>
+        <p class="muted" id="croix"></p>
+      </div>
+      <div class="card" id="cardRedac">
+        <h2>Rédaction</h2>
+        <div class="redac" id="redac"></div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="cours" aria-label="Rappel du cours">
+    <div class="card recip">
+      <h2>Réciproque <span>montrer que c'est parallèle</span></h2>
+      <p><strong>Si</strong></p>
+      <ul>
+        <li>les droites (BM) et (CN) sont sécantes en A ;</li>
+        <li><span class="eq"><span class="frac p"><span>AM</span><span class="g">AB</span></span> = <span class="frac p"><span>AN</span><span class="g">AC</span></span></span> ;</li>
+        <li>les points A, B, M sont alignés <strong>dans le même ordre</strong> que les points A, C, N ;</li>
+      </ul>
+      <p><strong>alors</strong> les droites <span class="g">(BC)</span> et <span class="p">(MN)</span> sont parallèles.</p>
+    </div>
+    <div class="card contra">
+      <h2>Contraposée <span>montrer que ce n'est pas parallèle</span></h2>
+      <p><strong>Si</strong></p>
+      <ul>
+        <li>les droites (BM) et (CN) sont sécantes en A ;</li>
+        <li><span class="eq"><span class="frac"><span>AM</span><span>AB</span></span> ≠ <span class="frac"><span>AN</span><span>AC</span></span></span> ;</li>
+      </ul>
+      <p><strong>alors</strong> les droites (BC) et (MN) ne sont <strong>pas</strong> parallèles.</p>
+    </div>
+    <div class="card meth">
+      <h2>Méthode</h2>
+      <ol>
+        <li>On repère les droites sécantes et leur point d'intersection.</li>
+        <li>On calcule <strong>séparément</strong> les deux quotients (produits en croix).</li>
+        <li>Différents : contraposée, pas parallèles. Égaux <strong>et</strong> même ordre : réciproque, parallèles.</li>
+      </ol>
+    </div>
+  </section>
+</div>
+
+<script>
+(function(){
+  const W=660, H=500, NS='http://www.w3.org/2000/svg';
+  const svg=document.getElementById('fig');
+  // abscisses signées (cm) sur chaque droite, A à l'origine ; angles des droites en degrés
+  const st={ b:6, m:4, c:8, n:6, t1:-28, t2:22, mode:'exp', long:true, ghost:false, step:0.5, answered:false, ok:0, tot:0, defi:null };
+  let view={S:40, ox:120, oy:240};
+
+  const EX={
+    contra:{b:6,m:4,c:8,n:6,t1:-28,t2:22},
+    recip:{b:3,m:8,c:6.75,n:18,t1:-30,t2:14},
+    papillon:{b:3.6,m:-2,c:5.4,n:-3,t1:-16,t2:42},
+    piege:{b:3,m:6,c:4,n:-8,t1:-25,t2:30}
+  };
+
+  const r2=v=>Math.round(v*100)/100;
+  const fr=(v,d=2)=>(Math.round(v*10**d)/10**d).toLocaleString('fr-FR',{maximumFractionDigits:d});
+  const I=v=>Math.round(v*100);                 // en centièmes, pour des comparaisons exactes
+  const gcd=(a,b)=>{a=Math.abs(a);b=Math.abs(b);while(b){[a,b]=[b,a%b];}return a||1;};
+  const rad=d=>d*Math.PI/180;
+  const u1=()=>({x:Math.cos(rad(st.t1)),y:Math.sin(rad(st.t1))});
+  const u2=()=>({x:Math.cos(rad(st.t2)),y:Math.sin(rad(st.t2))});
+  const P=(u,t)=>({x:u.x*t,y:u.y*t});
+  const pts=()=>{const a=u1(),c=u2();return {A:{x:0,y:0},B:P(a,st.b),M:P(a,st.m),C:P(c,st.c),N:P(c,st.n)};};
+  const px=p=>[view.ox+p.x*view.S, view.oy-p.y*view.S];
+
+  function fit(){
+    const p=pts(); const L=Object.values(p);
+    let x0=Math.min(...L.map(q=>q.x)),x1=Math.max(...L.map(q=>q.x)),y0=Math.min(...L.map(q=>q.y)),y1=Math.max(...L.map(q=>q.y));
+    const mx=1.6, my=1.3;
+    x0-=mx;x1+=mx;y0-=my;y1+=my;
+    const S=Math.min(70,(W-30)/(x1-x0),(H-30)/(y1-y0));
+    view={S, ox:W/2-S*(x0+x1)/2, oy:H/2+S*(y0+y1)/2};
+  }
+
+  function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);let css='';for(const k in attrs){const v=String(attrs[k]);if(v.startsWith('var(')) css+=k+':'+v+';'; else e.setAttribute(k,v);} if(css) e.setAttribute('style',css); (parent||svg).appendChild(e); return e;}
+  function txt(x,y,s,col,size,weight,parent,anchor){const t=el('text',{x,y,fill:col,'font-size':size||16,'font-weight':weight||700,'font-family':'var(--body)','text-anchor':anchor||'middle','dominant-baseline':'central'},parent);t.textContent=s;return t;}
+
+  // ---- état logique
+  function kind(t,ref){ // position du point "t" par rapport à A et au point "ref" sur la même droite
+    if(t*ref<0) return 'opp'; if(Math.abs(t)<Math.abs(ref)) return 'in'; if(Math.abs(t)>Math.abs(ref)) return 'out'; return 'same';
+  }
+  function analyse(){
+    const AB=Math.abs(st.b),AM=Math.abs(st.m),AC=Math.abs(st.c),AN=Math.abs(st.n);
+    const p1=I(AM)*I(AC), p2=I(AN)*I(AB);
+    const egal=p1===p2;
+    const k1=kind(st.m,st.b), k2=kind(st.n,st.c);
+    const ordre=k1===k2;
+    const sep=((st.t2-st.t1)%180+180)%180;
+    const secantes=sep>3&&sep<177;
+    const degen=k1==='same'||k2==='same';
+    let etat; if(degen) etat='degen'; else if(!egal) etat='contra'; else if(ordre) etat='recip'; else etat='piege';
+    // angle réel entre (MN) et (BC)
+    const p=pts(); const a1=Math.atan2(p.N.y-p.M.y,p.N.x-p.M.x), a2=Math.atan2(p.C.y-p.B.y,p.C.x-p.B.x);
+    let d=Math.abs(a1-a2)*180/Math.PI%180; if(d>90) d=180-d;
+    return {AB,AM,AC,AN,p1,p2,egal,k1,k2,ordre,secantes,etat,angle:d};
+  }
+
+  // ---- dessin
+  const grid=el('g',{}); const layer=el('g',{});
+  function drawGrid(){ grid.innerHTML=''; const s=view.S; const sx=((view.ox%s)+s)%s, sy=((view.oy%s)+s)%s;
+    for(let x=sx;x<=W;x+=s) el('line',{x1:x,y1:0,x2:x,y2:H,stroke:'var(--grid)','stroke-width':1},grid);
+    for(let y=sy;y<=H;y+=s) el('line',{x1:0,y1:y,x2:W,y2:y,stroke:'var(--grid)','stroke-width':1},grid); }
+
+  function fullLine(P1,P2,attrs){ // droite passant par P1,P2 prolongée
+    const dx=P2.x-P1.x, dy=P2.y-P1.y, L=Math.hypot(dx,dy)||1, k=60/L;
+    const a=px({x:P1.x-dx*k,y:P1.y-dy*k}), b=px({x:P1.x+dx*k,y:P1.y+dy*k});
+    return el('line',Object.assign({x1:a[0],y1:a[1],x2:b[0],y2:b[1]},attrs),layer);
+  }
+  function chevron(P1,P2,col){ // marque de parallélisme au milieu
+    const a=px(P1), b=px(P2); const mx=(a[0]+b[0])/2, my=(a[1]+b[1])/2;
+    let dx=b[0]-a[0], dy=b[1]-a[1]; const L=Math.hypot(dx,dy)||1; dx/=L; dy/=L; if(dx<0||(dx===0&&dy<0)){dx=-dx;dy=-dy;}
+    const nx=-dy, ny=dx, s=7;
+    for(const o of [-5,5]){ const cx=mx+dx*o, cy=my+dy*o;
+      el('polyline',{points:`${cx-dx*s+nx*s},${cy-dy*s+ny*s} ${cx},${cy} ${cx-dx*s-nx*s},${cy-dy*s-ny*s}`,fill:'none',stroke:col,'stroke-width':2.4,'stroke-linecap':'round','stroke-linejoin':'round'},layer); }
+  }
+
+  function draw(){
+    layer.innerHTML='';
+    const p=pts(), a=u1(), c=u2(), an=analyse();
+    // droites (d) et (d')
+    fullLine(p.A,{x:a.x,y:a.y},{stroke:'var(--droite)','stroke-width':1.8});
+    fullLine(p.A,{x:c.x,y:c.y},{stroke:'var(--droite)','stroke-width':1.8});
+    // triangles légers
+    el('polygon',{points:[p.A,p.B,p.C].map(q=>px(q).join(',')).join(' '),fill:'var(--grand-fill)',stroke:'none'},layer);
+    el('polygon',{points:[p.A,p.M,p.N].map(q=>px(q).join(',')).join(' '),fill:'var(--petit-fill)',stroke:'none'},layer);
+    // parallèle fantôme
+    if(st.ghost && st.mode==='exp' && an.secantes){
+      const dir={x:p.C.x-p.B.x,y:p.C.y-p.B.y};
+      fullLine(p.M,{x:p.M.x+dir.x,y:p.M.y+dir.y},{stroke:'var(--petit)','stroke-width':1.6,'stroke-dasharray':'7 6',opacity:.75});
+      const ns=st.m*st.c/st.b, G=P(c,ns), [gx,gy]=px(G);
+      el('circle',{cx:gx,cy:gy,r:6,fill:'none',stroke:'var(--petit)','stroke-width':2,'stroke-dasharray':'3 2'},layer);
+      txt(gx+(gx>W-90?-14:14),gy-14,'N*','var(--petit)',14,700,layer,gx>W-90?'end':'start');
+    }
+    // (BC) et (MN)
+    fullLine(p.B,p.C,{stroke:'var(--grand)','stroke-width':2.6});
+    fullLine(p.M,p.N,{stroke:'var(--petit)','stroke-width':2.6});
+    if(an.etat==='recip' && (st.mode==='exp'||st.answered)){ chevron(p.B,p.C,'var(--grand)'); chevron(p.M,p.N,'var(--petit)'); }
+    // longueurs (morceaux entre points consécutifs)
+    if(st.long||st.mode==='defi') pieces(p,a,c);
+    // poignées de rotation
+    if(st.mode==='exp'){ rotHandle(a,Math.max(Math.abs(st.b),Math.abs(st.m))+1.1,'t1','(d)'); rotHandle(c,Math.max(Math.abs(st.c),Math.abs(st.n))+1.1,'t2',"(d')"); }
+    // points
+    const nrm=(u,v,t)=>{ let n={x:-u.y,y:u.x}; const o={x:v.x*Math.sign(t),y:v.y*Math.sign(t)}; if(n.x*o.x+n.y*o.y>0) n={x:-n.x,y:-n.y}; return n; };
+    const lab=(Q,s,col,n)=>{ const [x,y]=px(Q); txt(x+n.x*20,y-n.y*20,s,col,18,700,layer); };
+    for(const [k,u,v,t,col] of [['B',a,c,st.b,'var(--grand)'],['M',a,c,st.m,'var(--petit)'],['C',c,a,st.c,'var(--grand)'],['N',c,a,st.n,'var(--petit)']]){
+      handle(p[k],k,col); lab(p[k],k,col,nrm(u,v,t));
+    }
+    const bis={x:-(a.x+c.x),y:-(a.y+c.y)}; const bl=Math.hypot(bis.x,bis.y)||1;
+    const [ax,ay]=px(p.A); el('circle',{cx:ax,cy:ay,r:5,fill:'var(--ink)'},layer); txt(ax+bis.x/bl*20,ay-bis.y/bl*20,'A','var(--ink)',18,700,layer);
+    panel(an);
+  }
+  function pieces(p,a,c){
+    for(const [u,v,list] of [[a,c,[['A',0],['B',st.b],['M',st.m]]],[c,a,[['A',0],['C',st.c],['N',st.n]]]]){
+      list.sort((x,y)=>x[1]-y[1]);
+      for(let i=0;i<2;i++){
+        const t0=list[i][1], t1=list[i+1][1], len=t1-t0; if(len<1e-9) continue;
+        const mid=(t0+t1)/2; let n={x:-u.y,y:u.x}; const o={x:v.x*Math.sign(mid||1),y:v.y*Math.sign(mid||1)}; if(n.x*o.x+n.y*o.y<0) n={x:-n.x,y:-n.y};
+        // côté intérieur de l'angle : vers l'autre droite
+        const Q=P(u,mid), [x,y]=px(Q);
+        txt(x+n.x*15,y-n.y*15,fr(len),'var(--piece)',14,700,layer);
+      }
+    }
+  }
+  function handle(Q,k,col){
+    const [x,y]=px(Q);
+    if(st.mode==='exp') el('circle',{cx:x,cy:y,r:16,fill:'transparent','data-pt':k,style:'cursor:grab'},layer);
+    el('circle',{cx:x,cy:y,r:6,fill:col,stroke:'var(--paper)','stroke-width':2,'pointer-events':'none'},layer);
+  }
+  function rotHandle(u,R,key,name){
+    const Q=P(u,R), [x,y]=px(Q);
+    const g=el('g',{'data-rot':key,style:'cursor:grab'},layer);
+    el('circle',{cx:x,cy:y,r:16,fill:'transparent','data-rot':key},g);
+    el('rect',{x:x-6,y:y-6,width:12,height:12,transform:`rotate(45 ${x} ${y})`,fill:'var(--paper)',stroke:'var(--droite)','stroke-width':2,'data-rot':key},g);
+    txt(x,y+20,name,'var(--droite)',13,400,layer);
+  }
+
+  // ---- panneau de droite
+  function frac(a,b,cls){ return `<span class="frac ${cls||''}"><span>${a}</span><span>${b}</span></span>`; }
+  function simp(a,b){ const A=I(a),B=I(b),g=gcd(A,B); const n=A/g,d=B/g; return d===1?String(n):frac(fr(n),fr(d)); }
+  const ORD={ in:['M est entre A et B','N est entre A et C'], out:['B est entre A et M','C est entre A et N'], opp:['A est entre B et M','A est entre C et N'], same:['M et B sont confondus','N et C sont confondus'] };
+
+  function panel(an){
+    const v=document.getElementById('verdict');
+    const hide=st.mode==='defi'&&!st.answered;
+    for(const id of ['verdict','cardChecks','cardQuot','cardRedac']) document.getElementById(id).hidden=hide;
+    if(hide) return;
+    const ang=`Angle entre (MN) et (BC) : ${fr(an.angle,1)}°.`;
+    if(an.etat==='degen'){ v.className='verdict v-wait'; v.innerHTML=`Points confondus<small>Choisis M différent de B et N différent de C.</small>`; }
+    else if(an.etat==='recip'){ v.className='verdict v-ok'; v.innerHTML=`Parallèles : réciproque<small>Quotients égaux et points dans le même ordre. ${ang}</small>`; }
+    else if(an.etat==='contra'){ v.className='verdict v-no'; v.innerHTML=`Pas parallèles : contraposée<small>Les quotients sont différents. ${ang}</small>`; }
+    else { v.className='verdict v-trap'; v.innerHTML=`Pas parallèles : piège de l'ordre<small>Quotients égaux, mais les points ne sont pas dans le même ordre : la réciproque ne s'applique pas. ${ang}</small>`; }
+
+    const li=(ok,t,s)=>`<li><span class="ic ${ok?'y':'n'}">${ok?'✓':'✗'}</span><span>${t}${s?`<small>${s}</small>`:''}</span></li>`;
+    document.getElementById('checks').innerHTML=
+      li(an.secantes,'(BM) et (CN) sont sécantes en A')+
+      li(an.egal,`<span class="eq">${frac('AM','AB')} ${an.egal?'=':'≠'} ${frac('AN','AC')}</span>`,'')+
+      li(an.ordre,'A, B, M dans le même ordre que A, C, N',`${ORD[an.k1][0]} ; ${ORD[an.k2][1]}.`);
+
+    const q1=an.AM/an.AB, q2=an.AN/an.AC;
+    document.getElementById('quot').innerHTML=
+      `<span class="eq">${frac('AM','AB','')} = ${frac(fr(an.AM),fr(an.AB))} = ${simp(an.AM,an.AB)} ≈ ${fr(q1,3)}</span>`+
+      `<span class="eq">${frac('AN','AC','')} = ${frac(fr(an.AN),fr(an.AC))} = ${simp(an.AN,an.AC)} ≈ ${fr(q2,3)}</span>`;
+    document.getElementById('croix').innerHTML=`Produits en croix : ${fr(an.AM)} × ${fr(an.AC)} = <strong>${fr(an.AM*an.AC,4)}</strong> et ${fr(an.AN)} × ${fr(an.AB)} = <strong>${fr(an.AN*an.AB,4)}</strong>.`;
+    document.getElementById('redac').innerHTML=redaction(an);
+  }
+
+  function redaction(an){
+    if(an.etat==='degen') return '<p class="muted">Place d\'abord des points distincts.</p>';
+    const L=[];
+    L.push('<p>On sait que les droites (BM) et (CN) sont sécantes en A.</p>');
+    if(st.mode==='defi'){
+      const k1=an.k1, k2=an.k2;
+      if(k1==='in') L.push(`<p>M ∈ [AB] donc AB = AM + MB = ${fr(an.AM)} + ${fr(an.AB-an.AM)} = ${fr(an.AB)} cm.</p>`);
+      if(k1==='out') L.push(`<p>B ∈ [AM] donc AM = AB + BM = ${fr(an.AB)} + ${fr(an.AM-an.AB)} = ${fr(an.AM)} cm.</p>`);
+      if(k2==='in') L.push(`<p>N ∈ [AC] donc AC = AN + NC = ${fr(an.AN)} + ${fr(an.AC-an.AN)} = ${fr(an.AC)} cm.</p>`);
+      if(k2==='out') L.push(`<p>C ∈ [AN] donc AN = AC + CN = ${fr(an.AC)} + ${fr(an.AN-an.AC)} = ${fr(an.AN)} cm.</p>`);
+    }
+    L.push(`<p>On calcule séparément : <span class="eq">${frac('AM','AB')} = ${frac(fr(an.AM),fr(an.AB))}</span> et <span class="eq">${frac('AN','AC')} = ${frac(fr(an.AN),fr(an.AC))}</span>.</p>`);
+    L.push(`<p>Or ${fr(an.AM)} × ${fr(an.AC)} = ${fr(an.AM*an.AC,4)} et ${fr(an.AN)} × ${fr(an.AB)} = ${fr(an.AN*an.AB,4)}, donc <span class="eq">${frac('AM','AB')} ${an.egal?'=':'≠'} ${frac('AN','AC')}</span>.</p>`);
+    if(an.etat==='contra') L.push('<p>Donc, d\'après la <b class="k">contraposée du théorème de Thalès</b>, les droites (MN) et (BC) <strong>ne sont pas parallèles</strong>.</p>');
+    else if(an.etat==='recip'){ L.push('<p>De plus, les points A, B, M sont alignés dans le même ordre que les points A, C, N.</p>'); L.push('<p>Donc, d\'après la <b class="k">réciproque du théorème de Thalès</b>, les droites (MN) et (BC) <strong>sont parallèles</strong>.</p>'); }
+    else L.push(`<p>Mais ${ORD[an.k1][0]} alors que ${ORD[an.k2][1]} : les points ne sont pas dans le même ordre, on ne peut pas utiliser la réciproque. Sur la figure, (MN) et (BC) ne sont <strong>pas</strong> parallèles.</p>`);
+    return L.join('');
+  }
+
+  // ---- saisie
+  const iAB=document.getElementById('iAB'), iAM=document.getElementById('iAM'), iAC=document.getElementById('iAC'), iAN=document.getElementById('iAN');
+  const oM=document.getElementById('oppM'), oN=document.getElementById('oppN');
+  function syncInputs(){ iAB.value=r2(Math.abs(st.b)); iAM.value=r2(Math.abs(st.m)); iAC.value=r2(Math.abs(st.c)); iAN.value=r2(Math.abs(st.n)); oM.checked=st.m*st.b<0; oN.checked=st.n*st.c<0; }
+  function readInputs(){
+    const g=(e,old)=>{ const v=parseFloat(String(e.value).replace(',','.')); return (isFinite(v)&&v>0)?Math.min(r2(v),20):Math.abs(old); };
+    const sb=Math.sign(st.b)||1, sc=Math.sign(st.c)||1;
+    st.b=sb*g(iAB,st.b); st.m=sb*(oM.checked?-1:1)*g(iAM,st.m);
+    st.c=sc*g(iAC,st.c); st.n=sc*(oN.checked?-1:1)*g(iAN,st.n);
+    fit(); drawGrid(); draw();
+  }
+  for(const e of [iAB,iAM,iAC,iAN]) e.addEventListener('change',readInputs);
+  for(const e of [oM,oN]) e.addEventListener('change',readInputs);
+  document.querySelectorAll('[data-ex]').forEach(b=>b.addEventListener('click',()=>{ Object.assign(st,EX[b.dataset.ex]); syncInputs(); fit(); drawGrid(); draw(); }));
+  document.getElementById('pas').addEventListener('change',e=>{ st.step=+e.target.value; });
+  document.getElementById('tLong').addEventListener('change',e=>{ st.long=e.target.checked; draw(); });
+  document.getElementById('tGhost').addEventListener('change',e=>{ st.ghost=e.target.checked; draw(); });
+
+  // ---- glisser-déposer
+  let drag=null;
+  function toWorld(evt){ const r=svg.getBoundingClientRect(); const x=(evt.clientX-r.left)*W/r.width, y=(evt.clientY-r.top)*H/r.height; return {x:(x-view.ox)/view.S, y:(view.oy-y)/view.S, sx:x, sy:y}; }
+  svg.addEventListener('pointerdown',e=>{ if(st.mode!=='exp') return; const t=e.target; const k=t.getAttribute&&(t.getAttribute('data-pt')||t.getAttribute('data-rot')); if(!k) return; drag=k; svg.setPointerCapture(e.pointerId); e.preventDefault(); });
+  svg.addEventListener('pointermove',e=>{
+    if(!drag) return; const w=toWorld(e); if(w.sx<8||w.sx>W-8||w.sy<8||w.sy>H-8) return;
+    if(drag==='t1'||drag==='t2'){
+      let ang=Math.round(Math.atan2(w.y,w.x)*180/Math.PI);
+      const other=drag==='t1'?st.t2:st.t1; let sep=((ang-other)%180+180)%180; if(sep<12||sep>168) return;
+      st[drag]=ang; draw(); return;
+    }
+    const u=(drag==='B'||drag==='M')?u1():u2();
+    let t=w.x*u.x+w.y*u.y; t=Math.round(t/st.step)*st.step; t=r2(t); if(Math.abs(t)<0.05) return;
+    const key={B:'b',M:'m',C:'c',N:'n'}[drag], partner={b:'m',m:'b',c:'n',n:'c'}[key];
+    if(Math.abs(t-st[partner])<1e-9) return;
+    st[key]=t; syncInputs(); draw();
+  });
+  const end=()=>{ if(drag){ drag=null; } };
+  svg.addEventListener('pointerup',end); svg.addEventListener('pointercancel',end);
+
+  // ---- mode défi
+  const pick=a=>a[Math.floor(Math.random()*a.length)];
+  function exact(v){ return Math.abs(v*100-Math.round(v*100))<1e-7; }
+  function genDefi(){
+    for(let tries=0;tries<500;tries++){
+      const b=pick([2,2.5,3,3.5,4,4.5,5,6]), c=pick([2,2.4,3,3.5,4,4.5,5,5.6,6]);
+      const k=pick([1.5,2,2.5,1.6,0.5,0.4,0.6,0.75,-0.5,-0.6,-0.75,-0.8]);
+      const r=Math.random(); let m=r2(k*b), n;
+      if(!exact(k*b)||!exact(k*c)) continue;
+      let typ;
+      if(r<0.5){ typ='recip'; n=r2(k*c); }
+      else if(r<0.88){ typ='contra'; const d=pick([0.2,0.3,0.4,0.5,-0.2,-0.3,-0.4,-0.5]); n=r2(k*c+d*Math.sign(k)); if(Math.abs(n)<0.5||Math.sign(n)!==Math.sign(k*c)) continue; }
+      else { typ='piege'; n=r2(-k*c); }
+      if(Math.abs(m-b)<0.3||Math.abs(n-c)<0.3||Math.abs(m)<0.8) continue;
+      if(Math.max(Math.abs(b),Math.abs(m))>12||Math.max(Math.abs(c),Math.abs(n))>12) continue;
+      const t1=-10-Math.round(Math.random()*40), t2=t1+30+Math.round(Math.random()*35);
+      Object.assign(st,{b,m,c,n,t1,t2}); return typ;
+    }
+    Object.assign(st,EX.recip); return 'recip';
+  }
+  function newDefi(){ st.answered=false; genDefi(); fit(); drawGrid(); draw(); document.querySelectorAll('[data-rep]').forEach(b=>{b.disabled=false;}); }
+  document.getElementById('newDefi').addEventListener('click',newDefi);
+  document.querySelectorAll('[data-rep]').forEach(b=>b.addEventListener('click',()=>{
+    if(st.answered) return; const an=analyse(); const par=an.etat==='recip'; const ok=(b.dataset.rep==='oui')===par;
+    st.answered=true; st.tot++; if(ok) st.ok++;
+    document.getElementById('score').textContent=`Score : ${st.ok} / ${st.tot}`;
+    document.querySelectorAll('[data-rep]').forEach(x=>{x.disabled=true;});
+    draw();
+    const v=document.getElementById('verdict'); v.innerHTML=(ok?'Bonne réponse ! ':'Pas tout à fait. ')+v.innerHTML;
+  }));
+
+  const tabE=document.getElementById('tab-exp'), tabD=document.getElementById('tab-defi');
+  function setMode(m){
+    st.mode=m; tabE.setAttribute('aria-selected',m==='exp'); tabD.setAttribute('aria-selected',m==='defi');
+    document.getElementById('ctrl-exp').hidden=m!=='exp'; document.getElementById('ctrl-defi').hidden=m!=='defi'; document.getElementById('defiCard').hidden=m!=='defi';
+    if(m==='defi') newDefi(); else { Object.assign(st,EX.contra); syncInputs(); fit(); drawGrid(); draw(); }
+  }
+  tabE.addEventListener('click',()=>setMode('exp')); tabD.addEventListener('click',()=>setMode('defi'));
+
+  syncInputs(); fit(); drawGrid(); draw();
+})();
+</script>
+
+</body></html>

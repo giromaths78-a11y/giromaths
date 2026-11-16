@@ -1,0 +1,710 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>La machine à fonctions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Crimson+Pro:ital,wght@0,500;1,500;1,600&display=swap">
+<style>
+/* Layout : un cahier à petits carreaux ; une étape à la fois, scène au centre, navigation en haut et en bas.
+   Couleurs du cours : vert = antécédent, rouge = image, bleu = fonction. */
+:root{
+  --paper:#f7f9fc; --grid:#dfe7f2; --ink:#18202e; --muted:#5b6678; --card:#ffffff; --line:#c9d3e1;
+  --ant:#1b8a3a; --ant-soft:#e3f4e7; --img:#cf2f2b; --img-soft:#fbe6e4; --fn:#1f4e9c; --fn-soft:#e6edf8;
+  --focus:#f2a900; --on-fn:#ffffff;
+  --f-display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-math:"Crimson Pro", "Cambria Math", Georgia, serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#121722; --grid:#1d2533; --ink:#e8edf5; --muted:#9aa6b8; --card:#1a2130; --line:#2f3a4d;
+  --ant:#4cc372; --ant-soft:#173324; --img:#ff6b63; --img-soft:#3a1d1d; --fn:#7aa5ff; --fn-soft:#1b2a47; --focus:#ffc94d; --on-fn:#0d1526; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#121722; --grid:#1d2533; --ink:#e8edf5; --muted:#9aa6b8; --card:#1a2130; --line:#2f3a4d;
+  --ant:#4cc372; --ant-soft:#173324; --img:#ff6b63; --img-soft:#3a1d1d; --fn:#7aa5ff; --fn-soft:#1b2a47; --focus:#ffc94d; --on-fn:#0d1526; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--paper); color:var(--ink); font:17px/1.5 var(--f-body);
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px),linear-gradient(90deg,var(--grid) 1px, transparent 1px);
+  background-size:24px 24px;}
+.wrap{max-width:1100px; margin:0 auto; padding-block:18px 28px;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));
+  display:flex; flex-direction:column; gap:16px}
+header{display:flex; flex-wrap:wrap; align-items:baseline; justify-content:space-between; gap:8px 20px}
+h1{font:800 clamp(26px,4vw,40px)/1.05 var(--f-display); margin:0; letter-spacing:-.01em; text-wrap:balance}
+h1 .fx{font-family:var(--f-math); font-style:italic; font-weight:600; color:var(--fn)}
+.sub{color:var(--muted); font-size:15px}
+nav.steps{display:flex; flex-wrap:wrap; gap:6px}
+nav.steps button{font:700 14px var(--f-body); border:1.5px solid var(--line); background:var(--card); color:var(--ink);
+  border-radius:999px; padding:6px 12px; cursor:pointer; display:flex; gap:6px; align-items:center}
+nav.steps button .n{font-variant-numeric:tabular-nums; color:var(--muted)}
+nav.steps button[aria-current="step"]{background:var(--fn); border-color:var(--fn); color:var(--on-fn)}
+nav.steps button[aria-current="step"] .n{color:var(--on-fn)}
+button:focus-visible, input:focus-visible{outline:3px solid var(--focus); outline-offset:2px}
+
+.stage{background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:22px clamp(16px,3vw,32px);
+  min-height:520px; display:flex; flex-direction:column; gap:16px; box-shadow:0 10px 30px -18px rgba(20,40,80,.35)}
+.stage h2{font:800 clamp(22px,3vw,30px)/1.15 var(--f-display); margin:0; text-wrap:balance}
+.stage h2 small{display:block; font:700 13px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px}
+.lead{margin:0; max-width:68ch}
+.cols{display:grid; grid-template-columns:minmax(0,1.25fr) minmax(0,1fr); gap:22px; align-items:start}
+@media (max-width:820px){ .cols{grid-template-columns:1fr} }
+.panel{display:flex; flex-direction:column; gap:12px; min-width:0}
+
+.m{font-family:var(--f-math); font-style:italic; font-size:1.18em}
+.m .n{font-style:normal}
+.ant{color:var(--ant); font-weight:700}
+.img{color:var(--img); font-weight:700}
+.fn{color:var(--fn); font-weight:700}
+.big{font-size:clamp(24px,3.2vw,34px)}
+
+.seg{display:inline-flex; flex-wrap:wrap; gap:4px; background:var(--paper); border:1.5px solid var(--line); border-radius:10px; padding:4px}
+.seg button{font:700 15px var(--f-body); border:0; background:transparent; color:var(--ink); padding:7px 12px; border-radius:7px; cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--fn); color:var(--on-fn)}
+.seg button .m{font-size:1.1em}
+.btn{font:700 16px var(--f-body); border:0; border-radius:10px; padding:10px 18px; cursor:pointer; background:var(--fn); color:var(--on-fn)}
+.btn.ghost{background:transparent; color:var(--fn); border:1.5px solid var(--fn)}
+.btn:disabled{opacity:.45; cursor:default}
+.row{display:flex; flex-wrap:wrap; gap:10px; align-items:center}
+label.ctl{display:flex; flex-direction:column; gap:4px; font-weight:700; font-size:15px}
+input[type=range]{width:100%; accent-color:var(--fn)}
+.chips{display:flex; flex-wrap:wrap; gap:6px}
+.chips button{font:600 18px var(--f-math); min-width:46px; border:1.5px solid var(--line); background:var(--card); color:var(--ink); border-radius:9px; padding:5px 10px; cursor:pointer}
+.chips button[aria-pressed="true"]{border-color:var(--ant); background:var(--ant-soft); color:var(--ant)}
+.chips.red button[aria-pressed="true"]{border-color:var(--img); background:var(--img-soft); color:var(--img)}
+
+.box{border-radius:12px; padding:14px 16px; border:1.5px solid var(--line); background:var(--paper)}
+.box.def{border-color:var(--fn); background:var(--fn-soft)}
+.box.ok{border-color:var(--ant); background:var(--ant-soft)}
+.box.warn{border-color:var(--img); background:var(--img-soft)}
+.box p{margin:0}
+.box .t{font:800 13px var(--f-body); letter-spacing:.08em; text-transform:uppercase; margin-bottom:4px}
+
+svg{display:block; width:100%; height:auto; max-width:100%}
+svg text{font-family:var(--f-body)}
+.svgwrap{overflow-x:auto}
+
+table.vals{border-collapse:collapse; font-variant-numeric:tabular-nums; font-size:17px}
+table.vals th, table.vals td{border:1.5px solid var(--line); padding:6px 10px; text-align:center; min-width:46px}
+table.vals th{background:var(--ant-soft); color:var(--ant); font-family:var(--f-math); font-style:italic; font-size:19px}
+table.vals tr.ri td:first-child, table.vals tr.ri th{background:var(--img-soft); color:var(--img)}
+table.vals td.click, table.vals th.click{cursor:pointer}
+table.vals .hit-a{outline:3px solid var(--ant); outline-offset:-3px; background:var(--ant-soft)}
+table.vals .hit-i{outline:3px solid var(--img); outline-offset:-3px; background:var(--img-soft)}
+
+.steps-list{display:flex; flex-direction:column; gap:6px; font-family:var(--f-math); font-size:clamp(20px,2.6vw,26px)}
+.steps-list div{opacity:0; transform:translateY(6px); transition:opacity .35s, transform .35s}
+.steps-list div.on{opacity:1; transform:none}
+.steps-list .note{font-family:var(--f-body); font-size:14px; color:var(--muted); font-style:normal; margin-left:10px}
+
+.sentence{font-size:clamp(18px,2.2vw,22px)}
+.history{font-variant-numeric:tabular-nums}
+
+footer.nav{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap}
+footer.nav .hint{color:var(--muted); font-size:14px}
+
+.quiz{display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr)); gap:14px}
+.q{border:1.5px solid var(--line); border-radius:12px; padding:14px; background:var(--paper); display:flex; flex-direction:column; gap:10px}
+.q p{margin:0; font-weight:700}
+.q .opts{display:flex; flex-wrap:wrap; gap:6px}
+.q .opts button{font:600 16px var(--f-body); border:1.5px solid var(--line); background:var(--card); color:var(--ink); border-radius:9px; padding:7px 12px; cursor:pointer}
+.q .opts button.good{border-color:var(--ant); background:var(--ant-soft); color:var(--ant)}
+.q .opts button.bad{border-color:var(--img); background:var(--img-soft); color:var(--img)}
+.q .fb{font-size:15px; min-height:1.5em}
+.score{font:800 22px var(--f-display)}
+
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>La machine à fonctions <span class="fx">f</span></h1>
+      <div class="sub">Notions de fonction — 3<sup>e</sup></div>
+    </div>
+    <nav class="steps" id="stepsNav" aria-label="Étapes du cours"></nav>
+  </header>
+
+  <main class="stage" id="stage" aria-live="polite"></main>
+
+  <footer class="nav">
+    <button class="btn ghost" id="prev">← Précédent</button>
+    <span class="hint">Flèches ← → du clavier pour changer d'étape</span>
+    <button class="btn" id="next">Suivant →</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = (s, r=document) => r.querySelector(s);
+const el = (tag, attrs={}, html="") => { const e=document.createElement(tag); for(const k in attrs){ if(k==="class") e.className=attrs[k]; else e.setAttribute(k,attrs[k]); } if(html) e.innerHTML=html; return e; };
+const NS="http://www.w3.org/2000/svg";
+const sv = (tag, attrs={}) => { const e=document.createElementNS(NS,tag); for(const k in attrs) e.setAttribute(k,attrs[k]); return e; };
+function fmt(v, d=2){
+  if (Math.abs(v) < 1e-9) v = 0;
+  let s = (Math.round(v*Math.pow(10,d))/Math.pow(10,d)).toString().replace(".", ",");
+  return s.replace("-", "−");
+}
+const css = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+
+/* ---------- Les fonctions du cours ---------- */
+const FUNCS = {
+  carre:  { label:"f(x) = x²",           expr:x=>"x²",            f:x=>x*x,
+            subst:x=>`(${p(x)})²`, mid:x=>null },
+  affine: { label:"f(x) = 2(x − 3) + 5", expr:()=>"2(x − 3) + 5", f:x=>2*(x-3)+5,
+            subst:x=>`2 × (${fmt(x)} − 3) + 5`, mid:x=>`2 × ${p(x-3)} + 5` },
+  moins4: { label:"f(x) = x² − 4",       expr:()=>"x² − 4",       f:x=>x*x-4,
+            subst:x=>`${p(x)}² − 4`, mid:x=>`${fmt(x*x)} − 4` }
+};
+function p(v){ return v<0 ? "("+fmt(v)+")" : fmt(v); }
+
+/* ---------- Étapes ---------- */
+const STEPS = [
+  {id:"machine",      name:"La machine",       build:buildMachine},
+  {id:"vocabulaire",  name:"Image / antécédent", build:buildSagittal},
+  {id:"calcul",       name:"Par le calcul",    build:buildCalcul},
+  {id:"tableau",      name:"Avec un tableau",  build:buildTableau},
+  {id:"graphique",    name:"Avec un graphique",build:buildGraphique},
+  {id:"courbe",       name:"La courbe",        build:buildCourbe},
+  {id:"quiz",         name:"À toi de jouer",   build:buildQuiz},
+];
+let cur = 0, cleanup = null;
+const nav = $("#stepsNav");
+STEPS.forEach((s,i)=>{
+  const b = el("button",{type:"button"},`<span class="n">${i+1}</span>${s.name}`);
+  b.addEventListener("click",()=>go(i));
+  nav.appendChild(b);
+});
+function go(i){
+  cur = Math.max(0, Math.min(STEPS.length-1, i));
+  [...nav.children].forEach((b,k)=> k===cur ? b.setAttribute("aria-current","step") : b.removeAttribute("aria-current"));
+  $("#prev").disabled = cur===0; $("#next").disabled = cur===STEPS.length-1;
+  if (cleanup) { cleanup(); cleanup=null; }
+  const st = $("#stage"); st.innerHTML="";
+  cleanup = STEPS[cur].build(st) || null;
+  if (location.hash.slice(1)!==STEPS[cur].id) history.replaceState(null,"","#"+STEPS[cur].id);
+}
+$("#prev").addEventListener("click",()=>go(cur-1));
+$("#next").addEventListener("click",()=>go(cur+1));
+document.addEventListener("keydown",e=>{
+  if (e.target.matches("input,textarea")) return;
+  if (e.key==="ArrowRight") go(cur+1);
+  if (e.key==="ArrowLeft") go(cur-1);
+});
+window.addEventListener("hashchange",()=>{ const k=STEPS.findIndex(s=>s.id===location.hash.slice(1)); if(k>=0 && k!==cur) go(k); });
+
+/* =========================================================
+   1. La machine
+   ========================================================= */
+function buildMachine(st){
+  st.innerHTML = `
+  <h2><small>Étape 1 · Définition</small>Une fonction, c'est une machine</h2>
+  <p class="lead">On donne un nombre <span class="ant">x</span> à la machine <span class="fn">f</span>. Elle lui associe <b>un unique</b> nombre, noté <span class="img m">f(x)</span>.</p>
+  <div class="cols">
+    <div class="panel">
+      <div class="seg" id="fsel" role="group" aria-label="Choix de la fonction"></div>
+      <div class="svgwrap"><svg id="mach" viewBox="0 0 640 260" role="img" aria-label="Machine qui transforme un nombre"></svg></div>
+      <div class="row">
+        <label class="ctl" style="flex:1; min-width:200px">Nombre de départ <span class="ant m" id="xv"></span>
+          <input type="range" id="xin" min="-5" max="5" step="0.5" value="3"></label>
+        <button class="btn" id="run">Lancer la machine</button>
+      </div>
+    </div>
+    <div class="panel">
+      <div class="box def"><div class="t fn">Notation</div>
+        <p class="m big" id="not1">f : 3 ⟼ 9</p>
+        <p class="m big" id="not2">f(3) = 9</p></div>
+      <div class="box"><div class="t">On dit</div><p class="sentence" id="say"></p></div>
+      <div class="box"><div class="t">Déjà calculés</div>
+        <div class="svgwrap"><table class="vals history" id="hist"><tr><th>x</th></tr><tr class="ri"><th>f(x)</th></tr></table></div></div>
+    </div>
+  </div>`;
+  let fk = "carre", busy=false;
+  const fsel=$("#fsel",st);
+  Object.entries(FUNCS).forEach(([k,F])=>{
+    const b=el("button",{type:"button","aria-pressed":k===fk},`<span class="m">${F.label}</span>`);
+    b.onclick=()=>{ fk=k; [...fsel.children].forEach(c=>c.setAttribute("aria-pressed",c===b)); resetHist(); draw(null,null,0); };
+    fsel.appendChild(b);
+  });
+  const xin=$("#xin",st), xv=$("#xv",st), svg=$("#mach",st);
+  const showX=()=>{ xv.textContent=fmt(+xin.value); };
+  xin.addEventListener("input",()=>{ showX(); draw(+xin.value,null,0); });
+  function resetHist(){ $("#hist",st).innerHTML=`<tr><th>x</th></tr><tr class="ri"><th>f(x)</th></tr>`; }
+
+  // dessin de la machine
+  function draw(x, y, phase){ // phase 0: x à gauche, 1: dans la machine, 2: sortie
+    svg.innerHTML="";
+    const ink=css("--ink"), fn=css("--fn"), fnS=css("--fn-soft"), ant=css("--ant"), antS=css("--ant-soft"), img=css("--img"), imgS=css("--img-soft"), mut=css("--muted");
+    svg.appendChild(sv("rect",{x:220,y:55,width:200,height:150,rx:18,fill:fnS,stroke:fn,"stroke-width":3}));
+    // entonnoir et sortie
+    svg.appendChild(sv("path",{d:"M170 95 L220 110 L220 150 L170 165 Z",fill:fnS,stroke:fn,"stroke-width":3}));
+    svg.appendChild(sv("path",{d:"M420 115 L470 115 L470 145 L420 145 Z",fill:fnS,stroke:fn,"stroke-width":3}));
+    const t1=sv("text",{x:320,y:122,"text-anchor":"middle","font-size":40,"font-style":"italic","font-family":"Crimson Pro, Georgia, serif",fill:fn}); t1.textContent="f"; svg.appendChild(t1);
+    const t2=sv("text",{x:320,y:158,"text-anchor":"middle","font-size":19,"font-family":"Crimson Pro, Georgia, serif","font-style":"italic",fill:fn}); t2.textContent=FUNCS[fk].label; svg.appendChild(t2);
+    // engrenage (rotation pendant le calcul)
+    const g=sv("g",{transform:"translate(395 80)"}); const gear=sv("g",{}); g.appendChild(gear);
+    for(let k=0;k<8;k++){ gear.appendChild(sv("rect",{x:-3,y:-15,width:6,height:8,fill:fn,transform:`rotate(${k*45})`})); }
+    gear.appendChild(sv("circle",{r:10,fill:"none",stroke:fn,"stroke-width":4}));
+    if(phase===1 && !reduce) gear.appendChild(sv("animateTransform",{attributeName:"transform",type:"rotate",from:"0",to:"360",dur:"0.8s",repeatCount:"indefinite"}));
+    svg.appendChild(g);
+    // étiquettes
+    const l1=sv("text",{x:85,y:235,"text-anchor":"middle","font-size":15,"font-weight":700,fill:ant}); l1.textContent="ANTÉCÉDENT"; svg.appendChild(l1);
+    const l2=sv("text",{x:555,y:235,"text-anchor":"middle","font-size":15,"font-weight":700,fill:img}); l2.textContent="IMAGE"; svg.appendChild(l2);
+    // jeton x
+    if(x!==null){
+      const pos = phase===0 ? 85 : 320;
+      const gx=sv("g",{transform:`translate(${pos} 130)`,opacity: phase===1?0.0:1});
+      gx.appendChild(sv("circle",{r:42,fill:antS,stroke:ant,"stroke-width":3}));
+      const tx=sv("text",{"text-anchor":"middle",y:11,"font-size":30,"font-weight":700,fill:ant}); tx.textContent=fmt(x); gx.appendChild(tx);
+      if(phase!==2) svg.appendChild(gx);
+    }
+    if(y!==null && phase===2){
+      const gy=sv("g",{transform:"translate(555 130)"});
+      gy.appendChild(sv("circle",{r:48,fill:imgS,stroke:img,"stroke-width":3}));
+      const ty=sv("text",{"text-anchor":"middle",y:11,"font-size":y.toString().length>4?24:30,"font-weight":700,fill:img}); ty.textContent=fmt(y); gy.appendChild(ty);
+      svg.appendChild(gy);
+      const gx=sv("g",{transform:"translate(85 130)",opacity:.35});
+      gx.appendChild(sv("circle",{r:42,fill:antS,stroke:ant,"stroke-width":3}));
+      const tx=sv("text",{"text-anchor":"middle",y:11,"font-size":30,"font-weight":700,fill:ant}); tx.textContent=fmt(x); gx.appendChild(tx);
+      svg.appendChild(gx);
+    }
+  }
+  function animateToken(x, done){
+    if(reduce){ done(); return; }
+    // déplace le jeton de 85 à 230 puis lance la machine
+    let t0=null; const dur=700;
+    function stepF(ts){
+      if(!t0) t0=ts; const k=Math.min(1,(ts-t0)/dur);
+      draw(x,null,0);
+      const g=svg.lastChild; const pos=85+(240-85)*k*k*(3-2*k);
+      g.setAttribute("transform",`translate(${pos} 130) scale(${1-0.5*k})`);
+      if(k<1) raf=requestAnimationFrame(stepF); else { draw(x,null,1); tm=setTimeout(done,800); }
+    }
+    raf=requestAnimationFrame(stepF);
+  }
+  let raf=null, tm=null;
+  function update(x,y){
+    const F=FUNCS[fk];
+    $("#not1",st).innerHTML=`f : <span class="ant">${fmt(x)}</span> ⟼ <span class="img">${fmt(y)}</span>`;
+    $("#not2",st).innerHTML=`f(<span class="ant">${fmt(x)}</span>) = <span class="img">${fmt(y)}</span>`;
+    $("#say",st).innerHTML=`<span class="img">${fmt(y)}</span> est <b>l'image</b> de <span class="ant">${fmt(x)}</span> par <span class="fn m">f</span>.<br><span class="ant">${fmt(x)}</span> est <b>un antécédent</b> de <span class="img">${fmt(y)}</span> par <span class="fn m">f</span>.`;
+    const h=$("#hist",st); const r1=h.rows[0], r2=h.rows[1];
+    for(let c=1;c<r1.cells.length;c++){ if(+r1.cells[c].dataset.x===x) return; }
+    if(r1.cells.length>8){ r1.deleteCell(1); r2.deleteCell(1); }
+    const c1=r1.insertCell(); c1.textContent=fmt(x); c1.dataset.x=x;
+    const c2=r2.insertCell(); c2.textContent=fmt(y);
+  }
+  $("#run",st).addEventListener("click",()=>{
+    if(busy) return; busy=true; const x=+xin.value, y=FUNCS[fk].f(x);
+    animateToken(x,()=>{ draw(x,y,2); update(x,y); busy=false; });
+  });
+  showX(); draw(3,9,2); update(3,9);
+  return ()=>{ cancelAnimationFrame(raf); clearTimeout(tm); };
+}
+
+/* =========================================================
+   2. Diagramme : une seule image, plusieurs antécédents
+   ========================================================= */
+function buildSagittal(st){
+  st.innerHTML = `
+  <h2><small>Étape 2 · Vocabulaire</small>« L'image », mais « un antécédent »</h2>
+  <p class="lead">Fonction carré : <span class="m">f(x) = x²</span>. Clique sur un nombre <span class="ant">à gauche</span> pour voir son image, ou sur un nombre <span class="img">à droite</span> pour voir ses antécédents.</p>
+  <div class="cols">
+    <div class="svgwrap"><svg id="sag" viewBox="0 0 560 445" role="img" aria-label="Diagramme : nombres de départ reliés à leurs images"></svg></div>
+    <div class="panel">
+      <div class="box" id="sagOut"><div class="t">Résultat</div><p class="sentence">Choisis un nombre.</p></div>
+      <div class="box def"><div class="t fn">À retenir</div>
+        <p>• Un nombre a <b>une seule image</b> : on dit <b>l'</b>image.</p>
+        <p>• Un nombre peut avoir <b>aucun, un ou plusieurs antécédents</b> : on dit <b>un</b> antécédent.</p></div>
+    </div>
+  </div>`;
+  const svg=$("#sag",st);
+  const L=[-3,-2,-1,0,1,2,3], R=[-1,0,1,4,9];
+  const yl=i=>65+i*55, yr=i=>95+i*72;
+  let sel=null;
+  function render(){
+    svg.innerHTML="";
+    const ant=css("--ant"), antS=css("--ant-soft"), img=css("--img"), imgS=css("--img-soft"), line=css("--line"), ink=css("--ink"), mut=css("--muted"), card=css("--card");
+    svg.appendChild(sv("ellipse",{cx:110,cy:235,rx:85,ry:205,fill:antS,stroke:ant,"stroke-width":2}));
+    svg.appendChild(sv("ellipse",{cx:450,cy:235,rx:85,ry:205,fill:imgS,stroke:img,"stroke-width":2}));
+    const h1=sv("text",{x:110,y:20,"text-anchor":"middle","font-size":14,"font-weight":700,fill:ant}); h1.textContent="nombres de départ";
+    const h2=sv("text",{x:450,y:20,"text-anchor":"middle","font-size":14,"font-weight":700,fill:img}); h2.textContent="images";
+    // flèches
+    L.forEach((x,i)=>{
+      const j=R.indexOf(x*x);
+      const on = sel && ((sel.side==="L" && sel.v===x) || (sel.side==="R" && sel.v===x*x));
+      const pth=sv("path",{d:`M150 ${yl(i)} C 280 ${yl(i)}, 280 ${yr(j)}, 410 ${yr(j)}`,fill:"none",stroke:on?ink:line,"stroke-width":on?3.5:1.8,"marker-end":on?"url(#ah2)":"url(#ah)"});
+      svg.appendChild(pth);
+    });
+    const defs=sv("defs");
+    [["ah",line],["ah2",ink]].forEach(([id,c])=>{ const m=sv("marker",{id,viewBox:"0 0 10 10",refX:9,refY:5,markerWidth:7,markerHeight:7,orient:"auto"}); m.appendChild(sv("path",{d:"M0 0 L10 5 L0 10 z",fill:c})); defs.appendChild(m); });
+    svg.appendChild(defs);
+    L.forEach((x,i)=>{
+      const on=sel && sel.side==="L" && sel.v===x, hit=sel && sel.side==="R" && x*x===sel.v;
+      const g=sv("g",{transform:`translate(110 ${yl(i)})`,tabindex:0,role:"button","aria-label":"nombre "+x,style:"cursor:pointer"});
+      g.appendChild(sv("circle",{r:20,fill:(on||hit)?ant:card,stroke:ant,"stroke-width":2}));
+      const t=sv("text",{y:7,"text-anchor":"middle","font-size":20,"font-weight":700,fill:(on||hit)?"#fff":ant}); t.textContent=fmt(x); g.appendChild(t);
+      g.addEventListener("click",()=>{sel={side:"L",v:x}; render(); explain();});
+      g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); sel={side:"L",v:x}; render(); explain(); }});
+      svg.appendChild(g);
+    });
+    R.forEach((y,j)=>{
+      const on=sel && sel.side==="R" && sel.v===y, hit=sel && sel.side==="L" && sel.v*sel.v===y;
+      const g=sv("g",{transform:`translate(450 ${yr(j)})`,tabindex:0,role:"button","aria-label":"nombre "+y,style:"cursor:pointer"});
+      g.appendChild(sv("circle",{r:22,fill:(on||hit)?img:card,stroke:img,"stroke-width":2}));
+      const t=sv("text",{y:7,"text-anchor":"middle","font-size":20,"font-weight":700,fill:(on||hit)?"#fff":img}); t.textContent=fmt(y); g.appendChild(t);
+      g.addEventListener("click",()=>{sel={side:"R",v:y}; render(); explain();});
+      g.addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); sel={side:"R",v:y}; render(); explain(); }});
+      svg.appendChild(g);
+    });
+    svg.appendChild(h1); svg.appendChild(h2);
+  }
+  function explain(){
+    const box=$("#sagOut",st); let html="";
+    if(sel.side==="L"){
+      const x=sel.v,y=x*x;
+      html=`<div class="t">Image</div><p class="sentence"><span class="m">f(<span class="ant">${fmt(x)}</span>) = ${p(x)}² = <span class="img">${fmt(y)}</span></span></p>
+      <p class="sentence">Une seule flèche part de <span class="ant">${fmt(x)}</span> : <b>l'</b>image de <span class="ant">${fmt(x)}</span> est <span class="img">${fmt(y)}</span>.</p>`;
+      box.className="box ok";
+    } else {
+      const y=sel.v, a=L.filter(x=>x*x===y);
+      if(a.length===0){ html=`<div class="t">Antécédents</div><p class="sentence">Aucune flèche n'arrive sur <span class="img">${fmt(y)}</span> : <b>${fmt(y)} n'a aucun antécédent</b>.<br>Un carré n'est jamais négatif.</p>`; box.className="box warn"; }
+      else if(a.length===1){ html=`<div class="t">Antécédents</div><p class="sentence">Une seule flèche arrive sur <span class="img">${fmt(y)}</span> : son unique antécédent est <span class="ant">${fmt(a[0])}</span>.</p>`; box.className="box ok"; }
+      else { html=`<div class="t">Antécédents</div><p class="sentence">${a.length} flèches arrivent sur <span class="img">${fmt(y)}</span> : <span class="ant">${a.map(fmt).join("</span> et <span class=\"ant\">")}</span> sont <b>des</b> antécédents de <span class="img">${fmt(y)}</span>.</p><p class="sentence">On dit « <b>un</b> antécédent de ${fmt(y)} est ${fmt(a[1])} ».</p>`; box.className="box ok"; }
+    }
+    box.innerHTML=html;
+  }
+  render();
+}
+
+/* =========================================================
+   3. Par le calcul : f(x) = 2(x − 3) + 5
+   ========================================================= */
+function buildCalcul(st){
+  st.innerHTML = `
+  <h2><small>Étape 3 · Savoir-faire 1</small>Avec une expression : <span class="m fn">f(x) = 2(x − 3) + 5</span></h2>
+  <div class="seg" id="mode" role="group" aria-label="Que cherche-t-on ?">
+    <button type="button" aria-pressed="true" data-m="img">Calculer une image</button>
+    <button type="button" aria-pressed="false" data-m="ant">Trouver un antécédent</button>
+  </div>
+  <div class="cols">
+    <div class="panel">
+      <div class="box def" id="meth"></div>
+      <div class="row"><span id="pickLbl" style="font-weight:700"></span><div class="chips" id="pick"></div></div>
+      <div class="row"><button class="btn" id="stepBtn">Étape suivante</button><button class="btn ghost" id="allBtn">Tout afficher</button></div>
+    </div>
+    <div class="panel"><div class="box" style="min-height:260px"><div class="steps-list" id="lines"></div></div></div>
+  </div>`;
+  const f=x=>2*(x-3)+5;
+  let mode="img", val=5, shown=0, lines=[];
+  const modeEl=$("#mode",st);
+  modeEl.querySelectorAll("button").forEach(b=>b.onclick=()=>{ mode=b.dataset.m; modeEl.querySelectorAll("button").forEach(c=>c.setAttribute("aria-pressed",c===b)); val= mode==="img"?5:19; setup(); });
+  function setup(){
+    const meth=$("#meth",st), pick=$("#pick",st);
+    if(mode==="img"){
+      meth.innerHTML=`<div class="t fn">Méthode</div><p>Pour calculer <b>l'image</b> d'un nombre, on <b>remplace x par ce nombre</b>, puis on calcule.</p>`;
+      $("#pickLbl",st).innerHTML=`Image de <span class="ant">…</span> ?`;
+      fill(pick,[-1,0,2,5,7,10],"");
+    } else {
+      meth.innerHTML=`<div class="t fn">Méthode</div><p>Pour trouver <b>un antécédent</b> d'un nombre <span class="m">b</span>, on <b>résout l'équation</b> <span class="m">f(x) = b</span>.</p>`;
+      $("#pickLbl",st).innerHTML=`Antécédent de <span class="img">…</span> ?`;
+      fill(pick,[-1,5,9,13,19,20],"red");
+    }
+    build();
+  }
+  function fill(pick, arr, cls){
+    pick.className="chips "+cls; pick.innerHTML="";
+    arr.forEach(v=>{ const b=el("button",{type:"button","aria-pressed":v===val},fmt(v)); b.onclick=()=>{ val=v; [...pick.children].forEach(c=>c.setAttribute("aria-pressed",c===b)); build(); }; pick.appendChild(b); });
+  }
+  function build(){
+    const x=val;
+    if(mode==="img"){
+      lines=[
+        `f(<span class="ant">${fmt(x)}</span>) = 2 × (<span class="ant">${fmt(x)}</span> − 3) + 5 <span class="note">on remplace x</span>`,
+        `f(<span class="ant">${fmt(x)}</span>) = 2 × ${p(x-3)} + 5 <span class="note">parenthèses d'abord</span>`,
+        `f(<span class="ant">${fmt(x)}</span>) = ${fmt(2*(x-3))} + 5 <span class="note">multiplication</span>`,
+        `f(<span class="ant">${fmt(x)}</span>) = <span class="img">${fmt(f(x))}</span>`,
+        `<span style="font-family:var(--f-body);font-style:normal;font-size:.8em">Donc <span class="img">${fmt(f(x))}</span> est l'image de <span class="ant">${fmt(x)}</span> par f.</span>`
+      ];
+    } else {
+      const b=x, s=(b+1)/2;
+      lines=[
+        `2(x − 3) + 5 = <span class="img">${fmt(b)}</span> <span class="note">on écrit f(x) = ${fmt(b)}</span>`,
+        `2x − 6 + 5 = <span class="img">${fmt(b)}</span> <span class="note">on développe</span>`,
+        `2x − 1 = <span class="img">${fmt(b)}</span> <span class="note">on réduit</span>`,
+        `2x = ${fmt(b)} + 1 = ${fmt(b+1)} <span class="note">on ajoute 1</span>`,
+        `x = ${fmt(b+1)} ÷ 2 = <span class="ant">${fmt(s)}</span> <span class="note">on divise par 2</span>`,
+        `<span style="font-family:var(--f-body);font-style:normal;font-size:.8em">Vérification : f(${fmt(s)}) = 2 × ${p(s-3)} + 5 = ${fmt(f(s))} ✓<br>Donc <span class="ant">${fmt(s)}</span> est un antécédent de <span class="img">${fmt(b)}</span> par f.</span>`
+      ];
+    }
+    shown=1; render();
+  }
+  function render(){
+    const box=$("#lines",st); box.innerHTML="";
+    lines.forEach((h,i)=>{ const d=el("div",{},h); box.appendChild(d); if(i<shown) requestAnimationFrame(()=>d.classList.add("on")); });
+    $("#stepBtn",st).disabled = shown>=lines.length;
+  }
+  $("#stepBtn",st).onclick=()=>{ shown++; render(); };
+  $("#allBtn",st).onclick=()=>{ shown=lines.length; render(); };
+  setup();
+}
+
+/* =========================================================
+   4. Tableau : aire du rectangle A(x) = x(5 − x)
+   ========================================================= */
+function buildTableau(st){
+  st.innerHTML = `
+  <h2><small>Étape 4 · Savoir-faire 2</small>Avec un tableau de valeurs</h2>
+  <p class="lead">Un rectangle a pour dimensions <span class="m ant">x</span> et <span class="m">5 − x</span> (en cm). Son aire est <span class="m fn">A(x) = x(5 − x)</span>. Déplace le curseur, puis clique dans le tableau.</p>
+  <div class="cols">
+    <div class="panel">
+      <div class="svgwrap"><svg id="rect" viewBox="0 0 520 250" role="img" aria-label="Rectangle de dimensions x et 5 − x"></svg></div>
+      <label class="ctl">Longueur <span class="m ant" id="xl"></span><input type="range" id="xr" min="0.5" max="4.5" step="0.5" value="2"></label>
+    </div>
+    <div class="panel">
+      <div class="svgwrap"><table class="vals" id="tab"></table></div>
+      <div class="box" id="tabOut"><div class="t">Lecture</div><p class="sentence">Clique sur un nombre de la <b class="ant">1<sup>re</sup> ligne</b> (image) ou de la <b class="img">2<sup>e</sup> ligne</b> (antécédents).</p></div>
+    </div>
+  </div>`;
+  const xs=[1,1.5,2,2.5,3,3.5,4,4.5], A=x=>x*(5-x);
+  const tab=$("#tab",st);
+  tab.innerHTML=`<tr><th>x (cm)</th>${xs.map(x=>`<td class="click" data-x="${x}">${fmt(x)}</td>`).join("")}</tr>
+  <tr class="ri"><th>A(x) (cm²)</th>${xs.map(x=>`<td class="click" data-y="${A(x)}">${fmt(A(x))}</td>`).join("")}</tr>`;
+  const xr=$("#xr",st), svg=$("#rect",st);
+  function clearHits(){ tab.querySelectorAll(".hit-a,.hit-i").forEach(c=>c.classList.remove("hit-a","hit-i")); }
+  function hitX(x){
+    clearHits();
+    const i=xs.indexOf(x); if(i<0) return;
+    tab.rows[0].cells[i+1].classList.add("hit-a"); tab.rows[1].cells[i+1].classList.add("hit-i");
+  }
+  tab.querySelectorAll("td[data-x]").forEach(td=>td.onclick=()=>{
+    const x=+td.dataset.x; xr.value=x; drawRect(); hitX(x);
+    $("#tabOut",st).className="box ok";
+    $("#tabOut",st).innerHTML=`<div class="t">Image</div><p class="sentence">On part de <span class="ant">${fmt(x)}</span> sur la 1<sup>re</sup> ligne et on descend : <span class="m">A(${fmt(x)}) = <span class="img">${fmt(A(x))}</span></span>.<br><span class="img">${fmt(A(x))}</span> est l'image de <span class="ant">${fmt(x)}</span>.</p>`;
+  });
+  tab.querySelectorAll("td[data-y]").forEach(td=>td.onclick=()=>{
+    const y=+td.dataset.y; clearHits();
+    const a=xs.filter(x=>Math.abs(A(x)-y)<1e-9);
+    a.forEach(x=>{ const i=xs.indexOf(x); tab.rows[0].cells[i+1].classList.add("hit-a"); tab.rows[1].cells[i+1].classList.add("hit-i"); });
+    $("#tabOut",st).className="box ok";
+    $("#tabOut",st).innerHTML=`<div class="t">Antécédent${a.length>1?"s":""}</div><p class="sentence">On cherche <span class="img">${fmt(y)}</span> sur la 2<sup>e</sup> ligne et on remonte : ${a.map(x=>`<span class="m">A(<span class="ant">${fmt(x)}</span>) = ${fmt(y)}</span>`).join(" et ")}.<br>${a.length>1?`<span class="ant">${a.map(fmt).join(" et ")}</span> sont des antécédents`:`<span class="ant">${fmt(a[0])}</span> est un antécédent`} de <span class="img">${fmt(y)}</span>.</p>`;
+  });
+  function drawRect(){
+    const x=+xr.value, w=x, h=5-x, sc=44, ox=40, oy=30;
+    $("#xl",st).textContent=fmt(x)+" cm";
+    svg.innerHTML="";
+    const ant=css("--ant"), fn=css("--fn"), fnS=css("--fn-soft"), ink=css("--ink"), img=css("--img"), grid=css("--grid"), line=css("--line");
+    // quadrillage 0,5 cm
+    for(let i=0;i<=20;i++){ const X=ox+i*sc/2; svg.appendChild(sv("line",{x1:X,y1:oy,x2:X,y2:oy+4.5*sc,stroke:grid})); }
+    for(let j=0;j<=9;j++){ const Y=oy+j*sc/2; svg.appendChild(sv("line",{x1:ox,y1:Y,x2:ox+10*sc,y2:Y,stroke:grid})); }
+    svg.appendChild(sv("rect",{x:ox,y:oy,width:w*sc,height:h*sc,fill:fnS,stroke:fn,"stroke-width":3}));
+    const t1=sv("text",{x:ox+w*sc/2,y:oy-8,"text-anchor":"middle","font-size":17,"font-weight":700,fill:ant}); t1.textContent=`x = ${fmt(w)} cm`; svg.appendChild(t1);
+    const t2=sv("text",{x:ox+w*sc+10,y:oy+h*sc/2+6,"font-size":17,"font-weight":700,fill:ink}); t2.textContent=`5 − x = ${fmt(h)} cm`; svg.appendChild(t2);
+    const t3=sv("text",{x:ox+w*sc+10,y:oy+h*sc/2+32,"font-size":20,"font-weight":700,fill:img}); t3.textContent=`A = ${fmt(A(x))} cm²`; svg.appendChild(t3);
+    hitX(x);
+  }
+  xr.addEventListener("input",()=>{ drawRect(); const x=+xr.value;
+    $("#tabOut",st).className="box ok";
+    $("#tabOut",st).innerHTML=`<div class="t">Image</div><p class="sentence"><span class="m">A(<span class="ant">${fmt(x)}</span>) = ${fmt(x)} × ${fmt(5-x)} = <span class="img">${fmt(A(x))}</span></span></p>`; });
+  drawRect();
+}
+
+/* =========================================================
+   Outil de repère SVG
+   ========================================================= */
+function makeAxes(svg, o){
+  // o: {W,H,pad,xmin,xmax,ymin,ymax,xstep,ystep,xlab,ylab}
+  const {W,H,pad}=o; svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.innerHTML="";
+  const X=x=>pad.l+(x-o.xmin)/(o.xmax-o.xmin)*(W-pad.l-pad.r);
+  const Y=y=>H-pad.b-(y-o.ymin)/(o.ymax-o.ymin)*(H-pad.t-pad.b);
+  const grid=css("--grid"), line=css("--line"), ink=css("--ink"), mut=css("--muted");
+  const g=sv("g");
+  for(let x=Math.ceil(o.xmin/o.xstep)*o.xstep; x<=o.xmax+1e-9; x+=o.xstep){ g.appendChild(sv("line",{x1:X(x),y1:Y(o.ymin),x2:X(x),y2:Y(o.ymax),stroke:line,"stroke-width":.8,opacity:.7})); }
+  for(let y=Math.ceil(o.ymin/o.ystep)*o.ystep; y<=o.ymax+1e-9; y+=o.ystep){ g.appendChild(sv("line",{x1:X(o.xmin),y1:Y(y),x2:X(o.xmax),y2:Y(y),stroke:line,"stroke-width":.8,opacity:.7})); }
+  const x0=Math.max(o.xmin,Math.min(o.xmax,0)), y0=Math.max(o.ymin,Math.min(o.ymax,0));
+  g.appendChild(sv("line",{x1:X(o.xmin),y1:Y(y0),x2:X(o.xmax),y2:Y(y0),stroke:ink,"stroke-width":2}));
+  g.appendChild(sv("line",{x1:X(x0),y1:Y(o.ymin),x2:X(x0),y2:Y(o.ymax),stroke:ink,"stroke-width":2}));
+  g.appendChild(sv("path",{d:`M${X(o.xmax)} ${Y(y0)} l-9 -5 v10 z`,fill:ink}));
+  g.appendChild(sv("path",{d:`M${X(x0)} ${Y(o.ymax)} l-5 9 h10 z`,fill:ink}));
+  const lx=o.xlabEvery||o.xstep, ly=o.ylabEvery||o.ystep;
+  for(let x=Math.ceil(o.xmin/lx)*lx; x<=o.xmax+1e-9; x+=lx){ if(Math.abs(x)<1e-9 && !o.zeroX) continue; const t=sv("text",{x:X(x),y:Y(y0)+18,"text-anchor":"middle","font-size":13,fill:mut}); t.textContent=fmt(x); g.appendChild(t); }
+  for(let y=Math.ceil(o.ymin/ly)*ly; y<=o.ymax+1e-9; y+=ly){ if(Math.abs(y)<1e-9) continue; const t=sv("text",{x:X(x0)-7,y:Y(y)+4,"text-anchor":"end","font-size":13,fill:mut}); t.textContent=fmt(y); g.appendChild(t); }
+  if(o.xlab){ const t=sv("text",{x:X(o.xmax)-4,y:Y(y0)-8,"text-anchor":"end","font-size":13,"font-weight":700,fill:o.xcol||ink}); t.textContent=o.xlab; g.appendChild(t); }
+  if(o.ylab){ const t=sv("text",{x:X(x0)+8,y:Y(o.ymax)+12,"font-size":13,"font-weight":700,fill:o.ycol||ink}); t.textContent=o.ylab; g.appendChild(t); }
+  svg.appendChild(g);
+  return {X,Y};
+}
+function pathOf(f,a,b,X,Y,n=300,ymin=-1e9,ymax=1e9){
+  let d="", pen=false;
+  for(let i=0;i<=n;i++){ const x=a+(b-a)*i/n, y=f(x); if(y<ymin||y>ymax){pen=false; continue;} d+=(pen?"L":"M")+X(x).toFixed(1)+" "+Y(y).toFixed(1)+" "; pen=true; }
+  return d;
+}
+
+/* =========================================================
+   5. Lecture graphique (courbe du cours)
+   ========================================================= */
+function buildGraphique(st){
+  st.innerHTML = `
+  <h2><small>Étape 5 · Savoir-faire 3</small>Lire sur un graphique</h2>
+  <div class="seg" id="gmode" role="group" aria-label="Que cherche-t-on ?">
+    <button type="button" aria-pressed="true" data-m="img">Lire une image</button>
+    <button type="button" aria-pressed="false" data-m="ant">Lire des antécédents</button>
+  </div>
+  <div class="cols">
+    <div class="svgwrap"><svg id="gr" role="img" aria-label="Courbe de la fonction f avec lecture graphique"></svg></div>
+    <div class="panel">
+      <label class="ctl" id="slLbl"></label>
+      <div class="box ok" id="gOut"></div>
+      <div class="box def" id="gMeth"></div>
+      <div class="box warn"><div class="t img">Attention</div><p>Une lecture graphique donne le plus souvent une <b>valeur approchée</b> : on écrit <span class="m">≈</span>.</p></div>
+    </div>
+  </div>`;
+  const a=4/((7-.75)*(7-4.25)*(7-6.5)), f=x=>a*(x-.75)*(x-4.25)*(x-6.5);
+  let mode="img";
+  const svg=$("#gr",st), lbl=$("#slLbl",st);
+  const gm=$("#gmode",st);
+  gm.querySelectorAll("button").forEach(b=>b.onclick=()=>{ mode=b.dataset.m; gm.querySelectorAll("button").forEach(c=>c.setAttribute("aria-pressed",c===b)); setup(); });
+  function setup(){
+    if(mode==="img"){
+      lbl.innerHTML=`On part de l'abscisse <span class="m ant" id="sv"></span><input type="range" id="sl" min="0.6" max="7.3" step="0.1" value="7">`;
+      $("#gMeth",st).innerHTML=`<div class="t fn">Méthode</div><p>On part de <b class="ant">l'abscisse x</b>, on monte (ou descend) jusqu'à la courbe, puis on lit la valeur sur <b class="img">l'axe des ordonnées</b>.</p>`;
+    } else {
+      lbl.innerHTML=`On part de l'ordonnée <span class="m img" id="sv"></span><input type="range" id="sl" min="-2.5" max="6" step="0.5" value="1">`;
+      $("#gMeth",st).innerHTML=`<div class="t fn">Méthode</div><p>On part de <b class="img">l'ordonnée</b>, on trace l'horizontale jusqu'à la courbe, puis on lit les valeurs sur <b class="ant">l'axe des abscisses</b>.</p>`;
+    }
+    $("#sl",st).addEventListener("input",draw); draw();
+  }
+  function roots(y){
+    const r=[]; let prev=f(0.4)-y;
+    for(let x=0.41;x<=7.4;x+=0.01){ const v=f(x)-y; if(prev*v<=0){ let lo=x-0.01, hi=x; for(let k=0;k<40;k++){ const m=(lo+hi)/2; if((f(lo)-y)*(f(m)-y)<=0) hi=m; else lo=m; } const R=(lo+hi)/2; if(!r.some(q=>Math.abs(q-R)<0.02)) r.push(R);} prev=v; }
+    return r;
+  }
+  function draw(){
+    const v=+$("#sl",st).value; $("#sv",st).textContent=fmt(v,1);
+    const {X,Y}=makeAxes(svg,{W:520,H:600,pad:{l:40,r:20,t:20,b:30},xmin:-0.5,xmax:7.8,ymin:-3.3,ymax:6.6,xstep:1,ystep:1,xlab:"x",ylab:"y"});
+    const ink=css("--ink"), ant=css("--ant"), img=css("--img"), fn=css("--fn");
+    svg.appendChild(sv("path",{d:pathOf(f,0.45,7.4,X,Y,400,-3.3,6.6),fill:"none",stroke:fn,"stroke-width":3.5}));
+    const tc=sv("text",{x:X(6.1),y:Y(6.1),"font-size":24,"font-style":"italic","font-family":"Crimson Pro, Georgia, serif",fill:fn}); tc.textContent="C"; const ts=sv("tspan",{"font-size":16,dy:5}); ts.textContent="f"; tc.appendChild(ts); svg.appendChild(tc);
+    const out=$("#gOut",st);
+    if(mode==="img"){
+      const y=f(v);
+      svg.appendChild(sv("line",{x1:X(v),y1:Y(0),x2:X(v),y2:Y(y),stroke:ant,"stroke-width":3,"stroke-dasharray":"7 6"}));
+      svg.appendChild(sv("line",{x1:X(v),y1:Y(y),x2:X(0),y2:Y(y),stroke:img,"stroke-width":3,"stroke-dasharray":"7 6"}));
+      svg.appendChild(sv("circle",{cx:X(v),cy:Y(y),r:7,fill:fn}));
+      svg.appendChild(sv("circle",{cx:X(v),cy:Y(0),r:6,fill:ant}));
+      svg.appendChild(sv("circle",{cx:X(0),cy:Y(y),r:6,fill:img}));
+      out.innerHTML=`<div class="t">Lecture</div><p class="sentence m big">f(<span class="ant">${fmt(v,1)}</span>) ≈ <span class="img">${fmt(y,1)}</span></p><p>L'image de ${fmt(v,1)} est environ ${fmt(y,1)}.</p>`;
+    } else {
+      const r=roots(v);
+      svg.appendChild(sv("line",{x1:X(-0.5),y1:Y(v),x2:X(7.8),y2:Y(v),stroke:img,"stroke-width":3,"stroke-dasharray":"7 6"}));
+      svg.appendChild(sv("circle",{cx:X(0),cy:Y(v),r:6,fill:img}));
+      r.forEach(x=>{ svg.appendChild(sv("line",{x1:X(x),y1:Y(v),x2:X(x),y2:Y(0),stroke:ant,"stroke-width":3,"stroke-dasharray":"7 6"})); svg.appendChild(sv("circle",{cx:X(x),cy:Y(v),r:7,fill:fn})); svg.appendChild(sv("circle",{cx:X(x),cy:Y(0),r:6,fill:ant})); });
+      out.className = r.length? "box ok":"box warn";
+      out.innerHTML = r.length
+        ? `<div class="t">${r.length} antécédent${r.length>1?"s":""}</div><p class="sentence">Antécédents de <span class="img">${fmt(v,1)}</span> : <span class="ant">${r.map(x=>"≈ "+fmt(x,1)).join(" ; ")}</span></p><p class="m">${r.map(x=>`f(${fmt(x,1)}) ≈ ${fmt(v,1)}`).join(" ; ")}</p>`
+        : `<div class="t">Aucun antécédent</div><p class="sentence">L'horizontale ne coupe pas la courbe : <span class="img">${fmt(v,1)}</span> n'a pas d'antécédent ici.</p>`;
+    }
+  }
+  setup();
+}
+
+/* =========================================================
+   6. Courbe représentative : distance de freinage
+   ========================================================= */
+function buildCourbe(st){
+  st.innerHTML = `
+  <h2><small>Étape 6 · Courbe représentative</small>Du tableau à la courbe</h2>
+  <p class="lead">Distance de freinage sur route sèche : <span class="m fn">f(v) = 0,005 v²</span> (v en km/h, f(v) en m). La courbe de <span class="m">f</span> est l'ensemble des points de coordonnées <span class="m">(<span class="ant">v</span> ; <span class="img">f(v)</span>)</span>.</p>
+  <div class="svgwrap"><table class="vals" id="ftab"></table></div>
+  <div class="cols">
+    <div class="svgwrap"><svg id="fr" role="img" aria-label="Courbe de la distance de freinage"></svg></div>
+    <div class="panel">
+      <div class="row"><button class="btn" id="place">Placer les points</button><button class="btn ghost" id="link" disabled>Relier les points</button></div>
+      <div class="box" id="frOut"><div class="t">Point placé</div><p class="sentence">Clique sur « Placer les points ».</p></div>
+      <label class="ctl" id="vctl" hidden>Lire la courbe pour <span class="m ant" id="vv"></span><input type="range" id="vr" min="0" max="130" step="5" value="110"></label>
+    </div>
+  </div>`;
+  const vs=[0,10,20,30,40,50,60,70,80,90,100,110,120,130], f=v=>0.005*v*v;
+  const tab=$("#ftab",st);
+  tab.innerHTML=`<tr><th>v</th>${vs.map(v=>`<td>${v}</td>`).join("")}</tr><tr class="ri"><th>f(v)</th>${vs.map(v=>`<td>${fmt(f(v))}</td>`).join("")}</tr>`;
+  const svg=$("#fr",st);
+  let placed=0, linked=false, timer=null;
+  function draw(){
+    const {X,Y}=makeAxes(svg,{W:620,H:400,pad:{l:44,r:16,t:16,b:30},xmin:0,xmax:150,ymin:0,ymax:95,xstep:10,ystep:10,xlabEvery:20,ylabEvery:20,xlab:"v (km/h)",ylab:"f(v) (m)",xcol:css("--ant"),ycol:css("--img"),zeroX:true});
+    const fn=css("--fn"), ant=css("--ant"), img=css("--img"), ink=css("--ink");
+    if(linked){
+      const pth=sv("path",{d:pathOf(f,0,135,X,Y,200),fill:"none",stroke:fn,"stroke-width":3.5});
+      svg.appendChild(pth);
+      if(!reduce && !draw.done){ const L=pth.getTotalLength(); pth.style.strokeDasharray=L; pth.style.strokeDashoffset=L; pth.getBoundingClientRect(); pth.style.transition="stroke-dashoffset 1.6s ease"; requestAnimationFrame(()=>pth.style.strokeDashoffset=0); draw.done=true; }
+      const v=+$("#vr",st).value, y=f(v);
+      svg.appendChild(sv("line",{x1:X(v),y1:Y(0),x2:X(v),y2:Y(y),stroke:ant,"stroke-width":2.5,"stroke-dasharray":"6 5"}));
+      svg.appendChild(sv("line",{x1:X(v),y1:Y(y),x2:X(0),y2:Y(y),stroke:img,"stroke-width":2.5,"stroke-dasharray":"6 5"}));
+      svg.appendChild(sv("circle",{cx:X(v),cy:Y(y),r:6,fill:img}));
+    }
+    vs.slice(0,placed).forEach((v,i)=>{ svg.appendChild(sv("circle",{cx:X(v),cy:Y(f(v)),r:i===placed-1&&!linked?8:5.5,fill:ink})); });
+  }
+  function hl(i){ [...tab.rows].forEach(r=>[...r.cells].forEach((c,k)=>c.classList.toggle(r.rowIndex===0?"hit-a":"hit-i",k===i+1))); }
+  $("#place",st).onclick=()=>{
+    if(timer) return; placed=0; linked=false; draw.done=false; $("#link",st).disabled=true;
+    const tick=()=>{ placed++; hl(placed-1); draw();
+      const v=vs[placed-1];
+      $("#frOut",st).innerHTML=`<div class="t">Point placé</div><p class="sentence">v = <span class="ant">${v}</span> et f(${v}) = <span class="img">${fmt(f(v))}</span> : on place le point <span class="m">(<span class="ant">${v}</span> ; <span class="img">${fmt(f(v))}</span>)</span>.</p>`;
+      if(placed<vs.length) timer=setTimeout(tick, reduce?0:450); else { timer=null; $("#link",st).disabled=false; } };
+    tick();
+  };
+  $("#link",st).onclick=()=>{ linked=true; hl(-1); $("#vctl",st).hidden=false; showV(); };
+  function showV(){ const v=+$("#vr",st).value; $("#vv",st).textContent=v+" km/h"; draw();
+    $("#frOut",st).className="box ok";
+    $("#frOut",st).innerHTML=`<div class="t">Lecture</div><p class="sentence">À <span class="ant">${v} km/h</span>, la distance de freinage est <span class="img">${fmt(f(v),1)} m</span>.</p><p class="m">f(${v}) = 0,005 × ${v}² = ${fmt(f(v),1)}</p>`; }
+  $("#vr",st).addEventListener("input",showV);
+  draw();
+  return ()=>clearTimeout(timer);
+}
+
+/* =========================================================
+   7. Quiz
+   ========================================================= */
+function buildQuiz(st){
+  const Q=[
+    {q:`<span class="m">f(x) = x² − 4</span>. Quelle est l'image de 3 ?`, o:["5","−1","13"], a:0, e:"f(3) = 3² − 4 = 9 − 4 = 5."},
+    {q:`<span class="m">f(4) = 7</span> signifie :`, o:["7 est l'image de 4","4 est l'image de 7","7 est un antécédent de 4"], a:0, e:"Le nombre entre parenthèses est l'antécédent, le résultat est l'image."},
+    {q:`Par la fonction carré, combien d'antécédents a 9 ?`, o:["Aucun","Un seul","Deux"], a:2, e:"3² = 9 et (−3)² = 9 : les antécédents sont 3 et −3."},
+    {q:`Tableau : x = −1 ; 0 ; 1 ; 2 et f(x) = 2 ; 5 ; −1 ; 5. Antécédents de 5 ?`, o:["0 et 2","5","−1"], a:0, e:"On cherche 5 sur la 2e ligne : f(0) = 5 et f(2) = 5."},
+    {q:`<span class="m">f(x) = 2x + 3</span>. Un antécédent de 9 est :`, o:["21","3","6"], a:1, e:"2x + 3 = 9 donne 2x = 6, donc x = 3."},
+    {q:`Sur une courbe, on lit les images sur :`, o:["l'axe des abscisses","l'axe des ordonnées"], a:1, e:"Abscisses : antécédents (horizontal). Ordonnées : images (vertical)."},
+  ];
+  st.innerHTML=`<h2><small>Étape 7 · Vérifier</small>À toi de jouer</h2>
+  <div class="row"><span class="score" id="score">0 / ${Q.length}</span><button class="btn ghost" id="again">Recommencer</button></div>
+  <div class="quiz" id="qz"></div>`;
+  let good=0;
+  function render(){
+    good=0; $("#score",st).textContent=`0 / ${Q.length}`;
+    const qz=$("#qz",st); qz.innerHTML="";
+    Q.forEach((it,i)=>{
+      const card=el("div",{class:"q"},`<p>${i+1}. ${it.q}</p><div class="opts"></div><div class="fb" aria-live="polite"></div>`);
+      const opts=card.querySelector(".opts"); let done=false;
+      it.o.forEach((t,k)=>{ const b=el("button",{type:"button"},t); b.onclick=()=>{
+        if(done) return; done=true;
+        if(k===it.a){ b.classList.add("good"); good++; card.querySelector(".fb").innerHTML=`<b class="ant">Bravo !</b> ${it.e}`; }
+        else { b.classList.add("bad"); opts.children[it.a].classList.add("good"); card.querySelector(".fb").innerHTML=`<b class="img">Pas tout à fait.</b> ${it.e}`; }
+        $("#score",st).textContent=`${good} / ${Q.length}`;
+      }; opts.appendChild(b); });
+      qz.appendChild(card);
+    });
+  }
+  $("#again",st).onclick=render;
+  render();
+}
+
+/* Redessine les SVG si le thème change */
+const mq=window.matchMedia("(prefers-color-scheme: dark)");
+mq.addEventListener && mq.addEventListener("change",()=>go(cur));
+new MutationObserver(()=>go(cur)).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+
+const start=STEPS.findIndex(s=>s.id===location.hash.slice(1));
+go(start>=0?start:0);
+})();
+</script>
+
+</body></html>

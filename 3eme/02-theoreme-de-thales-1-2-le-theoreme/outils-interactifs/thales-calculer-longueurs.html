@@ -1,0 +1,431 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Thalès : calculer des longueurs</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Layout : une colonne façon copie de cahier (grille 5 mm, marge rouge), chaque exercice = une feuille. Même charte que la fiche « Agrandissement et réduction ». */
+:root{
+  --paper:#fbfcfe; --grid:#e3eaf5; --ink:#1b2a41; --muted:#5a6b85; --accent:#1f4e8c; --accent-soft:#e6eefa;
+  --margin:#d9483b; --ok:#1d7a46; --ok-soft:#e3f4ea; --bad:#b3261e; --bad-soft:#fbe9e7; --line:#c9d5e6; --card:#ffffff;
+  --f1:#f6c9a8; --f3:#b8c8f0;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#111a29; --grid:#1a2538; --ink:#e4ebf5; --muted:#9aabc4; --accent:#7fb0f5; --accent-soft:#1c2d47;
+  --margin:#f07a6e; --ok:#5fd394; --ok-soft:#14301f; --bad:#ff8a80; --bad-soft:#3a1715; --line:#2c3b55; --card:#162133;
+  --f1:#7a4a2c; --f3:#2f4580; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#111a29; --grid:#1a2538; --ink:#e4ebf5; --muted:#9aabc4; --accent:#7fb0f5; --accent-soft:#1c2d47;
+  --margin:#f07a6e; --ok:#5fd394; --ok-soft:#14301f; --bad:#ff8a80; --bad-soft:#3a1715; --line:#2c3b55; --card:#162133;
+  --f1:#7a4a2c; --f3:#2f4580; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:20px 20px}
+.wrap{max-width:860px;margin:0 auto;padding-block:24px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{display:grid;gap:10px;margin-bottom:18px}
+.eyebrow{font-family:var(--display);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.78rem;color:var(--margin)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,4.5vw,2.5rem);line-height:1.1;margin:0;text-wrap:balance}
+.rule{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--margin);border-radius:6px;padding:12px 14px;font-size:.95rem}
+.rule b{color:var(--accent)}
+.k-table{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:8px 0;text-align:center}
+@media (max-width:560px){.k-table{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.k-table div{background:var(--accent-soft);border-radius:4px;padding:6px 4px;font-variant-numeric:tabular-nums}
+.k-table small{display:block;color:var(--muted);font-size:.78rem}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  background:var(--paper);border-bottom:1px solid var(--line);padding:10px 0;margin-bottom:14px}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.score{font-family:var(--display);font-weight:600;font-variant-numeric:tabular-nums}
+.progress{flex:1 1 160px;height:8px;border-radius:4px;background:var(--line);overflow:hidden;min-width:120px}
+.progress span{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+button,select,input{font:inherit;color:inherit}
+.btn{border:1px solid var(--accent);background:var(--card);color:var(--accent);border-radius:6px;padding:5px 12px;cursor:pointer;font-weight:700;font-size:.9rem}
+.btn:hover{background:var(--accent-soft)}
+.btn.primary{background:var(--accent);color:var(--paper)}
+.btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.part{font-family:var(--display);font-weight:600;font-size:1.15rem;color:var(--accent);margin:26px 0 10px}
+.exo{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 16px 14px 22px;margin-bottom:16px;position:relative}
+.exo::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--margin);opacity:.55}
+.exo h2{font-family:var(--display);font-weight:800;font-size:1.15rem;margin:0 0 6px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.exo h2 .src{font-family:var(--body);font-style:italic;font-weight:400;font-size:.85rem;color:var(--muted)}
+.exo h2 .st{font-family:var(--body);font-size:.78rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--line);color:var(--muted)}
+.exo h2 .st:empty{display:none}
+.exo h2 .st.done{background:var(--ok-soft);color:var(--ok)}
+.body{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
+.body.nofig{grid-template-columns:minmax(0,1fr)}
+@media (max-width:640px){.body{grid-template-columns:minmax(0,1fr)}}
+.fig{justify-self:center;max-width:100%}
+.fig svg{max-width:100%;height:auto;display:block}
+.stmt p{margin:0 0 8px}
+.qs{display:grid;gap:8px;margin-top:6px}
+.q{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 8px;border-radius:6px;border:1px solid transparent}
+.q.ok{background:var(--ok-soft);border-color:var(--ok)}
+.q.bad{background:var(--bad-soft);border-color:var(--bad)}
+.q label{flex:1 1 230px;min-width:0}
+.q input{width:110px;padding:4px 8px;border:1px solid var(--line);border-radius:5px;background:var(--paper);font-variant-numeric:tabular-nums}
+.q select{padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--paper);max-width:100%}
+.q.note{color:var(--muted);font-style:italic}
+.unit{color:var(--muted);font-size:.9rem}
+.mark{width:1.3em;text-align:center;font-weight:700}
+.q.ok .mark{color:var(--ok)} .q.bad .mark{color:var(--bad)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.corr{margin-top:10px;border-top:1px dashed var(--ok);padding-top:8px;font-size:.95rem}
+.corr h3{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ok);margin:0 0 4px}
+.corr p{margin:0 0 6px}
+.hint{color:var(--muted);font-size:.85rem}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid currentColor;padding:0 2px}
+svg text{font-family:var(--body);font-size:12px;fill:var(--ink)}
+svg .lbl{font-style:italic;font-weight:700}
+svg .edge{stroke:var(--ink);stroke-width:1.6;fill:none}
+svg .hid{stroke:var(--muted);stroke-width:1.2;stroke-dasharray:4 3;fill:none}
+svg .dot{fill:var(--ink)}
+.lab{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:14px 16px;margin:6px 0 16px}
+.lab h2{font-family:var(--display);font-weight:800;font-size:1.1rem;margin:0 0 4px}
+.lab .row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center}
+@media (max-width:640px){.lab .row{grid-template-columns:minmax(0,1fr)}}
+.lab input[type=range]{width:100%}
+footer{color:var(--muted);font-size:.85rem;margin-top:24px}
+footer a{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<style>
+svg .d1{stroke:#1e6ec8;stroke-width:2;fill:none}
+svg .d2{stroke:#c82828;stroke-width:2;fill:none}
+svg .d3{stroke:#d07a10;stroke-width:1.8;stroke-dasharray:5 3;fill:none}
+svg .d4{stroke:var(--ok);stroke-width:2;fill:none}
+svg .wood{stroke:#8a5a2b;stroke-width:4;fill:none;stroke-linecap:round}
+svg .wood2{stroke:#8a5a2b;stroke-width:2.2;fill:none}
+svg .ramp{stroke:#d07a10;stroke-width:4;fill:none;stroke-linecap:round}
+svg .run{stroke:var(--bad);stroke-width:2.4;fill:none;marker-end:url(#arr)}
+svg .ground{stroke:var(--ink);stroke-width:1.4}
+svg .wall{fill:var(--line)}
+svg .ra{stroke:var(--ink);stroke-width:1;fill:none}
+svg .small{font-size:11px;fill:var(--muted)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) svg .d1{stroke:#7fb0f5} :root:not([data-theme="light"]) svg .d2{stroke:#ff8a80}}
+:root[data-theme="dark"] svg .d1{stroke:#7fb0f5} :root[data-theme="dark"] svg .d2{stroke:#ff8a80}
+.grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:8px 0}
+@media (max-width:700px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.grid4 figure{margin:0;text-align:center;font-size:.85rem;color:var(--muted)}
+.grid4 figure svg{max-width:100%;height:auto}
+.rule ol{margin:6px 0 0;padding-left:1.4em}
+.rule li{margin:2px 0}
+.q select{flex:1 1 240px;min-width:0;width:100%;max-width:360px}
+.stmt{min-width:0}
+</style>
+<style>.choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;width:100%}@media (max-width:560px){.choices{grid-template-columns:minmax(0,1fr)}}.ch{display:flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:6px;padding:4px 8px;background:var(--paper);cursor:pointer;font-size:1.05rem}.ch:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}.q .choices+.mark{align-self:center}</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">3<sup>e</sup> · S2 · Exercices interactifs</div>
+    <h1>Théorème de Thalès : calculer des longueurs</h1>
+    <div class="rule">
+      <b>Modèle de rédaction</b> (les droites (BM) et (CN) sont sécantes en A et (MN) // (BC))
+      <ol>
+        <li>On sait que : les droites (BM) et (CN) sont sécantes en A ; les droites (MN) et (BC) sont parallèles.</li>
+        <li>Donc, d'après le <b>théorème de Thalès</b> : AM/AB = AN/AC = MN/BC.</li>
+        <li>On remplace par les longueurs connues, puis on calcule la longueur cherchée avec un <b>produit en croix</b>.</li>
+      </ol>
+    </div>
+  </header>
+
+  <div class="bar">
+    <span class="score" id="score">0 / 0 réponses justes</span>
+    <div class="progress" aria-hidden="true"><span id="prog"></span></div>
+    <div class="tabs">
+      <button class="btn" id="showAll" type="button">Afficher toutes les corrections</button>
+      <button class="btn" id="reset" type="button">Tout effacer</button>
+    </div>
+  </div>
+
+  <p class="hint">Écris tes réponses avec une virgule ou un point (2,5 ou 2.5). Les fractions sont acceptées (2/3). Les figures ne sont pas en vraie grandeur.</p>
+
+  <div id="exos"></div>
+
+  <footer>Fiche interactive de la séquence 2 (Théorème de Thalès 1/2) : partie A exercices de base, partie B exercices avec piège, partie C problèmes. Tes réponses sont gardées dans ce navigateur.</footer>
+</div>
+
+<script>
+(function(){
+const F=(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+
+/* ---------- Figures SVG génériques ---------- */
+const pol=(deg,r)=>[r*Math.cos(deg*Math.PI/180),r*Math.sin(deg*Math.PI/180)];
+const add=(a,b)=>[a[0]+b[0],a[1]+b[1]], mul=(k,a)=>[k*a[0],k*a[1]];
+const lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];
+/* def = {P:{A:[x,y,angleLabel]}, L:[[a,b,cls,t0,t1]], R:[[a,b,c]], T:[[x,y,txt,anchor]], W:largeur} */
+function fig(def){
+  const P=def.P, W=def.W||230, H=def.H||200;
+  const pt=k=>Array.isArray(k)?k:P[k];
+  const segs=(def.L||[]).map(([a,b,c,t0=0,t1=1])=>{const A=pt(a),B=pt(b);return [lerp(A,B,t0),lerp(A,B,t1),c];});
+  const all=[...Object.values(P),...segs.flatMap(s=>[s[0],s[1]]),...(def.X||[])];
+  const xs=all.map(p=>p[0]),ys=all.map(p=>p[1]);
+  const minx=Math.min(...xs),maxx=Math.max(...xs),miny=Math.min(...ys),maxy=Math.max(...ys);
+  const s=Math.min(W/Math.max(maxx-minx,1e-6),H/Math.max(maxy-miny,1e-6));
+  const T=p=>[(p[0]-minx)*s,(maxy-p[1])*s];
+  let o='';
+  (def.pre||[]).forEach(f=>o+=f(T,s));
+  segs.forEach(([A,B,c])=>{const a=T(A),b=T(B);o+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" class="${c}"/>`;});
+  (def.R||[]).forEach(([a,b,c])=>{const B=T(P[b]),u=T(P[a]),v=T(P[c]);
+    const nu=[u[0]-B[0],u[1]-B[1]],nv=[v[0]-B[0],v[1]-B[1]],lu=Math.hypot(...nu),lv=Math.hypot(...nv),k=8;
+    const p1=[B[0]+nu[0]/lu*k,B[1]+nu[1]/lu*k],p3=[B[0]+nv[0]/lv*k,B[1]+nv[1]/lv*k],p2=[p1[0]+nv[0]/lv*k,p1[1]+nv[1]/lv*k];
+    o+=`<polyline points="${[p1,p2,p3].map(p=>p.map(x=>x.toFixed(1)).join(',')).join(' ')}" class="ra"/>`;});
+  Object.entries(P).forEach(([n,p])=>{const a=T(p);o+=`<circle cx="${a[0].toFixed(1)}" cy="${a[1].toFixed(1)}" r="2.6" class="dot"/>`;
+    if(p[2]!==undefined&&p[2]!==null){const d=pol(p[2],13);o+=`<text x="${(a[0]+d[0]).toFixed(1)}" y="${(a[1]-d[1]+4).toFixed(1)}" text-anchor="middle" class="lbl">${n}</text>`;}});
+  (def.T||[]).forEach(([p,t,dx=0,dy=0,cls='small'])=>{const a=T(p);o+=`<text x="${(a[0]+dx).toFixed(1)}" y="${(a[1]+dy).toFixed(1)}" text-anchor="middle" class="${cls}">${t}</text>`;});
+  const pad=18,w=(maxx-minx)*s,h=(maxy-miny)*s;
+  return `<svg viewBox="${-pad} ${-pad} ${w+2*pad} ${h+2*pad}" width="${w+2*pad}" role="img" aria-label="${def.alt||'Figure'}"><defs><marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="currentColor" style="fill:var(--bad)"/></marker></defs>${o}</svg>`;
+}
+/* Configuration « deux sécantes en S » : directions du et dv, positions signées sur chaque droite */
+function sec(S,du,dv,onU,onV,ext,pairs,o={}){
+  const P={};P[S[0]]=[0,0,S[1]];
+  const u=pol(du,1),v=pol(dv,1);
+  onU.forEach(([n,r,a])=>P[n]=[...mul(r,u),a]); onV.forEach(([n,r,a])=>P[n]=[...mul(r,v),a]);
+  const L=[[mul(ext[0],u),mul(ext[1],u),'edge'],[mul(ext[2],v),mul(ext[3],v),'edge']];
+  pairs.forEach(([a,b,c,e=0.2])=>L.push([a,b,c,-e,1+e]));
+  return fig({P,L,W:o.W||170,H:o.H||170,alt:o.alt,T:o.T});
+}
+
+/* ---------- Données des exercices ---------- */
+const R=(s1,s2,P,p1,p2)=>`On sait que : les droites ${s1} et ${s2} sont sécantes en ${P} ; les droites ${p1} et ${p2} sont parallèles.<br>Donc, d'après le <b>théorème de Thalès</b> :`;
+const E=[];
+/* ===== Partie A : exercices de base ===== */
+E.push({part:'Partie A — Exercices de base',title:'Dans un triangle',
+ fig:()=>sec(['A',90],-115,-62,[['M',3,180],['B',5,180]],[['N',4.2,0],['C',7,0]],[-0.6,5.8,-0.6,7.8],[['M','N','d1',.2],['B','C','d2',.15]],{W:170,H:190}),
+ st:`<p>Les points A, M, B sont alignés, ainsi que les points A, N, C. Les droites (MN) et (BC) sont parallèles.</p><p>AM = 3 cm ; AB = 5 cm ; AC = 7 cm et BC = 6 cm.</p>`,
+ qs:[{l:'Longueur AN',n:4.2,u:'cm'},{l:'Longueur MN',n:3.6,u:'cm'}],
+ co:`<p>${R('(BM)','(CN)','A','(MN)','(BC)')} ${F('AM','AB')} = ${F('AN','AC')} = ${F('MN','BC')}, soit ${F(3,5)} = ${F('AN',7)} = ${F('MN',6)}.</p>
+ <p>Donc AN = ${F('3 × 7',5)} = <b>4,2 cm</b> et MN = ${F('3 × 6',5)} = <b>3,6 cm</b>.</p>`});
+E.push({title:'Les parallèles plus loin',
+ fig:()=>sec(['E',180],18,-22,[['F',4,90],['G',10,90]],[['H',3.6,270],['K',9,270]],[-0.8,11,-0.8,10],[['F','H','d1',.25],['G','K','d2',.15]],{W:260,H:150}),
+ st:`<p>Les points E, F, G sont alignés, ainsi que les points E, H, K. Les droites (FH) et (GK) sont parallèles.</p><p>EF = 4 cm ; EG = 10 cm ; EH = 3,6 cm et GK = 8,5 cm.</p>`,
+ qs:[{l:'Longueur EK',n:9,u:'cm'},{l:'Longueur FH',n:3.4,u:'cm'}],
+ co:`<p>${R('(FG)','(HK)','E','(FH)','(GK)')} ${F('EF','EG')} = ${F('EH','EK')} = ${F('FH','GK')}, soit ${F(4,10)} = ${F('3,6','EK')} = ${F('FH','8,5')}.</p>
+ <p>Donc EK = ${F('10 × 3,6',4)} = <b>9 cm</b> et FH = ${F('4 × 8,5',10)} = <b>3,4 cm</b>.</p>`});
+E.push({title:'Le papillon',
+ fig:()=>sec(['O',270],25,-30,[['A',-2.5,180],['C',6,0]],[['B',-3,180],['D',7.2,0]],[-3.3,7,-3.8,8.2],[['A','B','d1',.25],['C','D','d2',.15]],{W:250,H:190}),
+ st:`<p>Les droites (AC) et (BD) se coupent en O. Les droites (AB) et (CD) sont parallèles.</p><p>OA = 2,5 cm ; OC = 6 cm ; OB = 3 cm et CD = 7,2 cm.</p>`,
+ qs:[{l:'Longueur OD',n:7.2,u:'cm'},{l:'Longueur AB',n:3,u:'cm'}],
+ co:`<p>${R('(AC)','(BD)','O','(AB)','(CD)')} ${F('OA','OC')} = ${F('OB','OD')} = ${F('AB','CD')}, soit ${F('2,5',6)} = ${F(3,'OD')} = ${F('AB','7,2')}.</p>
+ <p>Donc OD = ${F('6 × 3','2,5')} = <b>7,2 cm</b> et AB = ${F('2,5 × 7,2',6)} = <b>3 cm</b>.</p>`});
+E.push({title:'Écrire la bonne égalité',
+ st:`<p><b>a)</b> Les points R, S, T sont alignés, ainsi que R, U, V, et (SU) // (TV) (S ∈ [RT], U ∈ [RV]).</p><p><b>b)</b> Les droites (LM) et (PQ) se coupent en K et (LP) // (MQ).</p>`,
+ fig:()=>sec(['R',90],-118,-64,[['S',2.4,180],['T',6,180]],[['U',2.6,0],['V',6.5,0]],[-0.5,6.8,-0.5,7.3],[['S','U','d1',.25],['T','V','d2',.15]],{W:150,H:170}),
+ qs:[{l:'a) L\'égalité de Thalès est…',radio:1,c:[`${F('RS','RT')} = ${F('RU','RV')} = ${F('SU','TV')}`,`${F('RS','ST')} = ${F('RU','UV')} = ${F('SU','TV')}`,`${F('RT','RS')} = ${F('RU','RV')} = ${F('TV','SU')}`,`${F('RS','RT')} = ${F('RV','RU')} = ${F('SU','TV')}`],a:0},
+     {l:'b) L\'égalité de Thalès est…',radio:1,c:[`${F('KL','KP')} = ${F('KM','KQ')} = ${F('LM','PQ')}`,`${F('KL','KM')} = ${F('KP','KQ')} = ${F('LP','MQ')}`,`${F('KL','LM')} = ${F('KP','PQ')} = ${F('LP','MQ')}`,`${F('KL','KM')} = ${F('KQ','KP')} = ${F('LP','MQ')}`],a:1}],
+ co:`<p><b>a)</b> Les droites (ST) et (UV) sont sécantes en R et (SU) // (TV) : ${F('RS','RT')} = ${F('RU','RV')} = ${F('SU','TV')}. Le point R apparaît 4 fois dans les deux premiers quotients, les numérateurs sont les côtés du triangle RSU et les dénominateurs les côtés correspondants du triangle RTV.</p>
+ <p><b>b)</b> Les droites (LM) et (PQ) sont sécantes en K et (LP) // (MQ) : ${F('KL','KM')} = ${F('KP','KQ')} = ${F('LP','MQ')}. Dans la configuration papillon, les deux triangles sont KLP et KMQ.</p>`});
+E.push({title:'Valeur exacte, valeur approchée',
+ fig:()=>sec(['A',90],-112,-66,[['M',3,180],['B',7,180]],[['N',4,0],['C',28/3,0]],[-0.5,7.6,-0.5,10],[['M','N','d1',.25],['B','C','d2',.15]],{W:150,H:200}),
+ st:`<p>Les points A, M, B sont alignés, ainsi que A, N, C, et (MN) // (BC).</p><p>AM = 3 cm ; AB = 7 cm et AN = 4 cm.</p>`,
+ qs:[{l:'Valeur exacte de AC (sous forme de fraction)',n:28/3,u:'cm',tol:1e-9},{l:'Valeur approchée de AC au centième',n:9.33,u:'cm',tol:1e-9}],
+ co:`<p>${R('(BM)','(CN)','A','(MN)','(BC)')} ${F('AM','AB')} = ${F('AN','AC')} = ${F('MN','BC')}, soit ${F(3,7)} = ${F(4,'AC')}.</p>
+ <p>Donc AC = ${F('7 × 4',3)} = ${F(28,3)} cm (<b>valeur exacte</b>) et AC ≈ <b>9,33 cm</b> (valeur approchée au centième). Attention : 9,33 n'est pas la valeur exacte, car 28 ÷ 3 = 9,333… ne s'arrête pas.</p>`});
+/* ===== Partie B : exercices avec piège ===== */
+E.push({part:'Partie B — Exercices avec piège',title:'Piège : la longueur n\'est pas donnée directement',
+ fig:()=>sec(['A',90],-110,-65,[['M',4,180],['B',6,180]],[['N',5,0],['C',7.5,0]],[-0.5,6.8,-0.5,8.4],[['M','N','d1',.25],['B','C','d2',.15]],{W:150,H:190}),
+ st:`<p>Les points A, M, B sont alignés, ainsi que A, N, C, et (MN) // (BC).</p><p>AM = 4 cm ; <b>MB</b> = 2 cm et AN = 5 cm.</p>`,
+ qs:[{l:'Longueur AB',n:6,u:'cm'},{l:'Longueur AC',n:7.5,u:'cm'}],
+ co:`<p>Piège : on connaît MB, pas AB. Comme M ∈ [AB], AB = AM + MB = 4 + 2 = <b>6 cm</b>.</p>
+ <p>${R('(BM)','(CN)','A','(MN)','(BC)')} ${F('AM','AB')} = ${F('AN','AC')} = ${F('MN','BC')}, soit ${F(4,6)} = ${F(5,'AC')}.</p>
+ <p>Donc AC = ${F('6 × 5',4)} = <b>7,5 cm</b>. (Avec ${F(4,2)} = ${F(5,'AC')}, on trouverait 2,5 cm : c'est faux, car les quotients doivent comparer AM à AB.)</p>`});
+E.push({title:'Piège : on demande NC',
+ fig:()=>sec(['A',90],-108,-60,[['M',3,180],['B',5,180]],[['N',4.8,0],['C',8,0]],[-0.5,5.8,-0.5,8.8],[['M','N','d1',.25],['B','C','d2',.15]],{W:150,H:190}),
+ st:`<p>Les points A, M, B sont alignés, ainsi que A, N, C, et (MN) // (BC).</p><p>AM = 3 cm ; AB = 5 cm et AC = 8 cm. Calculer <b>NC</b>.</p>`,
+ qs:[{l:'Longueur AN',n:4.8,u:'cm'},{l:'Longueur NC',n:3.2,u:'cm'}],
+ co:`<p>${R('(BM)','(CN)','A','(MN)','(BC)')} ${F('AM','AB')} = ${F('AN','AC')} = ${F('MN','BC')}, soit ${F(3,5)} = ${F('AN',8)}. Donc AN = ${F('3 × 8',5)} = <b>4,8 cm</b>.</p>
+ <p>Piège : le théorème donne AN, pas NC. Comme N ∈ [AC], NC = AC − AN = 8 − 4,8 = <b>3,2 cm</b>.</p>`});
+E.push({title:'Piège : « elles ont l\'air parallèles »',
+ fig:()=>sec(['A',90],-110,-66,[['M',2,180],['B',5,180]],[['N',2.2,0],['C',5.5,0]],[-0.5,5.8,-0.5,6.3],[['M','N','d3',.25],['B','C','d2',.15]],{W:150,H:170}),
+ st:`<p>Les points A, M, B sont alignés, ainsi que A, N, C. Sur la figure, les droites (MN) et (BC) <b>semblent</b> parallèles, mais l'énoncé ne le dit pas.</p><p>AM = 2 cm ; AB = 5 cm et BC = 6 cm.</p>`,
+ qs:[{l:'Peut-on calculer MN avec le théorème de Thalès ?',c:['Oui : MN = 2 × 6 ÷ 5 = 2,4 cm','Non : on ne sait pas si (MN) et (BC) sont parallèles','Oui, car les points sont alignés'],a:1}],
+ co:`<p>Pour utiliser le théorème de Thalès, il faut savoir que les droites (MN) et (BC) sont <b>parallèles</b> : c'est une hypothèse du théorème, qui doit être donnée par l'énoncé (ou démontrée). On ne peut jamais l'affirmer « parce que ça se voit sur la figure ». Ici, <b>on ne peut pas calculer MN</b>.</p>`});
+E.push({title:'Piège : les unités',
+ fig:()=>sec(['A',90],-112,-64,[['M',3,180],['B',5,180]],[['N',4.8,0],['C',8,0]],[-0.5,5.8,-0.5,8.8],[['M','N','d1',.25],['B','C','d2',.15]],{W:150,H:190}),
+ st:`<p>Les points A, M, B sont alignés, ainsi que A, N, C, et (MN) // (BC).</p><p>AM = <b>30 mm</b> ; AB = 5 cm et AC = 8 cm.</p>`,
+ qs:[{l:'Longueur AN',n:4.8,u:'cm'}],
+ co:`<p>Piège : les longueurs ne sont pas dans la même unité. On convertit : AM = 30 mm = 3 cm.</p>
+ <p>${R('(BM)','(CN)','A','(MN)','(BC)')} ${F('AM','AB')} = ${F('AN','AC')} = ${F('MN','BC')}, soit ${F(3,5)} = ${F('AN',8)}. Donc AN = ${F('3 × 8',5)} = <b>4,8 cm</b>.</p>`});
+E.push({title:'Piège : le papillon retourné',
+ fig:()=>sec(['C',0],115,35,[['A',-3,270],['E',4.5,90]],[['B',-2,270],['D',3,90]],[-3.6,5.2,-2.6,3.7],[['A','B','d1',.3],['E','D','d2',.25]],{W:170,H:220}),
+ st:`<p>Les droites (AE) et (BD) se coupent en C, et (AB) // (DE).</p><p>CA = 3 cm ; CE = 4,5 cm ; CB = 2 cm et AB = 2,6 cm.</p>`,
+ qs:[{l:'Longueur CD',n:3,u:'cm'},{l:'Longueur DE',n:3.9,u:'cm'}],
+ co:`<p>Piège : il faut bien associer les points. Les deux triangles sont CAB et CED : A et E sont sur la même droite, B et D aussi.</p>
+ <p>${R('(AE)','(BD)','C','(AB)','(DE)')} ${F('CA','CE')} = ${F('CB','CD')} = ${F('AB','ED')}, soit ${F(3,'4,5')} = ${F(2,'CD')} = ${F('2,6','DE')}.</p>
+ <p>Donc CD = ${F('4,5 × 2',3)} = <b>3 cm</b> et DE = ${F('4,5 × 2,6',3)} = <b>3,9 cm</b>.</p>`});
+E.push({title:'Piège : l\'arrondi',
+ fig:()=>sec(['A',90],-110,-64,[['M',4,180],['B',6,180]],[['N',14/3,0],['C',7,0]],[-0.5,6.7,-0.5,7.7],[['M','N','d1',.25],['B','C','d2',.15]],{W:150,H:190}),
+ st:`<p>Les points A, M, B sont alignés, ainsi que A, N, C, et (MN) // (BC).</p><p>AM = 4 cm ; AB = 6 cm et AC = 7 cm. Donner AN arrondi au dixième.</p>`,
+ qs:[{l:'AN arrondi au dixième',n:4.7,u:'cm',tol:1e-9}],
+ co:`<p>${R('(BM)','(CN)','A','(MN)','(BC)')} ${F('AM','AB')} = ${F('AN','AC')}, soit ${F(4,6)} = ${F('AN',7)}. Donc AN = ${F('4 × 7',6)} = ${F(28,6)} = 4,666… cm.</p>
+ <p>Piège : arrondir, ce n'est pas couper. Le chiffre des centièmes est 6 (≥ 5), donc AN ≈ <b>4,7 cm</b> (et non 4,6).</p>`});
+/* ===== Partie C : problèmes ===== */
+/* ---------- Illustrations des problèmes (scènes à l'échelle) ---------- */
+const svgw=(w,h,alt,body)=>`<svg viewBox="0 0 ${w} ${h}" width="${w}" role="img" aria-label="${alt}" style="border-radius:6px">${body}</svg>`;
+const ptl=(x,y,n,dx,dy,c='#1b2a41')=>`<circle cx="${x}" cy="${y}" r="3" fill="${c}"/><text x="${x+dx}" y="${y+dy}" text-anchor="middle" style="font-style:italic;font-weight:700;font-size:13px;fill:${c}">${n}</text>`;
+const tx=(x,y,t,c='#1b2a41',s=12,a='middle')=>`<text x="${x}" y="${y}" text-anchor="${a}" style="font-size:${s}px;fill:${c};font-weight:600;paint-order:stroke;stroke:#fff;stroke-width:3px;stroke-linejoin:round">${t}</text>`;
+const ra=(x,y,ux,uy,vx,vy,k=8)=>`<polyline points="${x+ux*k},${y+uy*k} ${x+ux*k+vx*k},${y+uy*k+vy*k} ${x+vx*k},${y+vy*k}" fill="none" stroke="#1b2a41" stroke-width="1"/>`;
+function figArbre(){ // 20 px = 1 m ; O(0) P(2) H(12) ; PT = 1,5 ; HS = 9
+  const g=210,O=[30,g],P=[70,g],T=[70,g-30],H=[270,g],S=[270,g-180];
+  return svgw(320,250,'Arbre, bâton et ombres',`
+  <defs><linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3ff"/><stop offset="1" stop-color="#eef8ff"/></linearGradient></defs>
+  <rect width="320" height="${g}" fill="url(#ciel)"/><rect y="${g}" width="320" height="40" fill="#9ccc65"/><rect y="${g}" width="320" height="4" fill="#7cb342"/>
+  <circle cx="318" cy="2" r="26" fill="#ffd54f"/><g stroke="#ffb300" stroke-width="2">${[200,215,230,245,260].map(a=>{const r=Math.PI*a/180;return `<line x1="${318+32*Math.cos(r)}" y1="${2-32*Math.sin(r)}" x2="${318+44*Math.cos(r)}" y2="${2-44*Math.sin(r)}"/>`}).join('')}</g>
+  <polygon points="${O} ${H} ${H[0]} ${g+5} ${O[0]} ${g+2}" fill="#33691e" opacity=".45"/>
+  <line x1="${O[0]}" y1="${O[1]}" x2="310" y2="${O[1]-0.75*280}" stroke="#f9a825" stroke-width="2" stroke-dasharray="6 4"/>
+  ${tx(150,g-100,'rayon du soleil','#e65100',11)}
+  <rect x="${H[0]-7}" y="${g-34}" width="14" height="34" fill="#6d4c41"/>
+  <polygon points="${S[0]},${S[1]} ${H[0]-30},${S[1]+52} ${H[0]+30},${S[1]+52}" fill="#2e7d32"/>
+  <polygon points="${S[0]},${S[1]+28} ${H[0]-40},${S[1]+98} ${H[0]+40},${S[1]+98}" fill="#2e7d32"/>
+  <polygon points="${S[0]},${S[1]+70} ${H[0]-48},${g-34} ${H[0]+48},${g-34}" fill="#1b5e20"/>
+  <line x1="${H[0]}" y1="${H[1]}" x2="${S[0]}" y2="${S[1]}" stroke="#c62828" stroke-width="1.6" stroke-dasharray="4 3"/>
+  <line x1="${P[0]}" y1="${P[1]}" x2="${T[0]}" y2="${T[1]}" stroke="#5d4037" stroke-width="4" stroke-linecap="round"/>
+  ${ra(P[0],P[1],0,-1,-1,0)}${ra(H[0],H[1],0,-1,-1,0)}
+  ${ptl(...O,'O',-4,-8)}${ptl(...P,'P',8,16)}${ptl(...T,'T',-9,-4)}${ptl(...H,'H',10,16)}${ptl(...S,'S',12,-2,'#c62828')}
+  ${tx(50,g+30,'2 m')}${tx(170,g+30,'12 m')}${tx(86,g-12,'1,5 m','#5d4037',11,'start')}${tx(H[0]-62,g-110,'?','#c62828',18)}`);
+}
+function figRiviere(){ // vue de dessus, 9 px = 1 m ; AB = 16, BC = 20, CD = 5, DE = 4
+  const B=[40,180],A=[40,36],C=[220,180],D=[265,180],E=[265,216];
+  return svgw(310,240,'Vue de dessus de la rivière',`
+  <rect width="310" height="240" fill="#a5d6a7"/><rect y="0" width="310" height="44" fill="#81c784"/>
+  <path d="M0 44 Q80 52 160 44 T310 46 L310 168 Q230 160 150 170 T0 166 Z" fill="#64b5f6"/>
+  <g stroke="#e3f2fd" stroke-width="1.5" fill="none" opacity=".8"><path d="M30 80 q10 -6 20 0 t20 0"/><path d="M150 110 q10 -6 20 0 t20 0"/><path d="M230 70 q10 -6 20 0 t20 0"/><path d="M90 140 q10 -6 20 0 t20 0"/></g>
+  ${tx(160,100,'rivière','#0d47a1',13)}
+  <circle cx="${A[0]}" cy="${A[1]-6}" r="15" fill="#2e7d32"/><circle cx="${A[0]-7}" cy="${A[1]-10}" r="8" fill="#388e3c"/>
+  <line x1="0" y1="${B[1]}" x2="310" y2="${B[1]}" stroke="#6d4c41" stroke-width="1.5" stroke-dasharray="2 3"/>
+  <line x1="${A[0]}" y1="${A[1]}" x2="${E[0]}" y2="${E[1]}" stroke="#e65100" stroke-width="1.6" stroke-dasharray="6 4"/>
+  <line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="#1565c0" stroke-width="2"/>
+  <line x1="${D[0]}" y1="${D[1]}" x2="${E[0]}" y2="${E[1]}" stroke="#c62828" stroke-width="2"/>
+  <line x1="${B[0]}" y1="${B[1]}" x2="${D[0]}" y2="${D[1]}" stroke="#1b2a41" stroke-width="1.6"/>
+  ${ra(B[0],B[1],0,-1,1,0)}${ra(D[0],D[1],0,1,-1,0)}
+  <rect x="${C[0]-3}" y="${C[1]-12}" width="6" height="12" fill="#ff7043"/>
+  <circle cx="${E[0]}" cy="${E[1]}" r="7" fill="#5c6bc0"/><circle cx="${E[0]}" cy="${E[1]}" r="3.5" fill="#f1c27d"/>
+  ${ptl(...A,'A',-14,4)}${ptl(...B,'B',-10,16)}${ptl(...C,'C',-10,-14)}${ptl(...D,'D',10,-6)}${ptl(...E,'E',16,6)}
+  ${tx(130,196,'20 m')}${tx(243,196,'5 m')}${tx(285,204,'4 m')}${tx(26,110,'?','#c62828',16)}
+  ${tx(150,232,'Tom marche le long de la rive','#33691e',11)}`);
+}
+function figToit(){ // 30 px = 1 m ; AB = AC = 6, BC = 8, AM = 2,4
+  const B=[30,150],C=[270,150],A=[150,15.8],M=[102.0,69.5],N=[198.0,69.5];
+  return svgw(300,250,'Maison et charpente',`
+  <rect width="300" height="250" fill="#e3f2fd"/><rect y="236" width="300" height="14" fill="#8d6e63"/>
+  <rect x="48" y="150" width="204" height="86" fill="#f5e6c8" stroke="#a1887f"/>
+  <rect x="132" y="180" width="36" height="56" fill="#8d6e63"/><circle cx="160" cy="210" r="2" fill="#ffd54f"/>
+  <rect x="68" y="172" width="40" height="30" fill="#bbdefb" stroke="#795548" stroke-width="2"/><line x1="88" y1="172" x2="88" y2="202" stroke="#795548" stroke-width="2"/>
+  <rect x="192" y="172" width="40" height="30" fill="#bbdefb" stroke="#795548" stroke-width="2"/><line x1="212" y1="172" x2="212" y2="202" stroke="#795548" stroke-width="2"/>
+  <polygon points="${A} ${B} ${C}" fill="#ffccbc" opacity=".55"/>
+  <g stroke="#6d4c41" stroke-width="7" stroke-linecap="round"><line x1="${B[0]}" y1="${B[1]}" x2="${A[0]}" y2="${A[1]}"/><line x1="${A[0]}" y1="${A[1]}" x2="${C[0]}" y2="${C[1]}"/><line x1="${B[0]}" y1="${B[1]}" x2="${C[0]}" y2="${C[1]}"/></g>
+  <line x1="${M[0]}" y1="${M[1]}" x2="${N[0]}" y2="${N[1]}" stroke="#1565c0" stroke-width="6" stroke-linecap="round"/>
+  ${ptl(...A,'A',0,-6)}${ptl(...B,'B',-10,-6)}${ptl(...C,'C',10,-6)}${ptl(...M,'M',-12,-2)}${ptl(...N,'N',12,-2)}
+  ${tx(64,98,'6 m','#4e342e',12)}${tx(236,98,'6 m','#4e342e',12)}${tx(150,144,'8 m','#4e342e',12)}${tx(150,62,'poutre ?','#1565c0',11)}${tx(108,36,'AM = 2,4 m','#4e342e',11,'end')}`);
+}
+function figRampe2(){ // 87,5 px = 1 m ; AB = 2,4 ; BC = 0,7 ; AM = 1,8 ; MN = 0,525
+  const k=87.5,y0=140,A=[30,y0],B=[30+2.4*k,y0],C=[B[0],y0-0.7*k],M=[30+1.8*k,y0],N=[M[0],y0-0.525*k];
+  return svgw(310,175,'Rampe d\'accès',`
+  <rect width="310" height="175" fill="#eceff1"/><rect y="${y0}" width="310" height="35" fill="#b0bec5"/>
+  <rect x="${B[0]}" y="${C[1]}" width="${310-B[0]}" height="${y0-C[1]}" fill="#90a4ae" stroke="#607d8b"/>
+  <rect x="${B[0]+22}" y="${C[1]-62}" width="26" height="62" fill="#5d4037"/><rect x="${B[0]}" y="${C[1]-70}" width="${310-B[0]}" height="8" fill="#78909c"/>
+  <polygon points="${A} ${C} ${C[0]} ${C[1]+7} ${A[0]+10} ${A[1]}" fill="#ffb74d" stroke="#e65100"/>
+  <line x1="${M[0]}" y1="${M[1]}" x2="${N[0]}" y2="${N[1]}" stroke="#1565c0" stroke-width="4"/>
+  <line x1="${B[0]}" y1="${B[1]}" x2="${C[0]}" y2="${C[1]}" stroke="#1b2a41" stroke-width="1.5" stroke-dasharray="4 3"/>
+  ${ra(M[0],M[1],0,-1,-1,0)}${ra(B[0],B[1],0,-1,-1,0)}
+  ${tx(96,y0-58,'♿','#1565c0',22)}
+  ${ptl(...A,'A',-8,16)}${ptl(...B,'B',10,16)}${ptl(...C,'C',-8,-10)}${ptl(...M,'M',0,16)}${ptl(...N,'N',-10,-8)}
+  ${tx(140,y0+31,'2,4 m')}${tx(B[0]+24,y0-24,'0,7 m','#263238',11,'start')}${tx((A[0]+M[0])/2,y0+15,'AM = 1,8 m','#1565c0',11)}`);
+}
+
+E.push({part:'Partie C — Problèmes',title:'La hauteur de l\'arbre',fig:figArbre,
+ st:`<p>Pour mesurer la hauteur HS d'un arbre, Léa plante verticalement un bâton [PT] de 1,5 m, de façon que l'extrémité de l'ombre du bâton et celle de l'ombre de l'arbre soient au même point O.</p><p>Elle mesure OP = 2 m et OH = 12 m. Le sol est horizontal et l'arbre est vertical.</p>`,
+ qs:[{l:'Hauteur HS de l\'arbre',n:9,u:'m'}],
+ co:`<p>Le bâton [PT] et l'arbre [HS] sont tous les deux perpendiculaires au sol, donc (PT) // (HS).</p>
+ <p>${R('(PH)','(TS)','O','(PT)','(HS)')} ${F('OP','OH')} = ${F('OT','OS')} = ${F('PT','HS')}, soit ${F(2,12)} = ${F('OT','OS')} = ${F('1,5','HS')}.</p>
+ <p>Donc HS = ${F('12 × 1,5',2)} = <b>9 m</b>.</p>`});
+E.push({title:'La largeur de la rivière',fig:figRiviere,
+ st:`<p>Pour connaître la largeur AB d'une rivière sans la traverser, Tom repère un arbre A sur l'autre rive, juste en face du point B. Il marche le long de la rive : BC = 20 m, puis CD = 5 m. Il s'éloigne alors perpendiculairement à la rive jusqu'au point E où il voit l'arbre A juste derrière le piquet C : DE = 4 m.</p><p>Les droites (AB) et (DE) sont perpendiculaires à la rive (BD).</p>`,
+ qs:[{l:'Largeur AB de la rivière',n:16,u:'m'}],
+ co:`<p>Les droites (AB) et (DE) sont perpendiculaires à la même droite (BD), donc elles sont parallèles.</p>
+ <p>${R('(AE)','(BD)','C','(AB)','(DE)')} ${F('CA','CE')} = ${F('CB','CD')} = ${F('AB','ED')}, soit ${F('CA','CE')} = ${F(20,5)} = ${F('AB',4)}.</p>
+ <p>Donc AB = ${F('20 × 4',5)} = <b>16 m</b>.</p>`});
+E.push({title:'La poutre de la charpente',fig:figToit,
+ st:`<p>Une charpente a la forme d'un triangle ABC avec AB = AC = 6 m et BC = 8 m. On veut fixer une poutre [MN] parallèle à [BC], avec M ∈ [AB], N ∈ [AC] et AM = 2,4 m.</p><p>La poutre coûte 15 € le mètre.</p>`,
+ qs:[{l:'Longueur MN de la poutre',n:3.2,u:'m'},{l:'Longueur AN',n:2.4,u:'m'},{l:'Prix de la poutre',n:48,u:'€'}],
+ co:`<p>${R('(BM)','(CN)','A','(MN)','(BC)')} ${F('AM','AB')} = ${F('AN','AC')} = ${F('MN','BC')}, soit ${F('2,4',6)} = ${F('AN',6)} = ${F('MN',8)}.</p>
+ <p>Donc MN = ${F('2,4 × 8',6)} = <b>3,2 m</b> et AN = ${F('2,4 × 6',6)} = <b>2,4 m</b>.</p>
+ <p>Prix : 3,2 × 15 = <b>48 €</b>.</p>`});
+E.push({title:'La rampe d\'accès',fig:figRampe2,
+ st:`<p>Une rampe d'accès [AC] monte d'un trottoir. Le sol [AB] est horizontal et [BC] est vertical : AB = 2,4 m et BC = 0,7 m.</p><p>Un pied vertical [MN] soutient la rampe, avec M ∈ [AB], N ∈ [AC] et AM = 1,8 m.</p>`,
+ qs:[{l:'1. Longueur AC de la rampe',n:2.5,u:'m'},{l:'2. Hauteur MN du pied',n:0.525,u:'m'},{l:'3. Longueur AN',n:1.875,u:'m'}],
+ co:`<p>1. Le triangle ABC est rectangle en B. D'après le théorème de Pythagore : AC² = AB² + BC² = 2,4² + 0,7² = 5,76 + 0,49 = 6,25, donc AC = <b>2,5 m</b>.</p>
+ <p>2. (MN) et (BC) sont perpendiculaires au sol (AB), donc parallèles. ${R('(MB)','(NC)','A','(MN)','(BC)')} ${F('AM','AB')} = ${F('AN','AC')} = ${F('MN','BC')}, soit ${F('1,8','2,4')} = ${F('AN','2,5')} = ${F('MN','0,7')}.</p>
+ <p>Donc MN = ${F('1,8 × 0,7','2,4')} = <b>0,525 m</b> (52,5 cm).</p>
+ <p>3. AN = ${F('1,8 × 2,5','2,4')} = <b>1,875 m</b>.</p>`});
+
+/* ---------- Rendu ---------- */
+const KEY='thales-calculer-longueurs-3e';
+let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(saved));}catch(e){}};
+const root=document.getElementById('exos');
+let html='';
+E.forEach((ex,i)=>{
+  if(ex.part) html+=`<div class="part">${ex.part}</div>`;
+  const qs=ex.qs.map((q,j)=>{
+    const id=`q${i}_${j}`;
+    const ctl=q.radio?`<div class="choices" id="${id}">${q.c.map((o,k)=>`<label class="ch"><input type="radio" name="${id}" value="${k}"> ${o}</label>`).join('')}</div>`
+      :q.c?`<select id="${id}"><option value="">— choisir —</option>${q.c.map((o,k)=>`<option value="${k}">${o}</option>`).join('')}</select>`
+      :`<input id="${id}" inputmode="decimal" autocomplete="off"> ${q.u?`<span class="unit">${q.u}</span>`:''}`;
+    return `<div class="q" id="w${id}"><label for="${id}">${q.l}</label>${ctl}<span class="mark" aria-live="polite"></span></div>`;}).join('');
+  html+=`<article class="exo" id="exo${i+1}"><h2>Exercice ${i+1}${ex.title?` <span class="src">${ex.title}</span>`:''} <span class="st" id="st${i}"></span></h2>
+   <div class="body ${ex.fig?'':'nofig'}"><div class="stmt">${ex.st}<div class="qs">${qs}</div></div>${ex.fig?`<div class="fig">${ex.fig()}</div>`:''}</div>
+   <div class="actions"><button class="btn primary" type="button" data-check="${i}">Vérifier</button><button class="btn" type="button" data-corr="${i}">Voir la correction</button></div>
+   <div class="corr" id="co${i}" hidden><h3>Correction</h3>${ex.co}</div></article>`;
+});
+root.innerHTML=html;
+
+function parse(v){
+  v=String(v).trim().replace(/\s/g,'').replace(/,/g,'.').replace(/(cm²|cm|m)$/,'');
+  if(!v) return NaN;
+  const m=v.match(/^(-?[\d.]+)\/([\d.]+)$/); if(m) return parseFloat(m[1])/parseFloat(m[2]);
+  return /^-?[\d.]+$/.test(v)?parseFloat(v):NaN;
+}
+function judge(i,j){
+  const q=E[i].qs[j],el=document.getElementById(`q${i}_${j}`),w=document.getElementById(`wq${i}_${j}`),mk=w.querySelector('.mark');
+  let ok=null;
+  const val=q.radio?((el.querySelector('input:checked')||{}).value??''):el.value;
+  if(q.c){ if(val!=='') ok=(+val===q.a); }
+  else { const x=parse(el.value); if(!isNaN(x)){ const tol=q.tol??Math.max(1e-6,Math.abs(q.n)*0.002); ok=Math.abs(x-q.n)<=tol; } else if(el.value.trim()) ok=false; }
+  w.classList.toggle('ok',ok===true); w.classList.toggle('bad',ok===false);
+  mk.textContent=ok===true?'✓':ok===false?'✗':'';
+  return ok;
+}
+function check(i){let good=0;E[i].qs.forEach((q,j)=>{if(judge(i,j)) good++;});
+  const st=document.getElementById('st'+i);st.textContent=`${good}/${E[i].qs.length}`;st.classList.toggle('done',good===E[i].qs.length);
+  saved['c'+i]=1;save();tally();}
+function tally(){let tot=0,good=0;E.forEach((ex,i)=>ex.qs.forEach((q,j)=>{tot++;if(document.getElementById(`wq${i}_${j}`).classList.contains('ok'))good++;}));
+  document.getElementById('score').textContent=`${good} / ${tot} réponses justes`;document.getElementById('prog').style.width=(100*good/tot)+'%';}
+root.addEventListener('click',e=>{
+  const c=e.target.closest('[data-check]');if(c){check(+c.dataset.check);return;}
+  const r=e.target.closest('[data-corr]');if(r){const i=+r.dataset.corr,b=document.getElementById('co'+i);b.hidden=!b.hidden;r.textContent=b.hidden?'Voir la correction':'Masquer la correction';}
+});
+root.addEventListener('input',e=>{const id=e.target.type==='radio'?e.target.name:e.target.id;if(/^q\d+_\d+$/.test(id)){saved[id]=e.target.value;save();
+  const w=document.getElementById('w'+id);w.classList.remove('ok','bad');w.querySelector('.mark').textContent='';tally();}});
+E.forEach((ex,i)=>{ex.qs.forEach((q,j)=>{const id=`q${i}_${j}`;if(saved[id]!=null){if(q.radio){const r=document.querySelector(`input[name="${id}"][value="${saved[id]}"]`);if(r)r.checked=true;}else document.getElementById(id).value=saved[id];}});if(saved['c'+i])check(i);});
+tally();
+
+let all=false;
+document.getElementById('showAll').addEventListener('click',ev=>{all=!all;E.forEach((ex,i)=>{document.getElementById('co'+i).hidden=!all;
+  document.querySelector(`[data-corr="${i}"]`).textContent=all?'Masquer la correction':'Voir la correction';});
+  ev.target.textContent=all?'Masquer toutes les corrections':'Afficher toutes les corrections';});
+const resetBtn=document.getElementById('reset');let armed=false,tmo;
+resetBtn.addEventListener('click',()=>{
+  if(!armed){armed=true;resetBtn.textContent='Confirmer l\'effacement';tmo=setTimeout(()=>{armed=false;resetBtn.textContent='Tout effacer';},3000);return;}
+  clearTimeout(tmo);armed=false;resetBtn.textContent='Tout effacer';saved={};save();
+  E.forEach((ex,i)=>{ex.qs.forEach((q,j)=>{const id=`q${i}_${j}`;if(q.radio)document.querySelectorAll(`input[name="${id}"]`).forEach(r=>r.checked=false);else document.getElementById(id).value='';const w=document.getElementById('w'+id);w.classList.remove('ok','bad');w.querySelector('.mark').textContent='';});
+    const st=document.getElementById('st'+i);st.textContent='';st.classList.remove('done');});tally();});
+})();
+</script>
+
+</body></html>

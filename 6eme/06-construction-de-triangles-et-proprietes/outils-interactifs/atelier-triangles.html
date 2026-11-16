@@ -1,0 +1,282 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Atelier triangles 6e</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bitter:wght@600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout : cahier quadrillé, une activité par carte, onglets en haut */
+:root{
+  --bg:#f6f8fb; --paper:#ffffff; --grid:#dfe7f1; --ink:#1b2433; --muted:#5b6676;
+  --blue:#1f56a8; --blue-soft:#e3ecf9; --red:#c0362c; --green:#1d7a46; --green-soft:#e2f3e8; --red-soft:#fae6e4;
+  --line:#c9d3e0; --pencil:#7a8597;
+  --f-display:"Bitter",Georgia,serif; --f-body:"Atkinson Hyperlegible",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121821; --paper:#1a2230; --grid:#243042; --ink:#e7edf5; --muted:#9aa6b8;
+  --blue:#7fb0ff; --blue-soft:#1f2f4a; --red:#ff7f73; --green:#6fd39a; --green-soft:#183326; --red-soft:#3a2020;
+  --line:#33415a; --pencil:#8f9bb0; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121821; --paper:#1a2230; --grid:#243042; --ink:#e7edf5; --muted:#9aa6b8;
+  --blue:#7fb0ff; --blue-soft:#1f2f4a; --red:#ff7f73; --green:#6fd39a; --green-soft:#183326; --red-soft:#3a2020;
+  --line:#33415a; --pencil:#8f9bb0; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:24px 24px;}
+.wrap{max-width:980px;margin:0 auto;padding-block:24px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header h1{font-family:var(--f-display);font-weight:800;font-size:clamp(1.7rem,4vw,2.4rem);margin:0;text-wrap:balance}
+header p{margin:4px 0 0;color:var(--muted)}
+nav{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}
+nav button{font:inherit;font-size:15px;border:1.5px solid var(--line);background:var(--paper);color:var(--ink);padding:7px 12px;border-radius:8px;cursor:pointer}
+nav button[aria-selected="true"]{background:var(--blue);border-color:var(--blue);color:var(--paper);font-weight:700}
+nav button:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.card{background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:20px;display:flex;flex-direction:column;gap:14px}
+.card h2{font-family:var(--f-display);font-weight:600;font-size:1.35rem;margin:0}
+.consigne{color:var(--muted);margin:0}
+.q{font-size:1.2rem}
+.big{font-family:var(--f-mono);font-size:1.15rem}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.btn{font:inherit;font-weight:700;border:2px solid var(--blue);background:var(--paper);color:var(--blue);padding:9px 16px;border-radius:8px;cursor:pointer}
+.btn.primary{background:var(--blue);color:var(--paper)}
+.btn:disabled{opacity:.45;cursor:default}
+.fb{border-radius:8px;padding:10px 14px;min-height:1.5em}
+.fb.ok{background:var(--green-soft);color:var(--green)}
+.fb.ko{background:var(--red-soft);color:var(--red)}
+.score{font-family:var(--f-mono);font-size:.95rem;color:var(--muted)}
+.pills{display:flex;gap:4px;flex-wrap:wrap}
+.pill{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--line)}
+.pill.ok{background:var(--green);border-color:var(--green)} .pill.ko{background:var(--red);border-color:var(--red)}
+.svgbox{border:1.5px solid var(--line);border-radius:8px;background:var(--paper);overflow-x:auto}
+svg{display:block;max-width:100%;height:auto}
+svg text{font-family:var(--f-body);fill:var(--ink);pointer-events:none}
+.nohit{pointer-events:none}
+.lab{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.lab label{display:flex;flex-direction:column;gap:4px;font-weight:700}
+.lab output{font-family:var(--f-mono);color:var(--blue)}
+input[type=range]{width:100%;accent-color:var(--blue)}
+.steps{display:flex;flex-direction:column;gap:8px}
+.step{font:inherit;text-align:left;border:1.5px dashed var(--line);background:var(--paper);color:var(--ink);padding:10px 12px;border-radius:8px;cursor:pointer}
+.step.used{opacity:.35;cursor:default}
+.order{counter-reset:n;display:flex;flex-direction:column;gap:6px;min-height:40px;padding:0;margin:0;list-style:none}
+.order li{counter-increment:n;padding:8px 12px;border-radius:8px;background:var(--blue-soft)}
+.order li::before{content:counter(n) ". ";font-weight:700;color:var(--blue)}
+.order li.ok{background:var(--green-soft)} .order li.ko{background:var(--red-soft)}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:700px){.cols{grid-template-columns:1fr}}
+.cols>*{min-width:0}
+.tag{display:inline-block;font-size:.8rem;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.hit{cursor:pointer}
+@media (prefers-reduced-motion:no-preference){.fb{transition:background .2s}}
+</style>
+
+<div class="wrap">
+<header>
+  <span class="tag">6e · S6 · Constructions de triangles</span>
+  <h1>Atelier triangles</h1>
+  <p>Six activités pour s'entraîner. Choisis une activité dans la liste.</p>
+</header>
+
+<nav role="tablist" id="tabs"></nav>
+<main id="panel"></main>
+</div>
+
+<script>
+(function(){
+const $=(s,r=document)=>r.querySelector(s);
+const fr=x=>(Math.round(x*10)/10).toString().replace('.',',');
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs={},parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function txt(parent,x,y,s,extra={}){const t=el('text',Object.assign({x,y,'font-size':16},extra),parent);t.textContent=s;return t}
+function pillsHTML(res,n){let h='';for(let i=0;i<n;i++){h+=`<span class="pill ${res[i]===true?'ok':res[i]===false?'ko':''}"></span>`}return `<div class="pills" aria-label="Progression">${h}</div>`}
+
+const acts=[
+ {id:'vocabulaire',name:'1. Vocabulaire',run:vocab},
+ {id:'segment',name:'2. Sur le segment ?',run:segment},
+ {id:'constructible',name:'3. Constructible ?',run:constructible},
+ {id:'compas',name:'4. Le labo du compas',run:labo},
+ {id:'cas',name:'5. Quel cas ?',run:cas},
+ {id:'etapes',name:'6. Les étapes dans l\'ordre',run:etapes},
+];
+const tabs=$('#tabs');
+acts.forEach(a=>{const b=document.createElement('button');b.textContent=a.name;b.setAttribute('role','tab');b.id='tab-'+a.id;b.onclick=()=>{location.hash=a.id;show(a.id)};tabs.appendChild(b)});
+function show(id){const a=acts.find(x=>x.id===id)||acts[0];tabs.querySelectorAll('button').forEach(b=>b.setAttribute('aria-selected',b.id==='tab-'+a.id));const p=$('#panel');p.innerHTML='';a.run(p)}
+window.addEventListener('hashchange',()=>show(location.hash.slice(1)));
+show(location.hash.slice(1));
+
+/* ---------- 1. Vocabulaire : cliquer sur la figure ---------- */
+function vocab(p){
+  const N=8;let i=0,res=[];
+  const pts={A:[80,260],B:[420,230],C:[250,60]};
+  const names=shuffle(['ABC','ACB','BAC','BCA','CAB','CBA']);
+  const qs=shuffle([
+    {t:'Clique sur le sommet A',k:'A'},{t:'Clique sur le sommet B',k:'B'},{t:'Clique sur le sommet C',k:'C'},
+    {t:'Clique sur le côté [AB]',k:'AB'},{t:'Clique sur le côté [BC]',k:'BC'},{t:'Clique sur le côté [CA]',k:'CA'},
+  ]).slice(0,5).concat([
+    {t:`Le triangle ${names[0]} est-il le même triangle que ABC ?`,choices:['Oui','Non'],good:'Oui',why:'On peut citer les trois sommets dans n\'importe quel ordre.'},
+    {t:'Combien de côtés a un triangle ?',choices:['2','3','4'],good:'3',why:'Un triangle est un polygone à trois côtés.'},
+    {t:`Le triangle ABD est-il le même triangle que ABC ?`,choices:['Oui','Non'],good:'Non',why:'D n\'est pas un sommet du triangle ABC.'},
+  ]).slice(0,N);
+  p.innerHTML=`<section class="card"><h2>Vocabulaire du triangle</h2><p class="consigne">Réponds en cliquant sur la figure ou sur un bouton.</p>
+   <div id="pl"></div><p class="q" id="qq"></p><div class="row" id="ch"></div>
+   <div class="svgbox"><svg id="fig" viewBox="0 0 500 300" role="img" aria-label="Triangle ABC"></svg></div>
+   <div class="fb" id="fb" aria-live="polite"></div><div class="row"><button class="btn primary" id="nx" hidden>Question suivante</button><span class="score" id="sc"></span></div></section>`;
+  const svg=$('#fig',p);
+  const segs=[['A','B'],['B','C'],['C','A']];
+  segs.forEach(([u,v])=>{const [x1,y1]=pts[u],[x2,y2]=pts[v];
+    el('line',{x1,y1,x2,y2,stroke:'var(--ink)','stroke-width':3,class:'nohit'},svg);
+    const h=el('line',{x1,y1,x2,y2,stroke:'transparent','stroke-width':24,class:'hit','data-k':u+v},svg);});
+  Object.entries(pts).forEach(([k,[x,y]])=>{el('circle',{cx:x,cy:y,r:16,fill:'transparent',class:'hit','data-k':k},svg);
+    el('circle',{cx:x,cy:y,r:4,fill:'var(--ink)',class:'nohit'},svg);
+    txt(svg,x+(k==='A'?-28:k==='B'?14:-6),y+(k==='C'?-14:24),k,{'font-size':22,'font-style':'italic'})});
+  let locked=false;
+  function ask(){locked=false;const q=qs[i];$('#pl',p).innerHTML=pillsHTML(res,N);$('#qq',p).textContent=q.t;$('#fb',p).textContent='';$('#fb',p).className='fb';$('#nx',p).hidden=true;
+    svg.querySelectorAll('.mark').forEach(m=>m.remove());const ch=$('#ch',p);ch.innerHTML='';
+    if(q.choices){q.choices.forEach(c=>{const b=document.createElement('button');b.className='btn';b.textContent=c;b.onclick=()=>answer(c===q.good,q.why);ch.appendChild(b)})}}
+  svg.addEventListener('click',e=>{const k=e.target.getAttribute&&e.target.getAttribute('data-k');const q=qs[i];if(!k||locked||q.choices)return;
+    const ok=(k===q.k)||(q.k.length===2&&k.split('').reverse().join('')===q.k);
+    // surligner la bonne réponse
+    if(q.k.length===1){const [x,y]=pts[q.k];el('circle',{cx:x,cy:y,r:12,fill:'none',stroke:'var(--green)','stroke-width':3,class:'mark nohit'},svg)}
+    else{const [x1,y1]=pts[q.k[0]],[x2,y2]=pts[q.k[1]];el('line',{x1,y1,x2,y2,stroke:'var(--green)','stroke-width':6,class:'mark nohit'},svg)}
+    answer(ok, q.k.length===1?`Un sommet est un point du triangle.`:`Un côté est un segment qui relie deux sommets.`)});
+  function answer(ok,why){if(locked)return;locked=true;res[i]=ok;$('#pl',p).innerHTML=pillsHTML(res,N);const f=$('#fb',p);f.className='fb '+(ok?'ok':'ko');f.textContent=(ok?'Bravo ! ':'Pas tout à fait. ')+why;
+    $('#ch',p).querySelectorAll('button').forEach(b=>b.disabled=true);
+    i++;if(i<N){$('#nx',p).hidden=false}else{$('#sc',p).textContent=`Score : ${res.filter(Boolean).length} / ${N}`;const b=$('#nx',p);b.hidden=false;b.textContent='Recommencer';b.onclick=()=>vocab(p)}}
+  $('#nx',p).onclick=ask;ask();
+}
+
+/* ---------- 2. Sur le segment ? ---------- */
+function segment(p){
+  const N=8;let i=0,res=[];
+  function gen(){const ab=rnd(4,10);let am,mb,on=Math.random()<.5;
+    if(on){am=rnd(1,ab-1)+(Math.random()<.4?0.5:0);if(am>=ab)am=ab-1;mb=ab-am}
+    else{am=rnd(1,ab);mb=ab-am+rnd(1,3)}
+    return {ab,am,mb,on}}
+  p.innerHTML=`<section class="card"><h2>Le point M est-il sur le segment [AB] ?</h2><p class="consigne">Compare AM + MB avec AB.</p><div id="pl"></div>
+  <p class="q big" id="qq"></p><div class="row"><button class="btn" id="oui">Oui, M ∈ [AB]</button><button class="btn" id="non">Non, M ∉ [AB]</button></div>
+  <div class="fb" id="fb" aria-live="polite"></div><div class="row"><button class="btn primary" id="nx" hidden>Question suivante</button><span class="score" id="sc"></span></div></section>`;
+  let q;
+  function ask(){q=gen();$('#pl',p).innerHTML=pillsHTML(res,N);$('#qq',p).textContent=`AB = ${fr(q.ab)} cm ; AM = ${fr(q.am)} cm ; MB = ${fr(q.mb)} cm`;
+    $('#fb',p).textContent='';$('#fb',p).className='fb';$('#nx',p).hidden=true;$('#oui',p).disabled=$('#non',p).disabled=false}
+  function answer(r){const ok=r===q.on;res[i]=ok;const s=q.am+q.mb;const f=$('#fb',p);f.className='fb '+(ok?'ok':'ko');
+    f.textContent=(ok?'Bravo ! ':'Non. ')+`AM + MB = ${fr(q.am)} + ${fr(q.mb)} = ${fr(s)}`+(q.on?` = AB, donc M est sur le segment [AB].`:` et ${fr(s)} > ${fr(q.ab)}, donc M n'est pas sur le segment [AB].`);
+    $('#oui',p).disabled=$('#non',p).disabled=true;$('#pl',p).innerHTML=pillsHTML(res,N);i++;
+    if(i<N)$('#nx',p).hidden=false;else{$('#sc',p).textContent=`Score : ${res.filter(Boolean).length} / ${N}`;const b=$('#nx',p);b.hidden=false;b.textContent='Recommencer';b.onclick=()=>segment(p)}}
+  $('#oui',p).onclick=()=>answer(true);$('#non',p).onclick=()=>answer(false);$('#nx',p).onclick=ask;ask();
+}
+
+/* ---------- 3. Constructible ? ---------- */
+function constructible(p){
+  const N=10;let i=0,res=[];
+  function gen(){const t=Math.random();let a,b,c;
+    const big=rnd(5,12);
+    if(t<.45){a=rnd(2,big-1);b=rnd(big-a+1,big)}           // constructible
+    else if(t<.85){a=rnd(1,big-2);b=rnd(1,big-a-1)}          // impossible
+    else{a=rnd(1,big-1);b=big-a}                             // aplati
+    if(Math.random()<.35){a+=.5;}
+    c=big;const s=shuffle([a,b,c]);return {s,big:Math.max(a,b,c)}}
+  p.innerHTML=`<section class="card"><h2>Ce triangle est-il constructible ?</h2><p class="consigne">Compare le plus grand côté à la somme des deux autres.</p><div id="pl"></div>
+  <p class="q big" id="qq"></p><div class="row"><button class="btn" id="oui">Oui, on peut le construire</button><button class="btn" id="non">Non, impossible</button></div>
+  <div class="fb" id="fb" aria-live="polite"></div><div class="row"><button class="btn primary" id="nx" hidden>Question suivante</button><span class="score" id="sc"></span></div></section>`;
+  let q;const L='XYZ';
+  function ask(){q=gen();const n=shuffle(['ABC','EFG','RST','IJK','LMN','DEF','PQR','UVW'])[0];
+    $('#qq',p).textContent=`${n} : ${n[0]}${n[1]} = ${fr(q.s[0])} cm ; ${n[1]}${n[2]} = ${fr(q.s[1])} cm ; ${n[0]}${n[2]} = ${fr(q.s[2])} cm`;
+    $('#pl',p).innerHTML=pillsHTML(res,N);$('#fb',p).textContent='';$('#fb',p).className='fb';$('#nx',p).hidden=true;$('#oui',p).disabled=$('#non',p).disabled=false}
+  function answer(r){const sorted=q.s.slice().sort((x,y)=>x-y);const sum=sorted[0]+sorted[1],big=sorted[2];const good=sum>big;const ok=r===good;res[i]=ok;
+    const f=$('#fb',p);f.className='fb '+(ok?'ok':'ko');
+    let e=`Le plus grand côté mesure ${fr(big)} cm. ${fr(sorted[0])} + ${fr(sorted[1])} = ${fr(sum)} `;
+    e+= sum>big?`et ${fr(sum)} > ${fr(big)} : le triangle est constructible.`: sum<big?`et ${fr(sum)} < ${fr(big)} : le triangle n'est pas constructible.`:`: c'est égal au plus grand côté. Les trois points sont alignés, c'est un « triangle aplati » : pas de vrai triangle.`;
+    f.textContent=(ok?'Bravo ! ':'Non. ')+e;$('#oui',p).disabled=$('#non',p).disabled=true;$('#pl',p).innerHTML=pillsHTML(res,N);i++;
+    if(i<N)$('#nx',p).hidden=false;else{$('#sc',p).textContent=`Score : ${res.filter(Boolean).length} / ${N}`;const b=$('#nx',p);b.hidden=false;b.textContent='Recommencer';b.onclick=()=>constructible(p)}}
+  $('#oui',p).onclick=()=>answer(true);$('#non',p).onclick=()=>answer(false);$('#nx',p).onclick=ask;ask();
+}
+
+/* ---------- 4. Le labo du compas ---------- */
+function labo(p){
+  p.innerHTML=`<section class="card"><h2>Le labo du compas</h2><p class="consigne">Fais varier les longueurs. Les deux arcs de cercle se coupent-ils ? Quand le point C existe-t-il ?</p>
+  <div class="lab">
+   <label for="ab">AB <output id="oab"></output><input type="range" id="ab" min="2" max="10" step="0.5" value="6"></label>
+   <label for="ac">AC (rayon du cercle de centre A) <output id="oac"></output><input type="range" id="ac" min="1" max="10" step="0.5" value="4"></label>
+   <label for="bc">BC (rayon du cercle de centre B) <output id="obc"></output><input type="range" id="bc" min="1" max="10" step="0.5" value="5"></label>
+  </div>
+  <div class="svgbox"><svg id="lab" viewBox="0 0 640 380" role="img" aria-label="Construction au compas"></svg></div>
+  <div class="fb" id="fb" aria-live="polite"></div></section>`;
+  const svg=$('#lab',p);const K=40,ox=110,oy=300;
+  function draw(){const ab=+$('#ab',p).value,ac=+$('#ac',p).value,bc=+$('#bc',p).value;
+    $('#oab',p).textContent=fr(ab)+' cm';$('#oac',p).textContent=fr(ac)+' cm';$('#obc',p).textContent=fr(bc)+' cm';
+    svg.innerHTML='';
+    const A=[ox,oy],B=[ox+ab*K,oy];
+    el('circle',{cx:A[0],cy:A[1],r:ac*K,fill:'none',stroke:'var(--pencil)','stroke-dasharray':'5 5','stroke-width':1.5},svg);
+    el('circle',{cx:B[0],cy:B[1],r:bc*K,fill:'none',stroke:'var(--pencil)','stroke-dasharray':'5 5','stroke-width':1.5},svg);
+    el('line',{x1:A[0],y1:A[1],x2:B[0],y2:B[1],stroke:'var(--ink)','stroke-width':3},svg);
+    txt(svg,(A[0]+B[0])/2-18,oy+24,fr(ab)+' cm',{fill:'var(--blue)','font-size':14});
+    const x=(ab*ab+ac*ac-bc*bc)/(2*ab),y2=ac*ac-x*x;const f=$('#fb',p);
+    const s=[ab,ac,bc].sort((a,b)=>a-b);const sum=s[0]+s[1];
+    if(y2>1e-9){const y=Math.sqrt(y2);const C=[ox+x*K,oy-y*K];
+      el('polygon',{points:`${A} ${B} ${C}`,fill:'var(--blue-soft)',stroke:'var(--blue)','stroke-width':2.5},svg);
+      el('line',{x1:A[0],y1:A[1],x2:B[0],y2:B[1],stroke:'var(--ink)','stroke-width':3},svg);
+      el('circle',{cx:C[0],cy:C[1],r:4,fill:'var(--blue)'},svg);txt(svg,C[0]-5,C[1]-12,'C',{'font-size':20,'font-style':'italic'});
+      f.className='fb ok';f.textContent=`Les arcs se coupent : le triangle existe. Plus grand côté ${fr(s[2])} cm ; ${fr(s[0])} + ${fr(s[1])} = ${fr(sum)} et ${fr(sum)} > ${fr(s[2])}.`}
+    else if(Math.abs(y2)<=1e-9){const C=[ox+x*K,oy];el('circle',{cx:C[0],cy:C[1],r:5,fill:'var(--red)'},svg);txt(svg,C[0]-5,C[1]-12,'C',{'font-size':20,'font-style':'italic'});
+      f.className='fb ko';f.textContent=`Les arcs se touchent en un seul point, sur la droite (AB) : ${fr(s[0])} + ${fr(s[1])} = ${fr(s[2])}. Les points sont alignés, c'est un triangle aplati.`}
+    else{f.className='fb ko';f.textContent=`Les arcs ne se coupent pas : pas de triangle. Plus grand côté ${fr(s[2])} cm ; ${fr(s[0])} + ${fr(s[1])} = ${fr(sum)} et ${fr(sum)} < ${fr(s[2])}.`}
+    [['A',A,-26],['B',B,10]].forEach(([n,P,dx])=>{el('circle',{cx:P[0],cy:P[1],r:4,fill:'var(--ink)'},svg);txt(svg,P[0]+dx,P[1]+22,n,{'font-size':20,'font-style':'italic'})});
+  }
+  ['ab','ac','bc'].forEach(id=>$('#'+id,p).addEventListener('input',draw));draw();
+}
+
+/* ---------- 5. Quel cas ? ---------- */
+function cas(p){
+  const bank=[
+   {t:'AB = 5 cm ; BC = 7 cm ; AC = 4 cm',c:0},{t:'EF = 6 cm ; FG = 3,5 cm ; EG = 8 cm',c:0},{t:'IJ = 4,5 cm ; JK = 4,5 cm ; IK = 6 cm',c:0},
+   {t:'RS = 4 cm ; RT = 6 cm ; angle SRT = 50°',c:1},{t:'MN = 7 cm ; MP = 3 cm ; angle NMP = 110°',c:1},{t:'XY = 5 cm ; YZ = 4 cm ; angle XYZ = 35°',c:1},
+   {t:'AB = 6 cm ; angle BAC = 30° ; angle ABC = 60°',c:2},{t:'DE = 4 cm ; angle EDF = 70° ; angle DEF = 45°',c:2},{t:'KL = 8 cm ; angle LKM = 25° ; angle KLM = 100°',c:2},
+  ];
+  const cases=['Trois longueurs','Deux côtés et l\'angle entre eux','Un côté et ses deux angles'];
+  const tools=['Règle et compas','Règle et rapporteur','Règle et rapporteur'];
+  const qs=shuffle(bank).slice(0,6);const N=qs.length;let i=0,res=[];
+  p.innerHTML=`<section class="card"><h2>Quel cas de construction ?</h2><p class="consigne">Lis les données, puis choisis le cas du cours et les instruments.</p><div id="pl"></div>
+  <p class="q big" id="qq"></p><div class="cols"><div><span class="tag">Cas</span><div class="row" id="c1"></div></div><div><span class="tag">Instruments</span><div class="row" id="c2"></div></div></div>
+  <div class="row"><button class="btn primary" id="ok" disabled>Vérifier</button></div>
+  <div class="fb" id="fb" aria-live="polite"></div><div class="row"><button class="btn primary" id="nx" hidden>Question suivante</button><span class="score" id="sc"></span></div></section>`;
+  let s1=null,s2=null;
+  function opts(id,list,set){const r=$('#'+id,p);r.innerHTML='';list.forEach((l,k)=>{if(id==='c2'&&k===2)return;const b=document.createElement('button');b.className='btn';b.textContent=l;b.onclick=()=>{set(k);r.querySelectorAll('button').forEach(x=>x.classList.remove('primary'));b.classList.add('primary');$('#ok',p).disabled=(s1===null||s2===null)};r.appendChild(b)})}
+  function ask(){s1=s2=null;const q=qs[i];$('#qq',p).textContent=q.t;$('#pl',p).innerHTML=pillsHTML(res,N);opts('c1',cases,k=>s1=k);opts('c2',tools,k=>s2=k);
+    $('#ok',p).disabled=true;$('#ok',p).hidden=false;$('#fb',p).textContent='';$('#fb',p).className='fb';$('#nx',p).hidden=true}
+  $('#ok',p).onclick=()=>{const q=qs[i];const goodTool=q.c===0?0:1;const ok=s1===q.c&&s2===goodTool;res[i]=ok;const f=$('#fb',p);f.className='fb '+(ok?'ok':'ko');
+    f.textContent=(ok?'Bravo ! ':'Non. ')+`Cas : ${cases[q.c].toLowerCase()}. Instruments : ${tools[q.c].toLowerCase()}.`;
+    p.querySelectorAll('#c1 button,#c2 button').forEach(b=>b.disabled=true);$('#ok',p).hidden=true;$('#pl',p).innerHTML=pillsHTML(res,N);i++;
+    if(i<N)$('#nx',p).hidden=false;else{$('#sc',p).textContent=`Score : ${res.filter(Boolean).length} / ${N}`;const b=$('#nx',p);b.hidden=false;b.textContent='Recommencer';b.onclick=()=>cas(p)}};
+  $('#nx',p).onclick=ask;ask();
+}
+
+/* ---------- 6. Les étapes dans l'ordre ---------- */
+function etapes(p){
+  const sets=[
+   {t:'Construire ABC avec AB = 6 cm, AC = 4 cm et BC = 5 cm.',s:['Faire une figure à main levée codée.','Tracer le segment [AB] de longueur 6 cm.','Tracer un arc de cercle de centre A et de rayon 4 cm.','Tracer un arc de cercle de centre B et de rayon 5 cm.','Nommer C le point d\'intersection des arcs, puis tracer [AC] et [BC].']},
+   {t:'Construire RST avec ST = 4 cm, SR = 3 cm et l\'angle RST = 42°.',s:['Faire une figure à main levée codée.','Tracer le segment [ST] de longueur 4 cm.','Placer le centre du rapporteur en S et tracer l\'angle RST de 42°.','Placer R sur ce côté de l\'angle, à 3 cm de S.','Tracer le segment [RT].']},
+   {t:'Construire ABC avec AB = 5 cm, l\'angle BAC = 40° et l\'angle ABC = 50°.',s:['Faire une figure à main levée codée.','Tracer le segment [AB] de longueur 5 cm.','Avec le rapporteur centré en A, tracer l\'angle BAC de 40°.','Avec le rapporteur centré en B, tracer l\'angle ABC de 50°.','Nommer C le point d\'intersection des deux demi-droites.']},
+  ];
+  let k=0;
+  function run(){const S=sets[k];const mixed=shuffle(S.s.map((x,j)=>({x,j})));let chosen=[];
+    p.innerHTML=`<section class="card"><h2>Remets les étapes dans l'ordre</h2><p class="consigne">Construction ${k+1} sur ${sets.length}. Clique sur les étapes dans le bon ordre.</p>
+    <p class="q"><strong>${S.t}</strong></p>
+    <div class="cols"><div><span class="tag">Étapes mélangées</span><div class="steps" id="mix"></div></div><div><span class="tag">Ton programme de construction</span><ol class="order" id="ord"></ol></div></div>
+    <div class="row"><button class="btn" id="undo">Annuler la dernière</button><button class="btn primary" id="chk" disabled>Vérifier</button></div>
+    <div class="fb" id="fb" aria-live="polite"></div><div class="row"><button class="btn primary" id="nx" hidden></button></div></section>`;
+    const mix=$('#mix',p),ord=$('#ord',p);
+    function render(){mix.innerHTML='';mixed.forEach(m=>{const b=document.createElement('button');b.className='step'+(chosen.includes(m)?' used':'');b.textContent=m.x;b.disabled=chosen.includes(m);b.onclick=()=>{chosen.push(m);render()};mix.appendChild(b)});
+      ord.innerHTML='';chosen.forEach(m=>{const li=document.createElement('li');li.textContent=m.x;ord.appendChild(li)});$('#chk',p).disabled=chosen.length!==S.s.length}
+    $('#undo',p).onclick=()=>{chosen.pop();render();$('#fb',p).textContent='';$('#fb',p).className='fb'};
+    $('#chk',p).onclick=()=>{let good=0;[...ord.children].forEach((li,j)=>{const ok=chosen[j].j===j;li.className=ok?'ok':'ko';if(ok)good++});
+      const f=$('#fb',p);const all=good===S.s.length;f.className='fb '+(all?'ok':'ko');
+      f.textContent=all?'Bravo, ton programme de construction est dans le bon ordre !':`${good} étape(s) sur ${S.s.length} sont à la bonne place. Annule les dernières étapes et réessaie.`;
+      if(all){const b=$('#nx',p);b.hidden=false;b.textContent=k<sets.length-1?'Construction suivante':'Recommencer';b.onclick=()=>{k=(k+1)%sets.length;run()}}};
+    render()}
+  run();
+}
+})();
+</script>
+
+</body></html>

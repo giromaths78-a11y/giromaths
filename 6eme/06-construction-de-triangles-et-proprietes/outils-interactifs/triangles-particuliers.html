@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Les triangles particuliers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bitter:wght@600;800&display=swap">
+<style>
+/* Triangles particuliers : explorer (sommets déplaçables), reconnaître la nature, calculer un angle. */
+:root{
+  --bg:#f6f8fb; --paper:#ffffff; --ink:#1b2433; --muted:#5b6676; --line:#c9d3e0; --grid:#e3e9f2; --grid2:#eef2f8;
+  --blue:#2563eb; --blue-soft:#e6eeff; --ok:#1b8a3a; --ok-soft:#e3f4e7; --bad:#c62f2b; --bad-soft:#fbe6e4; --warn:#a86200; --warn-soft:#fff2dc;
+  --rose:#e0457b; --red:#e53935; --fill:rgba(37,99,235,.10); --yellow:#ffd21f; --violet:#7c3aed;
+  --f-display:"Bitter",Georgia,serif; --f-body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111723; --paper:#1a2230; --ink:#e7edf5; --muted:#9aa6b8; --line:#33415a; --grid:#253046; --grid2:#1e2738;
+  --blue:#7fb0ff; --blue-soft:#1f2f4a; --ok:#5fd08a; --ok-soft:#173324; --bad:#ff7a73; --bad-soft:#3a1d1d; --warn:#ffb547; --warn-soft:#3a2a12;
+  --rose:#ff7aa6; --red:#ff7a73; --fill:rgba(127,176,255,.14); --yellow:#e0b400; --violet:#c4a5ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111723; --paper:#1a2230; --ink:#e7edf5; --muted:#9aa6b8; --line:#33415a; --grid:#253046; --grid2:#1e2738;
+  --blue:#7fb0ff; --blue-soft:#1f2f4a; --ok:#5fd08a; --ok-soft:#173324; --bad:#ff7a73; --bad-soft:#3a1d1d; --warn:#ffb547; --warn-soft:#3a2a12;
+  --rose:#ff7aa6; --red:#ff7a73; --fill:rgba(127,176,255,.14); --yellow:#e0b400; --violet:#c4a5ff; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body)}
+.wrap{max-width:1180px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
+.tag{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(1.5rem,3.6vw,2.2rem)/1.1 var(--f-display);margin:2px 0 0}
+h2{font:700 1.15rem/1.2 var(--f-display);margin:0 0 6px}
+.intro{margin:4px 0 0;color:var(--muted);max-width:75ch}
+.tabs{display:flex;flex-wrap:wrap;gap:6px;border-bottom:2px solid var(--line);padding-bottom:0}
+.tab{font:inherit;font-weight:700;cursor:pointer;border:1.5px solid var(--line);border-bottom:none;background:var(--paper);color:var(--muted);padding:8px 14px;border-radius:10px 10px 0 0;margin-bottom:-2px}
+.tab[aria-selected="true"]{background:var(--blue);border-color:var(--blue);color:var(--paper)}
+.panel{display:none}.panel.on{display:block}
+.grid{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(280px,1fr);gap:14px;align-items:start}
+@media (max-width:860px){.grid{grid-template-columns:1fr}}
+.card{background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:12px 14px}
+button{font:inherit;cursor:pointer}
+.btn{border:1.5px solid var(--line);background:var(--paper);color:var(--ink);padding:6px 11px;border-radius:8px;font-weight:700;font-size:.95rem}
+.btn.main{background:var(--blue);border-color:var(--blue);color:var(--paper)}
+.btn:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+svg{display:block;width:100%;height:auto;touch-action:none;user-select:none}
+.board{background:var(--paper);border-radius:8px}
+.vx{cursor:grab}.vx:active{cursor:grabbing}
+.nature{font:800 1.35rem/1.2 var(--f-display);color:var(--blue);margin:2px 0 6px}
+table.m{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+table.m td{padding:3px 6px;border-bottom:1px solid var(--line)}
+table.m td:last-child{text-align:right;font-weight:700}
+.sum{margin-top:8px;padding:6px 10px;border-radius:8px;background:var(--blue-soft);font-weight:700}
+.why{margin:8px 0 0;padding-left:1.2em;color:var(--ink)}
+.why li{margin:2px 0}
+.defis{list-style:none;margin:0;padding:0}
+.defis li{display:flex;gap:8px;align-items:flex-start;padding:4px 0;border-bottom:1px dashed var(--line)}
+.defis li .ck{flex:0 0 1.4em;height:1.4em;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-size:.8rem;font-weight:700}
+.defis li.done .ck{background:var(--ok);border-color:var(--ok);color:var(--paper)}
+.defis li.done{color:var(--ok)}
+.score{font-weight:700;color:var(--muted)}
+.question{font-size:1.12rem;margin:4px 0 10px}
+.choices{display:flex;flex-wrap:wrap;gap:8px}
+.choices .btn{padding:9px 14px}
+.choices .btn.good{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.choices .btn.badc{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.choices .btn.good,.choices .btn.badc{opacity:1}
+.fb{margin-top:10px;padding:10px 12px;border-radius:10px;display:none}
+.fb.ok{display:block;background:var(--ok-soft);border:1.5px solid var(--ok)}
+.fb.ko{display:block;background:var(--bad-soft);border:1.5px solid var(--bad)}
+.fb.mid{display:block;background:var(--warn-soft);border:1.5px solid var(--warn)}
+.fb p{margin:2px 0}
+.corr{color:var(--violet)}
+input.ans{width:6em;font:inherit;font-size:1.1rem;padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+.hint{font-size:.9rem;color:var(--muted)}
+.rappel{font-size:.95rem}
+.rappel b{color:var(--blue)}
+.ang{position:relative;display:inline-block;padding-top:.2em;line-height:1}
+.ang::before{content:"";position:absolute;left:4%;right:4%;top:-.12em;height:.32em;background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpolyline points='2,18 50,3 98,18' fill='none' stroke='black' stroke-width='3' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") no-repeat center/100% 100%;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpolyline points='2,18 50,3 98,18' fill='none' stroke='black' stroke-width='3' vector-effect='non-scaling-stroke'/%3E%3C/svg%3E") no-repeat center/100% 100%}
+.mono{font-variant-numeric:tabular-nums}
+footer{font-size:.85rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="tag">6<sup>e</sup> · S6 · Triangles</div>
+    <h1>Les triangles particuliers</h1>
+    <p class="intro">Isocèle, équilatéral, rectangle : explore leurs propriétés, apprends à les reconnaître et calcule des angles grâce à la somme des angles d'un triangle (180°).</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" role="tab" id="t1" aria-controls="p1" aria-selected="true">1. J'explore</button>
+    <button class="tab" role="tab" id="t2" aria-controls="p2" aria-selected="false">2. Je reconnais</button>
+    <button class="tab" role="tab" id="t3" aria-controls="p3" aria-selected="false">3. Je calcule un angle</button>
+  </div>
+
+  <!-- ===================== 1. EXPLORER ===================== -->
+  <section class="panel on" id="p1" role="tabpanel" aria-labelledby="t1">
+    <div class="grid">
+      <div class="card">
+        <div class="row" style="margin-bottom:8px">
+          <span class="hint">Déplace les sommets (souris, doigt, ou Tab puis flèches). Modèles :</span>
+          <button class="btn" data-preset="quel">quelconque</button>
+          <button class="btn" data-preset="iso">isocèle</button>
+          <button class="btn" data-preset="equi">équilatéral</button>
+          <button class="btn" data-preset="rect">rectangle</button>
+          <button class="btn" data-preset="recti">rectangle isocèle</button>
+        </div>
+        <svg id="board" class="board" viewBox="0 0 520 360" aria-label="Triangle à déformer"></svg>
+        <p class="hint" style="margin:6px 0 0">1 carreau = 1 cm. Les sommets se placent au millimètre près.</p>
+      </div>
+      <div class="card" aria-live="polite">
+        <div class="tag">Nature du triangle</div>
+        <div class="nature" id="nature">—</div>
+        <table class="m" id="mesures"></table>
+        <div class="sum" id="somme"></div>
+        <ul class="why" id="why"></ul>
+      </div>
+    </div>
+    <div class="card" style="margin-top:14px">
+      <h2>Défis : fabrique ces triangles</h2>
+      <ul class="defis" id="defis"></ul>
+    </div>
+  </section>
+
+  <!-- ===================== 2. RECONNAÎTRE ===================== -->
+  <section class="panel" id="p2" role="tabpanel" aria-labelledby="t2">
+    <div class="grid">
+      <div class="card">
+        <div class="row" style="justify-content:space-between"><div class="tag">Quelle est la nature la plus précise ?</div><div class="score" id="sc2">0 / 0</div></div>
+        <div class="question" id="q2"></div>
+        <div class="choices" id="ch2"></div>
+        <div class="fb" id="fb2"></div>
+        <div class="row" style="margin-top:10px"><button class="btn main" id="next2">Question suivante</button></div>
+      </div>
+      <div class="card">
+        <svg id="fig2" viewBox="0 0 360 260" aria-label="Figure de la correction"></svg>
+        <p class="hint" id="fig2cap" style="margin:4px 0 0">La figure codée apparaît avec la correction.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== 3. CALCULER ===================== -->
+  <section class="panel" id="p3" role="tabpanel" aria-labelledby="t3">
+    <div class="grid">
+      <div class="card">
+        <div class="row" style="justify-content:space-between"><div class="tag">Calcule l'angle marqué « ? »</div><div class="score" id="sc3">0 / 0</div></div>
+        <div class="question" id="q3"></div>
+        <div class="row"><label for="ans3" id="lab3"></label><input class="ans" id="ans3" type="text" inputmode="numeric" autocomplete="off"> <span>°</span>
+          <button class="btn main" id="ok3">Vérifier</button><button class="btn" id="sol3">Voir la correction</button><button class="btn" id="next3">Suivant</button></div>
+        <div class="fb" id="fb3"></div>
+        <details class="rappel" style="margin-top:12px"><summary><b>Rappels</b></summary>
+          <ul>
+            <li>Dans un triangle, la somme des angles est égale à <b>180°</b>.</li>
+            <li>Triangle <b>isocèle</b> : les deux angles à la base ont la même mesure.</li>
+            <li>Triangle <b>équilatéral</b> : les trois angles mesurent <b>60°</b>.</li>
+            <li>Triangle <b>rectangle</b> : les deux angles aigus ont une somme de <b>90°</b>.</li>
+          </ul></details>
+      </div>
+      <div class="card">
+        <svg id="fig3" viewBox="0 0 360 260" aria-label="Figure à main levée"></svg>
+        <p class="hint" style="margin:4px 0 0">Figure à main levée : les mesures ne sont pas exactes.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>GiroMaths · 6<sup>e</sup> · S6 Triangles : constructions et propriétés</footer>
+</div>
+
+<script>
+"use strict";
+const NS="http://www.w3.org/2000/svg";
+const $=id=>document.getElementById(id);
+function el(tag,attrs,parent,txt){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(txt!=null)e.textContent=txt;if(parent)parent.appendChild(e);return e}
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim();
+const dist=(p,q)=>Math.hypot(p.x-q.x,p.y-q.y);
+const DEG=180/Math.PI;
+function angleAt(P,Q,R){ // angle en P
+  const a=Math.atan2(Q.y-P.y,Q.x-P.x),b=Math.atan2(R.y-P.y,R.x-P.x);let d=Math.abs(a-b)*DEG;if(d>180)d=360-d;return d}
+const fr=(x,d=1)=>x.toFixed(d).replace(".",",");
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+function hat(s){return s+"̂"} // Â etc. via combinaison
+const ang3=(a,b,c)=>`<span class="ang"><i>${a}${b}${c}</i></span>`;
+
+/* ---------- tracé d'un triangle codé (commun aux 3 parties) ---------- */
+// opts: names[3], ticks:[[i,j,n]], right:i|null, arcs:[{v:i,label,col}], sideLabels:[[i,j,txt]]
+function drawCoded(svg,P,opts){
+  const blue=css("--blue"),ink=css("--ink"),rose=css("--rose"),red=css("--red"),fill=css("--fill");
+  el("polygon",{points:P.map(p=>p.x+","+p.y).join(" "),fill:fill,stroke:blue,"stroke-width":2.4,"stroke-linejoin":"round"},svg);
+  const G={x:(P[0].x+P[1].x+P[2].x)/3,y:(P[0].y+P[1].y+P[2].y)/3};
+  // arcs d'angle
+  (opts.arcs||[]).forEach(a=>{
+    const p=P[a.v],q=P[(a.v+1)%3],r=P[(a.v+2)%3];
+    const t1=Math.atan2(q.y-p.y,q.x-p.x),t2=Math.atan2(r.y-p.y,r.x-p.x);
+    let d=t2-t1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+    const R=a.r||24,x1=p.x+R*Math.cos(t1),y1=p.y+R*Math.sin(t1),x2=p.x+R*Math.cos(t1+d),y2=p.y+R*Math.sin(t1+d);
+    el("path",{d:`M${x1},${y1} A${R},${R} 0 0 ${d>0?1:0} ${x2},${y2}`,fill:"none",stroke:a.col||red,"stroke-width":2},svg);
+    if(a.label!=null){const tm=t1+d/2,LR=R+(a.lr||16);
+      el("text",{x:p.x+LR*Math.cos(tm),y:p.y+LR*Math.sin(tm)+5,"text-anchor":"middle","font-size":14,"font-weight":700,fill:a.col||red},svg,a.label)}
+  });
+  // angle droit
+  if(opts.right!=null){const p=P[opts.right],q=P[(opts.right+1)%3],r=P[(opts.right+2)%3],s=13;
+    const u={x:(q.x-p.x)/dist(p,q),y:(q.y-p.y)/dist(p,q)},v={x:(r.x-p.x)/dist(p,r),y:(r.y-p.y)/dist(p,r)};
+    el("path",{d:`M${p.x+s*u.x},${p.y+s*u.y} L${p.x+s*u.x+s*v.x},${p.y+s*u.y+s*v.y} L${p.x+s*v.x},${p.y+s*v.y}`,fill:"none",stroke:red,"stroke-width":2},svg)}
+  // codage des côtés égaux
+  (opts.ticks||[]).forEach(([i,j,n])=>{const p=P[i],q=P[j],m={x:(p.x+q.x)/2,y:(p.y+q.y)/2},L=dist(p,q),u={x:(q.x-p.x)/L,y:(q.y-p.y)/L},nn={x:-u.y,y:u.x};
+    for(let k=0;k<n;k++){const o=(k-(n-1)/2)*5,c={x:m.x+o*u.x,y:m.y+o*u.y};
+      el("line",{x1:c.x-7*nn.x+2*u.x,y1:c.y-7*nn.y+2*u.y,x2:c.x+7*nn.x-2*u.x,y2:c.y+7*nn.y-2*u.y,stroke:rose,"stroke-width":2.2},svg)}});
+  (opts.sideLabels||[]).forEach(([i,j,t])=>{const p=P[i],q=P[j],m={x:(p.x+q.x)/2,y:(p.y+q.y)/2},L=dist(p,q);let nn={x:-(q.y-p.y)/L,y:(q.x-p.x)/L};
+    if((m.x-G.x)*nn.x+(m.y-G.y)*nn.y<0)nn={x:-nn.x,y:-nn.y};
+    el("text",{x:m.x+18*nn.x,y:m.y+18*nn.y+5,"text-anchor":"middle","font-size":13,fill:ink},svg,t)});
+  // noms des sommets
+  P.forEach((p,i)=>{const L=Math.max(1,dist(p,G)),d={x:(p.x-G.x)/L,y:(p.y-G.y)/L};
+    el("text",{x:p.x+16*d.x,y:p.y+16*d.y+6,"text-anchor":"middle","font-size":17,"font-style":"italic","font-weight":700,fill:ink},svg,opts.names[i])});
+}
+// triangle à partir des angles (en degrés) aux sommets 0,1,2 ; sommet 0 en haut, base [1,2]
+function fromAngles(a0,a1,a2,W,H,pad){
+  const b=a1/DEG,c=a2/DEG,L=1;
+  const BA=L*Math.sin(c)/Math.sin(a0/DEG);
+  const P=[{x:BA*Math.cos(b),y:-BA*Math.sin(b)},{x:0,y:0},{x:L,y:0}];
+  const xs=P.map(p=>p.x),ys=P.map(p=>p.y),mnx=Math.min(...xs),mxx=Math.max(...xs),mny=Math.min(...ys),mxy=Math.max(...ys);
+  const k=Math.min((W-2*pad)/(mxx-mnx),(H-2*pad)/(mxy-mny));
+  const ox=(W-k*(mxx-mnx))/2,oy=(H-k*(mxy-mny))/2;
+  return P.map(p=>({x:ox+k*(p.x-mnx),y:oy+k*(p.y-mny)}));
+}
+// répartition entière des angles qui garde une somme de 180
+function roundAngles(A){const f=A.map(Math.floor);let r=180-f.reduce((s,x)=>s+x,0);
+  const idx=[0,1,2].sort((i,j)=>(A[j]-f[j])-(A[i]-f[i]));for(let k=0;k<r;k++)f[idx[k]]++;return f}
+
+/* ========================= 1. EXPLORER ========================= */
+const S=40, W=520, H=360; // 1 cm = 40 px
+const board=$("board");
+let V=[{x:3,y:1.5},{x:1.5,y:7.5},{x:10.5,y:7.5}]; // en cm (y vers le bas)
+const NAMES=["A","B","C"];
+const PRESETS={quel:[[3,1.5],[1.5,7.5],[10.5,7.5]],iso:[[6.5,1.2],[3.5,7.6],[9.5,7.6]],
+  equi:[[6.5,1.4],[3,7.462],[10,7.462]],rect:[[3,2],[3,7.5],[10.5,7.5]],recti:[[3,1],[3,7.5],[9.5,7.5]]};
+function classify(P){
+  const a=dist(P[1],P[2]),b=dist(P[0],P[2]),c=dist(P[0],P[1]); // côtés opposés à A,B,C
+  const ang=[angleAt(P[0],P[1],P[2]),angleAt(P[1],P[2],P[0]),angleAt(P[2],P[0],P[1])];
+  const eq=(x,y)=>Math.abs(x-y)<0.05; // au millimètre près (moins d'un demi-millimètre d'écart)
+  const right=ang.findIndex(t=>Math.abs(t-90)<0.5);
+  const isoAt=[eq(b,c),eq(a,c),eq(a,b)]; // isocèle en A si AB=AC
+  const equi=isoAt[0]&&isoAt[1]&&isoAt[2];
+  const iso=isoAt.findIndex(x=>x);
+  return {a,b,c,ang,right,isoAt,equi,iso};
+}
+const sideName=[["B","C"],["A","C"],["A","B"]];
+function drawBoard(){
+  board.innerHTML="";
+  const gc=css("--grid"),gc2=css("--grid2");
+  for(let x=0;x<=W;x+=S/2)el("line",{x1:x,y1:0,x2:x,y2:H,stroke:(x%S)?gc2:gc,"stroke-width":1},board);
+  for(let y=0;y<=H;y+=S/2)el("line",{x1:0,y1:y,x2:W,y2:y,stroke:(y%S)?gc2:gc,"stroke-width":1},board);
+  const P=V.map(v=>({x:v.x*S,y:v.y*S}));
+  const k=classify(V);
+  const ticks=[];
+  if(k.equi)ticks.push([0,1,1],[1,2,1],[0,2,1]);
+  else if(k.iso>=0){const i=k.iso;ticks.push([i,(i+1)%3,1],[i,(i+2)%3,1])}
+  const R=roundAngles(k.ang);
+  const arcs=[0,1,2].filter(i=>i!==k.right).map(i=>({v:i,label:R[i]+"°",r:22,lr:18}));
+  const L=[k.a,k.b,k.c].map(x=>fr(x)+" cm");
+  drawCoded(board,P,{names:NAMES,ticks,right:k.right>=0?k.right:null,arcs,sideLabels:[[1,2,L[0]],[0,2,L[1]],[0,1,L[2]]]});
+  P.forEach((p,i)=>{
+    const g=el("g",{class:"vx",tabindex:0,role:"slider","aria-label":"Sommet "+NAMES[i]+" : flèches pour déplacer","data-i":i},board);
+    el("circle",{cx:p.x,cy:p.y,r:16,fill:"transparent"},g);
+    el("circle",{cx:p.x,cy:p.y,r:7,fill:css("--yellow"),stroke:css("--ink"),"stroke-width":1.5},g);
+  });
+  report(k,R);
+  if(focusIdx!=null){const g=board.querySelector(`.vx[data-i="${focusIdx}"]`);if(g)g.focus({preventScroll:true})}
+}
+function report(k,R){
+  const N=NAMES;let nat,why=[];
+  if(k.equi){nat="équilatéral";why.push("AB = BC = CA : les trois côtés ont la même longueur.","Ses trois angles mesurent 60°.","Il est aussi isocèle (en chacun de ses sommets).")}
+  else if(k.right>=0&&k.iso>=0){nat="rectangle isocèle en "+N[k.right];const o=[0,1,2].filter(i=>i!==k.right);
+    why.push(`L'angle en ${N[k.right]} est droit et ${N[k.right]}${N[o[0]]} = ${N[k.right]}${N[o[1]]}.`,`Ses angles aigus mesurent 45° chacun (90° ÷ 2).`,`L'hypoténuse est [${N[o[0]]}${N[o[1]]}], le plus grand côté.`)}
+  else if(k.right>=0){nat="rectangle en "+N[k.right];const o=[0,1,2].filter(i=>i!==k.right);
+    why.push(`L'angle en ${N[k.right]} est droit.`,`Les angles aigus : ${R[o[0]]}° + ${R[o[1]]}° = 90°.`,`L'hypoténuse est [${N[o[0]]}${N[o[1]]}], le plus grand côté.`)}
+  else if(k.iso>=0){const i=k.iso,o=[0,1,2].filter(j=>j!==i);nat="isocèle en "+N[i];
+    why.push(`${N[i]}${N[o[0]]} = ${N[i]}${N[o[1]]} : ${N[i]} est le sommet principal, [${N[o[0]]}${N[o[1]]}] est la base.`,`Les angles à la base mesurent tous les deux ${R[o[0]]}°.`)}
+  else {nat="quelconque";why.push("Pas de côtés égaux, pas d'angle droit.")}
+  const obt=k.ang.findIndex(t=>t>90.5);
+  if(obt>=0)why.push(`L'angle en ${N[obt]} est obtus : les deux autres sont forcément aigus.`);
+  $("nature").textContent="Triangle "+nat;
+  $("mesures").innerHTML=`<tr><td>AB</td><td>${fr(k.c)} cm</td><td>angle en A</td><td>${R[0]}°</td></tr>
+   <tr><td>BC</td><td>${fr(k.a)} cm</td><td>angle en B</td><td>${R[1]}°</td></tr>
+   <tr><td>CA</td><td>${fr(k.b)} cm</td><td>angle en C</td><td>${R[2]}°</td></tr>`;
+  $("somme").textContent=`Somme des angles : ${R[0]}° + ${R[1]}° + ${R[2]}° = 180°`;
+  $("why").innerHTML=why.map(t=>"<li>"+t+"</li>").join("");
+  if(userMove)checkDefis(k);else if(!$("defis").children.length)renderDefis();
+  userMove=false;
+}
+let drag=null,focusIdx=null,userMove=false;
+function svgPt(e){const r=board.getBoundingClientRect();return{x:(e.clientX-r.left)*W/r.width/S,y:(e.clientY-r.top)*H/r.height/S}}
+const clampV=p=>({x:Math.min(12.7,Math.max(.3,Math.round(p.x*10)/10)),y:Math.min(8.7,Math.max(.3,Math.round(p.y*10)/10))});
+function ok(nv){return Math.abs((nv[1].x-nv[0].x)*(nv[2].y-nv[0].y)-(nv[2].x-nv[0].x)*(nv[1].y-nv[0].y))>0.5}// pas aplati
+board.addEventListener("pointerdown",e=>{const g=e.target.closest(".vx");if(!g)return;drag=+g.dataset.i;focusIdx=drag;board.setPointerCapture(e.pointerId);e.preventDefault()});
+board.addEventListener("pointermove",e=>{if(drag==null)return;const nv=V.slice();nv[drag]=clampV(svgPt(e));if(ok(nv)){V=nv;userMove=true;drawBoard()}});
+const endDrag=()=>{drag=null};board.addEventListener("pointerup",endDrag);board.addEventListener("pointercancel",endDrag);
+board.addEventListener("keydown",e=>{const g=e.target.closest&&e.target.closest(".vx");if(!g)return;const i=+g.dataset.i,st=e.shiftKey?1:.1;
+  const d={ArrowLeft:[-st,0],ArrowRight:[st,0],ArrowUp:[0,-st],ArrowDown:[0,st]}[e.key];if(!d)return;e.preventDefault();
+  const nv=V.slice();nv[i]=clampV({x:V[i].x+d[0],y:V[i].y+d[1]});if(ok(nv)){V=nv;focusIdx=i;userMove=true;drawBoard()}});
+board.addEventListener("focusin",e=>{const g=e.target.closest(".vx");if(g)focusIdx=+g.dataset.i});
+document.querySelectorAll("[data-preset]").forEach(b=>b.addEventListener("click",()=>{V=PRESETS[b.dataset.preset].map(([x,y])=>({x,y}));focusIdx=null;drawBoard()}));
+const DEFIS=[
+  {t:"Un triangle isocèle en A qui n'est pas équilatéral.",f:k=>k.isoAt[0]&&!k.equi},
+  {t:"Un triangle équilatéral (à 1 mm près).",f:k=>k.equi},
+  {t:"Un triangle rectangle en B.",f:k=>k.right===1},
+  {t:"Un triangle rectangle isocèle.",f:k=>k.right>=0&&k.iso>=0},
+  {t:"Un triangle isocèle qui a un angle obtus.",f:k=>k.iso>=0&&k.ang.some(t=>t>90.5)},
+  {t:"Un triangle isocèle dont les angles à la base mesurent 30°.",f:k=>k.iso>=0&&!k.equi&&(()=>{const o=[0,1,2].filter(j=>j!==k.iso);return Math.abs(k.ang[o[0]]-30)<0.5&&Math.abs(k.ang[o[1]]-30)<0.5})()},
+];
+const doneDefis=new Set();
+function renderDefis(){$("defis").innerHTML=DEFIS.map((d,i)=>`<li class="${doneDefis.has(i)?"done":""}"><span class="ck">${doneDefis.has(i)?"✓":i+1}</span><span>${d.t}${doneDefis.has(i)?" <b>Réussi !</b>":""}</span></li>`).join("")}
+function checkDefis(k){let ch=false;DEFIS.forEach((d,i)=>{if(!doneDefis.has(i)&&d.f(k)){doneDefis.add(i);ch=true}});if(ch||!$("defis").children.length)renderDefis()}
+
+/* ========================= 2. RECONNAÎTRE ========================= */
+const LETTERS=["ABC","DEF","RST","IJK","MNP","EFG","KLM","XYZ","UVW","GHI"];
+const NAT=["quelconque","isocèle","équilatéral","rectangle","rectangle isocèle"];
+let sc2={ok:0,n:0},cur2=null;
+function gen2(){
+  const L=pick(LETTERS).split(""),A=L[0],B=L[1],C=L[2];
+  const t=pick(["equiA","equiS","rectiA","rectiS","rectA","rectH","isoA","isoH","isoS","quel","quel","isoObt"]);
+  let q,ans,angles,why,v,codes={};
+  const g=(x,y)=>`${x}${y}`;
+  switch(t){
+    case "equiA":angles=[60,60,60];q=`${A}${B}${C} est un triangle tel que ${ang3(B,A,C)} = 60° et ${ang3(A,B,C)} = 60°.`;ans=2;
+      why=[`${ang3(A,C,B)} = 180° − (60° + 60°) = 60°.`,`Les trois angles mesurent 60° : le triangle est équilatéral.`];break;
+    case "equiS":{const l=rnd(3,9);angles=[60,60,60];q=`${A}${B}${C} est un triangle tel que ${g(A,B)} = ${g(B,C)} = ${g(C,A)} = ${l} cm.`;ans=2;
+      why=[`Les trois côtés ont la même longueur : le triangle est équilatéral.`];codes.sides=true;break}
+    case "rectiA":angles=[90,45,45];q=`${A}${B}${C} est un triangle tel que ${ang3(B,A,C)} = 90° et ${ang3(A,B,C)} = 45°.`;ans=4;
+      why=[`${ang3(A,C,B)} = 180° − (90° + 45°) = 45°.`,`Il a un angle droit en ${A} et deux angles de même mesure : il est rectangle isocèle en ${A}.`];break;
+    case "rectiS":{const l=rnd(3,8);angles=[90,45,45];q=`${A}${B}${C} est rectangle en ${A} et ${g(A,B)} = ${g(A,C)} = ${l} cm.`;ans=4;
+      why=[`Il est rectangle en ${A} et isocèle en ${A} (${g(A,B)} = ${g(A,C)}) : il est rectangle isocèle en ${A}.`];codes.sides=true;break}
+    case "rectA":{const x=pick([20,25,30,35,40,50,55,60,65,70]);angles=[90,x,90-x];q=`${A}${B}${C} est un triangle tel que ${ang3(B,A,C)} = 90° et ${ang3(A,B,C)} = ${x}°.`;ans=3;
+      why=[`${ang3(A,C,B)} = 180° − (90° + ${x}°) = ${90-x}°.`,`Il a un angle droit en ${A} et ses angles aigus (${x}° et ${90-x}°) sont différents : il est rectangle en ${A}, mais pas isocèle.`];break}
+    case "rectH":{const x=pick([25,30,35,40,50,55,60,65]);angles=[90,x,90-x];q=`${A}${B}${C} est un triangle tel que ${ang3(A,B,C)} = ${x}° et ${ang3(A,C,B)} = ${90-x}°.`;ans=3;
+      why=[`${ang3(B,A,C)} = 180° − (${x}° + ${90-x}°) = 180° − 90° = 90°.`,`L'angle en ${A} est droit : le triangle est rectangle en ${A} (et pas isocèle car ${x}° ≠ ${90-x}°).`];break}
+    case "isoA":{const b=pick([30,35,40,50,55,65,70,75,80]);angles=[180-2*b,b,b];q=`${A}${B}${C} est un triangle tel que ${ang3(A,B,C)} = ${b}° et ${ang3(A,C,B)} = ${b}°.`;ans=1;
+      why=[`Les angles en ${B} et en ${C} ont la même mesure : le triangle est isocèle en ${A}.`,`${ang3(B,A,C)} = 180° − 2 × ${b}° = ${180-2*b}° : ce n'est ni 60° ni 90°, donc il n'est ni équilatéral, ni rectangle.`];break}
+    case "isoH":{const a=pick([20,30,40,50,70,80,100,110,120]),b=(180-a)/2;angles=[a,b,b];q=`${A}${B}${C} est un triangle tel que ${ang3(B,A,C)} = ${a}° et ${ang3(A,B,C)} = ${b}°.`;ans=1;
+      why=[`${ang3(A,C,B)} = 180° − (${a}° + ${b}°) = ${b}°.`,`Les angles en ${B} et en ${C} ont la même mesure : le triangle est isocèle en ${A}.`];break}
+    case "isoS":{const l=rnd(4,8),m=pick([3,5,6,7,9].filter(x=>x!==l&&x<2*l));const b=Math.acos(m/2/l)*DEG;angles=[180-2*b,b,b];
+      q=`${A}${B}${C} est un triangle tel que ${g(A,B)} = ${l} cm, ${g(A,C)} = ${l} cm et ${g(B,C)} = ${m} cm.`;ans=1;
+      why=[`${g(A,B)} = ${g(A,C)} : le triangle est isocèle en ${A}.`,`${g(B,C)} est différent : il n'est pas équilatéral.`];codes.sides=true;break}
+    case "isoObt":{const a=pick([100,110,120,130,140]),b=(180-a)/2;angles=[a,b,b];q=`${A}${B}${C} est un triangle tel que ${ang3(A,B,C)} = ${b}° et ${ang3(B,A,C)} = ${a}°.`;ans=1;
+      why=[`${ang3(A,C,B)} = 180° − (${b}° + ${a}°) = ${b}°.`,`${ang3(A,B,C)} = ${ang3(A,C,B)} : le triangle est isocèle en ${A} (il a un angle obtus en ${A}).`];break}
+    default:{let x,y,z;do{x=rnd(4,15)*5;y=rnd(4,15)*5;z=180-x-y}while(z<20||x===y||y===z||x===z||[x,y,z].includes(90)||[x,y,z].includes(60));
+      angles=[z,x,y];q=`${A}${B}${C} est un triangle tel que ${ang3(A,B,C)} = ${x}° et ${ang3(A,C,B)} = ${y}°.`;ans=0;
+      why=[`${ang3(B,A,C)} = 180° − (${x}° + ${y}°) = ${z}°.`,`Les trois angles (${z}°, ${x}° et ${y}°) sont différents et aucun n'est droit : le triangle est quelconque.`]}
+  }
+  cur2={q,ans,angles,why,names:[A,B,C],codes,done:false};
+  $("q2").innerHTML=q;$("fb2").className="fb";$("fb2").innerHTML="";
+  $("ch2").innerHTML=NAT.map((n,i)=>`<button class="btn" data-k="${i}">${n[0].toUpperCase()+n.slice(1)}</button>`).join("");
+  $("fig2").innerHTML="";$("fig2cap").textContent="La figure codée apparaît avec la correction.";
+}
+$("ch2").addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(!b||!cur2||cur2.done)return;const k=+b.dataset.k,c=cur2;
+  const fb=$("fb2");const right=k===c.ans;
+  const partial=(c.ans===2&&k===1)||(c.ans===4&&(k===1||k===3));
+  if(partial){fb.className="fb mid";fb.innerHTML=`<p><b>C'est vrai, mais il y a plus précis !</b> Cherche encore.</p>`;b.classList.add("badc");b.disabled=true;return}
+  c.done=true;sc2.n++;if(right)sc2.ok++;$("sc2").textContent=`${sc2.ok} / ${sc2.n}`;
+  [...$("ch2").children].forEach((x,i)=>{x.disabled=true;if(i===c.ans)x.classList.add("good");else if(i===k)x.classList.add("badc")});
+  fb.className="fb "+(right?"ok":"ko");
+  fb.innerHTML=`<p><b>${right?"Bravo !":"Pas tout à fait."}</b> Le triangle est <b>${NAT[c.ans]}</b>.</p>`+c.why.map(t=>`<p class="corr">${t}</p>`).join("");
+  drawFig2(c);
+});
+function drawFig2(c){const svg=$("fig2");svg.innerHTML="";const P=fromAngles(...c.angles,360,260,46);const a=c.angles;const N=c.names;
+  const eqi=(x,y)=>Math.abs(x-y)<1e-6;let ticks=[],right=null;
+  if(eqi(a[0],60)&&eqi(a[1],60))ticks=[[0,1,1],[1,2,1],[0,2,1]];else if(eqi(a[1],a[2]))ticks=[[0,1,1],[0,2,1]];
+  if(eqi(a[0],90))right=0;
+  const arcs=[0,1,2].filter(i=>i!==right).map(i=>({v:i,label:Number.isInteger(a[i])?a[i]+"°":null,r:22,lr:17}));
+  drawCoded(svg,P,{names:N,ticks,right,arcs});$("fig2cap").textContent="Figure codée (à main levée).";}
+$("next2").addEventListener("click",gen2);
+
+/* ========================= 3. CALCULER ========================= */
+let sc3={ok:0,n:0},cur3=null;
+function gen3(){
+  const L=pick(LETTERS).split(""),A=L[0],B=L[1],C=L[2];
+  const t=pick(["deux","deux","isoHaut","isoBase","rect","rect","equi","rectiso","isoBaseT"]);
+  let q,ans,angles,known,target,steps,label,ticks=[],right=null;
+  switch(t){
+    case "deux":{let x,y;do{x=rnd(5,16)*5+pick([0,2,3]);y=rnd(5,16)*5+pick([0,1,4])}while(x+y>160||x+y<40);
+      angles=[180-x-y,x,y];target=0;known=[1,2];
+      q=`${A}${B}${C} est un triangle tel que ${ang3(A,B,C)} = ${x}° et ${ang3(A,C,B)} = ${y}°. Calcule ${ang3(B,A,C)}.`;
+      ans=180-x-y;steps=[`Dans le triangle ${A}${B}${C}, la somme des angles est égale à 180°.`,`Donc ${ang3(B,A,C)} = 180° − (${x}° + ${y}°) = 180° − ${x+y}° = ${ans}°.`];break}
+    case "isoHaut":{const a=2*rnd(10,65);const b=(180-a)/2;angles=[a,b,b];target=1;known=[0];ticks=[[0,1,1],[0,2,1]];
+      q=`${A}${B}${C} est isocèle en ${A} et ${ang3(B,A,C)} = ${a}°. Calcule ${ang3(A,B,C)}.`;ans=b;
+      steps=[`La somme des angles est 180° : ${ang3(A,B,C)} + ${ang3(A,C,B)} = 180° − ${a}° = ${180-a}°.`,`${A}${B}${C} est isocèle en ${A}, donc ses angles à la base ont la même mesure :`,`${ang3(A,B,C)} = ${180-a}° ÷ 2 = ${b}°.`];break}
+    case "isoBase":{const b=rnd(16,85);angles=[180-2*b,b,b];target=0;known=[1];ticks=[[0,1,1],[0,2,1]];
+      q=`${A}${B}${C} est isocèle en ${A} et ${ang3(A,B,C)} = ${b}°. Calcule ${ang3(B,A,C)}.`;ans=180-2*b;
+      steps=[`${A}${B}${C} est isocèle en ${A}, donc ${ang3(A,C,B)} = ${ang3(A,B,C)} = ${b}°.`,`${ang3(B,A,C)} = 180° − (${b}° + ${b}°) = 180° − ${2*b}° = ${ans}°.`];break}
+    case "isoBaseT":{const b=rnd(16,85);angles=[180-2*b,b,b];target=2;known=[1];ticks=[[0,1,1],[0,2,1]];
+      q=`${A}${B}${C} est isocèle en ${A} et ${ang3(A,B,C)} = ${b}°. Calcule ${ang3(A,C,B)}.`;ans=b;
+      steps=[`${A}${B}${C} est isocèle en ${A} : ses angles à la base ${ang3(A,B,C)} et ${ang3(A,C,B)} ont la même mesure.`,`Donc ${ang3(A,C,B)} = ${b}° (pas besoin de calcul !).`];break}
+    case "rect":{const x=rnd(12,78);if(x===45)return gen3();angles=[90,x,90-x];target=2;known=[1];right=0;
+      q=`${A}${B}${C} est rectangle en ${A} et ${ang3(A,B,C)} = ${x}°. Calcule ${ang3(A,C,B)}.`;ans=90-x;
+      steps=[`${A}${B}${C} est rectangle en ${A}, donc la somme de ses angles aigus est 90° : ${ang3(A,B,C)} + ${ang3(A,C,B)} = 90°.`,`${ang3(A,C,B)} = 90° − ${x}° = ${ans}°.`,`(Ou : 180° − (90° + ${x}°) = ${ans}°.)`];break}
+    case "rectiso":{angles=[90,45,45];target=1;known=[];right=0;ticks=[[0,1,1],[0,2,1]];
+      q=`${A}${B}${C} est rectangle isocèle en ${A}. Calcule ${ang3(A,B,C)}.`;ans=45;
+      steps=[`${A}${B}${C} est rectangle en ${A} : ${ang3(A,B,C)} + ${ang3(A,C,B)} = 90°.`,`Il est isocèle en ${A} : ${ang3(A,B,C)} = ${ang3(A,C,B)}.`,`Donc ${ang3(A,B,C)} = 90° ÷ 2 = 45°.`];break}
+    default:{angles=[60,60,60];target=pick([0,1,2]);known=[];ticks=[[0,1,1],[1,2,1],[0,2,1]];
+      const nm=[ang3(B,A,C),ang3(A,B,C),ang3(A,C,B)];
+      q=`${A}${B}${C} est un triangle équilatéral. Calcule ${nm[target]}.`;ans=60;
+      steps=[`Un triangle équilatéral a ses trois angles de même mesure.`,`${nm[target]} = 180° ÷ 3 = 60°.`]}
+  }
+  cur3={ans,steps,done:false,tries:0};
+  $("q3").innerHTML=q;$("lab3").textContent="Réponse :";$("ans3").value="";$("fb3").className="fb";$("fb3").innerHTML="";
+  $("ok3").disabled=false;
+  // figure à main levée : légère déformation des angles affichés
+  const svg=$("fig3");svg.innerHTML="";
+  const P=fromAngles(...angles,360,260,46);
+  // tremblement « main levée »
+  const J=P.map(p=>({x:p.x+(Math.random()-.5)*6,y:p.y+(Math.random()-.5)*6}));
+  const arcs=[0,1,2].filter(i=>i!==right&&(known.includes(i)||i===target)).map(i=>({v:i,label:i===target?"?":angles[i]+"°",r:22,lr:17,col:i===target?css("--violet"):undefined}));
+  drawCoded(svg,J,{names:[A,B,C],ticks,right,arcs});
+}
+function check3(){if(!cur3||cur3.done)return;const v=$("ans3").value.trim().replace(",",".").replace("°","");const fb=$("fb3");
+  if(v===""||isNaN(+v)){fb.className="fb mid";fb.innerHTML="<p>Écris un nombre (la mesure en degrés).</p>";return}
+  cur3.tries++;
+  if(Math.abs(+v-cur3.ans)<1e-9){cur3.done=true;sc3.n++;sc3.ok++;$("sc3").textContent=`${sc3.ok} / ${sc3.n}`;
+    fb.className="fb ok";fb.innerHTML=`<p><b>Bravo, c'est ${cur3.ans}° !</b></p>`+cur3.steps.map(s=>`<p class="corr">${s}</p>`).join("");$("ok3").disabled=true}
+  else{fb.className="fb ko";fb.innerHTML=`<p><b>Ce n'est pas ${v}°.</b> ${cur3.tries<2?"Relis les rappels et essaie encore.":"Regarde la correction."}</p>`}}
+$("ok3").addEventListener("click",check3);
+$("ans3").addEventListener("keydown",e=>{if(e.key==="Enter")check3()});
+$("sol3").addEventListener("click",()=>{if(!cur3)return;if(!cur3.done){cur3.done=true;sc3.n++;$("sc3").textContent=`${sc3.ok} / ${sc3.n}`}
+  $("ok3").disabled=true;$("fb3").className="fb mid";$("fb3").innerHTML=`<p><b>Réponse : ${cur3.ans}°</b></p>`+cur3.steps.map(s=>`<p class="corr">${s}</p>`).join("")});
+$("next3").addEventListener("click",()=>{gen3();$("ans3").focus()});
+
+/* ---------- onglets ---------- */
+const tabs=[...document.querySelectorAll(".tab")];
+tabs.forEach(t=>t.addEventListener("click",()=>{tabs.forEach(x=>{x.setAttribute("aria-selected",x===t);$(x.getAttribute("aria-controls")).classList.toggle("on",x===t)});
+  if(t.id==="t1")drawBoard()}));
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",()=>{drawBoard();if(cur2&&cur2.done)drawFig2(cur2)});
+drawBoard();gen2();gen3();
+</script>
+</body>
+</html>

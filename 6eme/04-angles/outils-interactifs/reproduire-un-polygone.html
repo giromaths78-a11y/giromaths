@@ -1,0 +1,444 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Reproduire un polygone</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bitter:wght@600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Projection au tableau : barre d'outils en haut, onglets Énoncé / Corrigé animé / Programme */
+:root{
+  --bg:#f6f8fb; --paper:#ffffff; --grid:#e3eaf3; --ink:#1b2433; --muted:#5b6676;
+  --blue:#1f56a8; --blue-soft:#e3ecf9; --red:#c0362c; --green:#1d7a46; --orange:#b45f06; --purple:#7a3fb0; --teal:#0f7f86; --pencil:#8a94a6;
+  --tool:#c9d6ea; --tool-edge:#5d7395; --line:#c9d3e0; --hl:#fff4cf;
+  --f-display:"Bitter",Georgia,serif; --f-body:"Atkinson Hyperlegible",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121821; --paper:#1a2230; --grid:#243042; --ink:#e7edf5; --muted:#9aa6b8;
+  --blue:#7fb0ff; --blue-soft:#1f2f4a; --red:#ff7f73; --green:#6fd39a; --orange:#f0a95a; --purple:#c39bff; --teal:#5fd0d6; --pencil:#7c889c;
+  --tool:#2d3c55; --tool-edge:#8fa6c9; --line:#33415a; --hl:#3a3420; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121821; --paper:#1a2230; --grid:#243042; --ink:#e7edf5; --muted:#9aa6b8;
+  --blue:#7fb0ff; --blue-soft:#1f2f4a; --red:#ff7f73; --green:#6fd39a; --orange:#f0a95a; --purple:#c39bff; --teal:#5fd0d6; --pencil:#7c889c;
+  --tool:#2d3c55; --tool-edge:#8fa6c9; --line:#33415a; --hl:#3a3420; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5}
+.wrap{max-width:1240px;margin:0 auto;padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
+header{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;justify-content:space-between}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(1.5rem,3.6vw,2.2rem);margin:0;text-wrap:balance}
+.tag{font-size:.8rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+button,select{font:inherit}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.chk input{width:18px;height:18px;accent-color:var(--blue)}
+.bar label{display:flex;gap:6px;align-items:center;color:var(--muted);font-size:.95rem}
+select{padding:6px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink)}
+nav{display:flex;flex-wrap:wrap;gap:8px}
+nav button{border:1.5px solid var(--line);background:var(--paper);color:var(--ink);padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:700}
+nav button[aria-selected="true"]{background:var(--blue);border-color:var(--blue);color:var(--paper)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.btn{font-weight:700;border:2px solid var(--blue);background:var(--paper);color:var(--blue);padding:8px 14px;border-radius:8px;cursor:pointer}
+.btn.primary{background:var(--blue);color:var(--paper)}
+.btn.big{font-size:1.05rem}
+.btn:disabled{opacity:.4;cursor:default}
+.stage{background:var(--paper);border:1.5px solid var(--line);border-radius:12px;overflow:hidden}
+.consigne{padding:14px 18px;border-bottom:1.5px solid var(--line);font-size:1.2rem}
+.ans{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:10px}
+.ansTxt{display:inline-block;margin-top:8px;font-weight:700;color:var(--orange)}.ansTxt small{color:var(--muted);font-weight:400}
+.consigne b{color:var(--blue)}
+.caption{display:flex;gap:12px;align-items:baseline;padding:12px 16px;border-bottom:1.5px solid var(--line);min-height:3.4em}
+.caption .n{font-family:var(--f-mono);color:var(--blue);white-space:nowrap}
+.caption .t{font-size:1.2rem;font-weight:700}
+svg{display:block;width:100%;height:auto}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+.split{display:grid;grid-template-columns:minmax(0,1fr);gap:0}
+#svg{max-height:70vh}
+body.noprog .split .prog,body.noprog [data-v="prog"]{display:none}
+@media (min-width:980px){body:not(.noprog) .split{grid-template-columns:minmax(0,1fr) 330px}.split .prog{border-left:1.5px solid var(--line);border-top:0}}
+.prog{border-top:1.5px solid var(--line);padding:14px 16px}
+.prog h2{font-family:var(--f-display);font-size:1.15rem;margin:0 0 8px}
+ol.pc{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:6px}
+ol.pc li{padding:3px 6px;border-radius:6px;transition:background .3s,opacity .3s}
+ol.pc li.cur{background:var(--hl);font-weight:700}
+ol.pc li.todo{opacity:.25}
+.controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.controls label{display:flex;gap:6px;align-items:center;color:var(--muted)}
+input[type=range]{accent-color:var(--blue)}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.dot.on{background:var(--blue)}
+.big-prog{padding:18px 22px;font-size:1.3rem}
+.big-prog ol{padding-left:1.5em;display:flex;flex-direction:column;gap:10px;margin:0}
+.big-prog .note{color:var(--muted);font-size:1rem;margin-top:14px}
+.data{display:flex;flex-wrap:wrap;gap:8px 18px;font-family:var(--f-mono);font-size:1rem;color:var(--muted)}
+[hidden]{display:none!important}
+.ang{position:relative;display:inline-block}
+.ang::before{content:"";position:absolute;left:8%;right:8%;top:-.28em;height:.4em;background:currentColor;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpolyline points='2,18 50,3 98,18' fill='none' stroke='black' stroke-width='5'/%3E%3C/svg%3E") 0 0/100% 100%;
+  mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 20' preserveAspectRatio='none'%3E%3Cpolyline points='2,18 50,3 98,18' fill='none' stroke='black' stroke-width='5'/%3E%3C/svg%3E") 0 0/100% 100%}
+</style>
+
+<div class="wrap">
+  <header>
+    <div><span class="tag">6e · Angles et constructions</span><h1 id="titre">Reproduire un quadrilatère</h1></div>
+    <div class="bar">
+      <label for="mode">Longueurs
+        <select id="mode">
+          <option value="entier">entières, entre 4 et 8 cm</option>
+          <option value="demi">au demi-cm, entre 4 et 8 cm</option>
+        </select></label>
+      <label for="cotes">Figure
+        <select id="cotes">
+          <option value="4">quadrilatère (4 côtés)</option>
+          <option value="5">pentagone (5 côtés)</option>
+        </select></label>
+      <label for="semi" class="chk"><input type="checkbox" id="semi"> demi-cercles sur les côtés</label>
+      <label for="showprog" class="chk"><input type="checkbox" id="showprog" checked> afficher le programme</label>
+      <label for="showans" class="chk"><input type="checkbox" id="showans"> afficher les angles manquants</label>
+      <button class="btn primary big" id="new">🎲 Nouvelle figure</button>
+      <button class="btn" id="fs" title="Plein écran">⛶ Plein écran</button>
+    </div>
+  </header>
+
+  <nav role="tablist" id="tabs">
+    <button role="tab" data-v="enonce">1. Figure à reproduire</button>
+    <button role="tab" data-v="anim">2. Corrigé animé</button>
+    <button role="tab" data-v="prog">3. Programme de construction</button>
+  </nav>
+
+  <!-- Vue 1 : énoncé -->
+  <section class="stage" id="v-enonce">
+    <div class="consigne" id="consigne"></div>
+    <svg id="fig" viewBox="0 0 900 470" role="img" aria-label="Figure codée à reproduire"></svg>
+  </section>
+
+  <!-- Vue 2 : animation -->
+  <section id="v-anim" hidden>
+    <div class="stage split">
+      <div>
+        <div class="caption" aria-live="polite"><span class="n" id="num"></span><span class="t" id="cap"></span></div>
+        <svg id="svg" viewBox="0 0 860 480" role="img" aria-label="Animation de la construction"></svg>
+      </div>
+      <div class="prog"><h2>Programme de construction</h2><ol class="pc" id="pcSide"></ol></div>
+    </div>
+    <div class="controls" style="margin-top:14px">
+      <button class="btn" id="prev">◀ Étape précédente</button>
+      <button class="btn primary" id="play">▶ Lecture</button>
+      <button class="btn" id="next">Étape suivante ▶</button>
+      <button class="btn" id="reset">↺ Recommencer</button>
+      <label for="speed">Vitesse <input type="range" id="speed" min="0.5" max="2" step="0.25" value="1"></label>
+      <div class="dots" id="dots"></div>
+    </div>
+  </section>
+
+  <!-- Vue 3 : programme -->
+  <section class="stage" id="v-prog" hidden>
+    <div class="big-prog">
+      <ol id="pcBig"></ol>
+      <p class="note">On accepte d'autres ordres corrects (par exemple tracer l'angle en B avant de placer D), à condition que chaque phrase dise quel instrument utiliser ou quelle mesure reporter.</p>
+    </div>
+  </section>
+  <div class="data" id="data"></div>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const fr=x=>(Math.round(x*10)/10).toString().replace('.',',');
+const rad=d=>d*Math.PI/180, deg=r=>r*180/Math.PI;
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const clamp=(t,a,b)=>Math.max(0,Math.min(1,(t-a)/(b-a)));
+const pol=(c,r,a)=>[c[0]+r*Math.cos(rad(a)),c[1]+r*Math.sin(rad(a))];
+const lerp=(a,b,u)=>[a[0]+(b[0]-a[0])*u,a[1]+(b[1]-a[1])*u];
+const dist=(a,b)=>Math.hypot(b[0]-a[0],b[1]-a[1]);
+const rnd=(a,b,s)=>a+s*Math.floor(Math.random()*((b-a)/s+1));
+const NAMES=[['A','B','C','D'],['E','F','G','H'],['M','N','O','P'],['R','S','T','U'],['K','L','M','N'],['I','J','K','L']];
+
+/* ===================== Génération de la figure =====================
+   Polygone V0 V1 … V(k-1) (sens direct), k = 4 (quadrilatère) ou 5 (pentagone).
+   Données : V0V1, angle en V0 + V0V(k-1), angle en V1 + V1V2, (pentagone : angle en V2 + V2V3).
+   Le dernier côté V(k-2)V(k-1) ferme la figure ; les angles en V(k-2) et V(k-1) sont à mesurer.
+   Option : demi-cercles de diamètre chaque côté, à l'extérieur. */
+let F=null;
+const angAt=(v,p,q)=>{const a1=Math.atan2(p[1]-v[1],p[0]-v[0]),a2=Math.atan2(q[1]-v[1],q[0]-v[0]);let d=Math.abs(deg(a2-a1));return d>180?360-d:d};
+const NAMES5=[['A','B','C','D','E'],['M','N','O','P','Q'],['R','S','T','U','V'],['F','G','H','K','L']];
+const crs=(o,p,q)=>(p[0]-o[0])*(q[1]-o[1])-(p[1]-o[1])*(q[0]-o[0]);
+const dirOf=(v,p)=>deg(Math.atan2(p[1]-v[1],p[0]-v[0]));
+function generate(){
+  const st=$('#mode').value==='demi'?.5:1, k=+$('#cotes').value, semi=$('#semi').checked;
+  const amin=k===4?50:80, amax=k===4?130:145;
+  for(let it=0;it<40000;it++){
+    const L=[rnd(4,8,st),rnd(4,8,st),rnd(4,8,st)];if(k===5)L.push(rnd(4,8,st));
+    if(new Set(L).size<2)continue;
+    const ang=[rnd(amin,amax,5),rnd(amin,amax,5)];if(k===5)ang.push(rnd(amin,amax,5));
+    const V=[[0,0],[L[0],0]];const d=[180-ang[1]];
+    V.push(pol(V[1],L[2],d[0]));
+    if(k===5){d.push(d[0]+180-ang[2]);V.push(pol(V[2],L[3],d[1]))}
+    V.push(pol(V[0],L[1],ang[0]));
+    const last=dist(V[k-2],V[k-1]);if(last<3)continue;
+    let convex=true;for(let i=0;i<k;i++)if(crs(V[i],V[(i+1)%k],V[(i+2)%k])<=0.3)convex=false;
+    if(!convex)continue;
+    const gL=angAt(V[k-1],V[0],V[k-2]),gP=angAt(V[k-2],V[k-3],V[k-1]);// angles à mesurer
+    const lo=k===4?45:70,hi=k===4?140:160;
+    if(gL<lo||gL>hi||gP<lo||gP>hi)continue;
+    if(Math.abs(gL-90)<6||Math.abs(gP-90)<6)continue; // pas d'angle droit « trompeur »
+    if(it<30000&&(Math.abs(gL-Math.round(gL))>.25||Math.abs(gP-Math.round(gP))>.25))continue; // proches d'un entier
+    // encombrement (avec les demi-cercles si l'option est cochée) : doit tenir sur une feuille A4
+    const ext=[...V];if(semi)for(let i=0;i<k;i++){const a=V[i],b=V[(i+1)%k],m=lerp(a,b,.5),r=dist(a,b)/2,e=dirOf(a,b);for(let t=-180;t<=0;t+=15)ext.push(pol(m,r,e+t))}
+    const xs=ext.map(p=>p[0]),ys=ext.map(p=>p[1]);
+    if(Math.max(...xs)-Math.min(...xs)>(semi?17:15)||Math.max(...ys)-Math.min(...ys)>(semi?14:10.5))continue;
+    if(F&&F.ang[0]===ang[0]&&F.ang[1]===ang[1]&&F.L[0]===L[0])continue;
+    const pool=k===4?NAMES:NAMES5;
+    F={k,semi,L,ang,d,V,last,gL,gP,n:pool[Math.floor(Math.random()*pool.length)],rot:rnd(-35,35,5),mirror:Math.random()<.5};
+    return}
+}
+const nomFig=()=>F.k===4?'quadrilatère':'pentagone';
+const ctr=V=>[V.reduce((s,p)=>s+p[0],0)/V.length,V.reduce((s,p)=>s+p[1],0)/V.length];
+
+/* ===================== Énoncé : figure codée ===================== */
+const ah=s=>`<span class="ang">${s}</span>`;
+function enonce(){
+  const W=900,H=470,svg=$('#fig');const {V,n,k}=F;
+  const th=rad(F.rot),sg=F.mirror?-1:1;
+  const T=p=>{const x=p[0]*sg,y=p[1];return [x*Math.cos(th)-y*Math.sin(th),x*Math.sin(th)+y*Math.cos(th)]};
+  const ext=[...V];if(F.semi)for(let i=0;i<k;i++){const a=V[i],b=V[(i+1)%k],m=lerp(a,b,.5),r=dist(a,b)/2,e=dirOf(a,b);for(let t=-180;t<=0;t+=10)ext.push(pol(m,r,e+t))}
+  const Qe=ext.map(T),xs=Qe.map(p=>p[0]),ys=Qe.map(p=>p[1]);
+  const K=Math.min((W-200)/(Math.max(...xs)-Math.min(...xs)),(H-110)/(Math.max(...ys)-Math.min(...ys)),48);
+  const cx=(Math.max(...xs)+Math.min(...xs))/2,cy=(Math.max(...ys)+Math.min(...ys))/2;
+  const S=p=>[W/2+(p[0]-cx)*K,H/2-(p[1]-cy)*K];
+  const q=V.map(T).map(S);const G=ctr(q);
+  let s='';
+  if(F.semi){// demi-cercles : en coordonnées écran ; le miroir inverse le sens
+    for(let i=0;i<k;i++){const a=q[i],b=q[(i+1)%k],r=Math.hypot(b[0]-a[0],b[1]-a[1])/2;
+      const sweep=F.mirror?1:0; // extérieur = à droite de V(i)→V(i+1) en sens direct
+      s+=`<path d="M${a.join(' ')} A${r} ${r} 0 0 ${sweep} ${b.join(' ')} Z" fill="var(--green)" fill-opacity=".10" stroke="var(--ink)" stroke-width="2.4"/>`;
+      const m=[(a[0]+b[0])/2,(a[1]+b[1])/2];const ux=(b[0]-a[0])/(2*r),uy=(b[1]-a[1])/(2*r);
+      // codage du milieu : deux petits traits
+      [[.25],[.75]].forEach(([f])=>{const p=[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f];s+=`<line x1="${p[0]-uy*8+ux*3}" y1="${p[1]+ux*8+uy*3}" x2="${p[0]+uy*8-ux*3}" y2="${p[1]-ux*8-uy*3}" stroke="var(--ink)" stroke-width="2"/>`});
+      s+=`<circle cx="${m[0]}" cy="${m[1]}" r="3" fill="var(--ink)"/>`}}
+  s+=`<polygon points="${q.map(p=>p.join(',')).join(' ')}" fill="var(--blue-soft)" fill-opacity="${F.semi?.6:1}" stroke="var(--ink)" stroke-width="3" stroke-linejoin="round"/>`;
+  q.forEach((p,i)=>{const dx=p[0]-G[0],dy=p[1]-G[1],m=Math.hypot(dx,dy);const o=F.semi?22:26;
+    s+=`<text x="${p[0]+dx/m*o}" y="${p[1]+dy/m*o}" font-size="30" font-style="italic" text-anchor="middle" dominant-baseline="middle">${n[i]}</text>`});
+  const ang=(p,q2)=>deg(Math.atan2(q2[1]-p[1],q2[0]-p[0]));
+  function arcMark(v,p1,p2,txt,col){const r=36;let a1=ang(v,p1),a2=ang(v,p2);let da=((a2-a1)%360+360)%360;if(da>180){[a1,a2]=[a2,a1];da=360-da}
+    const P1=[v[0]+r*Math.cos(rad(a1)),v[1]+r*Math.sin(rad(a1))],P2=[v[0]+r*Math.cos(rad(a1+da)),v[1]+r*Math.sin(rad(a1+da))];
+    const mid=a1+da/2,tx=v[0]+(r+28)*Math.cos(rad(mid)),ty=v[1]+(r+28)*Math.sin(rad(mid));
+    return `<path d="M${P1[0]} ${P1[1]} A${r} ${r} 0 0 1 ${P2[0]} ${P2[1]}" fill="none" stroke="${col}" stroke-width="3"/>
+    <text x="${tx}" y="${ty}" font-size="23" font-weight="700" text-anchor="middle" dominant-baseline="middle" style="fill:${col}">${txt}</text>`}
+  const cols=['var(--red)','var(--green)','var(--purple)'];
+  s+=arcMark(q[0],q[1],q[k-1],F.ang[0]+'°',cols[0])+arcMark(q[1],q[0],q[2],F.ang[1]+'°',cols[1]);
+  if(k===5)s+=arcMark(q[2],q[1],q[3],F.ang[2]+'°',cols[2]);
+  const sa=$('#showans').checked,ca=sa?'var(--orange)':'var(--muted)';
+  s+=arcMark(q[k-2],q[k-3],q[k-1],sa?Math.round(F.gP)+'°':'?',ca)+arcMark(q[k-1],q[k-2],q[0],sa?Math.round(F.gL)+'°':'?',ca);
+  function lenMark(p,q2,txt){const m=[(p[0]+q2[0])/2,(p[1]+q2[1])/2];let nx=-(q2[1]-p[1]),ny=q2[0]-p[0];const l=Math.hypot(nx,ny);nx/=l;ny/=l;
+    if((m[0]-G[0])*nx+(m[1]-G[1])*ny<0){nx=-nx;ny=-ny} // vers l'extérieur
+    // avec demi-cercles : longueur écrite à l'intérieur du demi-cercle
+    const o=F.semi?Math.max(16,Math.hypot(q2[0]-p[0],q2[1]-p[1])*.22):18+Math.abs(nx)*40+Math.abs(ny)*4;return `<text x="${m[0]+nx*o}" y="${m[1]+ny*o}" font-size="24" font-weight="700" text-anchor="middle" dominant-baseline="middle" style="fill:var(--blue)">${txt}</text>`}
+  s+=lenMark(q[0],q[1],fr(F.L[0])+' cm')+lenMark(q[0],q[k-1],fr(F.L[1])+' cm')+lenMark(q[1],q[2],fr(F.L[2])+' cm');
+  if(k===5)s+=lenMark(q[2],q[3],fr(F.L[3])+' cm');
+  s+=`<text x="${W-14}" y="${H-12}" font-size="15" text-anchor="end" style="fill:var(--muted)">Figure codée, pas en vraie grandeur</text>`;
+  svg.innerHTML=s;
+  $('#titre').textContent='Reproduire un '+nomFig();
+  $('#consigne').innerHTML=`Reproduis ce ${nomFig()} <b>${n.join('')}</b>${F.semi?' et ses demi-cercles':''} en vraie grandeur et écris son <b>programme de construction</b>.<br>Mesure ensuite les angles <b>${ah(n[0]+n[k-1]+n[k-2])}</b> et <b>${ah(n[k-3]+n[k-2]+n[k-1])}</b>.${sa?`<br><span class="ansTxt">${ah(n[0]+n[k-1]+n[k-2])} ≈ ${Math.round(F.gL)}° &nbsp;·&nbsp; ${ah(n[k-3]+n[k-2]+n[k-1])} ≈ ${Math.round(F.gP)}° <small>(on accepte ± 2°)</small></span>`:''}`;
+}
+
+/* ===================== Programme de construction ===================== */
+function programme(){const {n,k,L,ang}=F;const Z=n[k-1];
+  const p=[
+    `Trace un segment [${n[0]}${n[1]}] de longueur ${fr(L[0])} cm.`,
+    `Construis un angle de mesure ${ang[0]}°, de sommet ${n[0]}, dont un côté est [${n[0]}${n[1]}].`,
+    `Place le point ${Z} à ${fr(L[1])} cm du point ${n[0]}, sur l'autre côté de cet angle.`,
+    `Construis un angle de mesure ${ang[1]}°, de sommet ${n[1]}, dont un côté est [${n[1]}${n[0]}], du même côté de (${n[0]}${n[1]}) que ${Z}.`,
+    `Place le point ${n[2]} à ${fr(L[2])} cm du point ${n[1]}, sur l'autre côté de cet angle.`];
+  if(k===5)p.push(`Construis un angle de mesure ${ang[2]}°, de sommet ${n[2]}, dont un côté est [${n[2]}${n[1]}], du même côté de (${n[1]}${n[2]}) que ${n[0]}.`,
+    `Place le point ${n[3]} à ${fr(L[3])} cm du point ${n[2]}, sur l'autre côté de cet angle.`);
+  p.push(`Trace le segment [${n[k-2]}${n[k-1]}].`);
+  if(F.semi)for(let i=0;i<k;i++)p.push(`Trace le demi-cercle de diamètre [${n[i]}${n[(i+1)%k]}], à l'extérieur du ${nomFig()}.`);
+  return p}
+function mesures(){const {n,k}=F;
+  return [`Angle ${n[0]}${n[k-1]}${n[k-2]} ≈ ${Math.round(F.gL)}°`,`Angle ${n[k-3]}${n[k-2]}${n[k-1]} ≈ ${Math.round(F.gP)}°`]}
+
+/* ===================== Animation ===================== */
+const svg=$('#svg');const W=860,H=480;
+let view=null,steps=[],idx=0,t=0,playing=false,last=0,stepToLine=[];
+function makeView(pts){let xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
+  let minx=Math.min(...xs),maxx=Math.max(...xs),miny=Math.min(...ys),maxy=Math.max(...ys);
+  const K=Math.min(44,(W-90)/(maxx-minx||1),(H-80)/(maxy-miny||1));
+  const ox=(W-(maxx-minx)*K)/2-minx*K, oy=H-(H-(maxy-miny)*K)/2+miny*K;
+  return {K,P:p=>[ox+p[0]*K,oy-p[1]*K]}}
+const P=p=>view.P(p);
+function line(a,b,cls='seg'){const [x1,y1]=P(a),[x2,y2]=P(b);
+  const st={seg:'stroke="var(--blue)" stroke-width="3.4"',ray:'stroke="var(--pencil)" stroke-width="1.4" stroke-dasharray="7 5"',perp:'stroke="var(--orange)" stroke-width="1.6" stroke-dasharray="7 5"'}[cls];
+  return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${st} stroke-linecap="round"/>`}
+function cross(p){const [x,y]=P(p);return `<path d="M${x-6} ${y-6}L${x+6} ${y+6}M${x-6} ${y+6}L${x+6} ${y-6}" stroke="var(--ink)" stroke-width="2.2"/>`}
+let G=[0,0];
+function label(p,s){const dx=p[0]-G[0],dy=p[1]-G[1],m=Math.hypot(dx,dy)||1;const [x,y]=P([p[0]+dx/m*.55,p[1]+dy/m*.55]);
+  return `<text x="${x}" y="${y}" font-size="24" font-style="italic" text-anchor="middle" dominant-baseline="middle">${s}</text>`}
+function len(a,b,s){const m=lerp(a,b,.5);let nx=-(b[1]-a[1]),ny=b[0]-a[0];const l=Math.hypot(nx,ny);nx/=l;ny/=l;
+  if((m[0]-G[0])*nx+(m[1]-G[1])*ny<0){nx=-nx;ny=-ny}
+  const o=.4+Math.abs(nx)*.65;const [x,y]=P([m[0]+nx*o,m[1]+ny*o]);return `<text x="${x}" y="${y}" font-size="17" font-weight="700" text-anchor="middle" dominant-baseline="middle" style="fill:var(--blue)">${s}</text>`}
+function angMark(v,a0,a1,s,col){const r=.75;const lo=Math.min(a0,a1),hi=Math.max(a0,a1);const R=r*view.K;
+  const [s0x,s0y]=P(pol(v,r,lo)),[s1x,s1y]=P(pol(v,r,hi));
+  const [tx,ty]=P(pol(v,1.3,(lo+hi)/2));
+  return `<path d="M${s0x} ${s0y} A${R} ${R} 0 0 0 ${s1x} ${s1y}" fill="none" stroke="${col}" stroke-width="2.4"/><text x="${tx}" y="${ty}" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle" style="fill:${col}">${s}</text>`}
+function rightMark(v,d1,d2){const q=.32;const p1=pol(v,q,d1),p2=pol(v,q,d2),p3=pol(p1,q,d2);
+  return `<path d="M${P(p1).join(' ')} L${P(p3).join(' ')} L${P(p2).join(' ')}" fill="none" stroke="var(--orange)" stroke-width="2.2"/>`}
+const fade=u=>u<.15?u/.15:u>.85?(1-u)/.15:1;
+function ruler(a,b,pen,op=1){const ang=Math.atan2(b[1]-a[1],b[0]-a[0]);const L=dist(a,b);
+  const start=lerp(a,b,-0.6/L),end=lerp(a,b,1+0.6/L);
+  const nn=[Math.sin(ang),-Math.cos(ang)];const w=.9;
+  const q=[start,end,[end[0]+nn[0]*w,end[1]+nn[1]*w],[start[0]+nn[0]*w,start[1]+nn[1]*w]].map(P);
+  let ticks='';const tot=L+1.2;for(let i=0;i<=Math.floor(tot*10);i++){const uu=i/10-.6;const pt=lerp(a,b,uu/L);const big=i%10===6;const mid=i%5===1;const h=big?.32:mid?.22:.13;
+    const [x1,y1]=P(pt),[x2,y2]=P([pt[0]+nn[0]*h,pt[1]+nn[1]*h]);ticks+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--tool-edge)" stroke-width="${big?1.4:.8}"/>`}
+  return `<g opacity="${op}"><polygon points="${q.map(p=>p.join(',')).join(' ')}" fill="var(--tool)" fill-opacity=".75" stroke="var(--tool-edge)" stroke-width="1.2"/>${ticks}</g>`+(pen?pencil(pen,op):'')}
+function pencil(p,op=1){const [x,y]=P(p);return `<g opacity="${op}"><path d="M${x} ${y} l10 -26 l8 3 z" fill="#e0a42b" stroke="var(--tool-edge)" stroke-width="1"/><path d="M${x} ${y} l3.5 -9 l3 1.2 z" fill="var(--ink)"/></g>`}
+function protractor(v,dir,sgn,op=1){const R=2.6;let g='';const pts=[];
+  for(let a=0;a<=180;a+=3)pts.push(P(pol(v,R,dir+sgn*a)));
+  g+=`<path d="M${pts.map(p=>p.join(' ')).join(' L')} Z" fill="var(--tool)" fill-opacity=".7" stroke="var(--tool-edge)" stroke-width="1.2"/>`;
+  for(let a=0;a<=180;a+=5){const big=a%10===0;const [x1,y1]=P(pol(v,R,dir+sgn*a)),[x2,y2]=P(pol(v,R*(big?.86:.92),dir+sgn*a));g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--tool-edge)" stroke-width="${big?1.2:.7}"/>`;
+    if(a%30===0&&a>0&&a<180){const [tx,ty]=P(pol(v,R*.74,dir+sgn*a));g+=`<text x="${tx}" y="${ty}" font-size="10" text-anchor="middle" dominant-baseline="middle" style="fill:var(--tool-edge)">${a}</text>`}}
+  const inner=[];for(let a=0;a<=180;a+=10)inner.push(P(pol(v,.5,dir+sgn*a)));g+=`<path d="M${inner.map(p=>p.join(' ')).join(' L')}" fill="none" stroke="var(--tool-edge)" stroke-width="1"/>`;
+  const [cx,cy]=P(v);const [ux,uy]=P(pol(v,.5,dir+sgn*90));g+=`<line x1="${cx}" y1="${cy}" x2="${ux}" y2="${uy}" stroke="var(--tool-edge)" stroke-width="1"/>`;
+  return `<g opacity="${op}">${g}</g>`}
+/* équerre : angle droit en v, un côté le long de la direction d1, l'autre le long de d2 */
+function setsquare(v,d1,d2,op=1){const a=pol(v,3.2,d1),b=pol(v,5.2,d2);
+  let g=`<polygon points="${[v,a,b].map(P).map(p=>p.join(',')).join(' ')}" fill="var(--tool)" fill-opacity=".7" stroke="var(--tool-edge)" stroke-width="1.4"/>`;
+  const i1=pol(pol(v,.8,d1),.8,d2),i2=pol(pol(v,2.0,d1),.8,d2),i3=pol(pol(v,.8,d1),3.0,d2);
+  g+=`<polygon points="${[i1,i2,i3].map(P).map(p=>p.join(',')).join(' ')}" fill="var(--paper)" fill-opacity=".6" stroke="var(--tool-edge)" stroke-width="1"/>`;
+  g+=rightMark(v,d1,d2).replace('var(--orange)','var(--tool-edge)');
+  return `<g opacity="${op}">${g}</g>`}
+function compass(c,m,op=1){const [x1,y1]=P(c),[x2,y2]=P(m);const mx=(x1+x2)/2,my=(y1+y2)/2;const dd=Math.hypot(x2-x1,y2-y1);
+  const h=Math.max(70,dd*.9);let nx=-(y2-y1)/(dd||1),ny=(x2-x1)/(dd||1);if(ny>0){nx=-nx;ny=-ny}
+  const hx=mx+nx*h,hy=my+ny*h;
+  return `<g opacity="${op}"><line x1="${hx}" y1="${hy}" x2="${x1}" y2="${y1}" stroke="var(--tool-edge)" stroke-width="5" stroke-linecap="round"/>
+  <line x1="${hx}" y1="${hy}" x2="${x2}" y2="${y2}" stroke="var(--tool-edge)" stroke-width="5" stroke-linecap="round"/>
+  <circle cx="${x2}" cy="${y2}" r="3" fill="var(--ink)"/><circle cx="${hx}" cy="${hy}" r="7" fill="var(--tool)" stroke="var(--tool-edge)" stroke-width="2"/>
+  <line x1="${hx}" y1="${hy}" x2="${hx+nx*16}" y2="${hy+ny*16}" stroke="var(--tool-edge)" stroke-width="4" stroke-linecap="round"/></g>`}
+/* arc de centre c, de a0 à a1 (degrés, sens direct) */
+function arcPath(c,r,a0,a1,col='var(--teal)',w=2.6){if(a1-a0<0.5)return '';const [x0,y0]=P(pol(c,r,a0)),[x1,y1]=P(pol(c,r,a1));const R=r*view.K;
+  return `<path d="M${x0} ${y0} A${R} ${R} 0 ${a1-a0>180?1:0} 0 ${x1} ${y1}" fill="none" stroke="${col}" stroke-width="${w}"/>`}
+function midTicks(a,b){const m=lerp(a,b,.5);let s='';[.25,.75].forEach(f=>{const p=lerp(a,b,f);const e=dirOf(a,b);const p1=pol(p,.16,e+70),p2=pol(p,.16,e-110);s+=`<line x1="${P(p1)[0]}" y1="${P(p1)[1]}" x2="${P(p2)[0]}" y2="${P(p2)[1]}" stroke="var(--teal)" stroke-width="2"/>`});
+  const [x,y]=P(m);return s+`<circle cx="${x}" cy="${y}" r="3.5" fill="var(--teal)"/>`}
+/* demi-cercle de diamètre [ab] à l'extérieur (à droite de a→b) : règle pour le milieu, puis compas */
+function semiStep(cap,a,b){const m=lerp(a,b,.5),r=dist(a,b)/2,e=dirOf(a,b);
+  return {cap,dur:3.6,draw:u=>{let s='';
+    if(u<.4){const op=u<.08?u/.08:u>.32?(.4-u)/.08:1;s+=ruler(a,b,u>.18?m:null,op)}
+    if(u>.2)s+=midTicks(a,b);
+    const k=ease(clamp(u,.45,.9));if(k>0)s+=arcPath(m,r,e-180,e-180+180*k);
+    if(u>.4&&u<1){const op=u<.48?(u-.4)/.08:u>.92?(1-u)/.08:1;s+=compass(m,pol(m,r,e-180+180*k),op)}
+    return s}}}
+function dot(p,col){const [x,y]=P(p);return `<circle cx="${x}" cy="${y}" r="5" fill="${col}"/>`}
+
+function segStep(cap,a,b,lab,na,nb){return {cap,dur:2.2,draw:u=>{const k=ease(clamp(u,.15,.85));const e=lerp(a,b,k);let s='';
+  if(k>0)s+=line(a,e);s+=cross(a)+label(a,na);if(k>=1){s+=cross(b)+label(b,nb)+len(a,b,lab)}
+  if(u<1)s+=ruler(a,b,e,fade(u));return s}}}
+function protStep(cap,v,dir,sgn,ang,col){return {cap,dur:2.8,transient:true,draw:u=>{let s='';const op=u<.2?u/.2:u>.85?(1-u)/.15:1;
+  if(u<1)s+=protractor(v,dir,sgn,op);if(u>.45){const m=pol(v,2.75,dir+sgn*ang);s+=dot(m,col);if(u<1)s+=pencil(m,op)}return s}}}
+function rayStep(cap,v,dir,L,cls='ray'){return {cap,dur:1.9,draw:u=>{const k=ease(clamp(u,.15,.85));const end=pol(v,L,dir);const e=lerp(v,end,k);let s='';if(k>0)s+=line(v,e,cls);
+  if(u<1)s+=ruler(v,end,e,fade(u));return s}}}
+function placeStep(cap,v,dir,L,p,name){return {cap,dur:2.2,draw:u=>{let s='';
+  if(u<1)s+=ruler(v,pol(v,L,dir),u>.5?p:null,fade(u));if(u>.5)s+=cross(p)+label(p,name);return s}}}
+function squareStep(cap,v,d1,d2,L){return {cap,dur:3,draw:u=>{let s='';const op=u<.15?u/.15:u>.88?(1-u)/.12:1;
+  const k=ease(clamp(u,.3,.8));const end=pol(v,L,d2);if(k>0)s+=line(v,lerp(v,end,k),'perp');
+  if(u<1){s+=setsquare(v,d1,d2,op);if(k>0&&k<1)s+=pencil(lerp(v,end,k),op)}return s}}}
+function pointStep(cap,p,name){return {cap,dur:1.3,draw:u=>{let s='';if(u>.2){const [x,y]=P(p);const r=u<.6?20*(1-(u-.2)/.4)+6:0;if(r)s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="var(--red)" stroke-width="2"/>`;s+=cross(p)+label(p,name)}return s}}}
+function finStep(cap,segs){return {cap,dur:2.2,draw:u=>{let s='';segs.forEach((g,i)=>{const k=ease(clamp(u,i/segs.length,(i+1)/segs.length));if(k>0)s+=line(g[0],lerp(g[0],g[1],k))});return s}}}
+
+/* mesure d'un angle au rapporteur : centre v, zéro sur [v p), lecture sur [v q) */
+function measStep(cap,v,p,q,val,col){const d0=dirOf(v,p),cr=(p[0]-v[0])*(q[1]-v[1])-(p[1]-v[1])*(q[0]-v[0]);const sg=cr>0?1:-1;
+  return {cap,dur:3.2,draw:u=>{let s='';const op=u<.15?u/.15:u>.88?(1-u)/.12:1;
+    if(u<1){s+=protractor(v,d0,sg,op);if(u>.35){const r=pol(v,2.75,d0+sg*val);const [x1,y1]=P(v),[x2,y2]=P(r);
+      s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="2" opacity="${op}"/>`;
+      const [tx,ty]=P(pol(v,3.25,d0+sg*val));s+=`<g opacity="${op}"><rect x="${tx-30}" y="${ty-15}" width="60" height="30" rx="7" fill="var(--paper)" stroke="${col}" stroke-width="2"/><text x="${tx}" y="${ty+1}" font-size="17" font-weight="700" text-anchor="middle" dominant-baseline="middle" style="fill:${col}">${Math.round(val)}°</text></g>`}}
+    return s}}}
+function buildAnim(){
+  const {V,n,k,L,ang,d,semi}=F;
+  G=ctr(V);
+  const rl=[L[1]+1.3,L[2]+1.3,(L[3]||0)+1.3];
+  const pts=[...V,pol(V[0],rl[0],ang[0]),pol(V[1],rl[1],d[0]),[-2.7,0],[L[0]+2.7,0],[0,2.7],[L[0],2.7],[-.7,-.6]];
+  if(k===5){pts.push(pol(V[2],rl[2],d[1]));const dcb=d[0]+180;for(let a=0;a<=180;a+=30)pts.push(pol(V[2],2.7,dcb-a))}
+  [[V[k-1],V[0],V[k-2]],[V[k-2],V[k-3],V[k-1]]].forEach(([v,p,q])=>{const d0=dirOf(v,p),sg=crs(v,p,q)>0?1:-1;for(let a=0;a<=180;a+=30)pts.push(pol(v,2.7,d0+sg*a))});
+  if(semi)for(let i=0;i<k;i++){const a=V[i],b=V[(i+1)%k],m=lerp(a,b,.5),r=dist(a,b)/2,e=dirOf(a,b);for(let t=-180;t<=0;t+=15)pts.push(pol(m,r+.3,e+t))}
+  view=makeView(pts);
+  const Z=n[k-1];
+  steps=[
+    segStep(`Tracer un segment [${n[0]}${n[1]}] de longueur ${fr(L[0])} cm.`,V[0],V[1],fr(L[0])+' cm',n[0],n[1]),
+    protStep(`Rapporteur centré en ${n[0]}, zéro sur [${n[0]}${n[1]}] : marquer ${ang[0]}°.`,V[0],0,1,ang[0],'var(--red)'),
+    rayStep(`Tracer l'autre côté de l'angle de sommet ${n[0]} : la demi-droite qui passe par le repère.`,V[0],ang[0],rl[0]),
+    placeStep(`Placer le point ${Z} à ${fr(L[1])} cm du point ${n[0]}, sur l'autre côté de l'angle.`,V[0],ang[0],rl[0],V[k-1],Z),
+    protStep(`Rapporteur centré en ${n[1]}, zéro sur [${n[1]}${n[0]}] : marquer ${ang[1]}°.`,V[1],180,-1,ang[1],'var(--green)'),
+    rayStep(`Tracer l'autre côté de l'angle de sommet ${n[1]} : la demi-droite qui passe par le repère.`,V[1],d[0],rl[1]),
+    placeStep(`Placer le point ${n[2]} à ${fr(L[2])} cm du point ${n[1]}, sur l'autre côté de l'angle.`,V[1],d[0],rl[1],V[2],n[2])];
+  stepToLine=[0,1,1,2,3,3,4];let line=5;
+  if(k===5){steps.push(
+    protStep(`Rapporteur centré en ${n[2]}, zéro sur [${n[2]}${n[1]}] : marquer ${ang[2]}°.`,V[2],d[0]+180,-1,ang[2],'var(--purple)'),
+    rayStep(`Tracer l'autre côté de l'angle de sommet ${n[2]} : la demi-droite qui passe par le repère.`,V[2],d[1],rl[2]),
+    placeStep(`Placer le point ${n[3]} à ${fr(L[3])} cm du point ${n[2]}, sur l'autre côté de l'angle.`,V[2],d[1],rl[2],V[3],n[3]));
+    stepToLine.push(5,5,6);line=7}
+  const fin=[[V[0],V[k-1]],[V[k-1],V[k-2]]];for(let i=k-2;i>=1;i--)fin.push([V[i],V[i-1]]);
+  steps.push(finStep(`Tracer [${n[k-2]}${n[k-1]}] et repasser les côtés : le ${nomFig()} ${n.join('')} est construit.`,fin.slice(0,2).concat(fin.slice(2,k-1))));
+  stepToLine.push(line++);
+  if(semi)for(let i=0;i<k;i++){const a=V[i],b=V[(i+1)%k];
+    steps.push(semiStep(`Placer le milieu de [${n[i]}${n[(i+1)%k]}] (${fr(dist(a,b)/2)} cm), puis tracer au compas le demi-cercle de diamètre [${n[i]}${n[(i+1)%k]}].`,a,b));stepToLine.push(line++)}
+  const mi=steps.length;F.mi=mi;
+  steps.push(
+    measStep(`Mesurer l'angle ${n[0]}${n[k-1]}${n[k-2]} : rapporteur centré en ${n[k-1]}, zéro sur [${n[k-1]}${n[0]}].`,V[k-1],V[0],V[k-2],F.gL,'var(--orange)'),
+    measStep(`Mesurer l'angle ${n[k-3]}${n[k-2]}${n[k-1]} : rapporteur centré en ${n[k-2]}, zéro sur [${n[k-2]}${n[k-3]}].`,V[k-2],V[k-3],V[k-1],F.gP,'var(--orange)'));
+  stepToLine.push(line,line);
+  idx=0;t=0;playing=false;setPlay();
+}
+function persistent(){const {V,k,L,ang,d}=F;let s='';
+  if(idx>=3)s+=angMark(V[0],0,ang[0],ang[0]+'°','var(--red)');
+  if(idx>=6)s+=angMark(V[1],d[0],180,ang[1]+'°','var(--green)');
+  if(k===5&&idx>=9)s+=angMark(V[2],d[1],d[0]+180,ang[2]+'°','var(--purple)');
+  if(idx>=4)s+=len(V[0],V[k-1],fr(L[1])+' cm');
+  if(idx>=7)s+=len(V[1],V[2],fr(L[2])+' cm');
+  if(k===5&&idx>=10)s+=len(V[2],V[3],fr(L[3])+' cm');
+  const arcAt=(v,p,q,val)=>{const d0=dirOf(v,p);const d1=d0+(crs(v,p,q)>0?1:-1)*val;return angMark(v,Math.min(d0,d1),Math.max(d0,d1),Math.round(val)+'°','var(--orange)')};
+  if(idx>=F.mi+1)s+=arcAt(V[k-1],V[0],V[k-2],F.gL);
+  if(idx>=F.mi+2)s+=arcAt(V[k-2],V[k-3],V[k-1],F.gP);
+  return s}
+function grid(){let g='';const K=view.K;const [ox,oy]=view.P([0,0]);
+  for(let x=((ox%K)+K)%K;x<W;x+=K)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="var(--grid)" stroke-width="1"/>`;
+  for(let y=((oy%K)+K)%K;y<H;y+=K)g+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="var(--grid)" stroke-width="1"/>`;return g}
+function render(){
+  let s=grid();
+  for(let i=0;i<idx;i++)if(!(steps[i].transient&&idx>i+2))s+=steps[i].draw(1);
+  s+=persistent();
+  if(idx<steps.length)s+=steps[idx].draw(t);
+  if(idx>=steps.length){s+=`<polygon points="${F.V.map(P).map(p=>p.join(',')).join(' ')}" fill="var(--blue)" fill-opacity=".08"/>`}
+  svg.innerHTML=s;
+  const shown=Math.min(idx,steps.length-1);
+  $('#num').textContent=`Étape ${shown+1} / ${steps.length}`;$('#cap').textContent=steps[shown].cap;
+  $('#dots').innerHTML=steps.map((_,i)=>`<span class="dot ${i<=shown?'on':''}"></span>`).join('');
+  $('#prev').disabled=idx===0&&t===0;$('#next').disabled=idx>=steps.length;
+  const cur=idx>=steps.length?99:stepToLine[idx];
+  [...$('#pcSide').children].forEach((li,i)=>{li.className=idx>=steps.length?'':i===cur?'cur':i>cur?'todo':''});
+}
+function frame(ts){if(!playing)return;const dt=Math.min(.1,(ts-last)/1000);last=ts;const sp=+$('#speed').value;
+  if(idx<steps.length){t+=dt*sp/steps[idx].dur;if(t>=1){t=0;idx++;if(idx>=steps.length){playing=false;setPlay()}}}
+  render();if(playing)requestAnimationFrame(frame)}
+function setPlay(){$('#play').textContent=playing?'❚❚ Pause':(idx>=steps.length?'↺ Rejouer':'▶ Lecture')}
+$('#play').onclick=()=>{if(idx>=steps.length){idx=0;t=0}playing=!playing;setPlay();if(playing){last=performance.now();requestAnimationFrame(frame)}};
+$('#next').onclick=()=>{playing=false;if(idx<steps.length){idx++;t=0}setPlay();render()};
+$('#prev').onclick=()=>{playing=false;if(t>0)t=0;else if(idx>0)idx--;setPlay();render()};
+$('#reset').onclick=()=>{playing=false;idx=0;t=0;setPlay();render()};
+
+/* ===================== Vues ===================== */
+function show(v){document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.v===v));
+  ['enonce','anim','prog'].forEach(k=>$('#v-'+k).hidden=k!==v);if(v!=='anim'){playing=false;setPlay()}}
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>show(b.dataset.v));
+function newFigure(){generate();enonce();const pg=programme();
+  const ms=mesures();const all=[...pg,'Mesures : '+ms.join(' ; ')];
+  $('#pcSide').innerHTML=all.map(l=>`<li>${l}</li>`).join('');$('#pcBig').innerHTML=pg.map(l=>`<li>${l}</li>`).join('')+`<li style="list-style:none;margin-left:-1.5em;margin-top:8px"><b>Mesures attendues :</b> ${ms.join(' ; ')} <span style="color:var(--muted);font-size:.9em">(on accepte ± 2°)</span></li>`;
+  $('#data').innerHTML='';
+  buildAnim();render();show('enonce')}
+$('#new').onclick=newFigure;
+$('#mode').onchange=newFigure;
+$('#cotes').onchange=newFigure;
+$('#semi').onchange=newFigure;
+$('#showans').onchange=()=>enonce();
+$('#showprog').onchange=()=>{const on=$('#showprog').checked;document.body.classList.toggle('noprog',!on);if(!on&&!$('#v-prog').hidden)show('enonce')};
+$('#fs').onclick=()=>{try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen()}catch(e){}};
+newFigure();
+})();
+</script>
+
+</body></html>

@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Écrire les décimaux</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--acc:#2563eb;--acc2:#1e40af;--soft:#e6eeff;--bg:#f7f9ff;--card:#fff;--ink:#15203a;--muted:#5b6782;--line:#d6e0f5;
+  --ok:#15803d;--oksoft:#dcfce7;--bad:#b91c1c;--badsoft:#fee2e2;--hint:#7c3aed;--pad:#94a3b8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--acc:#7aa5ff;--acc2:#a9c4ff;--soft:#1b2a47;--bg:#0f1522;--card:#172033;--ink:#e8eefb;--muted:#a3b0c8;--line:#2c3a55;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;--pad:#64748b;color-scheme:dark}}
+:root[data-theme="dark"]{--acc:#7aa5ff;--acc2:#a9c4ff;--soft:#1b2a47;--bg:#0f1522;--card:#172033;--ink:#e8eefb;--muted:#a3b0c8;--line:#2c3a55;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;--pad:#64748b;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+header.hero{background:linear-gradient(135deg,#2563eb,#1e3a8a);color:#fff;border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
+header.hero::after{content:"694,81";position:absolute;right:14px;bottom:-12px;font:700 54px/1 "Space Grotesk",sans-serif;opacity:.15;white-space:nowrap}
+.eyebrow{font:600 .8rem "Space Grotesk",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+h1{font:700 clamp(1.6rem,4.5vw,2.3rem)/1.1 "Space Grotesk",sans-serif;margin:4px 0 6px}
+header.hero p{margin:0;max-width:60ch;opacity:.95;position:relative;z-index:1}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 10px}
+.tab{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font:600 .9rem Inter,sans-serif;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+.tab .n{font-variant-numeric:tabular-nums;opacity:.8;font-weight:500;margin-left:4px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);margin-bottom:12px}
+.score{font:700 1rem "Space Grotesk",sans-serif;font-variant-numeric:tabular-nums}
+.progress{flex:1 1 160px;height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:120px}
+.progress span{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.btn{border:1.5px solid var(--acc);background:var(--card);color:var(--acc);border-radius:8px;padding:5px 12px;font:600 .88rem Inter,sans-serif;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--acc);color:var(--bg)}
+.btn:focus-visible,input:focus-visible,.tab:focus-visible,.choice:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.rappel{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.95rem}
+.rappel b{color:var(--acc2)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.q.ok{border-color:var(--ok);box-shadow:inset 4px 0 0 var(--ok)}
+.q.bad{border-color:var(--bad);box-shadow:inset 4px 0 0 var(--bad)}
+.qhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.num{font:700 .85rem "Space Grotesk",sans-serif;background:var(--soft);color:var(--acc2);border-radius:6px;padding:1px 8px}
+.consigne{color:var(--muted);font-size:.9rem}
+.expr{font-size:1.15rem;margin:6px 0 8px}
+.expr.txt{font-size:1rem}
+.m{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;white-space:nowrap}
+.ans{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ans input{font:1.1rem "Cambria Math","Times New Roman",serif;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:8.5em;max-width:100%;text-align:center}
+.ans .lbl{font-size:1.15rem}
+.ans input.sm{width:5.2em}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choice{border:1.5px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 14px;cursor:pointer;font:600 1rem Inter,sans-serif;color:var(--ink);min-width:44px}
+.choice.big{font:700 1.25rem "Cambria Math","Times New Roman",serif;min-width:52px}
+.choice.sel{border-color:var(--acc);background:var(--soft)}
+.choice .rk{display:inline-block;min-width:1.4em;margin-right:4px;border-radius:50%;background:var(--acc);color:var(--bg);font:700 .8rem/1.4em Inter,sans-serif;text-align:center}
+.seq{font-size:1.15rem;min-height:1.6em;margin:2px 0}
+.fb{margin-top:6px;font-size:.92rem}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}.fb.hint{color:var(--hint)}
+.corr{margin-top:8px;background:var(--soft);border-radius:8px;padding:8px 12px;font-size:1rem}
+.corr .line{display:block;margin:2px 0}
+.corr .why{display:block;font:italic .88rem Inter,sans-serif;color:var(--muted);margin-top:4px}
+.ai{display:contents}
+.ans input.ok{border-color:var(--ok);background:var(--oksoft)}
+.ans input.bad{border-color:var(--bad);background:var(--badsoft)}
+.etoiles{color:#f59e0b;letter-spacing:2px;font-size:1rem;margin-left:4px}
+.aide{font-size:.85rem;color:var(--muted);margin:0 0 10px}
+footer{margin-top:28px;color:var(--muted);font-size:.82rem;text-align:center}
+.ans input.xs{width:2.6em;padding:6px 4px}
+.ans input.md{width:6.5em}
+.ans input.wd{width:7.6em;font:600 .9rem Inter,sans-serif;padding:5px 4px}
+table.numt th input.wd{width:7em}
+table.numt th.pe{background:var(--card)}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;margin:0 3px;line-height:1.15}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px 2px}
+.fr>span:last-child{padding:2px 3px 0}
+.fr input{margin:1px 0}
+.tpl{display:flex;flex-wrap:wrap;align-items:center;gap:6px;font:1.15rem "Cambria Math","STIX Two Math","Times New Roman",serif}
+.tpl .t{white-space:nowrap}
+.tw{overflow-x:auto;max-width:100%}
+table.numt{border-collapse:collapse;font-size:.85rem;text-align:center}
+table.numt th{background:var(--soft);color:var(--acc2);border:1px solid var(--line);padding:4px 3px;font-weight:600;min-width:3.4em;line-height:1.15}
+table.numt th.vg,table.numt td.vg{min-width:1em;width:1em;border-left:2px solid var(--acc);border-right:2px solid var(--acc)}
+table.numt td{border:1px solid var(--line);padding:3px;font:1.2rem "Cambria Math","Times New Roman",serif;height:2.1em}
+table.numt td input.xs{width:2.2em}
+table.numt td.vg{font-weight:700;color:var(--acc2)}
+svg.gl{width:100%;max-width:820px;height:auto;display:block;margin:4px 0;touch-action:manipulation}
+svg.gl .ax{stroke:var(--ink);stroke-width:2}
+svg.gl .tk{stroke:var(--ink);stroke-width:1.3}
+svg.gl text{fill:var(--ink);font:15px "Cambria Math","Times New Roman",serif;text-anchor:middle}
+svg.gl .pt{stroke:#e11d48;stroke-width:3.5}
+svg.gl text.pl{fill:#e11d48;font:700 16px Inter,sans-serif}
+svg.gl .hit{fill:transparent;cursor:pointer}
+svg.gl .hit:hover{fill:var(--soft);fill-opacity:.8}
+svg.gl .sel{stroke:var(--acc);stroke-width:3.5}
+svg.gl text.sl{fill:var(--acc);font:700 16px Inter,sans-serif}
+svg.gl .sol{stroke:var(--ok);stroke-width:3.5}
+svg.gl text.so{fill:var(--ok);font:700 15px Inter,sans-serif}
+svg.band rect{stroke:var(--ink);stroke-width:1.2}
+svg.band .on{fill:#facc15}svg.band .off{fill:var(--card)}
+.placehint{font-size:.88rem;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">6ème · S3 · Nombres décimaux</div>
+  <h1>Fractions et nombres décimaux</h1>
+  <p>Des séries d'exercices qui changent à chaque fois. Réponds, vérifie, puis regarde la correction détaillée si besoin.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<div class="bar">
+  <span class="score" id="score">0 / 0</span>
+  <div class="progress"><span id="prog"></span></div>
+  <button class="btn" id="newSerie">Nouvelle série</button>
+  <button class="btn primary" id="checkAll">Tout vérifier</button>
+</div>
+<div class="rappel" id="rappel"></div>
+<p class="aide">Écris les nombres avec une virgule, par exemple <b>3,75</b>. Pour une fraction, écris le numérateur en haut et le dénominateur en bas.</p>
+<div id="list"></div>
+<footer>GiroMaths · 6ème S3 · Nombres décimaux · © 2026</footer>
+</div>
+<script>
+(function(){
+"use strict";
+/* ---------- outils ---------- */
+// Tous les nombres sont stockés en entiers de millionièmes : calculs exacts, sans erreur d'arrondi.
+const U=1000000;
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const NB=" ";
+// rangs : k = 3 milliers … 0 unités … −3 millièmes
+const RANG={3:"milliers",2:"centaines",1:"dizaines",0:"unités","-1":"dixièmes","-2":"centièmes","-3":"millièmes"};
+const RANG1={3:"millier",2:"centaine",1:"dizaine",0:"unité","-1":"dixième","-2":"centième","-3":"millième"};
+const P10=k=>k>=0?U*10**k:U/10**(-k);          // valeur du rang k en millionièmes
+const chiffre=(n,k)=>Math.floor(n/P10(k))%10;
+function N(ip,dec){dec=(dec||"").padEnd(6,"0");return ip*U+parseInt(dec,10);}
+function ndec(n){let d=0;n=Math.abs(n);while(d<6&&n%(U/10**d)!==0)d++;return d;}
+const ent=n=>Math.floor(n/U);
+const sp=x=>String(x).replace(/\B(?=(\d{3})+(?!\d))/g,NB);   // 12345 -> 12 345
+function fmt(n){const ip=Math.floor(n/U);const dp=String(n%U).padStart(6,"0").replace(/0+$/,"");return sp(ip)+(dp?","+dp:"");}
+const M=s=>'<span class="m">'+s+'</span>';
+const F=n=>M(fmt(n));
+const fr=(a,b)=>`<span class="fr"><span>${typeof a==="number"?sp(a):a}</span><span>${typeof b==="number"?sp(b):b}</span></span>`;
+const LT=" &lt; ",GT=" &gt; ";
+// nombre au hasard dont les chiffres non nuls occupent exactement les rangs hi … lo (aux extrémités : chiffres non nuls)
+function rnum(hi,lo,zeros){let n=0;for(let k=hi;k>=lo;k--){let d=(k===hi||k===lo||!zeros)?R(1,9):R(0,9);if(zeros&&k!==hi&&k!==lo&&Math.random()<.3)d=0;n+=d*P10(k);}return n;}
+const rangs=n=>{const r=[];for(let k=3;k>=-3;k--)if(chiffre(n,k))r.push(k);return r;};
+const pow10=d=>10**d;
+// lecture d'une réponse : entier de millionièmes, ou null si illisible
+function lire(s){s=String(s).replace(/[\s  ]/g,"").replace(/[^\d,.]+$/,"").replace(/^[^\d]+/,"");
+  if(!/^\d+([.,]\d+)?$/.test(s))return null;const [i,d=""]=s.split(/[.,]/);
+  if(d.length>6&&/[^0]/.test(d.slice(6)))return -1;return N(+i,d.slice(0,6));}
+const lireEntier=s=>{const v=lire(s);return v===null||v<0||v%U?null:v/U;};
+
+/* ---------- champs ----------
+   {t:"n",sol}            nombre (sol en millionièmes)
+   {t:"d",sol,opt}        chiffre d'un tableau (opt : case facultative, vide ou 0)
+   {t:"f",sol,dec,den,exact}  fraction en deux cases : valeur sol (millionièmes) ;
+        dec : dénominateur 10, 100, 1 000… ; den : dénominateur imposé ; exact:[n,d] fraction imposée
+*/
+const nF=sol=>({t:"n",sol});
+const dF=(sol,opt)=>({t:"d",sol,opt});
+
+/* ---------- droite graduée (SVG) ----------
+   o : {n : nb d'intervalles, label(i) → texte ou null, big(i), mid(i), pt : indice du point A, letter,
+        click : true (placer), sel : indice choisi, sol : indice à montrer (correction)} */
+function droite(o,j){
+  const W=820,x0=30,x1=W-40,dx=(x1-x0)/o.n,y=46;let s=`<svg class="gl" viewBox="0 0 ${W} 92" role="img" aria-label="Demi-droite graduée">`;
+  s+=`<line class="ax" x1="${x0-12}" y1="${y}" x2="${W-8}" y2="${y}"/><path d="M${W-8} ${y} l-12 -6 v12 z" fill="currentColor" style="color:var(--ink)"/>`;
+  for(let i=0;i<=o.n;i++){const x=x0+i*dx,h=o.big(i)?13:o.mid&&o.mid(i)?9:6;
+    s+=`<line class="tk" x1="${x}" y1="${y-h}" x2="${x}" y2="${y+h}"${o.big(i)?' style="stroke-width:2"':""}/>`;
+    const l=o.label(i);if(l!=null)s+=`<text x="${x}" y="${y+32}">${l}</text>`;}
+  if(o.origin)s+=`<text x="${x0}" y="${y-20}" style="font-weight:700">O</text>`;
+  if(o.pt!=null){const x=x0+o.pt*dx;s+=`<line class="pt" x1="${x}" y1="${y-15}" x2="${x}" y2="${y+15}"/><text class="pl" x="${x}" y="${y-22}">${o.letter||"A"}</text>`;}
+  if(o.sol!=null){const x=x0+o.sol*dx;s+=`<line class="sol" x1="${x}" y1="${y-15}" x2="${x}" y2="${y+15}"/><text class="so" x="${x}" y="${y-22}">${o.letter||"A"}</text>`;}
+  if(o.click){if(o.sel!=null){const x=x0+o.sel*dx;s+=`<line class="sel" x1="${x}" y1="${y-15}" x2="${x}" y2="${y+15}"/><text class="sl" x="${x}" y="${y-22}">${o.letter||"A"}</text>`;}
+    for(let i=0;i<=o.n;i++){const x=x0+i*dx;s+=`<rect class="hit" x="${x-dx/2}" y="8" width="${dx}" height="${y}" data-tick="${i}" data-q="${j}"><title>graduation ${i}</title></rect>`;}}
+  return s+"</svg>";
+}
+// droite en dixièmes : de a (entier) à a+u unités ; droite en centièmes : de s (1 décimale) à s+0,2
+function grilleDixiemes(a,u){return {n:10*u,start:a*U,step:U/10,label:i=>i%10===0?sp(a+i/10):null,big:i=>i%10===0,mid:i=>i%5===0,origin:a===0};}
+function grilleCentiemes(s){return {n:20,start:s,step:U/100,label:i=>i%10===0?fmt(s+i*U/100):null,big:i=>i%10===0,mid:i=>i%5===0};}
+function grilleFraction(b,u){return {n:b*u,frac:b,label:i=>i%b===0?String(i/b):null,big:i=>i%b===0,origin:true};}
+
+/* ---------- 1. Vocabulaire ---------- */
+const OPT_RANGS=[2,1,0,-1,-2,-3].map(k=>[String(k),"chiffre des "+RANG[k]]);
+function gVocab(){
+  const t=R(1,9);
+  if(t===1){const b=R(3,12),a=R(1,15),w=Math.random()<.5;
+    return {cons:`Dans la fraction ${fr(a,b)}, comment s'appelle le nombre ${w?a:b} ?`,txt:M(fr(a,b)),kind:"qcm",
+      opts:[["num","le numérateur"],["den","le dénominateur"]],sol:w?"num":"den",
+      steps:[`${fr(a,b)} : ${b} est le <b>dénominateur</b> (nombre de parts dans l'unité) ; ${a} est le <b>numérateur</b> (nombre de parts prises).`]};}
+  if(t===2){const n=rnum(R(1,2),-R(1,2));const ip=ent(n),d=ndec(n),f=(n%U)/(U/pow10(d));const w=Math.random()<.5;
+    return {cons:`${M(fmt(n)+" = "+sp(ip)+" + ")}${fr(f,pow10(d))} : comment s'appelle ${w?M(sp(ip)):fr(f,pow10(d))} ?`,txt:"",kind:"qcm",
+      opts:[["ent","la partie entière"],["dec","la partie décimale"]],sol:w?"ent":"dec",
+      steps:[`${F(n)} = ${M(sp(ip))} + ${fr(f,pow10(d))} : ${M(sp(ip))} est la <b>partie entière</b>, ${fr(f,pow10(d))} (soit ${F(n%U)}) est la <b>partie décimale</b>.`]};}
+  if(t===3){const p=R(1,3),k=R(2,19);const nm=["dixièmes","centièmes","millièmes"];
+    return {cons:"Comment se lit cette fraction ?",txt:M(fr(k,pow10(p))),kind:"qcm",opts:nm.map((x,i)=>[String(i+1),k+" "+x]),sol:String(p),
+      steps:[`Le dénominateur est ${sp(pow10(p))} : l'unité est partagée en ${sp(pow10(p))} parts, ce sont des <b>${nm[p-1]}</b>. On lit « ${k} ${nm[p-1]} ».`]};}
+  if(t===4){const p=R(1,3),k=R(1,9);const nm=["dixièmes","centièmes","millièmes"];const w=[N(0,""+k),N(0,"0"+k),N(0,"00"+k)];
+    const opts=shuffle(w.map((v,i)=>[String(i+1),fmt(v)]).concat([["0",sp(k*pow10(p))]]));
+    return {cons:`Comment s'écrit le nombre « ${k} ${nm[p-1]} » ?`,txt:"",kind:"qcm",opts,sol:String(p),
+      steps:[`${k} ${nm[p-1]} = ${fr(k,pow10(p))} = ${F(w[p-1])} : le chiffre ${k} est au rang des ${nm[p-1]}.`]};}
+  if(t===5){let n,k;do{n=rnum(R(1,2),-R(2,3),true);const r=rangs(n);k=pick(r);}while(String(fmt(n)).split(String(chiffre(n,k))).length!==2);
+    const c=chiffre(n,k);
+    return {cons:`Dans le nombre ${F(n)}, le chiffre ${c} est le…`,txt:"",kind:"qcm",opts:OPT_RANGS,sol:String(k),
+      steps:[tabLigne(n),`Le chiffre ${c} est dans la colonne des <b>${RANG[k]}</b>.`]};}
+  if(t===6){const q=pick([["frdec","Une fraction dont le dénominateur est 10 ; 100 ; 1 000… s'appelle :",[["frdec","une fraction décimale"],["entier","un nombre entier"],["pc","un pourcentage"]],"une <b>fraction décimale</b>, par exemple "+fr(3,10)+" ou "+fr(7,1000)+"."],
+      ["abs","Sur une demi-droite graduée, le nombre qui repère un point s'appelle :",[["abs","son abscisse"],["orig","son origine"],["unite","son unité"]],"l'<b>abscisse</b> du point (sa distance à l'origine)."],
+      ["orig","Sur une demi-droite graduée, le point de départ (d'abscisse 0) s'appelle :",[["abs","l'abscisse"],["orig","l'origine"],["unite","l'unité"]],"l'<b>origine</b> de la demi-droite graduée."],
+      ["dec","Un nombre qui peut s'écrire sous la forme d'une fraction décimale s'appelle :",[["dec","un nombre décimal"],["entier","un nombre entier"],["num","un numérateur"]],"un <b>nombre décimal</b> : par exemple 2,5 = "+fr(25,10)+"."]]);
+    return {cons:q[1],txt:"",kind:"qcm",opts:q[2],sol:q[0],steps:["C'est "+q[3]]};}
+  if(t===7){const e=R(2,60),pc=R(2,99);const w=pick(["e","pc"]);
+    return {cons:w==="e"?`Le nombre entier ${e} est-il un nombre décimal ?`:`Le pourcentage ${pc} % est-il un nombre décimal ?`,txt:"",kind:"qcm",opts:[["oui","Oui"],["non","Non"]],sol:"oui",
+      steps:[w==="e"?`Oui : ${M(e+" = ")}${fr(e*10,10)} s'écrit sous forme de fraction décimale (sa partie décimale est égale à zéro).`:`Oui : ${M(pc+" % = ")}${fr(pc,100)} = ${F(pc*U/100)}.`]};}
+  if(t===8){const b=R(2,9);const k=pick([R(1,9),R(1,9)*10,R(1,99)]);
+    const p=pick([1,2]);const den=pow10(p);
+    return {cons:`On partage l'unité en ${sp(den)} parts égales. Comment s'appelle chaque part ?`,txt:"",kind:"qcm",opts:[["1","un dixième"],["2","un centième"],["3","un millième"]],sol:String(p),
+      steps:[`Chaque part vaut ${fr(1,den)} : c'est <b>un ${["","dixième","centième"][p]}</b>.`]};}
+  const n=rnum(R(1,3),-R(1,3));const d=ndec(n);
+  return {cons:`Combien y a-t-il de chiffres dans la partie décimale de ${F(n)} ?`,txt:"",kind:"qcm",opts:[["1","1"],["2","2"],["3","3"],["4","4"]],sol:String(d),
+    steps:[`La partie décimale est ce qui est après la virgule : ${M(fmt(n).split(",")[1])}, soit <b>${d}</b> chiffre${d>1?"s":""}.`]};
+}
+/* ---------- tableau de numération ---------- */
+const COLS=[3,2,1,0,-1,-2,-3];
+function tabEntete(){return `<tr>${COLS.map(k=>(k===-1?'<th class="vg">,</th>':"")+`<th>${RANG[k]}</th>`).join("")}</tr>`;}
+function tabLigne(n,emph){const r=rangs(n),hi=Math.max(0,...r),lo=Math.min(0,...r);
+  return `<div class="tw"><table class="numt">${tabEntete()}<tr>${COLS.map(k=>(k===-1?'<td class="vg">,</td>':"")+`<td>${k<=hi&&k>=lo?chiffre(n,k):""}</td>`).join("")}</tr></table></div>`;}
+function gTableauMots(){
+  const n=rnum(R(0,3),-R(1,3),true);const r=rangs(n),hi=Math.max(0,...r),lo=Math.min(0,...r);
+  let manq;do{manq=shuffle(COLS).slice(0,R(3,5));}while(!manq.some(k=>k<0)||!manq.some(k=>k>=0));
+  const sup=Math.random()<.35;const fields=[];
+  const w=sol=>{fields.push({t:"w",sol});return `{{${fields.length-1}}}`;};
+  let h=`<div class="tw"><table class="numt">`;
+  h+=`<tr><th colspan="4" class="pe">${sup?w("partie entière"):"Partie entière"}</th><th class="vg"></th><th colspan="3" class="pe">${sup?w("partie décimale"):"Partie décimale"}</th></tr>`;
+  h+=`<tr>${COLS.map(k=>(k===-1?'<th class="vg">,</th>':"")+`<th>${manq.includes(k)?w(RANG[k]):RANG[k]}</th>`).join("")}</tr>`;
+  h+=`<tr>${COLS.map(k=>(k===-1?'<td class="vg">,</td>':"")+`<td>${k<=hi&&k>=lo?chiffre(n,k):""}</td>`).join("")}</tr></table></div>`;
+  return {cons:`Complète le tableau de numération en écrivant les mots manquants. Le nombre ${F(n)} y est écrit.`,txt:"",kind:"tpl",tpl:h,fields,
+    steps:[`<div class="tw"><table class="numt"><tr><th colspan="4">Partie entière</th><th class="vg"></th><th colspan="3">Partie décimale</th></tr>${tabEntete()}</table></div>`,
+      `Juste à gauche de la virgule : les <b>unités</b>, puis les <b>dizaines</b>, les <b>centaines</b>, les <b>milliers</b>. Juste à droite : les <b>dixièmes</b>, puis les <b>centièmes</b>, les <b>millièmes</b>.`],
+    why:"Attention : dixièmes (après la virgule) et dizaines (avant la virgule) se ressemblent !"};
+}
+function gTableau(i){
+  if(i<4)return gTableauMots();
+  const t=R(1,3);
+  if(t===1){const n=rnum(R(1,3),-R(1,3),true);const r=rangs(n),hi=Math.max(0,...r),lo=Math.min(...r);
+    const fields=[];let h=`<div class="tw"><table class="numt">${tabEntete()}<tr>`;
+    COLS.forEach(k=>{if(k===-1)h+='<td class="vg">,</td>';const opt=k>hi||k<lo;h+=`<td>{{${fields.length}}}</td>`;fields.push(dF(chiffre(n,k),opt));});
+    h+="</tr></table></div>";
+    return {cons:"Place chaque chiffre de ce nombre dans le tableau de numération (laisse vides les cases inutiles).",txt:M(fmt(n)),kind:"tpl",tpl:h,fields,
+      steps:[tabLigne(n),`Le chiffre des unités se place juste à gauche de la virgule. ${lo<0&&r.length<hi-lo+1?"Attention aux <b>0</b> à l'intérieur du nombre : ils doivent être écrits.":""}`]};}
+  if(t===2){const n=rnum(R(0,3),-R(1,3),true);
+    return {cons:"Quel nombre est écrit dans ce tableau ?",txt:tabLigne(n),kind:"tpl",tpl:"{{0}}",fields:[nF(n)],
+      steps:[`On lit la partie entière, la virgule, puis les chiffres décimaux : ${F(n)}.`]};}
+  let r;do{r=shuffle([2,1,0,-1,-2,-3]).slice(0,R(2,4));}while(!r.some(k=>k<0));
+  r.sort((a,b)=>b-a);const parts=r.map(k=>[R(1,9),k]);const n=parts.reduce((s,[d,k])=>s+d*P10(k),0);
+  const ordre=Math.random()<.35?shuffle(parts):parts;
+  const txt=ordre.map(([d,k])=>`${d} ${d>1?RANG[k]:RANG1[k]}`);
+  return {cons:"Écris ce nombre en chiffres.",txt:txt.slice(0,-1).join(", ")+" et "+txt[txt.length-1],kind:"tpl",tpl:"{{0}}",fields:[nF(n)],
+    steps:[tabLigne(n),`${ordre!==parts?"On range d'abord les rangs du plus grand au plus petit. ":""}Les rangs non cités valent 0 : le nombre est ${F(n)}.`]};
+}
+/* ---------- 3. Chiffre des…, nombre de… ---------- */
+function gChiffre(){
+  const n=rnum(3,-R(2,3),true);const lo=Math.min(...rangs(n));
+  if(Math.random()<.5){const k=pick(COLS.filter(k=>k>=lo));const c=chiffre(n,k);
+    return {cons:`Quel est le <b>chiffre des ${RANG[k]}</b> de ce nombre ?`,txt:F(n),kind:"tpl",tpl:"{{0}}",fields:[{t:"n",sol:c*U}],
+      steps:[tabLigne(n),`Le chiffre des ${RANG[k]} est <b>${c}</b>.`]};}
+  let k;do k=pick([2,1,0,-1,-2]);while(k<lo-0&&false);
+  const nb=Math.floor(n/P10(k));
+  if(nb===chiffre(n,k))return gChiffre();
+  const s=fmt(n);
+  return {cons:`Quel est le <b>nombre ${k===0?"d'unités":"de "+RANG[k]}</b> dans ce nombre ?`,txt:F(n),kind:"tpl",tpl:"{{0}}",fields:[{t:"n",sol:nb*U}],
+    steps:[tabLigne(n),k===0?`Le nombre d'unités est la partie entière : <b>${sp(nb)}</b>.`:
+      `On garde tous les chiffres jusqu'à celui des ${RANG[k]} (on ne tient pas compte de la virgule) : il y a <b>${sp(nb)}</b> ${RANG[k]}.`,
+      k<0?`En effet ${F(n)} = ${fr(sp(Math.floor(n/P10(-ndec(n)))),pow10(ndec(n)))}, et ${sp(nb)} ${RANG[k]} = ${F(nb*P10(k))}.`:`En effet ${sp(nb)} ${RANG[k]} = ${M(sp(nb)+" × "+sp(10**k))} = ${M(sp(nb*10**k))}.`],
+    why:`Ne pas confondre : le <b>chiffre</b> des ${RANG[k]} est ${chiffre(n,k)}, le <b>nombre</b> ${k===0?"d'unités":"de "+RANG[k]} est ${sp(nb)}.`};
+}
+/* ---------- 4. Fractions ---------- */
+function bande(b,k){const w=Math.min(52,560/b);let s=`<svg class="band" width="${b*w+4}" height="44" viewBox="0 0 ${b*w+4} 44">`;
+  for(let i=0;i<b;i++)s+=`<rect x="${2+i*w}" y="2" width="${w}" height="40" class="${i<k?"on":"off"}"/>`;return s+"</svg>";}
+function gFraction(){
+  const t=R(1,7);
+  if(t===1){const b=R(3,10),k=R(1,b-1);
+    return {cons:"La bande représente une unité. Quelle fraction de la bande est coloriée ?",txt:bande(b,k),kind:"tpl",tpl:"{{0}}",fields:[{t:"f",sol:k*U/b}],
+      steps:[`La bande est partagée en <b>${b}</b> parts égales (dénominateur) et <b>${k}</b> part${k>1?"s sont coloriées":" est coloriée"} (numérateur) : ${fr(k,b)}.`]};}
+  if(t===2){const b=R(2,12);const w=R(1,3);const a=w===1?R(1,b-1):w===2?b:R(b+1,3*b);
+    return {cons:"Compléter avec <, > ou =.",txt:M(fr(a,b)+" &nbsp;…&nbsp; 1"),kind:"qcm",big:true,opts:[["<","&lt;"],["=","="],[">","&gt;"]],sol:a<b?"<":a>b?">":"=",
+      steps:[a<b?`Le numérateur ${a} est inférieur au dénominateur ${b}, donc ${fr(a,b)} ${LT} 1.`:a>b?`Le numérateur ${a} est supérieur au dénominateur ${b}, donc ${fr(a,b)} ${GT} 1.`:`Le numérateur est égal au dénominateur, donc ${fr(a,b)} = 1.`]};}
+  if(t===3){const v=R(1,4);
+    if(v===1){const k=R(1,9);return {cons:"Compléter l'égalité.",txt:"",kind:"tpl",tpl:`${fr(k,10)}<span class="t">=</span>${fr("{{0}}",100)}`,fields:[nF(10*k*U)],
+      steps:[`1 dixième = 10 centièmes, donc ${k} dixièmes = ${10*k} centièmes : ${fr(k,10)} = ${fr(10*k,100)}.`]};}
+    if(v===2){const k=R(1,9);return {cons:"Compléter l'égalité.",txt:"",kind:"tpl",tpl:`${fr(10*k,100)}<span class="t">=</span>${fr("{{0}}",10)}`,fields:[nF(k*U)],
+      steps:[`${fr(10*k,100)} = ${M(k+" × ")}${fr(10,100)} = ${M(k+" × ")}${fr(1,10)} = ${fr(k,10)}.`]};}
+    if(v===3){const k=R(1,99);return {cons:"Compléter l'égalité.",txt:"",kind:"tpl",tpl:`${fr(k,100)}<span class="t">=</span>${fr("{{0}}",1000)}`,fields:[nF(10*k*U)],
+      steps:[`1 centième = 10 millièmes, donc ${fr(k,100)} = ${fr(10*k,1000)}.`]};}
+    const p=R(1,3);return {cons:"Compléter l'égalité.",txt:"",kind:"tpl",tpl:`<span class="t">1 =</span>${fr("{{0}}",pow10(p))}`,fields:[nF(pow10(p)*U)],
+      steps:[`L'unité contient ${sp(pow10(p))} ${["","dixièmes","centièmes","millièmes"][p]} : 1 = ${fr(pow10(p),pow10(p))}.`]};}
+  if(t===4||t===5){const den=t===4?10:100;let a,b;if(den===10){a=R(1,8);b=R(1,9-a);if(Math.random()<.35){a=R(3,9);b=R(10-a,9);}}else{a=R(5,70);b=R(5,99-a);}
+    return {cons:"Calculer.",txt:"",kind:"tpl",tpl:`${fr(a,den)}<span class="t">+</span>${fr(b,den)}<span class="t">=</span>{{0}}`,fields:[{t:"f",sol:(a+b)*U/den}],
+      steps:[`Même dénominateur : on additionne les numérateurs et on garde le dénominateur.`,`${fr(a,den)} + ${fr(b,den)} = ${fr(a+"+"+b,den)} = ${fr(a+b,den)}${a+b>=den?" = "+M((a+b===den?"1":"1 + "))+(a+b===den?"":fr(a+b-den,den)):""}`],
+      why:`Attention : on n'additionne pas les dénominateurs (${fr(a,den)} + ${fr(b,den)} ne fait pas ${fr(a+b,2*den)}).`};}
+  if(t===6){const den=pick([10,100,1000]);const e=R(1,25);const f=R(1,den-1);const num=e*den+f;
+    return {cons:"Écrire comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1.",txt:"",kind:"tpl",
+      tpl:`${fr(num,den)}<span class="t">=</span>{{0}}<span class="t">+</span>${fr("{{1}}",den)}`,fields:[nF(e*U),nF(f*U)],
+      steps:[`${fr(num,den)} = ${fr(e*den,den)} + ${fr(f,den)} = ${M(e+" + ")}${fr(f,den)}`,`(${fr(e*den,den)} = ${e} car ${M(sp(e*den)+" = "+e+" × "+sp(den))}.)`]};}
+  // lire une fraction sur une demi-droite graduée
+  const b=R(2,8),u=b>5?2:3;let k;do k=R(1,b*u-1);while(k%b===0);
+  const g=grilleFraction(b,u);
+  return {cons:"Lire l'abscisse du point A sous forme de fraction.",txt:droite(Object.assign({},g,{pt:k}),0),kind:"tpl",tpl:"{{0}}",fields:[{t:"f",sol:k*U/b}],
+    steps:[`L'unité est partagée en <b>${b}</b> parts égales et A est à <b>${k}</b> parts de l'origine : l'abscisse de A est ${fr(k,b)}.`]};
+}
+/* ---------- 5. Lire une abscisse ---------- */
+function gLire(){
+  const t=R(1,5);let g,i;
+  if(t<=3){const a=t===1?0:R(1,30),u=3;g=grilleDixiemes(a,u);do i=R(1,10*u-1);while(i%10===0);}
+  else{const s=N(R(0,20),""+R(0,8));g=grilleCentiemes(s);do i=R(1,19);while(i%10===0);}
+  const v=(g.start)+i*g.step;const base=g.start+Math.floor(i/10)*10*g.step;const r=i%10;
+  return {cons:"Lire l'abscisse du point A.",txt:droite(Object.assign({},g,{pt:i}),0),kind:"tpl",tpl:"A ( {{0}} )",fields:[nF(v)],
+    steps:[g.step===U/10?`Entre deux nombres entiers, il y a 10 intervalles : chaque petite graduation vaut <b>0,1</b> (un dixième).`:`Entre deux graduations numérotées (écart 0,1), il y a 10 intervalles : chaque petite graduation vaut <b>0,01</b> (un centième).`,
+      `A est à ${r} graduation${r>1?"s":""} après ${F(base)} : ${F(base)} + ${M(r+" × "+(g.step===U/10?"0,1":"0,01"))} = <b>${fmt(v)}</b>.`]};
+}
+/* ---------- 6. Placer un point ---------- */
+function gPlacer(){
+  const t=R(1,6);let g,i,txt;
+  if(t<=3){const a=t===1?0:R(1,30);g=grilleDixiemes(a,3);do i=R(1,29);while(i%10===0);txt=F(g.start+i*g.step);}
+  else if(t<=5){const s=N(R(0,20),""+R(0,8));g=grilleCentiemes(s);do i=R(1,19);while(i%10===0);txt=F(g.start+i*g.step);}
+  else{const b=R(2,8),u=b>5?2:3;g=grilleFraction(b,u);do i=R(1,b*u-1);while(i%b===0);txt=fr(i,b);}
+  const unit=g.frac?`L'unité est partagée en <b>${g.frac}</b> : on compte <b>${i}</b> parts à partir de 0.`:
+    g.step===U/10?`Chaque petite graduation vaut 0,1 : ${F(g.start+i*g.step)} = ${F(g.start+Math.floor(i/10)*U)} + ${M((i%10)+" × 0,1")}.`:
+    `Chaque petite graduation vaut 0,01 : ${F(g.start+i*g.step)} = ${F(g.start+Math.floor(i/10)*10*g.step)} + ${M((i%10)+" × 0,01")}.`;
+  return {cons:`Clique sur la graduation où se trouve le point A d'abscisse ${txt}.`,txt:"",kind:"place",g,sol:i,lab:txt,
+    steps:[unit],val:null};
+}
+/* ---------- 7. Différentes écritures ---------- */
+function decomp(n,mode){ // mode : "fr" (3/10), "dec" (0,3), "pf" (3 × 1/10), "pd" (3 × 0,1)
+  return rangs(n).map(k=>{const c=chiffre(n,k);
+    if(k>=0)return mode[0]==="p"?M(c+" × "+sp(10**k)):M(sp(c*10**k));
+    if(mode==="fr")return fr(c,pow10(-k));if(mode==="dec")return F(c*P10(k));
+    if(mode==="pf")return M(c+" × ")+fr(1,pow10(-k));return M(c+" × "+fmt(P10(k)));}).join(M(" + "));
+}
+function gEcritures(){
+  const t=R(1,8);
+  const n=rnum(R(0,2),-R(1,3),false);           // chiffres tous non nuls
+  if(t===1){const d=ndec(n);
+    return {cons:"Écrire ce nombre sous la forme d'une fraction décimale.",txt:"",kind:"tpl",tpl:`<span class="t">${fmt(n)} =</span>{{0}}`,fields:[{t:"f",sol:n,dec:true}],
+      steps:[`${F(n)} a ${d} chiffre${d>1?"s":""} après la virgule : ce sont des ${RANG[-d]}. ${F(n)} = ${fr(sp(n/P10(-d)),pow10(d))}.`]};}
+  if(t===2){const m=rnum(R(0,2),-R(1,3),true);const d=pick([ndec(m),Math.min(3,ndec(m)+1)]);const num=m/P10(-d);
+    return {cons:"Écrire ce nombre avec une virgule.",txt:"",kind:"tpl",tpl:`${fr(num,pow10(d))}<span class="t">=</span>{{0}}`,fields:[nF(m)],
+      steps:[`Le dénominateur est ${sp(pow10(d))} : le dernier chiffre de ${sp(num)} est celui des <b>${RANG[-d]}</b>.`,`${fr(num,pow10(d))} = ${F(m)}${num<pow10(d)?" (on complète avec des zéros devant)":""}.`]};}
+  if(t===3){const ip=ent(n),d=ndec(n),f=(n%U)/P10(-d);
+    return {cons:"Écrire ce nombre comme la somme d'un nombre entier et d'une fraction décimale inférieure à 1.",txt:"",kind:"tpl",
+      tpl:`<span class="t">${fmt(n)} =</span>{{0}}<span class="t">+</span>{{1}}`,fields:[nF(ip*U),{t:"f",sol:n%U,dec:true,lt1:true}],
+      steps:[`${F(n)} = ${M(sp(ip)+" + ")}${fr(f,pow10(d))}`,`partie entière : ${sp(ip)} ; partie décimale : ${fr(f,pow10(d))}.`]};}
+  if(t===4||t===5){const mode=t===4?"fr":"dec";const fields=[];
+    const parts=rangs(n).map(k=>{const c=chiffre(n,k);
+      if(k>=0){fields.push(nF(c*10**k*U));return `{{${fields.length-1}}}`;}
+      if(mode==="fr"){fields.push(nF(c*U));return fr(`{{${fields.length-1}}}`,pow10(-k));}
+      fields.push(nF(c*P10(k)));return `{{${fields.length-1}}}`;});
+    return {cons:`Décomposer suivant le rang des chiffres${mode==="fr"?" (avec des fractions décimales)":" (avec des nombres décimaux)"}.`,txt:"",kind:"tpl",
+      tpl:`<span class="t">${fmt(n)} =</span>`+parts.join('<span class="t">+</span>'),fields,
+      steps:[tabLigne(n),`${F(n)} = ${decomp(n,mode)}`]};}
+  if(t===6||t===7){const mode=t===6?"pf":"pd";const fields=[];
+    const parts=rangs(n).map(k=>{fields.push(nF(chiffre(n,k)*U));const i=`{{${fields.length-1}}}`;
+      if(k>=0)return i+`<span class="t">× ${sp(10**k)}</span>`;
+      return mode==="pf"?i+`<span class="t">×</span>`+fr(1,pow10(-k)):i+`<span class="t">× ${fmt(P10(k))}</span>`;});
+    return {cons:"Décomposer avec des produits.",txt:"",kind:"tpl",tpl:`<span class="t">${fmt(n)} =</span>`+parts.join('<span class="t">+</span>'),fields,
+      steps:[tabLigne(n),`${F(n)} = ${decomp(n,mode)}`]};}
+  // l'inverse : retrouver le nombre (avec parfois un rang « sauté »)
+  const m=rnum(R(1,2),-R(1,3),true);const mode=pick(["fr","dec","pf","pd"]);
+  return {cons:"Quel est ce nombre ?",txt:decomp(m,mode),kind:"tpl",tpl:"<span class=\"t\">=</span>{{0}}",fields:[nF(m)],
+    steps:[tabLigne(m),`On place chaque chiffre à son rang${rangs(m).length<Math.max(...rangs(m))-Math.min(...rangs(m))+1?" ; les rangs absents valent <b>0</b>":""} : ${F(m)}.`]};
+}
+/* ---------- 8. Pourcentages ---------- */
+const PCS=[[50,1,2,"la moitié"],[25,1,4,"le quart"],[75,3,4,"les trois quarts"],[10,1,10,"le dixième"]];
+function gPourcent(){
+  const t=R(1,6);
+  if(t===1){const a=pick([R(1,9),R(11,99)]);
+    return {cons:"Compléter.",txt:"",kind:"tpl",tpl:`<span class="t">${a} % =</span>${fr("{{0}}",100)}<span class="t">=</span>{{1}}`,fields:[nF(a*U),nF(a*U/100)],
+      steps:[`${M(a+" % = ")}${fr(a,100)} = ${F(a*U/100)}${a<10?" : "+a+" centièmes, donc le chiffre "+a+" est au rang des centièmes (et non "+fmt(a*U/10)+").":""}`]};}
+  if(t===2){const a=pick([R(1,9),R(11,99),R(1,9)*10]);
+    return {cons:"Écrire sous forme de pourcentage.",txt:"",kind:"tpl",tpl:`<span class="t">${fmt(a*U/100)} =</span>{{0}}<span class="t">%</span>`,fields:[nF(a*U)],
+      steps:[`${F(a*U/100)} = ${fr(a,100)} = ${M(a+" %")}`]};}
+  if(t===3){const a=R(1,99);
+    return {cons:"Écrire sous forme de pourcentage.",txt:"",kind:"tpl",tpl:`${fr(a,100)}<span class="t">=</span>{{0}}<span class="t">%</span>`,fields:[nF(a*U)],
+      steps:[`Une fraction de dénominateur 100 se note avec % : ${fr(a,100)} = ${M(a+" %")}.`]};}
+  const p=pick(PCS);
+  if(t===4)return {cons:`Prendre ${p[0]} % d'une quantité, c'est prendre…`,txt:"",kind:"qcm",opts:PCS.map(x=>[String(x[0]),x[3]]),sol:String(p[0]),
+    steps:[`${M(p[0]+" % = ")}${fr(p[0],100)} = ${fr(p[1],p[2])} : c'est <b>${p[3]}</b>.`]};
+  if(t===5)return {cons:`Écrire ${p[0]} % avec une fraction simple (${p[3]}).`,txt:"",kind:"tpl",tpl:`<span class="t">${p[0]} % =</span>{{0}}`,fields:[{t:"f",sol:p[0]*U/100,exact:[p[1],p[2]]}],
+    steps:[`${M(p[0]+" % = ")}${fr(p[0],100)} = ${fr(p[1],p[2])} (${p[3]})`,p[2]===2?`Car ${M("2 × 50 = 100")}.`:p[2]===4?`Car ${M("4 × 25 = 100")}${p[1]===3?" et "+M("3 × 25 = 75"):""}.`:`Car ${M("10 × 10 = 100")}.`]};
+  return {cons:`Prendre ${p[3]} d'une quantité, c'est en prendre combien de pourcents ?`,txt:"",kind:"tpl",tpl:`{{0}}<span class="t">%</span>`,fields:[nF(p[0]*U)],
+    steps:[`${p[3][0].toUpperCase()+p[3].slice(1)} = ${fr(p[1],p[2])} = ${fr(p[0],100)} = ${M(p[0]+" %")}.`]};
+}
+const TABS=[
+ {name:"Vocabulaire",gen:gVocab,n:8,rappel:"Dans "+fr("<b>a</b>","<b>b</b>")+", <b>a</b> est le <b>numérateur</b> (parts prises) et <b>b</b> le <b>dénominateur</b> (parts dans l'unité). Un nombre décimal = <b>partie entière</b> + <b>partie décimale</b>."},
+ {name:"Tableau de numération",gen:gTableau,n:7,rappel:"Le chiffre des <b>unités</b> est juste à gauche de la virgule. Après la virgule : <b>dixièmes</b>, <b>centièmes</b>, <b>millièmes</b>. Les 0 à l'intérieur du nombre s'écrivent."},
+ {name:"Chiffre des…, nombre de…",gen:gChiffre,n:8,rappel:"Dans 4 735,28 : le <b>chiffre</b> des dizaines est 3 ; le <b>nombre</b> de dizaines est 473 (on garde tous les chiffres jusqu'à celui des dizaines)."},
+ {name:"Fractions",gen:gFraction,n:8,rappel:"Une fraction décimale a pour dénominateur 10, 100, 1 000… "+fr(1,10)+" = "+fr(10,100)+" ; pour additionner deux fractions de <b>même dénominateur</b>, on additionne les numérateurs et on garde le dénominateur."},
+ {name:"Lire une abscisse",gen:gLire,n:6,rappel:"Compte le nombre d'intervalles entre deux nombres écrits pour savoir ce que vaut chaque petite graduation (0,1 ou 0,01)."},
+ {name:"Placer un point",gen:gPlacer,n:6,rappel:"Repère d'abord ce que vaut une petite graduation, puis compte à partir du nombre écrit le plus proche."},
+ {name:"Écritures d'un décimal",gen:gEcritures,n:8,rappel:"32,34 = "+fr(3234,100)+" = 32 + "+fr(34,100)+" = 30 + 2 + "+fr(3,10)+" + "+fr(4,100)+" = 30 + 2 + 0,3 + 0,04 = 3 × 10 + 2 × 1 + 3 × 0,1 + 4 × 0,01"},
+ {name:"Pourcentages",gen:gPourcent,n:8,rappel:"<b>a %</b> = "+fr("a",100)+" : 27 % = "+fr(27,100)+" = 0,27 ; 6 % = "+fr(6,100)+" = 0,06. 50 % = la moitié, 25 % = le quart, 75 % = les trois quarts, 10 % = le dixième."}
+];
+/* ---------- interface ---------- */
+let cur=0;const state=TABS.map(()=>null);
+const list=document.getElementById("list"),tabs=document.getElementById("tabs");
+const esc=s=>String(s).replace(/"/g,"&quot;");
+function serie(i){const t=TABS[i];const qs=[];const seen=new Set();let guard=0;
+  while(qs.length<t.n&&guard++<400){const q=t.gen(qs.length);const key=q.cons+q.txt+(q.tpl||"")+(q.lab||"");if(seen.has(key))continue;seen.add(key);
+    q.st=null;q.val=q.kind==="tpl"?q.fields.map(f=>f.t==="f"?{n:"",d:""}:""):q.kind==="place"?null:"";qs.push(q);}return qs;}
+function renderTabs(){tabs.innerHTML=TABS.map((t,i)=>{const s=state[i];const ok=s?s.filter(q=>q.st==="ok").length:0;
+  return `<button class="tab" role="tab" aria-selected="${i===cur}" data-tab="${i}">${t.name}<span class="n">${s?ok+"/"+s.length:""}</span></button>`;}).join("");}
+function fieldHTML(q,j,k){const f=q.fields[k],v=q.val[k];
+  if(f.t==="w")return `<input class="wd" id="in${j}_${k}" data-j="${j}" data-k="${k}" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(v)}" aria-label="Mot manquant">`;
+  if(f.t==="f")return `<span class="fr"><span><input class="xs" id="in${j}_${k}n" data-j="${j}" data-k="${k}" data-p="n" autocomplete="off" inputmode="numeric" value="${esc(v.n)}" aria-label="numérateur"></span><span><input class="xs" id="in${j}_${k}d" data-j="${j}" data-k="${k}" data-p="d" autocomplete="off" inputmode="numeric" value="${esc(v.d)}" aria-label="dénominateur"></span></span>`;
+  const cls=f.t==="d"?"xs":(q.fields.length>1?"sm":"md");
+  return `<input class="${cls}" id="in${j}_${k}" data-j="${j}" data-k="${k}" ${f.t==="d"?'maxlength="1" ':""}autocomplete="off" inputmode="decimal" value="${esc(v)}" aria-label="Réponse">`;}
+function ansHTML(q,j){
+  if(q.kind==="qcm")return `<div class="choices">${q.opts.map(([v,l])=>`<button class="choice${q.big?" big":""}${q.val===v?" sel":""}" data-ch="${j}" data-o="${esc(v)}">${q.big?l:l}</button>`).join("")}</div>`;
+  if(q.kind==="place")return `<div style="flex:1 1 100%">${droite(Object.assign({},q.g,{click:true,sel:q.val}),j)}<div class="placehint">${q.val==null?"Clique sur une graduation.":"Tu peux cliquer ailleurs pour déplacer le point."}</div></div>`;
+  const h=q.tpl.replace(/\{\{(\d+)\}\}/g,(m,k)=>fieldHTML(q,j,+k));
+  return q.tpl.startsWith("<div")?h:`<div class="tpl">${h}</div>`;
+}
+function render(){
+  if(!state[cur])state[cur]=serie(cur);
+  document.getElementById("rappel").innerHTML=TABS[cur].rappel;
+  const qs=state[cur];
+  list.innerHTML=qs.map((q,j)=>{const auto=q.kind==="qcm";
+    return `<div class="q ${q.st==="ok"?"ok":q.st==="bad"?"bad":""}" id="q${j}">
+      <div class="qhead"><span class="num">${j+1}</span><span class="consigne">${q.cons}</span></div>
+      ${q.txt?`<div class="expr">${q.txt}</div>`:""}
+      <div class="ans"><div class="ai" id="ai${j}">${ansHTML(q,j)}</div>${auto?"":`<button class="btn" data-check="${j}">Vérifier</button>`}<button class="btn" data-corr="${j}">Correction</button></div>
+      <div class="fb" id="fb${j}"></div><div class="corr" id="co${j}" hidden></div></div>`;}).join("");
+  qs.forEach((q,j)=>{if(q.fb)setFb(j,q.fb[0],q.fb[1]);if(q.marks)applyMarks(q,j);});
+  renderTabs();tally();
+}
+function setFb(j,cls,msg){const f=document.getElementById("fb"+j);f.className="fb "+cls;f.innerHTML=msg;}
+const isPow10=d=>d>=1&&/^10*$/.test(String(d));
+// vérifie un champ : "ok", "bad", "empty", "unread" (+ message éventuel)
+const normW=s=>String(s).toLowerCase().replace(/[’']/g," ").replace(/\s+/g," ").trim().replace(/^(le |la |les |chiffre des |colonne des )/,"").replace(/s$/,"");
+function checkField(f,v){
+  if(f.t==="w"){if(!String(v).trim())return ["empty"];const a=normW(v),b=normW(f.sol);if(a===b)return ["ok"];
+    const sa=a.normalize("NFD").replace(/[\u0300-\u036f]/g,""),sb=b.normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    return sa===sb?["bad",`Presque ! Attention à l'orthographe : « ${f.sol} ».`]:["bad"];}
+  if(f.t==="f"){const sn=v.n.trim(),sd=v.d.trim();if(!sn&&!sd)return ["empty"];if(!sn||!sd)return ["empty"];
+    const a=lireEntier(sn),b=lireEntier(sd);if(a===null||b===null)return ["unread"];if(b===0)return ["bad","Le dénominateur ne peut pas être 0."];
+    const eq=a*U===f.sol*b;
+    if(!eq)return ["bad"];
+    if(f.exact&&(a!==f.exact[0]||b!==f.exact[1]))return ["bad",`C'est bien égal, mais écris la fraction la plus simple (${f.exact[0]} sur ${f.exact[1]}).`];
+    if(f.dec&&!isPow10(b))return ["bad","Le dénominateur d'une fraction décimale est 10, 100, 1 000…"];
+    return ["ok"];}
+  const s=String(v).trim();
+  if(f.t==="d"){if(!s)return f.opt?["ok"]:["empty"];if(!/^\d$/.test(s))return ["unread"];return (+s===f.sol&&!(f.opt&&+s!==0))||(f.opt&&+s===0)?["ok"]:["bad"];}
+  if(!s)return ["empty"];const n=lire(s);if(n===null)return ["unread"];return n===f.sol?["ok"]:["bad"];
+}
+function applyMarks(q,j){q.fields.forEach((f,k)=>{const ids=f.t==="f"?[`in${j}_${k}n`,`in${j}_${k}d`]:[`in${j}_${k}`];
+  ids.forEach(id=>{const el=document.getElementById(id);if(!el)return;el.classList.remove("ok","bad");if(q.marks[k])el.classList.add(q.marks[k]);});});}
+const ILLISIBLE=["hint","Écris seulement un nombre (avec une virgule si besoin), sans lettres."];
+function check(j,silent){
+  const q=state[cur][j];let st="bad",fb;
+  if(q.kind==="qcm"){if(!q.val){if(!silent)setFb(j,"hint","Choisis une réponse.");return;}
+    st=q.val===q.sol?"ok":"bad";fb=st==="ok"?["ok","Bravo !"]:["bad","Ce n'est pas la bonne réponse (regarde la correction)."];}
+  else if(q.kind==="place"){if(q.val==null){if(!silent)setFb(j,"hint","Clique sur une graduation pour placer le point A.");return;}
+    st=q.val===q.sol?"ok":"bad";
+    if(st==="ok")fb=["ok","Bravo !"];
+    else{const g=q.g;const lu=g.frac?fr(q.val,g.frac):F(g.start+q.val*g.step);fb=["bad",`Ton point a pour abscisse ${lu}, pas ${q.lab}.`];}}
+  else{const res=q.fields.map((f,k)=>checkField(f,q.val[k]));
+    if(res.every(r=>r[0]==="empty")){if(!silent)setFb(j,"hint","Écris ta réponse.");return;}
+    q.marks=res.map(r=>r[0]==="ok"&&!(q.fields.length===1)?"ok":r[0]==="ok"?"ok":r[0]==="bad"?"bad":null);
+    if(q.fields.every(f=>f.t==="d"))q.marks=res.map((r,k)=>r[0]==="bad"?"bad":r[0]==="ok"&&String(q.val[k]).trim()?"ok":null);
+    applyMarks(q,j);
+    const msg=res.find(r=>r[0]==="bad"&&r[1]);
+    if(res.some(r=>r[0]==="unread")){fb=ILLISIBLE;st=null;}
+    else if(res.some(r=>r[0]==="bad"))fb=["bad",msg?msg[1]:(q.fields.length>1?"Une réponse est fausse (case en rouge).":"Ce n'est pas la bonne réponse.")];
+    else if(res.some(r=>r[0]==="empty")){fb=["hint","C'est juste pour l'instant : complète les cases vides."];st=null;}
+    else{st="ok";fb=["ok","Bravo !"];}}
+  q.st=st;q.fb=fb;const box=document.getElementById("q"+j);box.classList.toggle("ok",st==="ok");box.classList.toggle("bad",st==="bad");setFb(j,fb[0],fb[1]);renderTabs();tally();
+}
+function corr(j){const q=state[cur][j];const c=document.getElementById("co"+j);
+  if(!c.hidden){c.hidden=true;return;}
+  let h=q.kind==="place"?droite(Object.assign({},q.g,{sol:q.sol}),j):"";
+  c.innerHTML=h+q.steps.map(s=>s.startsWith("<div")?s:`<span class="line">${s}</span>`).join("")+(q.why?`<span class="why">${q.why}</span>`:"");c.hidden=false;}
+function tally(){let tot=0,ok=0;state.forEach(s=>{if(s)s.forEach(q=>{tot++;if(q.st==="ok")ok++;});});
+  document.getElementById("score").textContent=`${ok} / ${tot} réussies`;document.getElementById("prog").style.width=(tot?100*ok/tot:0)+"%";}
+function reset(j){const q=state[cur][j];q.st=null;q.fb=null;const box=document.getElementById("q"+j);box.classList.remove("ok","bad");setFb(j,"","");}
+tabs.addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;cur=+b.dataset.tab;render();});
+list.addEventListener("click",e=>{
+  const c=e.target.closest("[data-check]");if(c){check(+c.dataset.check);return;}
+  const r=e.target.closest("[data-corr]");if(r){corr(+r.dataset.corr);return;}
+  const ch=e.target.closest("[data-ch]");if(ch){const j=+ch.dataset.ch;state[cur][j].val=ch.dataset.o;
+    ch.parentNode.querySelectorAll(".choice").forEach(x=>x.classList.toggle("sel",x===ch));check(j);return;}
+  const tk=e.target.closest("[data-tick]");if(tk){const j=+tk.dataset.q,q=state[cur][j];q.val=+tk.dataset.tick;reset(j);
+    document.getElementById("ai"+j).innerHTML=ansHTML(q,j);renderTabs();tally();}
+});
+list.addEventListener("input",e=>{const d=e.target.dataset;if(d.j==null)return;const j=+d.j,k=+d.k,q=state[cur][j];
+  if(d.p)q.val[k][d.p]=e.target.value;else q.val[k]=e.target.value;
+  e.target.classList.remove("ok","bad");if(q.marks)q.marks[k]=null;reset(j);renderTabs();tally();});
+list.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.dataset.j!=null)check(+e.target.dataset.j);});
+document.getElementById("newSerie").addEventListener("click",()=>{state[cur]=serie(cur);render();});
+document.getElementById("checkAll").addEventListener("click",()=>{state[cur].forEach((q,j)=>check(j,true));});
+render();
+// accès pour les tests automatiques
+window.__d3={TABS,state,fmt,lire,U,serie,check,render,setCur:i=>{cur=i;render();},cur:()=>cur};
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Atelier de construction</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bitter:wght@600;800&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout : énoncé en haut, barre d'outils, feuille quadrillée 1 cm, bilan de vérification */
+:root{
+  --bg:#f6f8fb; --paper:#ffffff; --grid:#e6ecf4; --grid2:#d3dceb; --ink:#1b2433; --muted:#5b6676;
+  --blue:#1f56a8; --blue-soft:#e3ecf9; --red:#c0362c; --green:#1d7a46; --green-soft:#e2f3e8; --red-soft:#fae6e4;
+  --pencil:#7b8698; --tool:#c9d6ea; --tool-edge:#5d7395; --line:#c9d3e0; --snap:#e08a00;
+  --f-display:"Bitter",Georgia,serif; --f-body:"Atkinson Hyperlegible",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#121821; --paper:#1a2230; --grid:#222d3e; --grid2:#2c3a50; --ink:#e7edf5; --muted:#9aa6b8;
+  --blue:#7fb0ff; --blue-soft:#1f2f4a; --red:#ff7f73; --green:#6fd39a; --green-soft:#183326; --red-soft:#3a2020;
+  --pencil:#8f9bb0; --tool:#2d3c55; --tool-edge:#8fa6c9; --line:#33415a; --snap:#ffb347; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#121821; --paper:#1a2230; --grid:#222d3e; --grid2:#2c3a50; --ink:#e7edf5; --muted:#9aa6b8;
+  --blue:#7fb0ff; --blue-soft:#1f2f4a; --red:#ff7f73; --green:#6fd39a; --green-soft:#183326; --red-soft:#3a2020;
+  --pencil:#8f9bb0; --tool:#2d3c55; --tool-edge:#8fa6c9; --line:#33415a; --snap:#ffb347; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.45}
+.wrap{max-width:1100px;margin:0 auto;padding-block:18px 36px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:12px}
+h1{font-family:var(--f-display);font-weight:800;font-size:clamp(1.5rem,3.6vw,2.1rem);margin:0}
+.tag{font-size:.78rem;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+button,select{font:inherit}
+.card{background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px}
+.task{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between}
+.task .enonce{font-size:1.15rem;font-weight:700;min-width:0}
+.task select{padding:6px 8px;border-radius:6px;border:1.5px solid var(--line);background:var(--bg);color:var(--ink)}
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tool{border:1.5px solid var(--line);background:var(--paper);color:var(--ink);padding:7px 11px;border-radius:8px;cursor:pointer;display:flex;gap:6px;align-items:center}
+.tool[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--paper);font-weight:700}
+.sep{width:1px;height:28px;background:var(--line);margin:0 4px}
+.btn{font-weight:700;border:2px solid var(--blue);background:var(--paper);color:var(--blue);padding:7px 13px;border-radius:8px;cursor:pointer}
+.btn.primary{background:var(--blue);color:var(--paper)}
+button:focus-visible,select:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.hint{color:var(--muted);font-size:.95rem;min-height:1.4em}
+.hint b{color:var(--ink)}
+.sheet{background:var(--paper);border:1.5px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none}
+svg{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none}
+svg text{font-family:var(--f-body);fill:var(--ink)}
+.read{font-family:var(--f-mono)}
+.report{display:flex;flex-direction:column;gap:6px}
+.report:empty{display:none}
+.ok{background:var(--green-soft);color:var(--green);border-radius:8px;padding:8px 12px}
+.ko{background:var(--red-soft);color:var(--red);border-radius:8px;padding:8px 12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+details summary{cursor:pointer;font-weight:700}
+details ul{margin:6px 0 0;padding-left:20px}
+</style>
+
+<div class="wrap">
+  <div><span class="tag">6e · S6 · Constructions de triangles</span><h1>Atelier de construction</h1></div>
+
+  <section class="card task">
+    <div class="enonce" id="enonce"></div>
+    <div class="row">
+      <label for="choix" class="tag">Énoncé</label>
+      <select id="choix"></select>
+      <button class="btn" id="nouveau">Nouvel énoncé au hasard</button>
+    </div>
+  </section>
+
+  <div class="tools" role="toolbar" aria-label="Instruments">
+    <button class="tool" data-t="point">✕ Point</button>
+    <button class="tool" data-t="seg">📏 Règle (segment)</button>
+    <button class="tool" data-t="ray">↗ Demi-droite</button>
+    <button class="tool" data-t="compas">⌒ Compas</button>
+    <button class="tool" data-t="rapp">◠ Rapporteur</button>
+    <button class="tool" data-t="gomme">⌫ Gomme</button>
+    <span class="sep"></span>
+    <label for="nom" class="tag">Nom du point</label><select id="nom"></select>
+    <span class="sep"></span>
+    <button class="btn" id="undo">Annuler</button>
+    <button class="btn" id="clear">Tout effacer</button>
+  </div>
+  <div class="hint" id="hint" aria-live="polite"></div>
+
+  <div class="sheet"><svg id="svg" viewBox="0 0 960 560" aria-label="Feuille de construction"></svg></div>
+
+  <div class="row">
+    <button class="btn primary" id="verif">Vérifier ma construction</button>
+    <button class="btn" id="impossible">Ce triangle n'est pas constructible</button>
+  </div>
+  <div class="report" id="report" aria-live="polite"></div>
+
+  <details class="card"><summary>Mode d'emploi</summary><ul>
+    <li><b>Point</b> : clique pour placer un point. Choisis d'abord son nom dans la liste. Le point s'accroche aux croisements (repère orange).</li>
+    <li><b>Règle</b> : clique sur le point de départ, puis clique pour finir le segment. La longueur s'affiche pendant le tracé (au millimètre).</li>
+    <li><b>Demi-droite</b> : clique sur l'origine, puis sur un point par lequel elle passe.</li>
+    <li><b>Compas</b> : 1) clique sur le centre, 2) clique pour choisir l'écartement (le rayon s'affiche), 3) tourne et clique pour finir l'arc.</li>
+    <li><b>Rapporteur</b> : 1) clique sur le sommet de l'angle, 2) clique sur un point de l'autre côté (le zéro), 3) tourne et clique pour placer le repère à la bonne mesure.</li>
+    <li><b>Gomme</b> : clique sur un tracé pour l'effacer. <b>Annuler</b> retire le dernier tracé.</li>
+    <li>Quand le triangle est terminé (trois points nommés et trois côtés tracés), clique sur <b>Vérifier</b>.</li>
+  </ul></details>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const svg=$('#svg');const W=960,H=560,K=40; // 40 px = 1 cm
+const fr=(x,d=1)=>(Math.round(x*10**d)/10**d).toString().replace('.',',');
+const deg=r=>r*180/Math.PI, rad=d=>d*Math.PI/180;
+const dist=(p,q)=>Math.hypot(p[0]-q[0],p[1]-q[1]);
+const sub=(p,q)=>[p[0]-q[0],p[1]-q[1]], add=(p,q)=>[p[0]+q[0],p[1]+q[1]], mul=(p,k)=>[p[0]*k,p[1]*k];
+const toPx=p=>[p[0]*K,p[1]*K];
+const rnd=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+
+/* ---------- énoncés ---------- */
+const bank=[
+ {lab:'Cours a) ABC : 3 longueurs',n:'ABC',L:{AB:6,AC:4,BC:5}},
+ {lab:'Cours b) RST : 2 côtés + angle',n:'RST',L:{ST:4,SR:3},A:{RST:42}},
+ {lab:'Cours c) ABC : 2 angles + côté',n:'ABC',L:{AB:5},A:{BAC:40,ABC:50}},
+ {lab:'Exercice : EFG',n:'EFG',L:{EF:7,FG:5,EG:4}},
+ {lab:'Exercice : IJK',n:'IJK',L:{IJ:5,IK:4},A:{JIK:55}},
+ {lab:'Exercice : DEF',n:'DEF',L:{DE:6},A:{EDF:35,DEF:70}},
+ {lab:'Exercice : LMN (piège)',n:'LMN',L:{LM:8,MN:3,LN:4}},
+ {lab:'Exercice : PQR',n:'PQR',L:{PQ:6.5,PR:5},A:{QPR:48}},
+];
+function randomTask(){const names=['ABC','DEF','EFG','IJK','MNP','RST','UVW','XYZ'][rnd(0,7)];const [a,b,c]=names;const k=rnd(0,2);
+  if(k===0){let big=rnd(5,9),x=rnd(2,big-1)+(Math.random()<.4?.5:0),y;const imp=Math.random()<.2;y=imp?Math.max(1,big-x-rnd(1,2)):rnd(Math.ceil(big-x+.5),big);
+    return {lab:'Au hasard',n:names,L:{[a+b]:big,[a+c]:x,[b+c]:y}}}
+  if(k===1)return {lab:'Au hasard',n:names,L:{[a+b]:rnd(4,8),[a+c]:rnd(3,6)},A:{[b+a+c]:rnd(3,13)*10+rnd(0,1)*5}};
+  return {lab:'Au hasard',n:names,L:{[a+b]:rnd(4,8)},A:{[b+a+c]:rnd(3,8)*10,[a+b+c]:rnd(3,7)*10}}}
+const angTxt=s=>`l'angle ${s} = `;
+function enonce(T){const parts=[];for(const k in T.L)parts.push(`${k} = ${fr(T.L[k])} cm`);for(const k in (T.A||{}))parts.push(`\\(\\widehat{${k}}\\)`.replace(/.*/,`angle ${k} = ${T.A[k]}°`));
+  return `Construis le triangle ${T.n} tel que : ${parts.join(' ; ')}.`}
+function possible(T){const A=T.A||{};const ks=Object.keys(T.L);
+  if(ks.length===3){const v=Object.values(T.L).sort((x,y)=>x-y);return v[0]+v[1]>v[2]+1e-9}
+  const as=Object.values(A);if(as.length===2)return as[0]+as[1]<180;return as[0]<180}
+let task=bank[0];
+const sel=$('#choix');bank.forEach((b,i)=>{const o=document.createElement('option');o.value=i;o.textContent=b.lab;sel.appendChild(o)});
+sel.onchange=()=>setTask(bank[+sel.value]);
+$('#nouveau').onclick=()=>{let o=sel.querySelector('option[value="r"]');if(!o){o=document.createElement('option');o.value='r';sel.appendChild(o)}const t=randomTask();o.textContent='Au hasard : '+t.n;sel.value='r';setTask(t)};
+function setTask(T){task=T;$('#enonce').textContent=enonce(T);objs=[];hist=[];state=null;$('#report').innerHTML='';fillNames();render()}
+function fillNames(){const ns=$('#nom');const used=objs.filter(o=>o.t==='point').map(o=>o.name);ns.innerHTML='';
+  const list=[...task.n,...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(l=>!task.n.includes(l))];
+  list.forEach(l=>{const o=document.createElement('option');o.value=l;o.textContent=l+(used.includes(l)?' (déjà placé)':'');ns.appendChild(o)});
+  const next=[...task.n].find(l=>!used.includes(l));if(next)ns.value=next}
+
+/* ---------- objets ---------- */
+let objs=[],hist=[],tool='seg',state=null,mouse=null,snapPt=null;
+function push(o){hist.push(JSON.stringify(objs));objs.push(o);if(o.t==='point')fillNames();render()}
+$('#undo').onclick=()=>{if(state){state=null;render();return}if(hist.length){objs=JSON.parse(hist.pop());fillNames();render()}};
+$('#clear').onclick=()=>{hist.push(JSON.stringify(objs));objs=[];state=null;fillNames();render()};
+
+/* intersections */
+function lineOf(o){if(o.t==='seg')return {p:o.a,d:sub(o.b,o.a),t0:0,t1:1};if(o.t==='ray')return {p:o.a,d:sub(o.b,o.a),t0:0,t1:1e6};return null}
+function angIn(a,a0,a1){// a dans l'arc parcouru de a0 à a1 (a1 peut être < a0)
+  let lo=Math.min(a0,a1),hi=Math.max(a0,a1);if(hi-lo>=2*Math.PI-1e-6)return true;let x=a;while(x<lo)x+=2*Math.PI;while(x>hi+1e-9)x-=2*Math.PI;return x>=lo-1e-6&&x<=hi+1e-6}
+function inters(o1,o2){const out=[];const l1=lineOf(o1),l2=lineOf(o2);
+  if(l1&&l2){const den=l1.d[0]*l2.d[1]-l1.d[1]*l2.d[0];if(Math.abs(den)<1e-9)return out;const w=sub(l2.p,l1.p);const t=(w[0]*l2.d[1]-w[1]*l2.d[0])/den,u=(w[0]*l1.d[1]-w[1]*l1.d[0])/den;
+    if(t>=l1.t0-1e-6&&t<=l1.t1+1e-6&&u>=l2.t0-1e-6&&u<=l2.t1+1e-6)out.push(add(l1.p,mul(l1.d,t)));return out}
+  if(o1.t==='arc'&&o2.t==='arc'){const d=dist(o1.c,o2.c);if(d<1e-9||d>o1.r+o2.r+1e-9||d<Math.abs(o1.r-o2.r)-1e-9)return out;
+    const a=(o1.r*o1.r-o2.r*o2.r+d*d)/(2*d),h=Math.sqrt(Math.max(0,o1.r*o1.r-a*a));const m=add(o1.c,mul(sub(o2.c,o1.c),a/d));const n=[-(o2.c[1]-o1.c[1])/d,(o2.c[0]-o1.c[0])/d];
+    [add(m,mul(n,h)),add(m,mul(n,-h))].forEach(p=>{if(onArc(o1,p)&&onArc(o2,p))out.push(p)});return out}
+  const arc=o1.t==='arc'?o1:o2,l=o1.t==='arc'?l2:l1;if(!arc||!l)return out;
+  const f=sub(l.p,arc.c);const A=l.d[0]**2+l.d[1]**2,B=2*(f[0]*l.d[0]+f[1]*l.d[1]),C=f[0]**2+f[1]**2-arc.r**2;const D=B*B-4*A*C;if(D<0)return out;
+  [(-B+Math.sqrt(D))/(2*A),(-B-Math.sqrt(D))/(2*A)].forEach(t=>{if(t>=l.t0-1e-6&&t<=l.t1+1e-6){const p=add(l.p,mul(l.d,t));if(onArc(arc,p))out.push(p)}});return out}
+function onArc(a,p){return angIn(Math.atan2(p[1]-a.c[1],p[0]-a.c[0]),a.a0,a.a1)}
+function snapCandidates(){const c=[];objs.forEach(o=>{if(o.t==='point'||o.t==='mark')c.push({p:[o.x,o.y],k:'pt'});if(o.t==='seg'){c.push({p:o.a,k:'end'},{p:o.b,k:'end'})}if(o.t==='arc')c.push({p:o.c,k:'end'})});
+  const lines=objs.filter(o=>o.t==='seg'||o.t==='ray'||o.t==='arc');for(let i=0;i<lines.length;i++)for(let j=i+1;j<lines.length;j++)inters(lines[i],lines[j]).forEach(p=>c.push({p,k:'x'}));return c}
+function snap(p,r=.25){let best=null,bd=r;snapCandidates().forEach(s=>{const d=dist(s.p,p);if(d<bd){bd=d;best=s.p}});return best}
+const grid01=p=>[Math.round(p[0]*10)/10,Math.round(p[1]*10)/10];
+
+/* ---------- outils ---------- */
+const hints={
+ point:'Clique pour placer le point <b>{n}</b>. Il s\'accroche aux croisements des tracés.',
+ seg:['Règle : clique sur le point de départ du segment.','Règle : clique pour finir le segment. Longueur : <b class="read">{l}</b>'],
+ ray:['Demi-droite : clique sur son origine.','Demi-droite : clique sur un point par lequel elle passe.'],
+ compas:['Compas : clique sur le centre (pointe sèche).','Compas : clique pour fixer l\'écartement. Rayon : <b class="read">{l}</b>','Compas : tourne puis clique pour terminer l\'arc. Rayon : <b class="read">{l}</b>'],
+ rapp:['Rapporteur : clique sur le sommet de l\'angle.','Rapporteur : clique sur un point de l\'autre côté de l\'angle (le zéro).','Rapporteur : tourne puis clique pour placer le repère. Angle : <b class="read">{a}</b>'],
+ gomme:'Gomme : clique sur un tracé pour l\'effacer.'};
+document.querySelectorAll('.tool').forEach(b=>b.onclick=()=>{tool=b.dataset.t;state=null;document.querySelectorAll('.tool').forEach(x=>x.setAttribute('aria-pressed',x===b));render()});
+document.querySelector('.tool[data-t="seg"]').setAttribute('aria-pressed','true');
+
+function cmPt(ev){const pt=svg.createSVGPoint();pt.x=ev.clientX;pt.y=ev.clientY;const q=pt.matrixTransform(svg.getScreenCTM().inverse());return [q.x/K,q.y/K]}
+function cur(){return mouse||[0,0]}
+function segEnd(a,m){const s=snap(m,.12);if(s)return s;let dir=sub(m,a);
+  // si la souris longe une demi-droite ou un segment qui part de a, on suit ce tracé
+  for(const o of objs){if((o.t==='ray'||o.t==='seg')&&(dist(o.a,a)<.05||(o.t==='seg'&&dist(o.b,a)<.05))&&distTo(o,m)<.3){const st=dist(o.a,a)<.05?o.a:o.b,en=st===o.a?o.b:o.a;dir=sub(en,st);break}}
+  const d=dist(a,m);const n=Math.hypot(...dir);if(d<1e-6||n<1e-9)return m;const proj=(m[0]-a[0])*dir[0]/n+(m[1]-a[1])*dir[1]/n;const L=Math.round(Math.max(proj,0)*10)/10;return add(a,mul(dir,L/n))}
+function compRadius(c,m){const s=snap(m,.12);if(s&&dist(s,c)>.05)return dist(s,c);return Math.max(.1,Math.round(dist(c,m)*10)/10)}
+function rappAngle(st,m){const a0=Math.atan2(st.b[1]-st.v[1],st.b[0]-st.v[0]);const am=Math.atan2(m[1]-st.v[1],m[0]-st.v[0]);let d=am-a0;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+  const sgn=d<0?-1:1;const ang=Math.round(Math.abs(deg(d)));return {a0,sgn,ang}}
+
+svg.addEventListener('pointermove',ev=>{mouse=cmPt(ev);snapPt=(tool==='gomme')?null:snap(mouse);render()});
+svg.addEventListener('pointerleave',()=>{mouse=null;snapPt=null;render()});
+svg.addEventListener('pointerdown',ev=>{ev.preventDefault();mouse=cmPt(ev);const m=mouse;const s=snap(m);
+  if(tool==='point'){const p=s||grid01(m);const name=$('#nom').value;const old=objs.findIndex(o=>o.t==='point'&&o.name===name);
+    hist.push(JSON.stringify(objs));if(old>=0)objs.splice(old,1);objs.push({t:'point',x:p[0],y:p[1],name});fillNames();render();return}
+  if(tool==='seg'){if(!state){state={a:s||grid01(m)};render();return}const b=segEnd(state.a,m);if(dist(b,state.a)>.05)push({t:'seg',a:state.a,b});state=null;render();return}
+  if(tool==='ray'){if(!state){state={a:s||grid01(m)};render();return}const b=s||m;if(dist(b,state.a)>.05)push({t:'ray',a:state.a,b});state=null;render();return}
+  if(tool==='compas'){if(!state){state={c:s||grid01(m),step:1};render();return}
+    if(state.step===1){state.r=compRadius(state.c,m);state.a0=Math.atan2(m[1]-state.c[1],m[0]-state.c[0]);state.acc=0;state.prev=state.a0;state.step=2;render();return}
+    const a1=state.a0+state.acc;if(Math.abs(state.acc)>.02)push({t:'arc',c:state.c,r:state.r,a0:Math.min(state.a0,a1),a1:Math.max(state.a0,a1)});state=null;render();return}
+  if(tool==='rapp'){if(!state){if(!s){flash('Place le centre du rapporteur sur un point déjà tracé.');return}state={v:s,step:1};render();return}
+    if(state.step===1){const b=s||m;if(dist(b,state.v)<.3)return;state.b=b;state.step=2;render();return}
+    const r=rappAngle(state,m);const dir=r.a0+r.sgn*rad(r.ang);const p=add(state.v,[3.2*Math.cos(dir),3.2*Math.sin(dir)]);push({t:'mark',x:p[0],y:p[1],ang:r.ang});state=null;render();return}
+  if(tool==='gomme'){let bi=-1,bd=.35;objs.forEach((o,i)=>{const d=distTo(o,m);if(d<bd){bd=d;bi=i}});if(bi>=0){hist.push(JSON.stringify(objs));objs.splice(bi,1);fillNames();render()}}
+});
+// suivi de la rotation du compas
+svg.addEventListener('pointermove',()=>{if(tool==='compas'&&state&&state.step===2&&mouse){const a=Math.atan2(mouse[1]-state.c[1],mouse[0]-state.c[0]);let d=a-state.prev;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;state.acc=Math.max(-2*Math.PI,Math.min(2*Math.PI,state.acc+d));state.prev=a;render()}});
+function distTo(o,p){if(o.t==='point'||o.t==='mark')return dist([o.x,o.y],p);
+  if(o.t==='seg'||o.t==='ray'){const d=sub(o.b,o.a);let t=((p[0]-o.a[0])*d[0]+(p[1]-o.a[1])*d[1])/(d[0]**2+d[1]**2);t=Math.max(0,o.t==='seg'?Math.min(1,t):t);return dist(p,add(o.a,mul(d,t)))}
+  if(o.t==='arc'){const a=Math.atan2(p[1]-o.c[1],p[0]-o.c[0]);return angIn(a,o.a0,o.a1)?Math.abs(dist(p,o.c)-o.r):99}return 99}
+let flashMsg='',flashT=0;function flash(s){flashMsg=s;flashT=Date.now();render();setTimeout(render,2600)}
+
+/* ---------- dessin ---------- */
+function L(a,b,st){const [x1,y1]=toPx(a),[x2,y2]=toPx(b);return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" ${st} stroke-linecap="round"/>`}
+function cross(p,col='var(--ink)'){const [x,y]=toPx(p);return `<path d="M${x-6} ${y-6}L${x+6} ${y+6}M${x-6} ${y+6}L${x+6} ${y-6}" stroke="${col}" stroke-width="2.2"/>`}
+function arcPath(c,r,a0,a1,st){if(Math.abs(a1-a0)>=2*Math.PI-1e-3){const [x,y]=toPx(c);return `<circle cx="${x}" cy="${y}" r="${r*K}" fill="none" ${st}/>`}
+  const p0=toPx(add(c,[r*Math.cos(a0),r*Math.sin(a0)])),p1=toPx(add(c,[r*Math.cos(a1),r*Math.sin(a1)]));const large=Math.abs(a1-a0)>Math.PI?1:0,sw=a1>a0?1:0;
+  return `<path d="M${p0[0]} ${p0[1]} A${r*K} ${r*K} 0 ${large} ${sw} ${p1[0]} ${p1[1]}" fill="none" ${st}/>`}
+function tag(p,s,col='var(--blue)'){const [x,y]=toPx(p);return `<g><rect x="${x+10}" y="${y-30}" width="${s.length*9+14}" height="24" rx="5" fill="var(--paper)" stroke="${col}" stroke-width="1.2"/><text x="${x+17}" y="${y-13}" font-size="15" class="read" style="fill:${col};font-family:var(--f-mono)">${s}</text></g>`}
+function protractor(v,a0,sgn){const R=2.8;let g='';const pts=[];for(let a=0;a<=180;a+=3){const t=a0+sgn*rad(a);pts.push(toPx(add(v,[R*Math.cos(t),R*Math.sin(t)])))}
+  g+=`<path d="M${pts.map(p=>p.join(' ')).join(' L')} Z" fill="var(--tool)" fill-opacity=".72" stroke="var(--tool-edge)" stroke-width="1.2"/>`;
+  for(let a=0;a<=180;a+=1){if(a%5&&a%1)continue;const big=a%10===0,mid=a%5===0;if(!mid&&!big&&a%1)continue;const t=a0+sgn*rad(a);const r2=big?R*.86:mid?R*.91:R*.95;
+    const [x1,y1]=toPx(add(v,[R*Math.cos(t),R*Math.sin(t)])),[x2,y2]=toPx(add(v,[r2*Math.cos(t),r2*Math.sin(t)]));g+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="var(--tool-edge)" stroke-width="${big?1.1:.5}"/>`;
+    if(a%20===0){const [tx,ty]=toPx(add(v,[R*.74*Math.cos(t),R*.74*Math.sin(t)]));g+=`<text x="${tx}" y="${ty}" font-size="10" text-anchor="middle" dominant-baseline="middle" style="fill:var(--tool-edge)">${a}</text>`}}
+  const [cx,cy]=toPx(v);g+=`<circle cx="${cx}" cy="${cy}" r="3" fill="none" stroke="var(--tool-edge)"/>`;return g}
+function render(){
+  let s='';
+  for(let x=0;x<=W;x+=K/2)s+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="${x%K?'var(--grid)':'var(--grid2)'}" stroke-width="1"/>`;
+  for(let y=0;y<=H;y+=K/2)s+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="${y%K?'var(--grid)':'var(--grid2)'}" stroke-width="1"/>`;
+  objs.forEach(o=>{
+    if(o.t==='ray'){const d=sub(o.b,o.a),n=Math.hypot(...d);s+=L(o.a,add(o.a,mul(d,40/n)),'stroke="var(--pencil)" stroke-width="1.2" stroke-dasharray="6 5"')}
+    if(o.t==='arc')s+=arcPath(o.c,o.r,o.a0,o.a1,'stroke="var(--pencil)" stroke-width="1.8"');
+  });
+  objs.forEach(o=>{if(o.t==='seg')s+=L(o.a,o.b,'stroke="var(--blue)" stroke-width="3.4"')});
+  objs.forEach(o=>{if(o.t==='mark'){const [x,y]=toPx([o.x,o.y]);s+=`<circle cx="${x}" cy="${y}" r="4" fill="var(--red)"/><text x="${x+7}" y="${y-7}" font-size="12" style="fill:var(--red)">${o.ang}°</text>`}
+    if(o.t==='point'){s+=cross([o.x,o.y]);const [x,y]=toPx([o.x,o.y]);s+=`<text x="${x+8}" y="${y-8}" font-size="22" font-style="italic" font-weight="700">${o.name}</text>`}});
+  let h='';const m=mouse;
+  if(tool==='point'){h=hints.point.replace('{n}',$('#nom').value);if(m){const p=snapPt||grid01(m);s+=cross(p,'var(--blue)')}}
+  if(tool==='seg'){if(!state)h=hints.seg[0];else{const b=m?segEnd(state.a,m):state.a;const l=dist(state.a,b);h=hints.seg[1].replace('{l}',fr(l)+' cm');s+=L(state.a,b,'stroke="var(--blue)" stroke-width="3.4" stroke-opacity=".55"');if(m)s+=tag(b,fr(l)+' cm');s+=cross(state.a,'var(--blue)')}}
+  if(tool==='ray'){if(!state)h=hints.ray[0];else{h=hints.ray[1];if(m){const b=snapPt||m;const d=sub(b,state.a),n=Math.hypot(...d)||1;s+=L(state.a,add(state.a,mul(d,40/n)),'stroke="var(--pencil)" stroke-width="1.2" stroke-dasharray="6 5"')}}}
+  if(tool==='compas'){if(!state)h=hints.compas[0];else if(state.step===1){const r=m?compRadius(state.c,m):0;h=hints.compas[1].replace('{l}',fr(r)+' cm');s+=arcPath(state.c,r,0,2*Math.PI,'stroke="var(--blue)" stroke-width="1" stroke-dasharray="3 5"');if(m){const end=add(state.c,mul(sub(m,state.c),r/(dist(m,state.c)||1)));s+=compassSvg(state.c,end)+tag(m,fr(r)+' cm')}s+=cross(state.c,'var(--blue)')}
+    else{h=hints.compas[2].replace('{l}',fr(state.r)+' cm');const a1=state.a0+state.acc;s+=arcPath(state.c,state.r,Math.min(state.a0,a1),Math.max(state.a0,a1),'stroke="var(--blue)" stroke-width="2"');s+=compassSvg(state.c,add(state.c,[state.r*Math.cos(a1),state.r*Math.sin(a1)]))}}
+  if(tool==='rapp'){if(!state)h=hints.rapp[0];else if(state.step===1){h=hints.rapp[1];s+=cross(state.v,'var(--blue)');if(m){const a0=Math.atan2(m[1]-state.v[1],m[0]-state.v[0]);s+=protractor(state.v,a0,-1)}}
+    else{const r=m?rappAngle(state,m):{a0:Math.atan2(state.b[1]-state.v[1],state.b[0]-state.v[0]),sgn:-1,ang:0};h=hints.rapp[2].replace('{a}',r.ang+'°');s+=protractor(state.v,r.a0,r.sgn);
+      const dir=r.a0+r.sgn*rad(r.ang);const p=add(state.v,[3.2*Math.cos(dir),3.2*Math.sin(dir)]);s+=L(state.v,p,'stroke="var(--red)" stroke-width="1.2" stroke-dasharray="4 4"');const [x,y]=toPx(p);s+=`<circle cx="${x}" cy="${y}" r="4" fill="var(--red)"/>`+tag(p,r.ang+'°','var(--red)')}}
+  if(tool==='gomme')h=hints.gomme;
+  if(snapPt&&tool!=='gomme'){const [x,y]=toPx(snapPt);s+=`<circle cx="${x}" cy="${y}" r="9" fill="none" stroke="var(--snap)" stroke-width="2.2"/>`}
+  if(flashMsg&&Date.now()-flashT<2500)h=`<span style="color:var(--red);font-weight:700">${flashMsg}</span>`;
+  $('#hint').innerHTML=h;svg.innerHTML=s}
+function compassSvg(c,m){const [x1,y1]=toPx(c),[x2,y2]=toPx(m);const mx=(x1+x2)/2,my=(y1+y2)/2,d=Math.hypot(x2-x1,y2-y1)||1;const h=Math.max(60,d*.8);let nx=-(y2-y1)/d,ny=(x2-x1)/d;if(ny>0){nx=-nx;ny=-ny}const hx=mx+nx*h,hy=my+ny*h;
+  return `<g opacity=".85"><line x1="${hx}" y1="${hy}" x2="${x1}" y2="${y1}" stroke="var(--tool-edge)" stroke-width="5" stroke-linecap="round"/><line x1="${hx}" y1="${hy}" x2="${x2}" y2="${y2}" stroke="var(--tool-edge)" stroke-width="5" stroke-linecap="round"/><circle cx="${hx}" cy="${hy}" r="7" fill="var(--tool)" stroke="var(--tool-edge)" stroke-width="2"/><circle cx="${x2}" cy="${y2}" r="3" fill="var(--ink)"/></g>`}
+
+/* ---------- vérification ---------- */
+function ptByName(n){const o=objs.find(o=>o.t==='point'&&o.name===n);return o?[o.x,o.y]:null}
+function hasSeg(p,q){return objs.some(o=>o.t==='seg'&&((dist(o.a,p)<.15&&dist(o.b,q)<.15)||(dist(o.a,q)<.15&&dist(o.b,p)<.15)))}
+function angleAt(a,v,b){const u=sub(a,v),w=sub(b,v);return deg(Math.acos(Math.max(-1,Math.min(1,(u[0]*w[0]+u[1]*w[1])/(Math.hypot(...u)*Math.hypot(...w))))))}
+$('#verif').onclick=()=>{const rep=$('#report');const lines=[];let all=true;
+  if(!possible(task)){rep.innerHTML=`<div class="ko">Regarde bien les données : ce triangle ne peut pas être construit. ${explain()}</div>`;return}
+  const ns=[...task.n];const P={};ns.forEach(n=>P[n]=ptByName(n));
+  const miss=ns.filter(n=>!P[n]);if(miss.length){rep.innerHTML=`<div class="ko">Il manque le point ${miss.join(', ')}. Choisis son nom dans la liste « Nom du point » et place-le avec l'outil Point.</div>`;return}
+  [[0,1],[1,2],[0,2]].forEach(([i,j])=>{const s=ns[i]+ns[j];const ok=hasSeg(P[ns[i]],P[ns[j]]);if(!ok)all=false;lines.push([ok,ok?`Le côté [${s}] est tracé.`:`Le côté [${s}] n'est pas tracé avec la règle (d'un point à l'autre).`])});
+  for(const k in task.L){const d=dist(P[k[0]],P[k[1]]);const ok=Math.abs(d-task.L[k])<=.15;if(!ok)all=false;lines.push([ok,ok?`${k} mesure bien ${fr(task.L[k])} cm.`:`${k} mesure ${fr(d)} cm au lieu de ${fr(task.L[k])} cm.`])}
+  for(const k in (task.A||{})){const a=angleAt(P[k[0]],P[k[1]],P[k[2]]);const ok=Math.abs(a-task.A[k])<=1.5;if(!ok)all=false;lines.push([ok,ok?`L'angle ${k} mesure bien ${task.A[k]}°.`:`L'angle ${k} mesure ${Math.round(a)}° au lieu de ${task.A[k]}°.`])}
+  rep.innerHTML=(all?`<div class="ok"><b>Bravo, ton triangle ${task.n} est juste !</b></div>`:`<div class="ko"><b>Presque : corrige les points en rouge.</b></div>`)+lines.map(([ok,t])=>`<div class="${ok?'ok':'ko'}">${ok?'✓':'✗'} ${t}</div>`).join('')};
+function explain(){const ks=Object.keys(task.L);if(ks.length===3){const v=Object.values(task.L).sort((x,y)=>x-y);return `Le plus grand côté mesure ${fr(v[2])} cm et ${fr(v[0])} + ${fr(v[1])} = ${fr(v[0]+v[1])}, ce n'est pas plus grand que ${fr(v[2])}.`}const as=Object.values(task.A);return `La somme des deux angles (${as[0]}° + ${as[1]}°) est trop grande : les demi-droites ne se coupent pas.`}
+$('#impossible').onclick=()=>{const rep=$('#report');rep.innerHTML=possible(task)?`<div class="ko">Non, ce triangle peut être construit. Vérifie avec le cours, puis construis-le.</div>`:`<div class="ok"><b>Exact !</b> ${explain()}</div>`};
+
+setTask(bank[0]);
+})();
+</script>
+
+</body></html>

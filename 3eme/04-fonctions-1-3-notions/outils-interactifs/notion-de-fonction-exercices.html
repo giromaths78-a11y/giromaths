@@ -1,0 +1,455 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Notion de fonction 3e</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Crimson+Pro:ital,wght@0,500;1,500;1,600&display=swap">
+<style>
+/* Layout : même cahier (fiche de 35 exercices) à petits carreaux que « La machine à fonctions » ; un exercice à la fois,
+   pastilles d'avancement en haut. Vert = antécédent, rouge = image, bleu = fonction. */
+:root{
+  --paper:#f7f9fc; --grid:#dfe7f2; --ink:#18202e; --muted:#5b6678; --card:#ffffff; --line:#c9d3e1;
+  --ant:#1b8a3a; --ant-soft:#e3f4e7; --img:#cf2f2b; --img-soft:#fbe6e4; --fn:#1f4e9c; --fn-soft:#e6edf8;
+  --warn:#b26a00; --warn-soft:#fff2dc; --focus:#f2a900; --on-fn:#ffffff; --blue-curve:#1f5fd6; --red-curve:#e0211b;
+  --f-display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-math:"Crimson Pro", "Cambria Math", Georgia, serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#121722; --grid:#1d2533; --ink:#e8edf5; --muted:#9aa6b8; --card:#1a2130; --line:#2f3a4d;
+  --ant:#4cc372; --ant-soft:#173324; --img:#ff6b63; --img-soft:#3a1d1d; --fn:#7aa5ff; --fn-soft:#1b2a47;
+  --warn:#ffb547; --warn-soft:#3a2a12; --focus:#ffc94d; --on-fn:#0d1526; --blue-curve:#6ea0ff; --red-curve:#ff6b63; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#121722; --grid:#1d2533; --ink:#e8edf5; --muted:#9aa6b8; --card:#1a2130; --line:#2f3a4d;
+  --ant:#4cc372; --ant-soft:#173324; --img:#ff6b63; --img-soft:#3a1d1d; --fn:#7aa5ff; --fn-soft:#1b2a47;
+  --warn:#ffb547; --warn-soft:#3a2a12; --focus:#ffc94d; --on-fn:#0d1526; --blue-curve:#6ea0ff; --red-curve:#ff6b63; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--paper); color:var(--ink); font:17px/1.55 var(--f-body);
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px),linear-gradient(90deg,var(--grid) 1px, transparent 1px);
+  background-size:24px 24px;}
+.wrap{max-width:1040px; margin:0 auto; padding-block:18px 28px;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));
+  display:flex; flex-direction:column; gap:14px}
+header{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:10px 20px}
+h1{font:800 clamp(26px,4vw,38px)/1.05 var(--f-display); margin:0; letter-spacing:-.01em}
+.sub{color:var(--muted); font-size:15px}
+.prog{font:700 15px var(--f-body); color:var(--muted); font-variant-numeric:tabular-nums}
+.prog b{color:var(--ant); font-size:20px}
+nav.exs{display:flex; flex-wrap:wrap; gap:6px}
+nav.exs button{font:700 15px var(--f-body); width:42px; height:42px; border-radius:50%; border:2px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; font-variant-numeric:tabular-nums}
+nav.exs button.done{border-color:var(--ant); background:var(--ant-soft); color:var(--ant)}
+nav.exs button.part{border-color:var(--warn); background:var(--warn-soft); color:var(--warn)}
+nav.exs button[aria-current="step"]{outline:3px solid var(--fn); outline-offset:2px}
+button:focus-visible, input:focus-visible, select:focus-visible{outline:3px solid var(--focus); outline-offset:2px}
+
+.stage{background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:22px clamp(16px,3vw,30px);
+  display:flex; flex-direction:column; gap:16px; box-shadow:0 10px 30px -18px rgba(20,40,80,.35)}
+.stage h2{font:800 clamp(22px,3vw,28px)/1.15 var(--f-display); margin:0}
+.stage h2 small{display:block; font:700 13px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px}
+.stage p{margin:0}
+.q{display:flex; flex-direction:column; gap:8px; padding-top:12px; border-top:1px dashed var(--line)}
+.q > .lbl{font-weight:700}
+.cols{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:20px; align-items:start}
+@media (max-width:780px){ .cols{grid-template-columns:1fr} }
+.panel{display:flex; flex-direction:column; gap:12px; min-width:0}
+.m{font-family:var(--f-math); font-style:italic; font-size:1.17em}
+.ant{color:var(--ant); font-weight:700}
+.img{color:var(--img); font-weight:700}
+.line{display:flex; flex-wrap:wrap; align-items:center; gap:6px 14px}
+.eq{display:inline-flex; align-items:center; gap:4px; font-family:var(--f-math); font-style:italic; font-size:1.17em; white-space:nowrap}
+
+input.num{font:600 17px var(--f-body); width:5.2em; padding:5px 8px; border:2px solid var(--line); border-radius:8px; background:var(--paper); color:var(--ink); text-align:center; font-variant-numeric:tabular-nums}
+input.num.wide{width:9em}
+input.num.ok, .tbl input.num.ok{border-color:var(--ant); background:var(--ant-soft)}
+input.num.bad{border-color:var(--img); background:var(--img-soft)}
+.mcq{display:flex; flex-wrap:wrap; gap:6px}
+.mcq button{font:600 16px var(--f-body); border:2px solid var(--line); background:var(--card); color:var(--ink); border-radius:9px; padding:6px 12px; cursor:pointer; text-align:left}
+.mcq button .m{font-size:1.1em}
+.mcq button[aria-pressed="true"]{border-color:var(--fn); background:var(--fn-soft)}
+.mcq.ok button[aria-pressed="true"]{border-color:var(--ant); background:var(--ant-soft)}
+.mcq.bad button[aria-pressed="true"]{border-color:var(--img); background:var(--img-soft)}
+.mcq.vf button{min-width:64px; text-align:center}
+
+.tblwrap{overflow-x:auto}
+table.tbl{border-collapse:collapse; font-variant-numeric:tabular-nums}
+table.tbl th, table.tbl td{border:1.5px solid var(--line); padding:5px 7px; text-align:center; min-width:52px}
+table.tbl th{font-family:var(--f-math); font-style:italic; font-size:18px; background:var(--ant-soft); color:var(--ant); white-space:nowrap}
+table.tbl tr.ri th{background:var(--img-soft); color:var(--img)}
+table.tbl tr.ri2 th{background:var(--fn-soft); color:var(--fn)}
+table.tbl input.num{width:4.2em; padding:4px; font-size:16px}
+table.vf td:first-child{text-align:left}
+
+.actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding-top:6px}
+.btn{font:700 16px var(--f-body); border:0; border-radius:10px; padding:10px 18px; cursor:pointer; background:var(--fn); color:var(--on-fn)}
+.btn.ghost{background:transparent; color:var(--fn); border:1.5px solid var(--fn)}
+.btn:disabled{opacity:.45; cursor:default}
+.result{font-weight:700}
+.result.ok{color:var(--ant)} .result.part{color:var(--warn)}
+.corr{border:1.5px solid var(--fn); background:var(--fn-soft); border-radius:12px; padding:14px 16px; display:flex; flex-direction:column; gap:6px}
+.corr .t{font:800 13px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--fn)}
+.hint{color:var(--muted); font-size:14px}
+svg{display:block; width:100%; height:auto; max-width:100%}
+svg text{font-family:var(--f-body)}
+svg.clickable{cursor:crosshair; touch-action:manipulation}
+#stage > svg, .q > svg{max-width:640px; margin-inline:auto}
+.cols > svg{max-width:280px; margin-inline:auto}
+.chips{display:flex; flex-wrap:wrap; gap:6px; align-items:center}
+.chips button{font:700 16px var(--f-body); min-width:44px; border:2px solid var(--line); background:var(--card); color:var(--ink); border-radius:9px; padding:5px 10px; cursor:pointer}
+.chips button[aria-pressed="true"]{border-color:var(--fn); background:var(--fn-soft); color:var(--fn)}
+.chips button.ok{border-color:var(--ant); color:var(--ant)}
+.chips button.bad{border-color:var(--img); color:var(--img)}
+footer.nav{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Notion de fonction</h1>
+      <div class="sub">3<sup>e</sup> — Fiche de 35 exercices interactifs. Réponds, puis clique sur « Vérifier ».</div>
+    </div>
+    <div class="prog" id="prog"></div>
+  </header>
+  <nav class="exs" id="exNav" aria-label="Exercices"></nav>
+  <main class="stage" id="stage"></main>
+  <footer class="nav">
+    <button class="btn ghost" id="prev">← Exercice précédent</button>
+    <button class="btn" id="next">Exercice suivant →</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const NS="http://www.w3.org/2000/svg";
+const sv=(t,a={})=>{const e=document.createElementNS(NS,t); for(const k in a) e.setAttribute(k,a[k]); return e;};
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function fmt(v,d=2){ if(Math.abs(v)<1e-9) v=0; return (Math.round(v*10**d)/10**d).toString().replace(".",",").replace("-","−"); }
+function parseNum(s){
+  if(s==null) return NaN; s=String(s).trim().replace(/\s/g,"").replace(/[−–]/g,"-").replace(",",".");
+  if(s==="") return NaN;
+  if(/^-?\d+(\.\d+)?\/-?\d+(\.\d+)?$/.test(s)){ const [a,b]=s.split("/").map(Number); return b? a/b : NaN; }
+  return /^-?\d*\.?\d+$/.test(s)? Number(s) : NaN;
+}
+const store={ get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
+
+/* ---------- constructeurs ---------- */
+// ans : nombre | "set:a;b" (liste sans ordre) | "out:a:b" (hors de [a ; b]) | "in:a:b" (dans [a ; b])
+const N=(ans,tol=0.001,cls="")=>`<input class="num ${cls}" inputmode="decimal" autocomplete="off" data-ans="${ans}" data-tol="${tol}" aria-label="réponse">`;
+const S=(ans,tol=0.001)=>N("set:"+ans,tol,"wide")+`<span class="hint">sépare par « ; »</span>`;
+const Q=(opts,good,cls="")=>`<div class="mcq ${cls}" data-good="${good}" role="group">${opts.map((o,i)=>`<button type="button" aria-pressed="false" data-i="${i}">${o}</button>`).join("")}</div>`;
+const M=s=>`<span class="m">${s}</span>`;
+const L=(label,field)=>`<div class="line"><span class="lbl">${label}</span>${field}</div>`;
+const E=(...parts)=>`<span class="eq">${parts.join(" ")}</span>`;
+const q=(...rows)=>`<div class="q">${rows.join("")}</div>`;
+const T=(rows)=>`<div class="tblwrap"><table class="tbl">${rows.map((r,i)=>`<tr class="${i===1?"ri":i===2?"ri2":""}"><th>${r[0]}</th>${r.slice(1).map(c=>`<td>${c}</td>`).join("")}</tr>`).join("")}</table></div>`;
+const H=(n,title)=>`<h2><small>Exercice n°${n}</small>${title}</h2>`;
+const GR=id=>`<svg id="${id}" role="img" aria-label="Graphique de l'exercice"></svg>`;
+
+/* ---------- repère ---------- */
+function axes(svg,o){
+  const {W,H,pad}=o; svg.setAttribute("viewBox",`0 0 ${W} ${H}`); svg.innerHTML="";
+  const X=x=>pad.l+(x-o.xmin)/(o.xmax-o.xmin)*(W-pad.l-pad.r), Y=y=>H-pad.b-(y-o.ymin)/(o.ymax-o.ymin)*(H-pad.t-pad.b);
+  const Xi=px=>o.xmin+(px-pad.l)/(W-pad.l-pad.r)*(o.xmax-o.xmin), Yi=py=>o.ymin+(H-pad.b-py)/(H-pad.t-pad.b)*(o.ymax-o.ymin);
+  const line=css("--line"), ink=css("--ink"), mut=css("--muted"), g=sv("g");
+  const fine=o.fx&&o.fy;
+  if(fine){ for(let x=Math.ceil(o.xmin/o.fx)*o.fx;x<=o.xmax+1e-9;x+=o.fx) g.appendChild(sv("line",{x1:X(x),y1:Y(o.ymin),x2:X(x),y2:Y(o.ymax),stroke:line,"stroke-width":.4,opacity:.7}));
+    for(let y=Math.ceil(o.ymin/o.fy)*o.fy;y<=o.ymax+1e-9;y+=o.fy) g.appendChild(sv("line",{x1:X(o.xmin),y1:Y(y),x2:X(o.xmax),y2:Y(y),stroke:line,"stroke-width":.4,opacity:.7})); }
+  for(let x=Math.ceil(o.xmin/o.xs)*o.xs;x<=o.xmax+1e-9;x+=o.xs) g.appendChild(sv("line",{x1:X(x),y1:Y(o.ymin),x2:X(x),y2:Y(o.ymax),stroke:line,"stroke-width":.9}));
+  for(let y=Math.ceil(o.ymin/o.ys)*o.ys;y<=o.ymax+1e-9;y+=o.ys) g.appendChild(sv("line",{x1:X(o.xmin),y1:Y(y),x2:X(o.xmax),y2:Y(y),stroke:line,"stroke-width":.9}));
+  const x0=Math.max(o.xmin,Math.min(o.xmax,0)), y0=Math.max(o.ymin,Math.min(o.ymax,0));
+  g.appendChild(sv("line",{x1:X(o.xmin),y1:Y(y0),x2:X(o.xmax),y2:Y(y0),stroke:ink,"stroke-width":1.8}));
+  g.appendChild(sv("line",{x1:X(x0),y1:Y(o.ymin),x2:X(x0),y2:Y(o.ymax),stroke:ink,"stroke-width":1.8}));
+  g.appendChild(sv("path",{d:`M${X(o.xmax)} ${Y(y0)} l-9 -5 v10 z`,fill:ink})); g.appendChild(sv("path",{d:`M${X(x0)} ${Y(o.ymax)} l-5 9 h10 z`,fill:ink}));
+  const lx=o.lx||o.xs, ly=o.ly||o.ys;
+  for(let x=Math.ceil(o.xmin/lx)*lx;x<=o.xmax+1e-9;x+=lx){ if(Math.abs(x)<1e-9&&!o.zero) continue; const t=sv("text",{x:X(x),y:Y(y0)+16,"text-anchor":"middle","font-size":12.5,fill:mut}); t.textContent=fmt(x); g.appendChild(t); }
+  for(let y=Math.ceil(o.ymin/ly)*ly;y<=o.ymax+1e-9;y+=ly){ if(Math.abs(y)<1e-9&&!o.zero) continue; const t=sv("text",{x:X(x0)-6,y:Y(y)+4,"text-anchor":"end","font-size":12.5,fill:mut}); t.textContent=fmt(y); g.appendChild(t); }
+  if(o.xlab){ const t=sv("text",{x:X(o.xmax)-2,y:Y(y0)-8,"text-anchor":"end","font-size":13,"font-weight":700,fill:ink}); t.textContent=o.xlab; g.appendChild(t); }
+  if(o.ylab){ const t=sv("text",{x:X(x0)+8,y:Y(o.ymax)+13,"font-size":13,"font-weight":700,fill:ink}); t.textContent=o.ylab; g.appendChild(t); }
+  svg.appendChild(g); return {X,Y,Xi,Yi};
+}
+function svgPoint(svg,evt){ const p=svg.createSVGPoint(); p.x=evt.clientX; p.y=evt.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()); }
+function smooth(pts,X,Y){ let d=`M${X(pts[0][0])} ${Y(pts[0][1])}`;
+  for(let i=0;i<pts.length-1;i++){ const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(pts.length-1,i+2)];
+    const c1=[p1[0]+(p2[0]-p0[0])/6,p1[1]+(p2[1]-p0[1])/6], c2=[p2[0]-(p3[0]-p1[0])/6,p2[1]-(p3[1]-p1[1])/6];
+    d+=` C${X(c1[0])} ${Y(c1[1])} ${X(c2[0])} ${Y(c2[1])} ${X(p2[0])} ${Y(p2[1])}`; } return d; }
+function fpath(f,a,b,X,Y,ymin,ymax,n=300){ let d="",pen=false; for(let i=0;i<=n;i++){ const x=a+(b-a)*i/n, y=f(x); if(!isFinite(y)||y<ymin||y>ymax){pen=false;continue;} d+=(pen?"L":"M")+X(x).toFixed(1)+" "+Y(y).toFixed(1)+" "; pen=true; } return d; }
+const poly=(pts,X,Y)=>"M"+pts.map(([x,y])=>X(x)+" "+Y(y)).join(" L");
+// graphique statique : curves = [{d:(X,Y)=>path, color, label:[x,y,texte]}], marks = [[x,y]]
+function staticGraph(id,cfg,curves,marks=[]){
+  return { mount(st){ const svg=$("#"+id,st);
+    function draw(){ const {X,Y}=axes(svg,cfg);
+      curves.forEach(c=>{ svg.appendChild(sv("path",{d:c.d(X,Y),fill:"none",stroke:css(c.color||"--fn"),"stroke-width":3}));
+        if(c.label){ const t=sv("text",{x:X(c.label[0]),y:Y(c.label[1]),"font-size":15,"font-weight":700,"font-style":"italic",fill:css(c.color||"--fn")}); t.textContent=c.label[2]; svg.appendChild(t);} });
+      marks.forEach(([x,y])=>{ svg.appendChild(sv("path",{d:`M${X(x)-5} ${Y(y)} h10 M${X(x)} ${Y(y)-5} v10`,stroke:css("--img"),"stroke-width":2})); });
+    } draw(); return {redraw:draw}; } };
+}
+// widget « placer des points »
+function placeGraph(id,cfg,expected,snap,tol,curveAfter){
+  return { mount(st,S){ const svg=$("#"+id,st); svg.classList.add("clickable"); S.pts=S.pts||[]; let A;
+    function draw(){ A=axes(svg,cfg); const {X,Y}=A, img=css("--img"), fn=css("--fn");
+      const pts=[...S.pts].sort((a,b)=>a[0]-b[0]);
+      if(S.showCurve && curveAfter) svg.appendChild(sv("path",{d:curveAfter(X,Y),fill:"none",stroke:fn,"stroke-width":2.5}));
+      pts.forEach(([x,y])=>svg.appendChild(sv("circle",{cx:X(x),cy:Y(y),r:6,fill:img})));
+      const n=$("#"+id+"n",st); if(n) n.textContent=`${S.pts.length} / ${expected.length} points placés.`; }
+    svg.addEventListener("click",e=>{ const p=svgPoint(svg,e); const x=Math.round(A.Xi(p.x)/snap[0])*snap[0], y=Math.round(A.Yi(p.y)/snap[1])*snap[1];
+      if(x<cfg.xmin||x>cfg.xmax||y<cfg.ymin||y>cfg.ymax) return;
+      const k=S.pts.findIndex(q=>Math.hypot((q[0]-x)/snap[0],(q[1]-y)/snap[1])<0.6);
+      if(k>=0) S.pts.splice(k,1); else S.pts.push([+x.toFixed(3),+y.toFixed(3)]);
+      S.showCurve=false; draw(); save(); });
+    draw();
+    return { redraw:draw, check(){ let ok=0; expected.forEach(([x,y])=>{ if(S.pts.some(q=>Math.abs(q[0]-x)<=tol[0]&&Math.abs(q[1]-y)<=tol[1])) ok++; });
+      const extra=S.pts.filter(q=>!expected.some(([x,y])=>Math.abs(q[0]-x)<=tol[0]&&Math.abs(q[1]-y)<=tol[1])).length;
+      const sc=Math.max(0,ok-extra); if(sc===expected.length){ S.showCurve=true; draw(); } return [sc,expected.length]; } }; } };
+}
+
+/* ---------- données des graphiques ---------- */
+const V4=[[0,50],[5,52],[10,55],[15,58],[20,60],[23,63],[25,61],[30,40],[35,20],[40,30],[45,45],[50,50],[55,62],[60,65]];
+const P5=[[0,0],[1,2],[2,3.8],[3,5.5],[4,7],[5,8.3],[6,9.5],[7,10.5],[8,11.5],[9,12.5],[10,13.5]];
+const H11=[[0,1],[2,1.2],[4,2],[5,3.2],[6,4.5],[7,4.9],[8,5],[10,5.5],[11,5.6],[12,5.55],[14,5.1],[15,4.1],[16,3],[17,2],[18,1.4],[19,1.3],[22,1.2],[24,1]];
+const P28=[[-3,4],[-2,2],[-1,1],[0,2],[1,3],[2,2],[3,0],[4,-2],[5,-3],[6,-2],[7,0],[8,2],[9,5]];
+const P30=[[-3,-1],[-1,-1],[0,1],[3,2],[4,1],[5,0],[6,1]];
+const P31=[[-3,1],[-2,2],[-1,1.5],[0,0],[1,-1],[2.5,-0.6],[4,0]];
+const h32=x=> x<=-1 ? 1+4*(x+1.5) : x<=0 ? 3 : x<=1 ? 4*(x-1)**2-1 : 12*(x-1)**2-1;
+const g20a=90/56, g20b=90/56-10, g20=x=>g20a*x*x+g20b*x, f20=x=>1.25*x+11.25;
+
+const SAISON=["l'hiver","le printemps","l'été","l'automne"];
+/* =========================================================
+   Les 35 exercices
+   ========================================================= */
+const EX=[
+{ html:H(1,`${M("f : x ⟼ (x − 3)²")}`)+
+  q(L("1) Images de 2 et de 5 :",E("f(2) =",N(1))+E("f(5) =",N(4))))+
+  q(`<span class="lbl">2) Que représente ${M("f(−1)")} pour le nombre −1 ?</span>`,Q(["L'image de −1 par <i>f</i>","Un antécédent de −1 par <i>f</i>","Le produit de <i>f</i> par −1"],0))+
+  q(L("3) Calculer :",E("f(−1) =",N(16)))),
+  corr:`${M("f(2) = (2 − 3)² = (−1)² = 1")} ; ${M("f(5) = 2² = 4")} ; ${M("f(−1) = (−4)² = 16")}. ${M("f(−1)")} est l'image de −1.` },
+{ html:H(2,`${M("g : x ⟼ x² + 7")}`)+
+  q(L("1) Images de 0 et de 2,5 :",E("g(0) =",N(7))+E("g(2,5) =",N(13.25))))+
+  q(`<span class="lbl">2) Compléter le tableau :</span>`+T([["x","0","2,5","−1","4"],["image par g",N(7),N(13.25),N(8),N(23)]])),
+  corr:`${M("g(0) = 7")} ; ${M("g(2,5) = 6,25 + 7 = 13,25")} ; ${M("g(−1) = 1 + 7 = 8")} ; ${M("g(4) = 16 + 7 = 23")}.` },
+{ html:H(3,"Compléter des phrases")+T([["x","−1","3","4","6"],["image par f","5","10","10","−11"]])+
+  q(`<span class="lbl">1) 5 est … de −1 par <i>f</i>.</span>`,Q(["l'image","un antécédent"],0))+
+  q(`<span class="lbl">2) Un … de −11 par <i>f</i> est 6.</span>`,Q(["image","antécédent"],1))+
+  q(`<span class="lbl">3) … de 4 par <i>f</i> est 10.</span>`,Q(["L'image","Un antécédent"],0))+
+  q(L("4) Un antécédent de … par <i>f</i> est 3 :",N(10)),`<span class="lbl">Un autre … de 10 est 4.</span>`,Q(["image","antécédent"],1)),
+  corr:`1) 5 est <b>l'image</b> de −1. 2) Un <b>antécédent</b> de −11 est 6. 3) <b>L'image</b> de 4 est 10. 4) Un antécédent de <b>10</b> est 3 ; un autre <b>antécédent</b> de 10 est 4.` },
+{ html:H(4,"Le cycliste")+`<p>La courbe donne la vitesse affichée par le compteur (en km/h) à chaque instant (en s).</p>`+GR("g4")+
+  q(`<span class="lbl">1) Que signifie ${M("f(10) = 55")} ?</span>`,Q(["10 s après le début, le compteur affiche 55 km/h","Le cycliste a parcouru 55 km en 10 s","Le cycliste roule à 10 km/h pendant 55 s"],0))+
+  q(`<span class="lbl">2) Lire (à 5 km/h près) :</span><div class="line">${E("f(20) ≈",N(60,5))}${E("f(30) ≈",N(40,5))}${E("f(35) ≈",N(20,5))}${E("f(50) ≈",N(50,5))}</div>`),
+  corr:`${M("f(20) ≈ 60")} ; ${M("f(30) ≈ 40")} ; ${M("f(35) ≈ 20")} ; ${M("f(50) ≈ 50")} (en km/h).`,
+  ...staticGraph("g4",{W:640,H:300,pad:{l:36,r:14,t:12,b:24},xmin:0,xmax:62,ymin:0,ymax:75,xs:5,ys:10,zero:true,xlab:"instant (s)",ylab:"vitesse (km/h)"},[{d:(X,Y)=>smooth(V4,X,Y),color:"--ant"}]) },
+{ html:H(5,"Prix des pommes")+`<p><i>f</i> associe à la masse achetée (en kg) le prix (en €).</p>`+GR("g5")+
+  q(`<span class="lbl">1) Lire (valeurs approchées) :</span><div class="line">${E("f(2) ≈",N(3.8,.5))}${L("antécédent de 7 :",N(4,.4))}</div><div class="line">${E("f(7,5) ≈",N(11,.5))}${L("antécédent de 12 :",N(8.5,.5))}</div>`)+
+  q(`<span class="lbl">2) Que signifie ${M("f(2) ≈ 3,8")} ?</span>`,Q(["2 kg de pommes coûtent environ 3,80 €","Avec 2 € on achète 3,8 kg","Le prix augmente de 3,80 € tous les 2 kg"],0))+
+  q(`<span class="lbl">3) Le prix payé est-il proportionnel à la masse achetée ?</span>`,Q(["Oui, car le prix augmente avec la masse","Non, car la courbe n'est pas une droite passant par l'origine"],1)),
+  corr:`${M("f(2) ≈ 3,8")} ; antécédent de 7 ≈ 4 ; ${M("f(7,5) ≈ 11")} ; antécédent de 12 ≈ 8,5. Ce n'est pas proportionnel : la courbe n'est pas une droite (plus on achète, moins le kilo est cher).`,
+  ...staticGraph("g5",{W:620,H:320,pad:{l:36,r:14,t:12,b:24},xmin:0,xmax:10.5,ymin:0,ymax:14.5,xs:1,ys:2,fx:.5,fy:1,zero:true,xlab:"masse (kg)",ylab:"prix (€)"},[{d:(X,Y)=>smooth(P5,X,Y),color:"--img"}]) },
+{ html:H(6,"Température des océans")+T([["latitude (°)","0","10","20","30","40","50","60","70"],["température (°C)","27","27","25","22","15","7","5","0"]])+
+  q(L("1)",E("f(10) =",N(27))+E("f(40) =",N(15))+E("f(70) =",N(0))))+
+  q(`<span class="lbl">2) Que signifie ${M("f(40) = 15")} ?</span>`,Q(["À la latitude 40°, l'eau est en moyenne à 15 °C","À 15°, l'eau est à 40 °C","Il fait 15 °C pendant 40 jours"],0))+
+  q(`<span class="lbl">3) Que peut-on dire de ${M("f(45)")} ?</span>`,Q([M("f(45) = 11"),"On ne peut pas la connaître exactement ; on peut seulement supposer qu'elle est entre 7 et 15 °C",M("f(45) = 45")],1))+
+  q(L("4) Image de 0 :",N(27)),L("5) Un nombre qui a pour image 0 :",N(70))),
+  corr:`${M("f(10) = 27")} ; ${M("f(40) = 15")} ; ${M("f(70) = 0")}. 45 n'est pas dans le tableau. ${M("f(0) = 27")} et 70 a pour image 0.` },
+{ html:H(7,"Prix de la banane")+T([["n° du jour","1","70","140","210","280","350"],["prix (€/kg)","1,40","1,70","1,80","1,55","1,50","1,40"]])+
+  q(L("1)",E("f(70) =",N(1.7))+E("f(280) =",N(1.5))+E("f(350) =",N(1.4))))+
+  q(`<span class="lbl">2) Que signifie ${M("f(70) = 1,70")} ?</span>`,Q(["Le 70<sup>e</sup> jour de l'année, la banane coûte 1,70 €/kg","70 kg de bananes coûtent 1,70 €","Le prix a augmenté de 1,70 € en 70 jours"],0))+
+  q(`<span class="lbl">3) À quelle saison le cours semble-t-il le plus haut ?</span>`,Q(SAISON,1))+
+  q(`<span class="lbl">4) Pourquoi ne peut-on rien dire de l'image de 300 ?</span>`,Q(["300 n'est pas dans le tableau et le prix peut varier d'un jour à l'autre","Parce que 300 est trop grand","Parce que l'image de 300 est 0"],0)),
+  corr:`${M("f(70) = 1,70")} ; ${M("f(280) = 1,50")} ; ${M("f(350) = 1,40")}. Le maximum (1,80 €/kg) est au 140<sup>e</sup> jour, vers fin mai : au printemps.` },
+{ html:H(8,"La couronne")+`<div class="cols"><div class="panel"><p>${M("0 ≤ x ≤ 5")} et ${M("f : x ⟼ 25π − πx²")}.</p>
+  ${q(`<span class="lbl">1) Pourquoi ${M("f(x)")} est-elle l'aire de la couronne bleue (en cm²) ?</span>`,Q(["Aire du grand disque − aire du petit disque = π × 5² − π × x²","Périmètre du grand cercle − périmètre du petit","Aire d'un carré de côté 5 − aire d'un carré de côté x"],0))}</div>
+  <svg viewBox="0 0 220 200" role="img" aria-label="Couronne entre deux cercles de rayons 5 et x"><circle cx="110" cy="100" r="90" fill="var(--fn-soft)" stroke="var(--fn)" stroke-width="2"/><circle cx="110" cy="100" r="48" fill="var(--ant-soft)" stroke="var(--ant)" stroke-width="2"/><line x1="110" y1="100" x2="20" y2="100" stroke="var(--ink)"/><line x1="110" y1="100" x2="146" y2="68" stroke="var(--ink)"/><text x="40" y="94" font-size="15" fill="var(--ink)">5 cm</text><text x="130" y="76" font-size="15" font-style="italic" fill="var(--ink)">x cm</text></svg></div>`+
+  q(`<span class="lbl">2) Compléter (arrondir à 0,01) :</span>`+T([["x","0","1","2","3","4","5"],["f(x)",N(78.54,.011),N(75.4,.011),N(65.97,.011),N(50.27,.011),N(28.27,.011),N(0)]])),
+  corr:`${M("f(x) = π × 5² − π × x²")}. ${M("f(0) = 25π ≈ 78,54")} ; ${M("f(1) = 24π ≈ 75,40")} ; ${M("f(2) = 21π ≈ 65,97")} ; ${M("f(3) = 16π ≈ 50,27")} ; ${M("f(4) = 9π ≈ 28,27")} ; ${M("f(5) = 0")}.` },
+{ html:H(9,"Formule de Lorentz")+`<p>${M("f(x) = x − 100 − (x − 150) ÷ 4")}, où <i>x</i> est la taille en <b>cm</b> et ${M("f(x)")} le poids idéal en kg.</p>`+
+  q(L("1,70 m :",N(65)+"<span>kg</span>"),L("1,80 m :",N(72.5)+"<span>kg</span>"),L("1,90 m :",N(80)+"<span>kg</span>")),
+  corr:`Attention, 1,70 m = 170 cm. ${M("f(170) = 70 − 20 ÷ 4 = 65")} ; ${M("f(180) = 80 − 7,5 = 72,5")} ; ${M("f(190) = 90 − 10 = 80")}.` },
+{ html:H(10,"Liquide dans une sphère")+`<p>${M("f(x) = (π ÷ 3) x² (30 − x)")} est le volume (en cm³) pour une hauteur de ${M("x")} cm, ${M("0 ≤ x ≤ 20")}.</p>`+
+  q(`<span class="lbl">1) Compléter (arrondir à 0,1) :</span>`+T([["x","0","2,5","5","7,5","10","20"],["f(x)",N(0),N(180,.06),N(654.5,.06),N(1325.4,.06),N(2094.4,.06),N(4188.8,.06)]]))+
+  q(`<span class="lbl">2) a) ${M("f(5)")} est-il le double de ${M("f(2,5)")} ?</span>`,Q(["Oui","Non"],1),`<span class="lbl">b) ${M("f(10)")} est-il le double de ${M("f(5)")} ?</span>`,Q(["Oui","Non"],1),`<span class="lbl">c) ${M("f(20)")} est-il le double de ${M("f(10)")} ?</span>`,Q(["Oui","Non"],0)),
+  corr:`${M("f(2,5) ≈ 180,0")} ; ${M("f(5) ≈ 654,5")} ; ${M("f(7,5) ≈ 1 325,4")} ; ${M("f(10) ≈ 2 094,4")} ; ${M("f(20) ≈ 4 188,8")}. Seul c) est vrai : à 10 cm la demi-sphère est remplie, à 20 cm la sphère entière. Le volume n'est pas proportionnel à la hauteur.` },
+{ html:H(11,"Hauteur d'eau du torrent")+GR("g11")+
+  q(L("1) Antécédents de 4 :",S("5.5;15",.6)))+
+  q(`<span class="lbl">2) Que signifie ce résultat ?</span>`,Q(["La hauteur d'eau a été de 4 m vers 5 h 30 et vers 15 h","La hauteur d'eau a été de 5,5 m à 4 h","L'eau est montée de 4 m"],0))+
+  q(`<span class="lbl">3) La hauteur est restée supérieure à 5 m</span><div class="line"><span>entre</span>${N(8,.6)}<span>h et</span>${N(14,.6)}<span>h environ.</span></div>`),
+  corr:`Antécédents de 4 : environ 5,5 et 15. La hauteur dépasse 5 m entre 8 h et 14 h environ.`,
+  ...staticGraph("g11",{W:620,H:300,pad:{l:30,r:14,t:12,b:24},xmin:0,xmax:26,ymin:0,ymax:6.5,xs:2,ys:1,zero:true,xlab:"temps (h)",ylab:"hauteur (m)"},[{d:(X,Y)=>smooth(H11,X,Y),color:"--fn"}]) },
+{ html:H(12,"Le point M sur [AB]")+`<div class="cols"><div class="panel"><p>${M("AB = 6")} cm, ${M("BC = 3")} cm, ${M("AM = x")} cm (${M("0 ≤ x ≤ 6")}). La longueur ${M("MN")} est ${M("f(x)")}.</p>`+
+  T([["x","0","1","2","3","4","5","6"],["f(x)","3","2","1","1,5","2","2,5","3"]])+`</div>
+  <svg viewBox="0 0 260 150" role="img" aria-label="Rectangle ABCD, triangle DEC et segment MN"><rect x="20" y="20" width="220" height="110" fill="none" stroke="var(--ink)" stroke-width="2"/><path d="M20 130 L93 57 L240 130" fill="var(--fn-soft)" stroke="var(--fn)" stroke-width="2"/><line x1="93" y1="20" x2="93" y2="57" stroke="var(--img)" stroke-width="2.5"/><text x="6" y="16" font-size="14" fill="var(--ink)">A</text><text x="244" y="16" font-size="14" fill="var(--ink)">B</text><text x="244" y="146" font-size="14" fill="var(--ink)">C</text><text x="6" y="146" font-size="14" fill="var(--ink)">D</text><text x="88" y="14" font-size="14" fill="var(--img)">M</text><text x="98" y="58" font-size="14" fill="var(--fn)">E</text><text x="48" y="14" font-size="13" font-style="italic" fill="var(--ink)">x</text></svg></div>`+
+  q(L("1) Antécédent(s) de 2 :",S("1;4")),L("2) Antécédent(s) de 3 :",S("0;6")))+
+  q(`<span class="lbl">3) À quelles positions de M et N cela correspond-il ?</span>`,Q(["M en A et N en D, ou M en B et N en C","M au milieu de [AB]","M et N sont confondus avec E"],0)),
+  corr:`Antécédents de 2 : 1 et 4. Antécédents de 3 : 0 et 6. Pour ${M("x = 0")}, M est en A et N en D (MN = AD = 3) ; pour ${M("x = 6")}, M est en B et N en C (MN = BC = 3).` },
+{ html:H(13,`${M("f : x ⟼ −4x + 8")}`)+
+  q(`<div class="line">${E("f(x) =")}${Q([M("−4x + 8"),M("−4(x + 8)"),M("4x − 8")],0)}</div><div class="line">${E("f(−3) =",N(20))}${E("f(5) =",N(-12))}</div>`)+
+  q(L("2) Image de −3 :",N(20)),L("3) Antécédent de −20 :",N(7)),L("4) Image de 4 :",N(-8)),L("5) Antécédent de −28 :",N(9))),
+  corr:`${M("f(−3) = 12 + 8 = 20")} ; ${M("f(5) = −12")} ; ${M("−4x + 8 = −20 ⟺ x = 7")} ; ${M("f(4) = −8")} ; ${M("−4x + 8 = −28 ⟺ x = 9")}.` },
+{ html:H(14,`${M("g : x ⟼ 2x + 3")}`)+
+  q(`<div class="line">${E("g(x) =")}${Q([M("2(x + 3)"),M("2x + 3"),M("3x + 2")],1)}</div><div class="line">${E("g(−4) =",N(-5))}${E("g(−3,5) =",N(-4))}</div>`)+
+  q(L("2) Image de −4 :",N(-5)),L("3) Antécédent de −4 :",N(-3.5)),L("4) Image de 5 :",N(13)),L("5) Antécédent de 9 :",N(3))),
+  corr:`${M("g(−4) = −8 + 3 = −5")} ; ${M("g(−3,5) = −7 + 3 = −4")}, donc l'antécédent de −4 est −3,5 ; ${M("g(5) = 13")} ; ${M("2x + 3 = 9 ⟺ x = 3")}.` },
+{ html:H(15,`${M("h : x ⟼ x² + 2")}`)+
+  q(`<div class="line">${E("h(x) =")}${Q([M("2x + 2"),M("x² + 2"),M("(x + 2)²")],1)}</div><div class="line">${E("h(−3) =",N(11))}${E("h(−2) =",N(6))}${E("h(0) =",N(2))}${E("h(2) =",N(6))}${E("h(3) =",N(11))}</div>`)+
+  q(L("2) Image de −3 :",N(11)),L("3) Antécédents de 6 :",S("-2;2")),L("4) Image de 6 :",N(38)),L("5) Antécédents de 18 :",S("-4;4"))),
+  corr:`${M("h(−3) = 11")} ; ${M("h(−2) = h(2) = 6")} ; ${M("h(0) = 2")} ; ${M("h(6) = 38")}. ${M("x² + 2 = 18 ⟺ x² = 16 ⟺ x = 4")} ou ${M("x = −4")}.` },
+{ html:H(16,"Tableau de valeurs de <i>f</i>")+T([["x","4","−3","12","2","5","8"],["f(x)","12","−6","5","4","7","17"]])+
+  q(`<div class="line">${E("f(−3) =",N(-6))}${E("f(5) =",N(7))}${E("f(",N(2),") = 4")}${E("f(",N(12),") = 5")}</div>`)+
+  q(L("2) Image de 8 :",N(17)),L("3) Un antécédent de 12 :",N(4))),
+  corr:`${M("f(−3) = −6")} ; ${M("f(5) = 7")} ; ${M("f(2) = 4")} ; ${M("f(12) = 5")} ; ${M("f(8) = 17")} ; ${M("f(4) = 12")}.` },
+{ html:H(17,"Tableau de valeurs de <i>g</i>")+T([["x","−8","−3","−1","6","3","10"],["g(x)","−4","10","12","8","6","4"]])+
+  q(`<div class="line">${E("g(10) =",N(4))}${E("g(",N(-3),") = 10")}${E("g(−1) =",N(12))}${E("g(",N(6),") = 8")}</div>`)+
+  q(L("2) Image de −8 :",N(-4)),L("3) Un antécédent de 6 :",N(3))),
+  corr:`${M("g(10) = 4")} ; ${M("g(−3) = 10")} ; ${M("g(−1) = 12")} ; ${M("g(6) = 8")} ; ${M("g(−8) = −4")} ; ${M("g(3) = 6")}.` },
+{ html:H(18,`${M("h : x ⟼ 2x² + 3")}`)+q(`<span class="lbl">Compléter le tableau :</span>`+T([["x","−3","−1",N(0),"5","10"],["h(x)",N(21),N(5),"3",N(53),N(203)]])),
+  corr:`${M("h(−3) = 2 × 9 + 3 = 21")} ; ${M("h(−1) = 5")} ; ${M("h(5) = 53")} ; ${M("h(10) = 203")} ; ${M("2x² + 3 = 3 ⟺ x = 0")}.` },
+{ html:H(19,`${M("h : x ⟼ x(17 − 2x)")}`)+GR("g19")+
+  q(L("1) Lire :",E("h(1) ≈",N(15,1))+E("h(6) ≈",N(30,1))))+
+  q(L("2) Image de 2 :",N(26,1)),L("Antécédents de 21 :",S("1.5;7",.3)))+
+  q(L("3) Valeur maximum de <i>h(x)</i> (environ) :",N(36,1)))+
+  q(L("4) Calculer l'image de 3 :",N(33)),L("5) Calculer les antécédents de 0 :",S("0;8.5"))),
+  corr:`${M("h(1) = 15")} ; ${M("h(6) = 30")} ; ${M("h(2) = 26")} ; antécédents de 21 : 1,5 et 7 ; maximum ≈ 36 (exactement ${M("h(4,25) = 36,125")}) ; ${M("h(3) = 3 × 11 = 33")} ; ${M("x(17 − 2x) = 0 ⟺ x = 0")} ou ${M("x = 8,5")}.`,
+  ...staticGraph("g19",{W:600,H:330,pad:{l:32,r:14,t:12,b:24},xmin:-0.3,xmax:10.5,ymin:-2,ymax:37,xs:1,ys:5,xlab:"x",ylab:"h(x)"},[{d:(X,Y)=>fpath(x=>x*(17-2*x),0,8.6,X,Y,-2,37),color:"--fn"}]) },
+{ html:H(20,"Deux fonctions <i>f</i> et <i>g</i>")+GR("g20")+
+  q(L("1) Lire :",E("f(3) ≈",N(15,.6))+E("g(3) ≈",N(-10.7,1))))+
+  q(L("2) Valeur(s) de <i>x</i> telles que f(x) = g(x) :",S("-1;7",.3))),
+  corr:`${M("f(3) = 15")} ; ${M("g(3) ≈ −10,5")}. Les courbes se coupent pour ${M("x = −1")} et ${M("x = 7")} : ce sont les abscisses des points d'intersection.`,
+  ...staticGraph("g20",{W:560,H:400,pad:{l:32,r:14,t:12,b:24},xmin:-2.5,xmax:8.8,ymin:-13,ymax:31,xs:1,ys:5,ly:10,xlab:"x",ylab:"y"},[{d:(X,Y)=>fpath(f20,-2.5,8.8,X,Y,-13,31),color:"--fn",label:[8,22.5,"f"]},{d:(X,Y)=>fpath(g20,-1.6,7.6,X,Y,-13,31),color:"--img",label:[7.6,27,"g"]}]) },
+{ html:H(21,`${M("f : x ⟼ x² − 3")}`)+
+  q(`<span class="lbl">1) Compléter le tableau :</span>`+T([["x","−3","−1","−0,5","0","0,5","1","3"],["f(x)",N(6),N(-2),N(-2.75),N(-3),N(-2.75),N(-2),N(6)]]))+
+  q(`<span class="lbl">2) Place les 7 points dans le repère</span><span class="hint" id="g21n"></span>`+GR("g21")),
+  corr:`${M("f(−3) = f(3) = 6")} ; ${M("f(−1) = f(1) = −2")} ; ${M("f(−0,5) = f(0,5) = −2,75")} ; ${M("f(0) = −3")}. La courbe est une parabole symétrique par rapport à l'axe des ordonnées.`,
+  ...placeGraph("g21",{W:520,H:420,pad:{l:30,r:14,t:12,b:24},xmin:-3.6,xmax:3.6,ymin:-3.6,ymax:6.6,xs:1,ys:1,fx:.5,fy:.25,xlab:"x",ylab:"y"},[[-3,6],[-1,-2],[-0.5,-2.75],[0,-3],[0.5,-2.75],[1,-2],[3,6]],[.5,.25],[.01,.13],(X,Y)=>fpath(x=>x*x-3,-3.1,3.1,X,Y,-4,7)) },
+{ html:H(22,`${M("g : x ⟼ √(x + 3)")}`)+
+  q(`<span class="lbl">1) Compléter le tableau :</span>`+T([["x","−3","−1,56","1","6"],["g(x)",N(0),N(1.2),N(2),N(3)]]))+
+  q(`<span class="lbl">2) Place les 4 points dans le repère</span><span class="hint" id="g22n"></span>`+GR("g22")),
+  corr:`${M("g(−3) = √0 = 0")} ; ${M("g(−1,56) = √1,44 = 1,2")} ; ${M("g(1) = √4 = 2")} ; ${M("g(6) = √9 = 3")}.`,
+  ...placeGraph("g22",{W:560,H:300,pad:{l:30,r:14,t:12,b:24},xmin:-3.6,xmax:6.8,ymin:-0.6,ymax:3.6,xs:1,ys:1,fx:.5,fy:.25,xlab:"x",ylab:"y"},[[-3,0],[-1.56,1.2],[1,2],[6,3]],[.25,.1],[.3,.15],(X,Y)=>fpath(x=>Math.sqrt(x+3),-3,6.6,X,Y,-1,4,400)) },
+{ html:H(23,"Périmètre et aire en fonction de <i>x</i>")+`<div class="cols">
+  <div class="panel"><svg viewBox="0 0 260 120" role="img" aria-label="Triangle rectangle 3x, 4x, 5x"><path d="M30 105 H170 L30 20 Z" fill="var(--warn-soft)" stroke="var(--warn)" stroke-width="2"/><path d="M30 93 h12 v12" fill="none" stroke="var(--ink)"/><text x="10" y="66" font-size="15" font-style="italic" fill="var(--ink)">3x</text><text x="92" y="119" font-size="15" font-style="italic" fill="var(--ink)">4x</text><text x="108" y="56" font-size="15" font-style="italic" fill="var(--ink)">5x</text></svg>
+   ${q(`<div class="line">${E("p(x) =")}${Q([M("12x"),M("60x"),M("7x")],0)}</div><div class="line">${E("a(x) =")}${Q([M("12x²"),M("6x²"),M("60x³")],1)}</div>`)}</div>
+  <div class="panel"><svg viewBox="0 0 260 120" role="img" aria-label="Disque de rayon x"><circle cx="130" cy="60" r="52" fill="var(--img-soft)" stroke="var(--img)" stroke-width="2"/><line x1="130" y1="60" x2="90" y2="27" stroke="var(--ink)" stroke-width="2"/><text x="96" y="52" font-size="15" font-style="italic" fill="var(--ink)">x</text></svg>
+   ${q(`<div class="line">${E("p(x) =")}${Q([M("πx²"),M("2πx"),M("πx")],1)}</div><div class="line">${E("a(x) =")}${Q([M("2πx"),M("πx²"),M("2πx²")],1)}</div>`)}</div>
+  <div class="panel"><svg viewBox="0 0 260 110" role="img" aria-label="Rectangle de longueur 3x + 2 et de largeur 2"><rect x="30" y="30" width="200" height="60" fill="var(--ant-soft)" stroke="var(--ant)" stroke-width="2"/><text x="90" y="22" font-size="15" font-style="italic" fill="var(--ink)">3x</text><text x="190" y="22" font-size="15" fill="var(--ink)">2</text><text x="14" y="66" font-size="15" fill="var(--ink)">2</text></svg>
+   ${q(`<div class="line">${E("p(x) =")}${Q([M("3x + 4"),M("6x + 8"),M("6x + 4")],1)}</div><div class="line">${E("a(x) =")}${Q([M("6x + 4"),M("6x + 8"),M("3x + 2")],0)}</div>`)}</div>
+  <div class="panel"><svg viewBox="0 0 260 120" role="img" aria-label="Rectangle de longueur 4x + 3 et de largeur 3x"><rect x="30" y="30" width="200" height="75" fill="var(--fn-soft)" stroke="var(--fn)" stroke-width="2"/><text x="96" y="22" font-size="15" font-style="italic" fill="var(--ink)">4x</text><text x="192" y="22" font-size="15" fill="var(--ink)">3</text><text x="6" y="72" font-size="15" font-style="italic" fill="var(--ink)">3x</text></svg>
+   ${q(`<div class="line">${E("p(x) =")}${Q([M("14x + 6"),M("7x + 3"),M("14x + 3")],0)}</div><div class="line">${E("a(x) =")}${Q([M("12x² + 9x"),M("7x + 3"),M("12x² + 9")],0)}</div>`)}</div></div>`,
+  corr:`Triangle : ${M("p(x) = 12x")}, ${M("a(x) = 3x × 4x ÷ 2 = 6x²")}. Disque : ${M("p(x) = 2πx")}, ${M("a(x) = πx²")}. Rectangle vert : ${M("p(x) = 2(3x + 2) + 4 = 6x + 8")}, ${M("a(x) = 2(3x + 2) = 6x + 4")}. Rectangle bleu : ${M("p(x) = 2(4x + 3) + 6x = 14x + 6")}, ${M("a(x) = 3x(4x + 3) = 12x² + 9x")}.` },
+{ html:H(24,`L'équation ${M("x² = 4x − 3")}`)+
+  q(L("1) Solutions de l'équation :",S("1;3")))+GR("g24")+
+  q(`<span class="lbl">2) Coordonnées des points d'intersection des courbes de ${M("f : x ⟼ x²")} et ${M("g : x ⟼ 4x − 3")} :</span><div class="line">${E("(",N(1,.1),";",N(1,.2),")")}${E("(",N(3,.1),";",N(9,.2),")")}</div>`)+
+  q(`<span class="lbl">3) Vérification par le calcul</span><div class="line">${E("1² =",N(1))}${E("4 × 1 − 3 =",N(1))}${E("3² =",N(9))}${E("4 × 3 − 3 =",N(9))}</div>`),
+  corr:`${M("x² − 4x + 3 = (x − 1)(x − 3)")}, donc les solutions sont 1 et 3. Les courbes se coupent en (1 ; 1) et (3 ; 9).`,
+  ...staticGraph("g24",{W:520,H:340,pad:{l:30,r:14,t:12,b:24},xmin:-4.5,xmax:4.5,ymin:-3.5,ymax:11.5,xs:1,ys:2,xlab:"x",ylab:"y"},[{d:(X,Y)=>fpath(x=>x*x,-3.4,3.4,X,Y,-4,12),color:"--warn",label:[-3.3,10.6,"f"]},{d:(X,Y)=>fpath(x=>4*x-3,-0.2,3.6,X,Y,-4,12),color:"--ant",label:[3.7,10.6,"g"]}]) },
+{ html:H(25,`${M("f(x) = (x + 1) ÷ (x − 1)")}`)+q(T([["x","−3","−1","3","5"],["f(x)",N(.5),N(0),N(2),N(1.5)]])),
+  corr:`${M("f(−3) = −2 ÷ (−4) = 0,5")} ; ${M("f(−1) = 0")} ; ${M("f(3) = 4 ÷ 2 = 2")} ; ${M("f(5) = 6 ÷ 4 = 1,5")}.` },
+{ html:H(26,`${M("g(x) = (x − 1) ÷ x")}`)+q(`<span class="lbl">1) Compléter (arrondir à 0,01 si besoin) :</span>`+T([["x","−2","−1","1","2","3"],["g(x)",N(1.5),N(2),N(0),N(.5),N(2/3,.006)]]))+
+  q(`<span class="lbl">2) Pourquoi 0 n'a-t-il pas d'image par <i>g</i> ?</span>`,Q(["Parce qu'on ne peut pas diviser par 0","Parce que 0 − 1 est négatif","Parce que g(0) = 0"],0)),
+  corr:`${M("g(−2) = 1,5")} ; ${M("g(−1) = 2")} ; ${M("g(1) = 0")} ; ${M("g(2) = 0,5")} ; ${M("g(3) = 2 ÷ 3 ≈ 0,67")}. Pour ${M("x = 0")}, le dénominateur est nul.` },
+{ html:H(27,`${M("h(x) = 2x ÷ (x + 1)")}`)+q(`<span class="lbl">1) Compléter (arrondir à 0,01 si besoin) :</span>`+T([["x","−3","−2","0","1","2"],["h(x)",N(3),N(4),N(0),N(1),N(4/3,.006)]]))+
+  q(`<span class="lbl">2) Pourquoi −1 n'a-t-il pas d'image par <i>h</i> ?</span>`,Q(["Parce que −1 est négatif","Parce que x + 1 = 0 : on ne peut pas diviser par 0","Parce que h(−1) = −2"],1)),
+  corr:`${M("h(−3) = −6 ÷ (−2) = 3")} ; ${M("h(−2) = 4")} ; ${M("h(0) = 0")} ; ${M("h(1) = 1")} ; ${M("h(2) = 4 ÷ 3 ≈ 1,33")}.` },
+{ html:H(28,"Lecture graphique")+GR("g28")+
+  q(L("1) Image de 8 :",N(2)),L("2)",E("h(−1) =",N(1))),L("3) Antécédents de 0 :",S("3;7")))+
+  q(L("4) Image de −3 :",N(4)),L("5) Antécédents de −2 :",S("4;6")),L("6) Antécédents de 2 :",S("-2;0;2;8"))),
+  corr:`${M("h(8) = 2")} ; ${M("h(−1) = 1")} ; antécédents de 0 : 3 et 7 ; ${M("h(−3) = 4")} ; antécédents de −2 : 4 et 6 ; antécédents de 2 : −2, 0, 2 et 8.`,
+  ...staticGraph("g28",{W:600,H:340,pad:{l:30,r:14,t:12,b:24},xmin:-3.5,xmax:9.6,ymin:-4.5,ymax:5.6,xs:1,ys:1,xlab:"x",ylab:"y"},[{d:(X,Y)=>smooth(P28,X,Y),color:"--fn"}],P28) },
+{ html:H(29,`${M("i(x) = (x − 2) ÷ (x + 1)")}`)+
+  q(`<span class="lbl">1) Pourquoi −1 n'a-t-il pas d'image ?</span>`,Q(["Le dénominateur x + 1 est nul pour x = −1","Le numérateur est nul pour x = −1","i(−1) = −3"],0))+
+  q(`<span class="lbl">2) Compléter :</span>`+T([["x","4","2","1","0","−2"],["i(x)",N(.4),N(0),N(-.5),N(-2),N(4)]]))+
+  q(L("3) a) Image de 0 :",N(-2)),L("b) Un antécédent de 0 :",N(2)),L("c) Image de −1/2 :",N(-5)),L("d) Un antécédent de −1/2 :",N(1))),
+  corr:`${M("i(4) = 2 ÷ 5 = 0,4")} ; ${M("i(2) = 0")} ; ${M("i(1) = −0,5")} ; ${M("i(0) = −2")} ; ${M("i(−2) = 4")}. ${M("i(−0,5) = −2,5 ÷ 0,5 = −5")}.` },
+{ html:H(30,"Fonction définie par un graphique")+GR("g30")+
+  q(L("1)",E("f(0) =",N(1))+E("f(2) ≈",N(1.7,.2))+E("f(5) =",N(0))))+
+  q(L("2) Antécédents de 1 :",S("0;4;6")),`<span class="lbl">Antécédents de −1 :</span>`,Q(["−3 et −1 seulement","Tous les nombres compris entre −3 et −1","Aucun"],1))+
+  q(L("3) Un nombre qui n'a pas d'antécédent :",N("out:-1:2"))),
+  corr:`${M("f(0) = 1")} ; ${M("f(2) ≈ 1,7")} ; ${M("f(5) = 0")}. Antécédents de 1 : 0, 4 et 6. La courbe est horizontale entre −3 et −1 : tous ces nombres sont des antécédents de −1. <i>f</i> prend ses valeurs entre −1 et 2 : par exemple 3 n'a pas d'antécédent.`,
+  ...staticGraph("g30",{W:560,H:260,pad:{l:30,r:14,t:12,b:24},xmin:-3.6,xmax:6.8,ymin:-1.6,ymax:2.6,xs:1,ys:1,xlab:"x",ylab:"y"},[{d:(X,Y)=>poly(P30,X,Y),color:"--img"}],P30) },
+{ html:H(31,"Fonction définie par un graphique")+GR("g31")+
+  q(L("1) Image de 0 :",N(0)),L("2) Antécédents de 0 :",S("0;4")))+
+  q(L("3) Antécédent de −1 :",N(1)),L("Antécédents de 1 :",S("-3;-0.5",.3))),
+  corr:`${M("g(0) = 0")} ; antécédents de 0 : 0 et 4 ; antécédent de −1 : 1 ; antécédents de 1 : −3 et environ −0,5.`,
+  ...staticGraph("g31",{W:560,H:290,pad:{l:30,r:14,t:12,b:24},xmin:-3.6,xmax:4.8,ymin:-1.6,ymax:2.6,xs:1,ys:1,fx:.5,fy:.5,xlab:"x",ylab:"y"},[{d:(X,Y)=>smooth(P31,X,Y),color:"--img"}],[[-3,1],[-2,2],[0,0],[1,-1],[4,0]]) },
+{ html:H(32,"Fonction définie par un graphique")+GR("g32")+
+  q(L("1) a) Image de −1 :",N(3)),L("b) Antécédents de 2 :",S("-1.25;0.13;1.5",.15)),L("c) Image de 1,5 :",N(2)),L("d) Antécédent(s) de −1 :",N(1)))+
+  q(L("2)",E("h(0,5) =",N(0))+E("h(−1,5) =",N(1))+E("h(0) =",N(3))))+
+  q(L("3) a) Un nombre sans antécédent :",N("out:-1:3")),L("b) Un nombre avec un seul antécédent :",N(-1)),L("c) Un nombre avec trois antécédents :",N("in:1:2"))),
+  corr:`${M("h(−1) = 3")} ; antécédents de 2 : environ −1,25 ; 0,1 et 1,5 ; ${M("h(1,5) = 2")} ; antécédent de −1 : 1. ${M("h(0,5) = 0")} ; ${M("h(−1,5) = 1")} ; ${M("h(0) = 3")}. Sans antécédent : par exemple 4. Un seul antécédent : −1. Trois antécédents : tout nombre entre 1 et 2, par exemple 2.`,
+  ...staticGraph("g32",{W:520,H:320,pad:{l:30,r:14,t:12,b:24},xmin:-2,xmax:2.2,ymin:-1.6,ymax:3.6,xs:.5,ys:1,lx:1,xlab:"x",ylab:"y"},[{d:(X,Y)=>fpath(h32,-1.5,1.5,X,Y,-2,4,600),color:"--img"}],[[-1.5,1],[-1,3],[0,3],[0.5,0],[1,-1],[1.5,2]]) },
+{ html:H(33,`${M("f : x ⟼ x² − 10x + 1")}`)+
+  q(L("1) Image de −1 :",N(12)),L("2) Solutions de f(x) = 1 :",S("0;10")),L("3) Antécédent(s) de −24 :",S("5")),L("4)",E("f(−4) =",N(57)))),
+  corr:`${M("f(−1) = 1 + 10 + 1 = 12")}. ${M("x² − 10x = 0 ⟺ x(x − 10) = 0 ⟺ x = 0")} ou ${M("x = 10")}. ${M("x² − 10x + 25 = 0 ⟺ (x − 5)² = 0 ⟺ x = 5")}. ${M("f(−4) = 16 + 40 + 1 = 57")}.` },
+{ html:H(34,`${M("h : x ⟼ −2x + 3")}`)+q(L("1) Antécédent(s) de 5 :",N(-1)),L("2) Image de −3 :",N(9))),
+  corr:`${M("−2x + 3 = 5 ⟺ −2x = 2 ⟺ x = −1")} ; ${M("h(−3) = 6 + 3 = 9")}.` },
+{ html:H(35,`${M("g : x ⟼ −3x + 9")}`)+`<p class="hint">Tu peux écrire une fraction, par exemple 7/3.</p>`+
+  q(L("1) Image de −2 :",N(15)),L("2) Antécédent(s) de 1 :",N(8/3,.006)),L("3) Solution de g(x) = 4 :",N(5/3,.006)),L("4)",E("g(2,5) =",N(1.5)))),
+  corr:`${M("g(−2) = 6 + 9 = 15")} ; ${M("−3x + 9 = 1 ⟺ x = 8/3")} ; ${M("−3x + 9 = 4 ⟺ x = 5/3")} ; ${M("g(2,5) = −7,5 + 9 = 1,5")}.` },
+];
+
+/* =========================================================
+   Moteur
+   ========================================================= */
+const KEY="fiche35fonctions";
+const saved=store.get(KEY)||{status:{},state:{}};
+function save(){ store.set(KEY,saved); }
+let cur=0, api=null;
+const nav=$("#exNav");
+EX.forEach((e,i)=>{ const b=document.createElement("button"); b.type="button"; b.textContent=i+1; b.setAttribute("aria-label","Exercice "+(i+1)); b.onclick=()=>go(i); nav.appendChild(b); });
+function paintNav(){
+  [...nav.children].forEach((b,i)=>{ const s=saved.status[i]; b.classList.toggle("done",s==="done"); b.classList.toggle("part",s==="part"); i===cur?b.setAttribute("aria-current","step"):b.removeAttribute("aria-current"); });
+  const done=Object.values(saved.status).filter(s=>s==="done").length;
+  $("#prog").innerHTML=`<b>${done}</b> / ${EX.length} exercices réussis`;
+}
+function go(i){
+  cur=Math.max(0,Math.min(EX.length-1,i)); const Ex=EX[cur], st=$("#stage");
+  st.innerHTML=Ex.html+`<div class="actions"><button class="btn" id="chk">Vérifier</button><button class="btn ghost" id="sol">Voir la correction</button><button class="btn ghost" id="rst">Effacer mes réponses</button><span class="result" id="res" aria-live="polite"></span></div><div class="corr" id="corr" hidden><div class="t">Correction</div><div>${Ex.corr}</div></div>`;
+  saved.state[cur]=saved.state[cur]||{}; const St=saved.state[cur];
+  $$(".mcq",st).forEach((g,gi)=>{ g.dataset.gi=gi; $$("button",g).forEach(b=>b.onclick=()=>{
+    if(g.classList.contains("multi")) b.setAttribute("aria-pressed", b.getAttribute("aria-pressed")!=="true");
+    else $$("button",g).forEach(c=>c.setAttribute("aria-pressed",c===b));
+    g.classList.remove("ok","bad"); St.q=St.q||{}; St.q[gi]=$$("button",g).filter(c=>c.getAttribute("aria-pressed")==="true").map(c=>+c.dataset.i); save(); }); });
+  $$("input.num",st).forEach((inp,ii)=>{ inp.dataset.ii=ii; inp.addEventListener("input",()=>{ inp.classList.remove("ok","bad"); St.n=St.n||{}; St.n[ii]=inp.value; save(); });
+    inp.addEventListener("keydown",e=>{ if(e.key==="Enter") check(); }); });
+  if(St.n) $$("input.num",st).forEach(inp=>{ const v=St.n[inp.dataset.ii]; if(v!=null) inp.value=v; });
+  if(St.q) $$(".mcq",st).forEach(g=>{ const v=St.q[g.dataset.gi]; if(v) $$("button",g).forEach(b=>b.setAttribute("aria-pressed",v.includes(+b.dataset.i))); });
+  api = Ex.mount ? Ex.mount(st,St) : null;
+  $("#chk",st).onclick=check;
+  $("#sol",st).onclick=()=>{ const c=$("#corr",st); c.hidden=!c.hidden; $("#sol",st).textContent=c.hidden?"Voir la correction":"Masquer la correction"; };
+  $("#rst",st).onclick=()=>{ saved.state[cur]={}; delete saved.status[cur]; save(); paintNav(); go(cur); };
+  $("#prev").disabled=cur===0; $("#next").disabled=cur===EX.length-1;
+  if(location.hash!=="#exercice-"+(cur+1)) history.replaceState(null,"","#exercice-"+(cur+1));
+  paintNav();
+}
+function judge(inp){
+  const a=inp.dataset.ans, tol=+inp.dataset.tol;
+  if(a.startsWith("set:")){ const want=a.slice(4).split(";").map(Number).sort((p,q)=>p-q);
+    const got=inp.value.split(/;|\bet\b|\bou\b/).map(parseNum).filter(v=>!isNaN(v)).sort((p,q)=>p-q);
+    return got.length===want.length && got.every((v,i)=>Math.abs(v-want[i])<=tol); }
+  const v=parseNum(inp.value); if(isNaN(v)) return false;
+  if(a.startsWith("out:")){ const [lo,hi]=a.slice(4).split(":").map(Number); return v<lo-1e-9 || v>hi+1e-9; }
+  if(a.startsWith("in:")){ const [lo,hi]=a.slice(3).split(":").map(Number); return v>=lo-1e-9 && v<=hi+1e-9; }
+  return Math.abs(v-Number(a))<=tol;
+}
+function check(){
+  const st=$("#stage"); let ok=0, tot=0;
+  $$("input.num",st).forEach(inp=>{ tot++; const good=judge(inp); inp.classList.toggle("ok",good); inp.classList.toggle("bad",!good); if(good) ok++; });
+  $$(".mcq",st).forEach(g=>{ tot++; const want=g.dataset.good.split(",").map(Number).sort().join(",");
+    const got=$$("button",g).filter(b=>b.getAttribute("aria-pressed")==="true").map(b=>+b.dataset.i).sort().join(",");
+    const good=got===want; g.classList.toggle("ok",good); g.classList.toggle("bad",!good); if(good) ok++; });
+  if(api && api.check){ const [a,b]=api.check(); ok+=a; tot+=b; }
+  const res=$("#res",st);
+  if(ok===tot){ res.className="result ok"; res.textContent=`Bravo, tout est juste ! (${ok} / ${tot})`; saved.status[cur]="done"; }
+  else { res.className="result part"; res.textContent=`${ok} / ${tot} réponses justes. Corrige ce qui est en rouge.`; if(saved.status[cur]!=="done") saved.status[cur]="part"; }
+  save(); paintNav();
+}
+$("#prev").onclick=()=>go(cur-1); $("#next").onclick=()=>go(cur+1);
+window.addEventListener("hashchange",()=>{ const m=location.hash.match(/^#exercice-(\d+)$/); if(m && +m[1]-1!==cur) go(+m[1]-1); });
+const redraw=()=>{ if(api && api.redraw) api.redraw(); };
+const mq=window.matchMedia("(prefers-color-scheme: dark)"); mq.addEventListener && mq.addEventListener("change",redraw);
+new MutationObserver(redraw).observe(document.documentElement,{attributes:true,attributeFilter:["data-theme"]});
+const m=location.hash.match(/^#exercice-(\d+)$/); go(m?+m[1]-1:0);
+})();
+</script>
+
+</body></html>

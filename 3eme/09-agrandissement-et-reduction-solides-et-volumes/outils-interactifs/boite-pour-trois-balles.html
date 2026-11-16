@@ -1,0 +1,367 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Boîte pour trois balles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&display=swap">
+<style>
+/* Même charte que la fiche « Agrandissement et réduction » : copie de cahier, une carte par partie. */
+:root{
+  --paper:#fbfcfe; --grid:#e3eaf5; --ink:#1b2a41; --muted:#5a6b85; --accent:#1f4e8c; --accent-soft:#e6eefa;
+  --margin:#d9483b; --ok:#1d7a46; --ok-soft:#e3f4ea; --bad:#b3261e; --bad-soft:#fbe9e7; --line:#c9d5e6; --card:#ffffff;
+  --ball:#c9d63a; --ball-dark:#7f8a12; --box:#1f4e8c;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#111a29; --grid:#1a2538; --ink:#e4ebf5; --muted:#9aabc4; --accent:#7fb0f5; --accent-soft:#1c2d47;
+  --margin:#f07a6e; --ok:#5fd394; --ok-soft:#14301f; --bad:#ff8a80; --bad-soft:#3a1715; --line:#2c3b55; --card:#162133;
+  --ball:#a8b52a; --ball-dark:#5d660c; --box:#7fb0f5; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#111a29; --grid:#1a2538; --ink:#e4ebf5; --muted:#9aabc4; --accent:#7fb0f5; --accent-soft:#1c2d47;
+  --margin:#f07a6e; --ok:#5fd394; --ok-soft:#14301f; --bad:#ff8a80; --bad-soft:#3a1715; --line:#2c3b55; --card:#162133;
+  --ball:#a8b52a; --ball-dark:#5d660c; --box:#7fb0f5; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:20px 20px}
+.wrap{max-width:900px;margin:0 auto;padding-block:24px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header.top{display:grid;gap:10px;margin-bottom:18px}
+.eyebrow{font-family:var(--display);font-weight:600;letter-spacing:.08em;text-transform:uppercase;font-size:.78rem;color:var(--margin)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,4.5vw,2.5rem);line-height:1.1;margin:0;text-wrap:balance}
+.rule{background:var(--card);border:1px solid var(--line);border-left:4px solid var(--margin);border-radius:6px;padding:12px 14px;font-size:.95rem}
+.rule b{color:var(--accent)}
+.formulas{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:8px;margin-top:8px}
+.formulas div{background:var(--accent-soft);border-radius:4px;padding:6px 8px;font-size:.9rem}
+.formulas small{display:block;color:var(--muted);font-size:.78rem}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;
+  background:var(--paper);border-bottom:1px solid var(--line);padding:10px 0;margin-bottom:14px}
+.score{font-family:var(--display);font-weight:600;font-variant-numeric:tabular-nums}
+.progress{flex:1 1 160px;height:8px;border-radius:4px;background:var(--line);overflow:hidden;min-width:120px}
+.progress span{display:block;height:100%;background:var(--ok);width:0;transition:width .3s}
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+button,select,input{font:inherit;color:inherit}
+.btn{border:1px solid var(--accent);background:var(--card);color:var(--accent);border-radius:6px;padding:5px 12px;cursor:pointer;font-weight:700;font-size:.9rem}
+.btn:hover{background:var(--accent-soft)}
+.btn.primary{background:var(--accent);color:var(--paper)}
+.btn:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.part{font-family:var(--display);font-weight:600;font-size:1.15rem;color:var(--accent);margin:26px 0 10px}
+.exo{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 16px 14px 22px;margin-bottom:16px;position:relative}
+.exo::before{content:"";position:absolute;left:10px;top:0;bottom:0;width:2px;background:var(--margin);opacity:.55}
+.exo h2{font-family:var(--display);font-weight:800;font-size:1.15rem;margin:0 0 6px;display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.exo h2 .st{font-family:var(--body);font-size:.78rem;font-weight:700;padding:2px 8px;border-radius:99px;background:var(--line);color:var(--muted)}
+.exo h2 .st:empty{display:none}
+.exo h2 .st.done{background:var(--ok-soft);color:var(--ok)}
+.body{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:start}
+.body.nofig{grid-template-columns:minmax(0,1fr)}
+@media (max-width:640px){.body{grid-template-columns:minmax(0,1fr)}}
+.fig{justify-self:center;max-width:100%}
+.fig svg{max-width:100%;height:auto;display:block}
+.stmt p{margin:0 0 8px}
+.qs{display:grid;gap:8px;margin-top:6px}
+.q{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 8px;border-radius:6px;border:1px solid transparent}
+.q.ok{background:var(--ok-soft);border-color:var(--ok)}
+.q.bad{background:var(--bad-soft);border-color:var(--bad)}
+.q label{flex:1 1 220px;min-width:0}
+.q input{width:110px;padding:4px 8px;border:1px solid var(--line);border-radius:5px;background:var(--paper);font-variant-numeric:tabular-nums}
+.q select{padding:4px 6px;border:1px solid var(--line);border-radius:5px;background:var(--paper);max-width:100%}
+.unit{color:var(--muted);font-size:.9rem}
+.mark{width:1.3em;text-align:center;font-weight:700}
+.q.ok .mark{color:var(--ok)} .q.bad .mark{color:var(--bad)}
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.corr{margin-top:10px;border-top:1px dashed var(--ok);padding-top:8px;font-size:.95rem}
+.corr h3{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--ok);margin:0 0 4px}
+.corr p{margin:0 0 6px}
+.hint{color:var(--muted);font-size:.85rem}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.9em;line-height:1.1;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid currentColor;padding:0 2px}
+svg text{font-family:var(--body);font-size:13px;fill:var(--ink)}
+svg .box{stroke:var(--box);stroke-width:2.2;fill:none;stroke-linejoin:round}
+svg .boxh{stroke:var(--box);stroke-width:1.4;fill:none;stroke-dasharray:5 4}
+svg .cote{stroke:var(--muted);stroke-width:1}
+svg .ball{fill:url(#gball);stroke:var(--ball-dark);stroke-width:1}
+.tbl{width:100%;border-collapse:collapse;font-variant-numeric:tabular-nums;font-size:.92rem}
+.tbl th,.tbl td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+.tbl th{background:var(--accent-soft);font-weight:700}
+.tbl td:first-child,.tbl th:first-child{text-align:left}
+.tbl tr.mine td{background:var(--ok-soft);font-weight:700}
+.tblwrap{overflow-x:auto;margin-top:8px}
+.rk select{width:auto}
+.lab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:640px){.lab{grid-template-columns:minmax(0,1fr)}}
+.lab label{display:block;margin-top:8px}
+.lab input[type=range]{width:100%}
+.res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:10px;text-align:center}
+.res div{background:var(--accent-soft);border-radius:6px;padding:6px 4px;font-variant-numeric:tabular-nums;font-weight:700}
+.res small{display:block;color:var(--muted);font-weight:400;font-size:.78rem}
+.fit{margin-top:8px;padding:6px 10px;border-radius:6px;font-weight:700}
+.fit.ok{background:var(--ok-soft);color:var(--ok)} .fit.bad{background:var(--bad-soft);color:var(--bad)}
+footer{color:var(--muted);font-size:.85rem;margin-top:24px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+ <radialGradient id="gball" cx="35%" cy="32%" r="70%"><stop offset="0" stop-color="#f6fbc8"/><stop offset=".45" stop-color="var(--ball)"/><stop offset="1" stop-color="var(--ball-dark)"/></radialGradient>
+</defs></svg>
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">3<sup>e</sup> · Activité interactive · volumes et aires</div>
+    <h1>Optimiser une boîte pour trois balles</h1>
+    <div class="rule">
+      Un fabricant vend ses balles par lots de <b>trois</b>. Chaque balle est une boule de <b>rayon 4 cm</b>.
+      Quelle boîte laisse <b>le moins de vide</b> (meilleur taux d'occupation) et utilise <b>le moins de carton</b> (plus petite surface extérieure)&nbsp;?
+      <div class="formulas">
+        <div><small>Boule de rayon R</small>V = ⁴⁄₃ π R³ · S = 4 π R²</div>
+        <div><small>Cylindre (R, H)</small>V = π R² H · S = 2πR² + 2πRH</div>
+        <div><small>Prisme droit, pavé</small>V = A<sub>base</sub> × H · S = 2 A<sub>base</sub> + périmètre × H</div>
+        <div><small>Triangle équilatéral de côté c</small>A = (√3 ⁄ 4) c²</div>
+        <div><small>Taux d'occupation</small>volume des balles ÷ volume de la boîte × 100</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="bar">
+    <span class="score" id="score">0 / 0 réponses justes</span>
+    <div class="progress" aria-hidden="true"><span id="prog"></span></div>
+    <div class="tabs">
+      <button class="btn" id="showAll" type="button">Afficher toutes les corrections</button>
+      <button class="btn" id="reset" type="button">Tout effacer</button>
+    </div>
+  </div>
+
+  <p class="hint">Écris tes réponses avec une virgule ou un point. Arrondis les volumes et les surfaces à l'unité, les taux au pourcent. Un petit écart dû aux arrondis est accepté.</p>
+
+  <div id="exos"></div>
+
+  <div class="part">Partie E · Figure libre</div>
+  <section class="exo" aria-labelledby="lab-t">
+    <h2 id="lab-t">Invente ta boîte</h2>
+    <p class="hint" style="margin-top:0">Choisis une forme et règle ses dimensions. La page vérifie si les trois balles tiennent (empilées ou posées en triangle), puis calcule le taux et la surface et classe ta boîte parmi les cinq autres.</p>
+    <div class="lab">
+      <div>
+        <label for="shape">Forme</label>
+        <select id="shape" class="btn" style="font-weight:400">
+          <option value="cyl">Cylindre</option>
+          <option value="pave">Pavé droit</option>
+          <option value="hex">Prisme à base hexagonale régulière</option>
+          <option value="sph">Sphère</option>
+        </select>
+        <div id="sliders"></div>
+      </div>
+      <div>
+        <div class="fig" id="labfig"></div>
+        <div class="res" id="labres"></div>
+        <div class="fit" id="labfit"></div>
+      </div>
+    </div>
+    <div class="tblwrap"><table class="tbl" id="rank"></table></div>
+  </section>
+
+  <footer>Activité « Optimiser une boîte », 3<sup>e</sup>. Tes réponses sont gardées dans ce navigateur.</footer>
+</div>
+
+<script>
+(function(){
+const F=(a,b)=>`<span class="frac"><span>${a}</span><span>${b}</span></span>`;
+const fr=(x,d=0)=>(+x.toFixed(d)).toLocaleString('fr-FR',{maximumFractionDigits:d});
+const PI=Math.PI, S3=Math.sqrt(3);
+const VB=256*PI; // volume des 3 balles
+
+/* ---------- Données des boîtes ---------- */
+function triA(c){return S3/4*c*c;}
+const BOX=[
+ {n:'Cylindre',d:'R = 4 cm, H = 24 cm',V:PI*16*24,S:2*PI*16+2*PI*4*24},
+ {n:'Pavé droit',d:'8 cm × 8 cm, H = 24 cm',V:1536,S:896},
+ {n:'Prisme à base triangulaire',d:'triangle équilatéral c ≈ 21,9 cm, H = 8 cm',V:triA(21.9)*8,S:2*triA(21.9)+3*21.9*8},
+ {n:'Sphère',d:'R ≈ 8,7 cm',V:4/3*PI*8.7**3,S:4*PI*8.7**2},
+ {n:'Cylindre large',d:'R ≈ 8,7 cm, H = 8 cm',V:PI*8.7**2*8,S:2*PI*8.7**2+2*PI*8.7*8}];
+BOX.forEach(b=>b.T=VB/b.V*100);
+const rankBy=(key,asc)=>{const idx=BOX.map((b,i)=>i).sort((i,j)=>asc?BOX[i][key]-BOX[j][key]:BOX[j][key]-BOX[i][key]);const r=[];idx.forEach((i,k)=>r[i]=k+1);return r;};
+const RK_OCC=rankBy('T',false), RK_MAT=rankBy('S',true);
+
+/* ---------- Figures SVG (1 cm = s px) ---------- */
+const s=6.2;
+const ball=(x,y)=>`<circle class="ball" cx="${x}" cy="${y}" r="${4*s}"/>`;
+function wrap(w,h,inner,label){return `<svg viewBox="-14 -16 ${w+28} ${h+32}" width="${w+28}" role="img" aria-label="${label}">${inner}</svg>`;}
+function figCyl(){const w=8*s,h=24*s,ry=1.3*s;let o='';
+  o+=ball(w/2,h-4*s)+ball(w/2,h-12*s)+ball(w/2,h-20*s);
+  o+=`<path class="box" d="M0 0 V${h} A${w/2} ${ry} 0 0 0 ${w} ${h} V0"/><ellipse class="box" cx="${w/2}" cy="0" rx="${w/2}" ry="${ry}"/>`;
+  o+=`<path class="boxh" d="M0 ${h} A${w/2} ${ry} 0 0 1 ${w} ${h}"/>`;
+  o+=`<text x="${w+8}" y="${h/2}">24</text><text x="${w/2}" y="${h+ry+15}" text-anchor="middle">R = 4</text>`;
+  return wrap(w+26,h+20,o,'Cylindre contenant trois balles empilées');}
+function figPave(){const w=8*s,h=24*s,dx=3*s,dy=2.2*s;let o='';
+  for(const k of [1,3,5])o+=ball(w/2+dx/2,dy+h-(k*4*s)+dy/2-dy/2);
+  o+=`<path class="boxh" d="M0 ${h+dy} L${dx} ${h} H${w+dx} M${dx} ${h} V0"/>`;
+  o+=`<rect class="box" x="0" y="${dy}" width="${w}" height="${h}"/><path class="box" d="M0 ${dy} L${dx} 0 H${w+dx} L${w} ${dy} M${w+dx} 0 V${h} L${w} ${h+dy}"/>`;
+  o+=`<text x="${w/2}" y="${h+dy+16}" text-anchor="middle">8</text><text x="-12" y="${h/2}" text-anchor="end">24</text>`;
+  return wrap(w+dx+4,h+dy+20,o,'Pavé droit contenant trois balles empilées');}
+function figPrisme(){const c=(8+8*S3)*s,h=c*S3/2,d=4*S3*s;let o='';
+  o+=ball(d,h-4*s)+ball(d+8*s,h-4*s)+ball(c/2,h-4*s-4*S3*s);
+  o+=`<polygon class="box" points="0,${h} ${c},${h} ${c/2},0"/>`;
+  o+=`<text x="${c/2}" y="${h+16}" text-anchor="middle">c ≈ 21,9 · vue de dessus</text>`;
+  return wrap(c,h+20,o,'Vue de dessus du prisme triangulaire avec trois balles');}
+function figRond(sphere){const R=(4+8/S3)*s,g=8/S3*s;let o='';
+  o+=ball(R-4*s,R+g/2)+ball(R+4*s,R+g/2)+ball(R,R-g);
+  o+=`<circle class="box" cx="${R}" cy="${R}" r="${R}"/>`;
+  if(!sphere)o+=`<circle class="boxh" cx="${R}" cy="${R}" r="${R-5}"/>`;
+  o+=`<text x="${R}" y="${2*R+16}" text-anchor="middle">R ≈ 8,7 · ${sphere?'coupe':'vue de dessus'}</text>`;
+  return wrap(2*R,2*R+20,o,sphere?'Coupe de la sphère contenant trois balles':'Vue de dessus du cylindre large');}
+const FIG=[figCyl,figPave,figPrisme,()=>figRond(true),()=>figRond(false)];
+
+/* ---------- Exercices ---------- */
+const E=[];
+// tolérances : volumes et surfaces ±1,5 %, taux ±1,5 point
+const vol=(l,n)=>({l,n,u:'cm³',tol:Math.max(2,n*0.015)});
+const sur=(l,n)=>({l,n,u:'cm²',tol:Math.max(2,n*0.015)});
+const tx=(l,n)=>({l,n,u:'%',tol:1.5});
+E.push({part:'Partie A · Le volume des balles',title:'Volume des balles',
+ st:`<p>Calcule le volume d'une balle (arrondi au cm³), puis celui des trois balles.</p>`,
+ qs:[vol('Une balle',256*PI/3),vol('Les trois balles',VB)],
+ co:`<p>V<sub>balle</sub> = ⁴⁄₃ × π × 4³ = 256π ⁄ 3 ≈ <b>268 cm³</b>.</p><p>V<sub>balles</sub> = 3 × 256π ⁄ 3 = 256π ≈ <b>804 cm³</b>.</p>`});
+const CO=[
+ `<p>V = π × 4² × 24 = 384π ≈ <b>1 206 cm³</b>.</p><p>Taux = 256π ⁄ 384π = 2⁄3 ≈ <b>67 %</b>.</p><p>S = 2π × 4² + 2π × 4 × 24 = 224π ≈ <b>704 cm²</b>.</p>`,
+ `<p>V = 8 × 8 × 24 = <b>1 536 cm³</b>.</p><p>Taux = 804 ÷ 1 536 ≈ <b>52 %</b>.</p><p>S = 2 × 8 × 8 + 4 × 8 × 24 = 128 + 768 = <b>896 cm²</b>.</p>`,
+ `<p>A<sub>base</sub> = (√3 ⁄ 4) × 21,9² ≈ 207,7 cm², donc V ≈ 207,7 × 8 ≈ <b>1 661 cm³</b>.</p><p>Taux ≈ 804 ÷ 1 661 ≈ <b>48 %</b>.</p><p>S ≈ 2 × 207,7 + 3 × 21,9 × 8 ≈ <b>941 cm²</b>.</p><p class="hint">Piège : la base est équilatérale, son aire n'est pas c × c ÷ 2 (sa hauteur vaut environ 19 cm, pas 21,9 cm).</p>`,
+ `<p>V = ⁴⁄₃ × π × 8,7³ ≈ <b>2 758 cm³</b>.</p><p>Taux ≈ 804 ÷ 2 758 ≈ <b>29 %</b>.</p><p>S = 4π × 8,7² ≈ <b>951 cm²</b>.</p>`,
+ `<p>V = π × 8,7² × 8 ≈ <b>1 902 cm³</b>.</p><p>Taux ≈ 804 ÷ 1 902 ≈ <b>42 %</b>.</p><p>S = 2π × 8,7² + 2π × 8,7 × 8 ≈ 476 + 437 = <b>913 cm²</b>.</p>`];
+BOX.forEach((b,i)=>E.push({part:i===0?'Partie B · Cinq boîtes possibles':null,title:`Boîte ${i+1} · ${b.n}`,fig:FIG[i],
+ st:`<p><b>${b.d}</b>. Calcule le volume, le taux d'occupation et la surface extérieure de cette boîte.</p>`,
+ qs:[vol('Volume',b.V),tx('Taux d\'occupation',b.T),sur('Surface extérieure',b.S)],co:CO[i]}));
+const R5=['1','2','3','4','5'];
+E.push({title:'Classements',
+ st:`<p>Classe les cinq boîtes : rang 1 = la meilleure (plus grand taux d'occupation ; plus petite surface).</p>`,
+ qs:BOX.flatMap((b,i)=>[{l:`${i+1}. ${b.n} · occupation`,c:R5,a:RK_OCC[i]-1},{l:`${i+1}. ${b.n} · matière`,c:R5,a:RK_MAT[i]-1}]),
+ co:`<div class="tblwrap"><table class="tbl"><tr><th>Boîte</th><th>Volume</th><th>Taux</th><th>Surface</th><th>Rang occupation</th><th>Rang matière</th></tr>${BOX.map((b,i)=>`<tr><td>${i+1}. ${b.n}</td><td>${fr(b.V)} cm³</td><td>${fr(b.T)} %</td><td>${fr(b.S)} cm²</td><td>${RK_OCC[i]}</td><td>${RK_MAT[i]}</td></tr>`).join('')}</table></div>`});
+E.push({part:'Partie C · Conclure',title:'Le bon choix',
+ st:`<p>Quelle boîte le fabricant doit-il choisir&nbsp;? Les deux classements sont-ils identiques&nbsp;?</p>`,
+ qs:[{l:'La meilleure boîte',c:BOX.map((b,i)=>`${i+1}. ${b.n}`),a:0},
+     {l:'Les deux classements sont…',c:['identiques','différents'],a:1},
+     {l:'Quelle boîte est 3ᵉ pour l\'occupation mais 4ᵉ pour la matière ?',c:BOX.map((b,i)=>`${i+1}. ${b.n}`),a:2}],
+ co:`<p>Le <b>cylindre R = 4 cm, H = 24 cm</b> gagne sur les deux critères : 67 % de remplissage et seulement 704 cm² de carton. La sphère est la pire : plus de 70 % de vide.</p><p>Les classements sont <b>différents</b> : le prisme est 3ᵉ puis 4ᵉ, le cylindre large 4ᵉ puis 3ᵉ. Moins de vide ne veut pas toujours dire moins de carton.</p>`});
+E.push({part:'Partie D · D\'où viennent les dimensions ?',title:'Sphère et cylindre large',
+ st:`<p>Les centres A, B, C des trois balles forment un triangle équilatéral. Le centre O de la boîte est aux ${F(2,3)} de chaque hauteur, en partant du sommet.</p>`,
+ qs:[{l:'Hauteur du cylindre et du pavé',n:24,u:'cm'},{l:'AB',n:8,u:'cm'},{l:'Hauteur du triangle ABC (au centième)',n:4*S3,u:'cm',tol:0.02},{l:'OA (au centième)',n:8/S3,u:'cm',tol:0.02},{l:'Rayon R exact de la boîte (au centième)',n:4+8/S3,u:'cm',tol:0.02}],
+ co:`<p>Les balles empilées : 3 × 8 = <b>24 cm</b>. Les balles se touchent : AB = 4 + 4 = <b>8 cm</b>.</p><p>Pythagore : h² = 8² − 4² = 48, h = √48 ≈ <b>6,93 cm</b>. OA = ⅔ h ≈ <b>4,62 cm</b>. R = OA + 4 ≈ <b>8,62 cm</b>.</p><p>On arrondit <b>par excès</b> à 8,7 cm : avec 8,6 cm, les balles ne rentreraient pas.</p>`});
+E.push({title:'Prisme triangulaire',
+ st:`<p>Dans un coin du triangle, le centre de la balle, le sommet et le point de contact avec la base forment un triangle rectangle dont l'angle au sommet mesure 30°. On note d la distance entre le sommet et le point de contact.</p>`,
+ qs:[{l:'d (au centième)',n:4/Math.tan(PI/6),u:'cm',tol:0.02},{l:'Côté c du triangle (au dixième)',n:8+8*S3,u:'cm',tol:0.06}],
+ co:`<p>tan 30° = 4 ⁄ d, donc d = 4 ÷ tan 30° ≈ <b>6,93 cm</b>.</p><p>c = d + 8 + d ≈ <b>21,9 cm</b> (entre les deux points de contact, l'écart est celui des deux centres : 8 cm).</p>`});
+
+/* ---------- Rendu ---------- */
+const KEY='boite-balles-3e';
+let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||'{}');}catch(e){}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(saved));}catch(e){}};
+const root=document.getElementById('exos');
+let html='';
+E.forEach((ex,i)=>{
+  if(ex.part) html+=`<div class="part">${ex.part}</div>`;
+  const qs=ex.qs.map((q,j)=>{
+    const id=`q${i}_${j}`;
+    const ctl=q.c?`<select id="${id}"><option value="">—</option>${q.c.map((o,k)=>`<option value="${k}">${o}</option>`).join('')}</select>`
+      :`<input id="${id}" inputmode="decimal" autocomplete="off"> ${q.u?`<span class="unit">${q.u}</span>`:''}`;
+    return `<div class="q" id="w${id}"><label for="${id}">${q.l}</label>${ctl}<span class="mark" aria-live="polite"></span></div>`;}).join('');
+  html+=`<article class="exo"><h2>${ex.title} <span class="st" id="st${i}"></span></h2>
+   <div class="body ${ex.fig?'':'nofig'}"><div class="stmt">${ex.st}<div class="qs">${qs}</div></div>${ex.fig?`<div class="fig">${ex.fig()}</div>`:''}</div>
+   <div class="actions"><button class="btn primary" type="button" data-check="${i}">Vérifier</button><button class="btn" type="button" data-corr="${i}">Voir la correction</button></div>
+   <div class="corr" id="co${i}" hidden><h3>Correction</h3>${ex.co}</div></article>`;
+});
+root.innerHTML=html;
+
+function parse(v){v=String(v).trim().replace(/\s/g,'').replace(',','.').replace('%','');
+  if(!v) return NaN; return /^-?[\d.]+$/.test(v)?parseFloat(v):NaN;}
+function judge(i,j){
+  const q=E[i].qs[j],el=document.getElementById(`q${i}_${j}`),w=document.getElementById(`wq${i}_${j}`),mk=w.querySelector('.mark');
+  let ok=null;
+  if(q.c){ if(el.value!=='') ok=(+el.value===q.a); }
+  else { const x=parse(el.value); if(!isNaN(x)) ok=Math.abs(x-q.n)<=q.tol; else if(el.value.trim()) ok=false; }
+  w.classList.toggle('ok',ok===true); w.classList.toggle('bad',ok===false);
+  mk.textContent=ok===true?'✓':ok===false?'✗':'';
+  return ok;
+}
+function check(i){let good=0;E[i].qs.forEach((q,j)=>{if(judge(i,j)) good++;});
+  const st=document.getElementById('st'+i);st.textContent=`${good}/${E[i].qs.length}`;st.classList.toggle('done',good===E[i].qs.length);
+  saved['c'+i]=1;save();tally();}
+function tally(){let tot=0,good=0;E.forEach((ex,i)=>ex.qs.forEach((q,j)=>{tot++;if(document.getElementById(`wq${i}_${j}`).classList.contains('ok'))good++;}));
+  document.getElementById('score').textContent=`${good} / ${tot} réponses justes`;document.getElementById('prog').style.width=(100*good/tot)+'%';}
+root.addEventListener('click',e=>{
+  const c=e.target.closest('[data-check]');if(c){check(+c.dataset.check);return;}
+  const r=e.target.closest('[data-corr]');if(r){const i=+r.dataset.corr,box=document.getElementById('co'+i);box.hidden=!box.hidden;r.textContent=box.hidden?'Voir la correction':'Masquer la correction';}
+});
+const clearMark=id=>{const w=document.getElementById('w'+id);w.classList.remove('ok','bad');w.querySelector('.mark').textContent='';};
+root.addEventListener('input',e=>{const id=e.target.id;if(/^q\d+_\d+$/.test(id)){saved[id]=e.target.value;save();clearMark(id);tally();}});
+root.addEventListener('change',e=>{const id=e.target.id;if(/^q\d+_\d+$/.test(id)){saved[id]=e.target.value;save();}});
+E.forEach((ex,i)=>{ex.qs.forEach((q,j)=>{const id=`q${i}_${j}`;if(saved[id]!=null)document.getElementById(id).value=saved[id];});if(saved['c'+i])check(i);});
+tally();
+
+let all=false;
+document.getElementById('showAll').addEventListener('click',ev=>{all=!all;E.forEach((ex,i)=>{document.getElementById('co'+i).hidden=!all;
+  document.querySelector(`[data-corr="${i}"]`).textContent=all?'Masquer la correction':'Voir la correction';});
+  ev.target.textContent=all?'Masquer toutes les corrections':'Afficher toutes les corrections';});
+const resetBtn=document.getElementById('reset');let armed=false,tmo;
+resetBtn.addEventListener('click',()=>{
+  if(!armed){armed=true;resetBtn.textContent='Confirmer l\'effacement';tmo=setTimeout(()=>{armed=false;resetBtn.textContent='Tout effacer';},3000);return;}
+  clearTimeout(tmo);armed=false;resetBtn.textContent='Tout effacer';
+  Object.keys(saved).forEach(k=>{if(!k.startsWith('lab'))delete saved[k];});save();
+  E.forEach((ex,i)=>{ex.qs.forEach((q,j)=>{const id=`q${i}_${j}`;document.getElementById(id).value='';clearMark(id);});
+    const st=document.getElementById('st'+i);st.textContent='';st.classList.remove('done');});tally();});
+
+/* ---------- Partie E : laboratoire ---------- */
+const SH={
+ cyl:{p:[['R','Rayon R',3,12,4],['H','Hauteur H',6,30,24]],
+   V:v=>PI*v.R**2*v.H, S:v=>2*PI*v.R**2+2*PI*v.R*v.H,
+   fit:v=>(v.R>=4-1e-9&&v.H>=24-1e-9)?'empilées':(v.R>=4+8/S3-0.005&&v.H>=8-1e-9)?'posées en triangle':null},
+ pave:{p:[['a','Longueur a',6,30,8],['b','Largeur b',6,30,8],['H','Hauteur H',6,30,24]],
+   V:v=>v.a*v.b*v.H, S:v=>2*(v.a*v.b+v.a*v.H+v.b*v.H),
+   fit:v=>{const d=[v.a,v.b,v.H].sort((x,y)=>x-y);
+     if(d[0]>=8&&d[1]>=8&&d[2]>=24)return 'en ligne';
+     if(d[0]>=8&&d[1]>=8+4*S3-0.01&&d[2]>=16)return 'posées en triangle';return null;}},
+ hex:{p:[['a','Côté a de l\'hexagone',3,12,4.7],['H','Hauteur H',6,30,24]],
+   V:v=>3*S3/2*v.a**2*v.H, S:v=>3*S3*v.a**2+6*v.a*v.H,
+   fit:v=>(v.a*S3/2>=4-0.005&&v.H>=24)?'empilées':null},
+ sph:{p:[['R','Rayon R',4,14,9]],
+   V:v=>4/3*PI*v.R**3, S:v=>4*PI*v.R**2,
+   fit:v=>v.R>=4+8/S3-0.005?'posées en triangle':null}};
+const shapeSel=document.getElementById('shape'),sl=document.getElementById('sliders');
+let lab=saved.lab||{shape:'cyl',v:{}};
+function buildSliders(){const sh=SH[lab.shape];
+  sl.innerHTML=sh.p.map(([k,l,mi,ma,def])=>{const val=lab.v[lab.shape+k]??def;
+    return `<label for="s_${k}">${l} = <b id="o_${k}">${fr(val,1)}</b> cm</label><input type="range" id="s_${k}" min="${mi}" max="${ma}" step="0.1" value="${val}">`;}).join('');
+  sl.querySelectorAll('input').forEach(inp=>inp.addEventListener('input',()=>{const k=inp.id.slice(2);lab.v[lab.shape+k]=+inp.value;document.getElementById('o_'+k).textContent=fr(+inp.value,1);upd();}));}
+function labFig(v){const t=3.2;let o='',w,h;
+  if(lab.shape==='cyl'){w=2*v.R*t;h=v.H*t;const ry=Math.min(0.3*v.R*t,10);
+    o=`<path class="box" d="M0 0 V${h} A${w/2} ${ry} 0 0 0 ${w} ${h} V0"/><ellipse class="box" cx="${w/2}" cy="0" rx="${w/2}" ry="${ry}"/>`;}
+  else if(lab.shape==='pave'){const dx=v.b*t*.45,dy=v.b*t*.3;w=v.a*t+dx;h=v.H*t+dy;
+    o=`<rect class="box" x="0" y="${dy}" width="${v.a*t}" height="${v.H*t}"/><path class="box" d="M0 ${dy} L${dx} 0 H${v.a*t+dx} L${v.a*t} ${dy} M${v.a*t+dx} 0 V${v.H*t} L${v.a*t} ${h}"/>`;}
+  else if(lab.shape==='hex'){const a=v.a*t,ry=a*.35;w=2*a;h=v.H*t+2*ry;
+    const pts=[0,1,2,3,4,5].map(k=>{const an=PI/3*k;return [a+a*Math.cos(an),ry+ry*Math.sin(an)];});
+    o=`<polygon class="box" points="${pts.map(p=>p.join(',')).join(' ')}"/>`;
+    [0,1,2,3].forEach(k=>{const p=pts[k];o+=`<line class="box" x1="${p[0]}" y1="${p[1]}" x2="${p[0]}" y2="${p[1]+v.H*t}"/>`;});
+    o+=`<polyline class="box" points="${[0,1,2,3].map(k=>[pts[k][0],pts[k][1]+v.H*t].join(',')).join(' ')}"/>`;}
+  else {w=h=2*v.R*t;o=`<circle class="box" cx="${v.R*t}" cy="${v.R*t}" r="${v.R*t}"/><ellipse class="boxh" cx="${v.R*t}" cy="${v.R*t}" rx="${v.R*t}" ry="${v.R*t*.3}"/>`;}
+  return `<svg viewBox="-6 -6 ${w+12} ${h+12}" width="${Math.min(w+12,260)}" style="max-height:220px" role="img" aria-label="Schéma de la boîte choisie">${o}</svg>`;}
+function upd(){const sh=SH[lab.shape],v={};sh.p.forEach(([k,,,,def])=>v[k]=lab.v[lab.shape+k]??def);
+  const V=sh.V(v),S=sh.S(v),T=VB/V*100,f=sh.fit(v);
+  document.getElementById('labfig').innerHTML=labFig(v);
+  document.getElementById('labres').innerHTML=`<div><small>Volume</small>${fr(V)} cm³</div><div><small>Taux</small>${f?fr(T)+' %':'—'}</div><div><small>Surface</small>${fr(S)} cm²</div>`;
+  const fe=document.getElementById('labfit');fe.className='fit '+(f?'ok':'bad');
+  fe.textContent=f?`Les trois balles tiennent (${f}).`:'Les trois balles ne tiennent pas : agrandis la boîte.';
+  const rows=BOX.map((b,i)=>({n:`${i+1}. ${b.n}`,T:b.T,S:b.S,mine:false}));
+  if(f)rows.push({n:'Ta boîte',T,S,mine:true});
+  const occ=[...rows].sort((a,b)=>b.T-a.T),mat=[...rows].sort((a,b)=>a.S-b.S);
+  document.getElementById('rank').innerHTML=`<tr><th>Boîte</th><th>Taux</th><th>Rang occupation</th><th>Surface</th><th>Rang matière</th></tr>`+
+    rows.sort((a,b)=>b.T-a.T).map(r=>`<tr class="${r.mine?'mine':''}"><td>${r.n}</td><td>${fr(r.T)} %</td><td>${occ.indexOf(r)+1}</td><td>${fr(r.S)} cm²</td><td>${mat.indexOf(r)+1}</td></tr>`).join('');
+  saved.lab=lab;save();}
+shapeSel.value=lab.shape;
+shapeSel.addEventListener('change',()=>{lab.shape=shapeSel.value;buildSliders();upd();});
+buildSliders();upd();
+})();
+</script>
+</body>
+</html>
+
+</body></html>

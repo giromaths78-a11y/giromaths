@@ -1,0 +1,401 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Notion d'angle</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Crimson+Pro:ital,wght@0,500;1,500;1,600&display=swap">
+<style>
+/* Layout : cahier à petits carreaux, un exercice à la fois, pastilles d'avancement en haut (même cahier que les pages « fonctions »).
+   Couleurs d'angles = celles du manuel : bleu, vert, rouge, noir, rose, orange. */
+:root{
+  --paper:#f7f9fc; --grid:#dfe7f2; --ink:#18202e; --muted:#5b6678; --card:#ffffff; --line:#c9d3e1;
+  --ok:#1b8a3a; --ok-soft:#e3f4e7; --bad:#cf2f2b; --bad-soft:#fbe6e4; --fn:#1f4e9c; --fn-soft:#e6edf8;
+  --warn:#b26a00; --warn-soft:#fff2dc; --focus:#f2a900; --on-fn:#ffffff;
+  --c-blue:#2f7fd9; --c-green:#2aa04a; --c-red:#d6362f; --c-black:#222a38; --c-pink:#e0549a; --c-orange:#ef8a2c;
+  --f-display:"Bricolage Grotesque", "Trebuchet MS", system-ui, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", system-ui, sans-serif;
+  --f-math:"Crimson Pro", "Cambria Math", Georgia, serif;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --paper:#121722; --grid:#1d2533; --ink:#e8edf5; --muted:#9aa6b8; --card:#1a2130; --line:#2f3a4d;
+  --ok:#4cc372; --ok-soft:#173324; --bad:#ff6b63; --bad-soft:#3a1d1d; --fn:#7aa5ff; --fn-soft:#1b2a47;
+  --warn:#ffb547; --warn-soft:#3a2a12; --focus:#ffc94d; --on-fn:#0d1526;
+  --c-blue:#5ea2ff; --c-green:#4cc372; --c-red:#ff6b63; --c-black:#d5dcea; --c-pink:#ff7fb9; --c-orange:#ffa24d; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --paper:#121722; --grid:#1d2533; --ink:#e8edf5; --muted:#9aa6b8; --card:#1a2130; --line:#2f3a4d;
+  --ok:#4cc372; --ok-soft:#173324; --bad:#ff6b63; --bad-soft:#3a1d1d; --fn:#7aa5ff; --fn-soft:#1b2a47;
+  --warn:#ffb547; --warn-soft:#3a2a12; --focus:#ffc94d; --on-fn:#0d1526;
+  --c-blue:#5ea2ff; --c-green:#4cc372; --c-red:#ff6b63; --c-black:#d5dcea; --c-pink:#ff7fb9; --c-orange:#ffa24d; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--paper); color:var(--ink); font:17px/1.55 var(--f-body);
+  background-image:linear-gradient(var(--grid) 1px, transparent 1px),linear-gradient(90deg,var(--grid) 1px, transparent 1px);
+  background-size:24px 24px;}
+.wrap{max-width:1040px; margin:0 auto; padding-block:18px 28px;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));
+  display:flex; flex-direction:column; gap:14px}
+header{display:flex; flex-wrap:wrap; align-items:flex-end; justify-content:space-between; gap:10px 20px}
+h1{font:800 clamp(26px,4vw,38px)/1.05 var(--f-display); margin:0; letter-spacing:-.01em}
+.sub{color:var(--muted); font-size:15px}
+.prog{font:700 15px var(--f-body); color:var(--muted); font-variant-numeric:tabular-nums}
+.prog b{color:var(--ok); font-size:20px}
+nav.exs{display:flex; flex-wrap:wrap; gap:6px}
+nav.exs button{font:700 15px var(--f-body); width:42px; height:42px; border-radius:50%; border:2px solid var(--line); background:var(--card); color:var(--ink); cursor:pointer; font-variant-numeric:tabular-nums}
+nav.exs button.done{border-color:var(--ok); background:var(--ok-soft); color:var(--ok)}
+nav.exs button.part{border-color:var(--warn); background:var(--warn-soft); color:var(--warn)}
+nav.exs button[aria-current="step"]{outline:3px solid var(--fn); outline-offset:2px}
+button:focus-visible, input:focus-visible, select:focus-visible{outline:3px solid var(--focus); outline-offset:2px}
+
+.stage{background:var(--card); border:1.5px solid var(--line); border-radius:14px; padding:22px clamp(16px,3vw,30px);
+  display:flex; flex-direction:column; gap:16px; box-shadow:0 10px 30px -18px rgba(20,40,80,.35)}
+.stage h2{font:800 clamp(22px,3vw,28px)/1.15 var(--f-display); margin:0; text-wrap:balance}
+.stage h2 small{display:block; font:700 13px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--muted); margin-bottom:4px}
+.stage p{margin:0}
+.q{display:flex; flex-direction:column; gap:8px; padding-top:12px; border-top:1px dashed var(--line)}
+.q > .lbl{font-weight:700}
+.m{font-family:var(--f-math); font-style:italic; font-size:1.17em}
+.line{display:flex; flex-wrap:wrap; align-items:center; gap:6px 10px}
+.rule{background:var(--warn-soft); border:1.5px solid var(--warn); border-radius:10px; padding:10px 14px; font-size:16px}
+.rule b{color:var(--warn)}
+
+input.num, select.sel{font:600 17px var(--f-body); padding:5px 8px; border:2px solid var(--line); border-radius:8px; background:var(--paper); color:var(--ink)}
+input.num{width:5.2em; text-align:center}
+input.txt{width:4.6em; font-family:var(--f-math); font-style:italic; font-size:19px}
+input.num.ok, select.sel.ok{border-color:var(--ok); background:var(--ok-soft)}
+input.num.bad, select.sel.bad{border-color:var(--bad); background:var(--bad-soft)}
+.given{display:inline-block; min-width:3.2em; text-align:center; padding:3px 8px; border-bottom:2px solid var(--line)}
+.fig2{display:grid; grid-template-columns:minmax(0,260px) minmax(0,1fr); gap:10px 24px; align-items:center}
+@media (max-width:640px){ .fig2{grid-template-columns:1fr} .fig2 .fig{max-width:260px} }
+.fields{display:flex; flex-direction:column; gap:12px}
+.cloze{display:flex; flex-direction:column; gap:12px}
+.cloze p{line-height:2}
+
+.chips{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.chips button{font:700 16px var(--f-body); min-width:44px; border:2px solid var(--line); background:var(--card); color:var(--ink); border-radius:9px; padding:6px 12px; cursor:pointer}
+.chips button .m{font-size:1.15em}
+.chips button[aria-pressed="true"]{border-color:var(--fn); background:var(--fn-soft); color:var(--fn)}
+.chips button.ok{border-color:var(--ok); background:var(--ok-soft)}
+.chips button.bad{border-color:var(--bad); background:var(--bad-soft)}
+.sw{display:inline-block; width:14px; height:14px; border-radius:50%; margin-right:7px; vertical-align:-2px; border:1.5px solid var(--ink)}
+
+.board{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:14px 24px; align-items:start}
+@media (max-width:780px){ .board{grid-template-columns:1fr} }
+.board svg{max-width:420px; margin-inline:auto}
+.rk{display:grid; grid-template-columns:repeat(auto-fit,minmax(138px,1fr)); gap:12px}
+.rk button{position:relative; border:2px solid var(--line); border-radius:10px; padding:6px 6px 4px; color:var(--ink); cursor:pointer;
+  background-color:var(--card); background-image:linear-gradient(var(--grid) 1px, transparent 1px),linear-gradient(90deg,var(--grid) 1px, transparent 1px); background-size:15px 15px;
+  display:flex; flex-direction:column; align-items:center; gap:2px; font:inherit}
+.rk button svg{max-width:150px}
+.rk button .cap{font:600 16px var(--f-math); background:var(--card); padding:0 6px; border-radius:6px}
+.rk button .nb{position:absolute; top:6px; left:6px; width:26px; height:26px; border-radius:50%; background:var(--fn); color:var(--on-fn); font:800 14px/26px var(--f-body); text-align:center}
+.rk button .nb:empty{display:none}
+.rk button.on{border-color:var(--fn)}
+.rk button.ok{border-color:var(--ok)} .rk button.ok .nb{background:var(--ok)}
+.rk button.bad{border-color:var(--bad)} .rk button.bad .nb{background:var(--bad)}
+
+.actions{display:flex; flex-wrap:wrap; gap:10px; align-items:center; padding-top:6px}
+.btn{font:700 16px var(--f-body); border:0; border-radius:10px; padding:10px 18px; cursor:pointer; background:var(--fn); color:var(--on-fn)}
+.btn.ghost{background:transparent; color:var(--fn); border:1.5px solid var(--fn)}
+.btn:disabled{opacity:.45; cursor:default}
+.result{font-weight:700}
+.result.ok{color:var(--ok)} .result.part{color:var(--warn)}
+.corr{border:1.5px solid var(--fn); background:var(--fn-soft); border-radius:12px; padding:14px 16px; display:flex; flex-direction:column; gap:6px}
+.corr .t{font:800 13px var(--f-body); letter-spacing:.08em; text-transform:uppercase; color:var(--fn)}
+.hint{color:var(--muted); font-size:14px}
+svg{display:block; width:100%; height:auto; max-width:100%}
+svg text{font-family:var(--f-math)}
+.plab{font-style:italic; font-weight:600; font-size:17px; fill:var(--ink)}
+footer.nav{display:flex; justify-content:space-between; gap:10px; flex-wrap:wrap}
+@media (prefers-reduced-motion: reduce){ *{transition:none!important; animation:none!important} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Notion d'angle</h1>
+      <div class="sub">Sommet, côtés, notations, comparaison. Réponds, puis clique sur « Vérifier ».</div>
+    </div>
+    <div class="prog" id="prog"></div>
+  </header>
+  <nav class="exs" id="exNav" aria-label="Exercices"></nav>
+  <main class="stage" id="stage"></main>
+  <footer class="nav">
+    <button class="btn ghost" id="prev">← Exercice précédent</button>
+    <button class="btn" id="next">Exercice suivant →</button>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+const store={ get(k){ try{ return JSON.parse(localStorage.getItem(k)); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,JSON.stringify(v)); }catch(e){} } };
+const rnd=(a,b)=>a+Math.random()*(b-a), rint=(a,b)=>Math.floor(rnd(a,b+1));
+const shuffle=a=>{ a=a.slice(); for(let i=a.length-1;i>0;i--){ const j=rint(0,i); [a[i],a[j]]=[a[j],a[i]]; } return a; };
+
+/* ---------- géométrie (angles en degrés, sens trigonométrique, écran : y vers le bas) ---------- */
+const DEG=Math.PI/180;
+const nrm=a=>((a%360)+360)%360;
+const polar=(o,a,l)=>[o[0]+l*Math.cos(a*DEG), o[1]-l*Math.sin(a*DEG)];
+const r1=n=>Math.round(n*10)/10;
+const hat=(a,v,b)=>a+v+"̂"+b;               // x Ô y
+const clean=s=>String(s==null?"":s).toLowerCase().replace(/[\s\[\]()̂∠^]/g,"");
+function arcDelta(a1,a2){ let d=((nrm(a2)-nrm(a1)+540)%360)-180; return d===-180?180:d; }
+function sector(o,a1,a2,r){
+  const d=arcDelta(a1,a2), p1=polar(o,a1,r), p2=polar(o,a1+d,r);
+  return `M${r1(o[0])} ${r1(o[1])}L${r1(p1[0])} ${r1(p1[1])}A${r} ${r} 0 0 ${d>0?0:1} ${r1(p2[0])} ${r1(p2[1])}Z`;
+}
+const fillOf=c=>`style="fill:var(--c-${c});fill-opacity:.55;stroke:var(--c-${c});stroke-width:1.6"`;
+const LINE=`style="stroke:var(--ink);stroke-width:1.7;stroke-linecap:round"`;
+
+/* ---------- figure d'un angle coloré : sommet + demi-droites ---------- */
+function figSVG(f){
+  const o=f.o||[120,85];
+  let s=`<svg viewBox="0 0 240 170" role="img" aria-label="Figure : un angle coloré">`;
+  const a1=f.rays[f.col[0]].a, a2=f.rays[f.col[1]].a;
+  s+=`<path d="${sector(o,a1,a2,f.r||27)}" ${fillOf(f.color)}/>`;
+  f.rays.forEach(r=>{
+    const e=polar(o,r.a,r.len), t=polar(o,r.a,r.len+11);
+    s+=`<line x1="${r1(o[0])}" y1="${r1(o[1])}" x2="${r1(e[0])}" y2="${r1(e[1])}" ${LINE}/>`;
+    const k=polar(o,r.a,r.len); // petit trait à l'extrémité
+    s+=`<circle cx="${r1(k[0])}" cy="${r1(k[1])}" r="2.4" style="fill:var(--ink)"/>`;
+    s+=`<text class="plab" x="${r1(t[0])}" y="${r1(t[1])}" text-anchor="middle" dominant-baseline="central">${r.l}</text>`;
+  });
+  const mid=a1+arcDelta(a1,a2)/2, v=polar(o,mid+180,15);
+  s+=`<circle cx="${o[0]}" cy="${o[1]}" r="2.6" style="fill:var(--ink)"/>`;
+  s+=`<text class="plab" x="${r1(v[0])}" y="${r1(v[1])}" text-anchor="middle" dominant-baseline="central">${f.vl}</text></svg>`;
+  return s;
+}
+
+/* ---------- question « sommet, côtés, notations » ---------- */
+function angleQ(f,given,label){
+  const V=f.vl, a=f.rays[f.col[0]].l, b=f.rays[f.col[1]].l;
+  const ray=[V+a,V+b], nm=[a+V+b,b+V+a];
+  const gc=given&&given.c, gn=given&&given.n;
+  const inp=(k,ans)=>`<input class="num txt" data-k="${k}" data-ans="${ans}" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="${k==="s"?"sommet":k==="c"?"côté":"notation"}">`;
+  const cC=i=> gc===i? `<span class="given m">${ray[i]}</span>` : inp("c",ray[i]);
+  const cN=i=> gn===i? `<span class="given m">${hat(nm[i][0],V,nm[i][2])}</span>` : inp("n",nm[i]);
+  const el=document.createElement("div"); el.className="q";
+  el.innerHTML=`${label?`<div class="lbl">${label}</div>`:""}<div class="fig2"><div class="fig">${figSVG(f)}</div><div class="fields">
+    <div class="line"><span>Sommet :</span> ${inp("s",V)}</div>
+    <div class="line"><span>Côtés :</span> <span class="m">[</span>${cC(0)}<span class="m">)</span> <span>et</span> <span class="m">[</span>${cC(1)}<span class="m">)</span></div>
+    <div class="line"><span>Notations :</span> ${cN(0)} <span>ou</span> ${cN(1)}</div></div></div>`;
+  const mark=(e,ok)=>{ e.classList.toggle("ok",ok); e.classList.toggle("bad",!ok); };
+  return { el,
+    check(){
+      let score=0,total=0;
+      const s=$('input[data-k="s"]',el); total++; const okS=clean(s.value)===V.toLowerCase(); mark(s,okS); if(okS) score++;
+      let rem=ray.filter((_,i)=>i!==gc).map(clean);
+      $$('input[data-k="c"]',el).forEach(i=>{ total++; const v=clean(i.value), k=rem.indexOf(v); if(k>=0){ rem.splice(k,1); score++; mark(i,true);} else mark(i,false); });
+      rem=nm.filter((_,i)=>i!==gn).map(clean);
+      $$('input[data-k="n"]',el).forEach(i=>{ total++; const v=clean(i.value), k=rem.indexOf(v); if(k>=0){ rem.splice(k,1); score++; mark(i,true);} else mark(i,false); });
+      return {score,total};
+    },
+    corr:`${label?label+" ":""}sommet <b>${V}</b> ; côtés <span class="m">[${ray[0]})</span> et <span class="m">[${ray[1]})</span> ; notations <span class="m">${hat(a,V,b)}</span> ou <span class="m">${hat(b,V,a)}</span>.`
+  };
+}
+
+/* ---------- groupe de classement (clic dans l'ordre) ---------- */
+function rankGroup(cards, ask){
+  // cards : [{svg, cap, meas}]
+  const el=document.createElement("div"); el.className="q";
+  el.innerHTML=`<div class="lbl">${ask}</div><div class="rk">${cards.map((c,i)=>`<button type="button" data-i="${i}" data-meas="${c.meas}" aria-label="Figure ${i+1}">${c.svg}<span class="cap">${c.cap}</span><span class="nb"></span></button>`).join("")}</div>
+  <p class="hint">Clique sur les figures dans l'ordre. Clique encore sur une figure pour la retirer.</p>`;
+  let order=[];
+  const paint=()=>$$(".rk button",el).forEach((b,i)=>{ const k=order.indexOf(i); $(".nb",b).textContent=k>=0?k+1:""; b.classList.toggle("on",k>=0); b.classList.remove("ok","bad"); });
+  el.addEventListener("click",e=>{ const b=e.target.closest(".rk button"); if(!b) return; const i=+b.dataset.i, k=order.indexOf(i); if(k>=0) order.splice(k,1); else order.push(i); paint(); });
+  const sorted=cards.map((c,i)=>i).sort((x,y)=>cards[x].meas-cards[y].meas);
+  return { el,
+    check(){ let score=0; $$(".rk button",el).forEach((b,i)=>{ const k=order.indexOf(i), good=k>=0 && sorted[k]===i; if(good) score++; b.classList.remove("ok","bad"); if(k>=0) b.classList.add(good?"ok":"bad"); }); return {score,total:cards.length}; },
+    sorted
+  };
+}
+
+/* ---------- définition des exercices ---------- */
+const EXS=[];
+
+/* 1. Vocabulaire */
+EXS.push({ title:"Le vocabulaire de l'angle", sub:"Cours", build(box){
+  const opts=["", "angle","sommet","côtés","milieu","ouverture","longueur des côtés","couleur"];
+  const sel=a=>`<select class="sel" data-ans="${a}" aria-label="mot à choisir">${opts.map(o=>`<option value="${o}">${o||"…"}</option>`).join("")}</select>`;
+  box.innerHTML=`<div class="rule"><b>À retenir.</b> Deux demi-droites de même origine forment un angle.</div>
+  <div class="cloze">
+   <p>Deux demi-droites de même origine forment un ${sel("angle")}.</p>
+   <p>L'origine commune des deux demi-droites est appelée le ${sel("sommet")} de l'angle.</p>
+   <p>Les deux demi-droites sont appelées les ${sel("côtés")} de l'angle.</p>
+   <p>Dans la notation <span class="m">${hat("x","O","y")}</span>, la lettre <span class="m">O</span>, écrite au ${sel("milieu")}, désigne le sommet.</p>
+   <p>Pour comparer deux angles, on compare leur ${sel("ouverture")}, pas la longueur des côtés dessinés.</p></div>`;
+  return { check(){ let score=0; const ss=$$("select",box); ss.forEach(s=>{ const ok=s.value===s.dataset.ans; s.classList.toggle("ok",ok); s.classList.toggle("bad",!ok); if(ok) score++; }); return {score,total:ss.length}; },
+    corr:`Angle, sommet, côtés, milieu, ouverture.` };
+}});
+
+/* 2. Sommet, côtés, notations (4 figures) */
+const FIGS=[
+  {vl:"B",o:[135,38],color:"green",rays:[{l:"A",a:225,len:68},{l:"C",a:270,len:70}],col:[0,1],given:{c:0,n:0},lab:"a."},
+  {vl:"O",o:[110,40],color:"pink",rays:[{l:"x",a:240,len:70},{l:"y",a:335,len:84}],col:[0,1],given:{c:0,n:0},lab:"b."},
+  {vl:"R",color:"orange",rays:[{l:"P",a:170,len:62},{l:"T",a:35,len:62},{l:"Q",a:215,len:62},{l:"S",a:350,len:62}],col:[2,3],given:{},lab:"c."},
+  {vl:"E",color:"blue",rays:[{l:"A",a:110,len:62},{l:"B",a:290,len:62},{l:"C",a:215,len:62},{l:"D",a:35,len:62}],col:[0,2],given:{},lab:"d."}
+];
+EXS.push({ title:"Sommet, côtés et notations", sub:"Figures du manuel", build(box){
+  box.innerHTML=`<p>Pour chacun des angles colorés, précise son <b>sommet</b>, ses <b>côtés</b>, puis note-le de deux manières. Écris seulement les lettres.</p>`;
+  const qs=FIGS.map(f=>angleQ(f,f.given,`<span style="color:var(--c-${f.color})">${f.lab}</span>`)); qs.forEach(q=>box.appendChild(q.el));
+  return { check(){ return qs.reduce((t,q)=>{ const r=q.check(); return {score:t.score+r.score,total:t.total+r.total}; },{score:0,total:0}); },
+    corr:qs.map(q=>q.corr).join("<br>") };
+}});
+
+/* 3. Marquer des angles sur une figure à demi-droites */
+EXS.push({ title:"Marquer les angles", sub:"Figure à demi-droites", build(box){
+  const O=[180,135], RAYS={x:{a:90,len:112},y:{a:35,len:140},w:{a:345,len:140},u:{a:270,len:112},z:{a:207,len:115},t:{a:162,len:128}};
+  const TASKS=[{c:"blue",p:["t","x"],n:"blue",lbl:"bleu"},{c:"green",p:["x","w"],lbl:"vert"},{c:"red",p:["u","t"],lbl:"rouge"},{c:"black",p:["z","w"],lbl:"noir"}];
+  const sel={blue:[],green:[],red:[],black:[]}; let active="blue"; let marks={};
+  box.innerHTML=`<p>Sur la figure, colorie : choisis d'abord une couleur, puis clique sur les <b>deux demi-droites</b> qui forment l'angle.</p>
+   <div class="chips" id="tk">${TASKS.map(t=>`<button type="button" data-c="${t.c}"><span class="sw" style="background:var(--c-${t.c})"></span>en ${t.lbl}, l'angle <span class="m">${hat(t.p[0],"O",t.p[1])}</span></button>`).join("")}</div>
+   <div id="fg"></div><p class="hint" id="st"></p>`;
+  const draw=()=>{
+    let s=`<svg viewBox="0 0 360 270" role="img" aria-label="Six demi-droites de même origine O">`;
+    TASKS.forEach((t,i)=>{ const p=sel[t.c]; if(p.length===2) s+=`<path d="${sector([O[0],O[1]],RAYS[p[0]].a,RAYS[p[1]].a,26+i*11)}" ${fillOf(t.c)}/>`; });
+    Object.keys(RAYS).forEach(k=>{ const r=RAYS[k], e=polar(O,r.a,r.len), l=polar(O,r.a,r.len+13), on=sel[active].includes(k);
+      s+=`<line x1="${O[0]}" y1="${O[1]}" x2="${r1(e[0])}" y2="${r1(e[1])}" style="stroke:${on?`var(--c-${active})`:"var(--ink)"};stroke-width:${on?3.4:1.7};stroke-linecap:round"/>`;
+      s+=`<line data-ray="${k}" x1="${O[0]}" y1="${O[1]}" x2="${r1(e[0])}" y2="${r1(e[1])}" stroke="transparent" stroke-width="22" pointer-events="stroke" style="cursor:pointer"/>`;
+      s+=`<text class="plab" x="${r1(l[0])}" y="${r1(l[1])}" text-anchor="middle" dominant-baseline="central">${k}</text>`; });
+    s+=`<circle cx="${O[0]}" cy="${O[1]}" r="3" style="fill:var(--ink)"/><text class="plab" x="${O[0]+14}" y="${O[1]+16}" text-anchor="middle">O</text></svg>`;
+    $("#fg",box).innerHTML=s;
+    $$("#tk button",box).forEach(b=>{ b.setAttribute("aria-pressed",b.dataset.c===active); });
+    $("#st",box).innerHTML=`Couleur choisie : <b>${TASKS.find(t=>t.c===active).lbl}</b>. Demi-droites sélectionnées : ${sel[active].map(k=>`<span class="m">[O${k})</span>`).join(" et ")||"aucune"}.`;
+  };
+  box.addEventListener("click",e=>{
+    const b=e.target.closest("#tk button"); if(b){ active=b.dataset.c; draw(); return; }
+    const r=e.target.closest("[data-ray]"); if(!r) return; const k=r.dataset.ray, a=sel[active], i=a.indexOf(k);
+    if(i>=0) a.splice(i,1); else { a.push(k); if(a.length>2) a.shift(); } draw();
+  });
+  draw();
+  return { check(){ let score=0; TASKS.forEach(t=>{ const p=sel[t.c], ok=p.length===2 && p.includes(t.p[0]) && p.includes(t.p[1]); if(ok) score++; const b=$(`#tk button[data-c="${t.c}"]`,box); b.classList.toggle("ok",ok); b.classList.toggle("bad",!ok); }); return {score,total:TASKS.length}; },
+    corr:TASKS.map(t=>`En ${t.lbl} : <span class="m">${hat(t.p[0],"O",t.p[1])}</span> (demi-droites <span class="m">[O${t.p[0]})</span> et <span class="m">[O${t.p[1]})</span>).`).join("<br>") };
+}});
+
+/* 4. Marquer des angles sur une figure à points + questions */
+EXS.push({ title:"Angles et points de la figure", sub:"Figure à points", build(box){
+  const P={G:[0,0],A:[-0.6,1.38],B:[1.3,-3],F:[1.5,2.2],E:[3.4,0.2],D:[4.4,1.6],C:[2.1,-1.6]};
+  const S=p=>[40+(p[0]+1)*48, 40+(2.8-p[1])*46];
+  const LBL={G:[-15,5],A:[-6,-13],B:[9,13],F:[0,-14],E:[16,4],D:[11,-9],C:[10,10]};
+  const SEG=[["A","B"],["G","F"],["F","E"],["E","B"],["C","D"]];
+  const TASKS=[{c:"blue",v:"E",s:["F","B"],lbl:"bleu"},{c:"green",v:"G",s:["A","F"],lbl:"vert"},{c:"black",v:"G",s:["B","F"],lbl:"noir"}];
+  const seq={blue:[],green:[],black:[]}; let active="blue";
+  const NAMES=[hat("F","E","B"),hat("A","G","F"),hat("B","G","F")];
+  const OPT=[{k:"EFG",h:hat("E","F","G"),ok:1},{k:"F",h:"F̂",ok:1},{k:"FGE",h:hat("F","G","E"),ok:0},{k:"GEF",h:hat("G","E","F"),ok:0},{k:"EGF",h:hat("E","G","F"),ok:0}];
+  box.innerHTML=`<p><b>1.</b> Sur la figure, marque : choisis une couleur, puis clique sur <b>trois points</b> : un point d'un côté, le sommet, un point de l'autre côté.</p>
+   <div class="chips" id="tk">${TASKS.map(t=>`<button type="button" data-c="${t.c}"><span class="sw" style="background:var(--c-${t.c})"></span>en ${t.lbl}, l'angle <span class="m">${hat(t.s[0],t.v,t.s[1])}</span></button>`).join("")}</div>
+   <div class="board"><div id="fg"></div><div style="display:flex;flex-direction:column;gap:14px">
+    <div class="q"><div class="lbl">2. Parmi les angles colorés, quels sont les deux qui ont le même sommet ?</div>
+      <div class="chips" id="q2">${NAMES.map((n,i)=>`<button type="button" data-k="${i}" aria-pressed="false"><span class="m">${n}</span></button>`).join("")}</div></div>
+    <div class="q"><div class="lbl">3. Les angles <span class="m">${NAMES[1]}</span> et <span class="m">${NAMES[2]}</span> ont un côté commun. Lequel ? <span class="m">[</span><input class="num txt" id="q3" data-ans="GF" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="côté commun"><span class="m">)</span></div></div>
+    <div class="q"><div class="lbl">4. Quelles sont les autres façons de nommer l'angle <span class="m">${hat("G","F","E")}</span> ?</div>
+      <div class="chips" id="q4">${OPT.map((o,i)=>`<button type="button" data-k="${i}" aria-pressed="false"><span class="m">${o.h}</span></button>`).join("")}</div></div>
+   </div></div><p class="hint" id="st"></p>`;
+  const draw=()=>{
+    let s=`<svg viewBox="0 0 340 330" role="img" aria-label="Figure avec les points A, B, C, D, E, F et G">`;
+    TASKS.forEach(t=>{ const q=seq[t.c]; if(q.length===3){ const v=S(P[q[1]]); const ang=k=>Math.atan2(P[k][1]-P[q[1]][1],P[k][0]-P[q[1]][0])/DEG; s+=`<path d="${sector(v,ang(q[0]),ang(q[2]),26)}" ${fillOf(t.c)}/>`; }});
+    SEG.forEach(([a,b])=>{ const p=S(P[a]),q=S(P[b]); s+=`<line x1="${r1(p[0])}" y1="${r1(p[1])}" x2="${r1(q[0])}" y2="${r1(q[1])}" ${LINE}/>`; });
+    Object.keys(P).forEach(k=>{ const p=S(P[k]), l=LBL[k], on=seq[active].includes(k);
+      s+=`<circle cx="${r1(p[0])}" cy="${r1(p[1])}" r="${on?5:3}" style="fill:${on?`var(--c-${active})`:"var(--ink)"}"/>`;
+      s+=`<text class="plab" x="${r1(p[0]+l[0])}" y="${r1(p[1]+l[1])}" text-anchor="middle" dominant-baseline="central">${k}</text>`;
+      s+=`<circle data-pt="${k}" cx="${r1(p[0])}" cy="${r1(p[1])}" r="17" fill="transparent" pointer-events="all" style="cursor:pointer"/>`; });
+    $("#fg",box).innerHTML=s+"</svg>";
+    $$("#tk button",box).forEach(b=>b.setAttribute("aria-pressed",b.dataset.c===active));
+    $("#st",box).innerHTML=`Couleur choisie : <b>${TASKS.find(t=>t.c===active).lbl}</b>. Points cliqués : ${seq[active].map(k=>`<span class="m">${k}</span>`).join(" , ")||"aucun"}.`;
+  };
+  box.addEventListener("click",e=>{
+    const b=e.target.closest("#tk button"); if(b){ active=b.dataset.c; draw(); return; }
+    const p=e.target.closest("[data-pt]"); if(p){ const q=seq[active]; if(q.length>=3) q.length=0; q.push(p.dataset.pt); draw(); return; }
+    const c=e.target.closest("#q2 button"); if(c){ const on=$$("#q2 [aria-pressed=true]",box); if(c.getAttribute("aria-pressed")==="true") c.setAttribute("aria-pressed","false"); else { if(on.length>=2) on[0].setAttribute("aria-pressed","false"); c.setAttribute("aria-pressed","true"); } return; }
+    const d=e.target.closest("#q4 button"); if(d) d.setAttribute("aria-pressed",d.getAttribute("aria-pressed")==="true"?"false":"true");
+  });
+  draw();
+  return { check(){
+      let score=0; const mk=(el,ok)=>{ el.classList.toggle("ok",ok); el.classList.toggle("bad",!ok); };
+      TASKS.forEach(t=>{ const q=seq[t.c], ok=q.length===3 && q[1]===t.v && q.includes(t.s[0]) && q.includes(t.s[1]); if(ok) score++; const b=$(`#tk button[data-c="${t.c}"]`,box); mk(b,ok); });
+      const g=$$("#q2 button",box), on=g.filter(b=>b.getAttribute("aria-pressed")==="true").map(b=>+b.dataset.k).sort().join(","); const ok2=on==="1,2"; if(ok2) score++; $("#q2",box).className="chips "+(ok2?"ok":"bad"); g.forEach(b=>{ if(b.getAttribute("aria-pressed")==="true") mk(b,ok2); else b.classList.remove("ok","bad"); });
+      const q3=$("#q3",box), ok3=clean(q3.value)==="gf"; mk(q3,ok3); if(ok3) score++;
+      const h=$$("#q4 button",box); let ok4=true; h.forEach(b=>{ const o=OPT[+b.dataset.k], pr=b.getAttribute("aria-pressed")==="true"; if(!!o.ok!==pr) ok4=false; }); if(ok4) score++;
+      h.forEach(b=>{ const pr=b.getAttribute("aria-pressed")==="true"; if(pr) mk(b,!!OPT[+b.dataset.k].ok); else { b.classList.remove("ok","bad"); if(OPT[+b.dataset.k].ok) b.classList.add("bad"); } });
+      return {score,total:6}; },
+    corr:`1. Bleu : <span class="m">${NAMES[0]}</span> (sommet E). Vert : <span class="m">${NAMES[1]}</span> (sommet G). Noir : <span class="m">${NAMES[2]}</span> (sommet G).<br>2. <span class="m">${NAMES[1]}</span> et <span class="m">${NAMES[2]}</span> ont le même sommet G.<br>3. Leur côté commun est <span class="m">[GF)</span>.<br>4. L'angle <span class="m">${hat("G","F","E")}</span> se nomme aussi <span class="m">${hat("E","F","G")}</span> ou <span class="m">F̂</span> (il n'y a qu'un seul angle de sommet F sur la figure).` };
+}});
+
+/* 5. Classer des angles (aléatoire) */
+function angleCard(meas,color){
+  const o=[75,65], a0=rnd(0,360), l1=rnd(36,54), l2=rnd(36,54), a1=a0+meas;
+  const e1=polar(o,a0,l1), e2=polar(o,a1,l2);
+  return `<svg viewBox="0 0 150 130" aria-hidden="true"><path d="${sector(o,a0,a1,rnd(16,26))}" ${fillOf(color)}/>
+   <line x1="75" y1="65" x2="${r1(e1[0])}" y2="${r1(e1[1])}" ${LINE}/><line x1="75" y1="65" x2="${r1(e2[0])}" y2="${r1(e2[1])}" ${LINE}/></svg>`;
+}
+EXS.push({ title:"Classer des angles", sub:"Comparer les ouvertures", random:true, build(box){
+  box.innerHTML=`<div class="rule"><b>Pour comparer deux angles</b>, on compare leurs « ouvertures » : plus l'ouverture est grande, plus l'angle est grand. La longueur des côtés dessinés ne compte pas.</div>`;
+  let m=[]; do{ m=[0,0,0,0].map(()=>rint(18,165)); const s=m.slice().sort((x,y)=>x-y); if(s.every((v,i)=>i===0||v-s[i-1]>=13)) break; }while(true);
+  const cols=shuffle(["green","blue","pink","orange","red"]);
+  const g=rankGroup(m.map((v,i)=>({svg:angleCard(v,cols[i]),cap:"figure "+(i+1),meas:v})),"Classe ces angles du plus petit au plus grand.");
+  box.appendChild(g.el);
+  const nw=document.createElement("div"); nw.className="actions"; nw.innerHTML=`<button type="button" class="btn ghost" id="again">Nouveaux angles</button>`; box.appendChild(nw);
+  nw.addEventListener("click",()=>window.__rerender());
+  return { check:g.check, corr:`Du plus petit au plus grand : ${g.sorted.map(i=>`figure ${i+1} (environ ${m[i]}°)`).join(" ; ")}.` };
+}});
+
+/* 6. Expert : polygones réguliers */
+function polyCard(n,letters){
+  const c=[75,65], R=46, vs=[];
+  for(let k=0;k<n;k++){ const a=270+(k-1)*360/n; vs.push({p:polar(c,a,R),l:polar(c,a,R+13)}); }
+  const dir=(p,q)=>Math.atan2(-(q[1]-p[1]),q[0]-p[0])/DEG;
+  const v=vs[1].p, d0=dir(v,vs[0].p), d2=dir(v,vs[2].p);
+  let s=`<svg viewBox="0 0 150 130" aria-hidden="true"><path d="${sector(v,d0,d2,17)}" ${fillOf("orange")}/><polygon points="${vs.map(x=>r1(x.p[0])+","+r1(x.p[1])).join(" ")}" style="fill:none;stroke:var(--ink);stroke-width:1.7;stroke-linejoin:round"/>`;
+  vs.forEach((x,k)=>{ s+=`<text class="plab" x="${r1(x.l[0])}" y="${r1(x.l[1])}" text-anchor="middle" dominant-baseline="central" style="font-size:14px">${letters[k]}</text>`; });
+  return s+"</svg>";
+}
+EXS.push({ title:"Mode expert : polygones réguliers", sub:"Raisonner sans mesurer", build(box){
+  const defs=[{n:5,L:"HIJKL",deg:108,nm:"pentagone"},{n:3,L:"ABC",deg:60,nm:"triangle équilatéral"},{n:6,L:"MNPQRS",deg:120,nm:"hexagone régulier"},{n:4,L:"DEFG",deg:90,nm:"carré"}];
+  box.innerHTML=`<p>Chaque figure est un polygone régulier : tous ses côtés ont la même longueur et tous ses angles ont la même mesure. L'angle orange est un angle du polygone.</p>`;
+  const g=rankGroup(defs.map(d=>({svg:polyCard(d.n,d.L),cap:hat(d.L[0],d.L[1],d.L[2]),meas:d.deg})),"Classe les angles du plus petit au plus grand.");
+  box.appendChild(g.el);
+  return { check:g.check, corr:g.sorted.map(i=>`<span class="m">${hat(defs[i].L[0],defs[i].L[1],defs[i].L[2])}</span> : ${defs[i].nm}, ${defs[i].deg}°`).join(" <b>&lt;</b> ")+`<br><span class="hint">Triangle équilatéral : 180° ÷ 3 = 60°. Carré : 90°. Pentagone régulier : 540° ÷ 5 = 108°. Hexagone régulier : 720° ÷ 6 = 120°.</span>` };
+}});
+
+/* 7. Entraînement : figure au hasard */
+EXS.push({ title:"Entraînement sans fin", sub:"Une figure au hasard", random:true, build(box){
+  const L=shuffle("ABCDEFGHJKLMNPQRSTUVWXYZ".split("")).slice(0,3);
+  const a0=rnd(0,360), meas=rint(32,150)*(Math.random()<.5?1:-1);
+  const f={vl:L[0],color:["green","blue","pink","orange","red"][rint(0,4)],col:[0,1],
+    rays:[{l:L[1],a:a0,len:rint(52,64)},{l:L[2],a:a0+meas,len:rint(52,64)}]};
+  box.innerHTML=`<p>Précise le sommet, les côtés, puis note l'angle coloré de deux manières.</p>`;
+  const q=angleQ(f,{},""); box.appendChild(q.el);
+  const nw=document.createElement("div"); nw.className="actions"; nw.innerHTML=`<button type="button" class="btn ghost" id="again">Nouvelle figure</button>`; box.appendChild(nw);
+  nw.addEventListener("click",()=>window.__rerender());
+  return { check:q.check, corr:q.corr };
+}});
+
+/* ---------- moteur ---------- */
+const KEY="angles3e"; let st=store.get(KEY)||{}; let cur=0, ctrl=null;
+const stage=$("#stage");
+function nav(){
+  $("#exNav").innerHTML=EXS.map((e,i)=>`<button type="button" data-i="${i}" class="${st[i]==="ok"?"done":st[i]==="part"?"part":""}" ${i===cur?'aria-current="step"':""} aria-label="Exercice ${i+1}">${i+1}</button>`).join("");
+  const n=Object.values(st).filter(v=>v==="ok").length; $("#prog").innerHTML=`<b>${n}</b> / ${EXS.length} réussis`;
+  $("#prev").disabled=cur===0; $("#next").disabled=cur===EXS.length-1;
+}
+function render(i){
+  cur=i; const e=EXS[i];
+  stage.innerHTML=`<h2><small>Exercice ${i+1} sur ${EXS.length} · ${e.sub}</small>${e.title}</h2><div id="body" style="display:flex;flex-direction:column;gap:14px"></div>
+   <div class="actions"><button type="button" class="btn" id="chk">Vérifier</button><button type="button" class="btn ghost" id="show">Voir la correction</button><span class="result" id="res" role="status"></span></div><div id="cr"></div>`;
+  ctrl=e.build($("#body"));
+  $("#chk").onclick=()=>{ const r=ctrl.check(), res=$("#res");
+    if(r.score===r.total){ res.className="result ok"; res.textContent="Bravo ! Tout est juste."; st[cur]="ok"; }
+    else { res.className="result part"; res.textContent=`${r.score} sur ${r.total} bonne${r.score>1?"s":""} réponse${r.score>1?"s":""}. Corrige ce qui est en rouge.`; if(st[cur]!=="ok") st[cur]="part"; }
+    store.set(KEY,st); nav(); };
+  $("#show").onclick=()=>{ $("#cr").innerHTML=`<div class="corr"><div class="t">Correction</div><div>${ctrl.corr}</div></div>`; };
+  history.replaceState(null,"","#exercice-"+(i+1)); nav();
+}
+window.__rerender=()=>render(cur);
+$("#exNav").addEventListener("click",e=>{ const b=e.target.closest("button"); if(b) render(+b.dataset.i); });
+$("#prev").onclick=()=>render(cur-1); $("#next").onclick=()=>render(cur+1);
+const m=/^#exercice-(\d+)$/.exec(location.hash); render(m&&+m[1]>=1&&+m[1]<=EXS.length?+m[1]-1:0);
+})();
+</script>
+
+</body></html>

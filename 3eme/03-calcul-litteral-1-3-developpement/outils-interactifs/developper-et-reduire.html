@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Développer et réduire</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--acc:#c026d3;--acc2:#86198f;--soft:#fbe6fd;--bg:#fdf8fe;--card:#fff;--ink:#1f1630;--muted:#6b5b78;--line:#ecd5f0;
+  --ok:#15803d;--oksoft:#dcfce7;--bad:#b91c1c;--badsoft:#fee2e2;--hint:#7c3aed;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--acc:#e879f9;--acc2:#f0abfc;--soft:#3b1340;--bg:#150d19;--card:#1f1426;--ink:#f5ecf8;--muted:#c2adc9;--line:#3d2846;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;color-scheme:dark}}
+:root[data-theme="dark"]{--acc:#e879f9;--acc2:#f0abfc;--soft:#3b1340;--bg:#150d19;--card:#1f1426;--ink:#f5ecf8;--muted:#c2adc9;--line:#3d2846;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+header.hero{background:linear-gradient(135deg,#c026d3,#7e22ce);color:#fff;border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
+header.hero::after{content:"(a+b)²";position:absolute;right:14px;bottom:-14px;font:700 64px/1 "Space Grotesk",sans-serif;opacity:.16}
+.eyebrow{font:600 .8rem "Space Grotesk",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+h1{font:700 clamp(1.6rem,4.5vw,2.3rem)/1.1 "Space Grotesk",sans-serif;margin:4px 0 6px}
+header.hero p{margin:0;max-width:60ch;opacity:.95}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 10px}
+.tab{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font:600 .9rem Inter,sans-serif;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+.tab .n{font-variant-numeric:tabular-nums;opacity:.8;font-weight:500;margin-left:4px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);margin-bottom:12px}
+.score{font:700 1rem "Space Grotesk",sans-serif;font-variant-numeric:tabular-nums}
+.progress{flex:1 1 160px;height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:120px}
+.progress span{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.btn{border:1.5px solid var(--acc);background:var(--card);color:var(--acc);border-radius:8px;padding:5px 12px;font:600 .88rem Inter,sans-serif;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--acc);color:var(--bg)}
+.btn:focus-visible,input:focus-visible,.tab:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.rappel{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.95rem}
+.rappel b{color:var(--acc2)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.q.ok{border-color:var(--ok);box-shadow:inset 4px 0 0 var(--ok)}
+.q.bad{border-color:var(--bad);box-shadow:inset 4px 0 0 var(--bad)}
+.qhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.num{font:700 .85rem "Space Grotesk",sans-serif;background:var(--soft);color:var(--acc2);border-radius:6px;padding:1px 8px}
+.consigne{color:var(--muted);font-size:.9rem}
+.expr{font-size:1.15rem;margin:6px 0 8px}
+.m{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif}
+.m i{font-style:italic}
+.ans{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ans input{font:1.05rem "Cambria Math","Times New Roman",serif;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);min-width:0;flex:1 1 240px;max-width:420px}
+.ans .lbl{font-size:1.1rem}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choice{border:1.5px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 14px;cursor:pointer;font:600 .95rem Inter,sans-serif;color:var(--ink)}
+.choice.sel{border-color:var(--acc);background:var(--soft)}
+.fb{margin-top:6px;font-size:.92rem}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}.fb.hint{color:var(--hint)}
+.corr{margin-top:8px;background:var(--soft);border-radius:8px;padding:8px 12px;font-size:1rem}
+.corr .line{display:block;margin:2px 0}
+.corr .why{font:italic .85rem Inter,sans-serif;color:var(--muted);margin-left:10px}
+.keys{display:flex;gap:6px;flex-wrap:wrap;margin:-4px 0 12px}
+.key{border:1px solid var(--line);background:var(--card);border-radius:6px;padding:2px 10px;font:1rem "Cambria Math","Times New Roman",serif;cursor:pointer;color:var(--ink)}
+.aide{font-size:.85rem;color:var(--muted);margin:0 0 10px}
+footer{margin-top:28px;color:var(--muted);font-size:.82rem;text-align:center}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">3ème · S3 · Calcul littéral</div>
+  <h1>Développer et réduire</h1>
+  <p>Des séries d'exercices qui changent à chaque fois. Écris ta réponse, vérifie, puis regarde la correction détaillée si besoin.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<div class="bar">
+  <span class="score" id="score">0 / 0</span>
+  <div class="progress"><span id="prog"></span></div>
+  <button class="btn" id="newSerie">Nouvelle série</button>
+  <button class="btn primary" id="checkAll">Tout vérifier</button>
+</div>
+<div class="rappel" id="rappel"></div>
+<p class="aide">Pour écrire un carré, tape <b>x²</b> (bouton ci-dessous) ou <b>x^2</b>. Le signe × peut s'écrire * ou être omis : <b>3x</b>, <b>-2x²+5x-1</b>.</p>
+<div class="keys" id="keys"></div>
+<div id="list"></div>
+<footer>GiroMaths · Calcul littéral 1/3 : développement · © 2026</footer>
+</div>
+<script>
+(function(){
+"use strict";
+/* ---------- outils ---------- */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const nz=(a,b)=>{let v;do v=R(a,b);while(v===0);return v;};
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const sgn=()=>Math.random()<.5?-1:1;
+const MINUS="−";
+// polynôme = tableau de coefficients (indice = degré)
+const P={
+  add(a,b){const r=[];for(let i=0;i<Math.max(a.length,b.length);i++)r[i]=(a[i]||0)+(b[i]||0);return P.trim(r);},
+  scale(a,k){return P.trim(a.map(c=>c*k));},
+  mul(a,b){const r=new Array(a.length+b.length-1).fill(0);a.forEach((x,i)=>b.forEach((y,j)=>r[i+j]+=x*y));return P.trim(r);},
+  trim(a){a=a.map(c=>Math.abs(c)<1e-9?0:c);while(a.length>1&&a[a.length-1]===0)a.pop();return a.length?a:[0];},
+  eq(a,b){a=P.trim(a);b=P.trim(b);return a.length===b.length&&a.every((c,i)=>Math.abs(c-b[i])<1e-9);},
+  val(a,x){return a.reduce((s,c,i)=>s+c*Math.pow(x,i),0);}
+};
+const lin=(a,b)=>[b,a];          // a·x + b
+/* ---------- affichage ---------- */
+function nb(n){return (n<0?MINUS:"")+String(Math.abs(n)).replace(".",",");}
+function mono(c,d,v,first){ // monôme c·v^d, avec signe d'enchaînement
+  const s=c<0?(first?MINUS:" "+MINUS+" "):(first?"":" + ");
+  const a=Math.abs(c);let body;
+  if(d===0)body=String(a);
+  else body=(a===1?"":a)+"<i>"+v+"</i>"+(d>1?"<sup>"+d+"</sup>":"");
+  return s+body;
+}
+// liste de termes [[coef,deg],...] (non réduite)
+function terms(list,v){if(!list.length)return "0";return list.map((t,i)=>mono(t[0],t[1],v,i===0)).join("");}
+function poly(p,v){const l=[];for(let d=p.length-1;d>=0;d--)if(p[d])l.push([p[d],d]);return l.length?terms(l,v):"0";}
+function linS(a,b,v,rev){return rev?terms([[b,0],[a,1]],v):terms([[a,1],[b,0]],v);} // ax+b ou b+ax
+const M=s=>'<span class="m">'+s+'</span>';
+/* ---------- lecture d'une réponse ---------- */
+function normalize(s,v){
+  s=s.replace(/[−–—]/g,"-").replace(/[×·∙]/g,"*").replace(/²/g,"^2").replace(/³/g,"^3").replace(/⁴/g,"^4")
+     .replace(/,/g,".").replace(/\s+/g,"").replace(/X/g,"x").replace(/\[/g,"(").replace(/\]/g,")");
+  s=s.replace(new RegExp(v+"(\\d)","g"),v+"^$1"); // x2 → x^2
+  return s;
+}
+function parse(s,v){ // renvoie un polynôme ou lève une erreur
+  let i=0;const peek=()=>s[i];
+  function expr(){let r=term();while(peek()==="+"||peek()==="-"){const op=s[i++];const t=term();r=op==="+"?P.add(r,t):P.add(r,P.scale(t,-1));}return r;}
+  function term(){let r=factor();for(;;){if(peek()==="*"){i++;r=P.mul(r,factor());}
+      else if(peek()!==undefined&&/[0-9.(a-z]/.test(peek()))r=P.mul(r,factor());else break;}return r;}
+  function factor(){if(peek()==="-"){i++;return P.scale(factor(),-1);}if(peek()==="+"){i++;return factor();}
+    let b=base();while(peek()==="^"){i++;const m=s.slice(i).match(/^\d+/);if(!m)throw 0;i+=m[0].length;let r=[1];for(let k=0;k<+m[0];k++)r=P.mul(r,b);b=r;}return b;}
+  function base(){const c=peek();
+    if(c==="("){i++;const r=expr();if(peek()!==")")throw 0;i++;return r;}
+    if(c===v){i++;return [0,1];}
+    const m=s.slice(i).match(/^\d+(\.\d+)?/);if(m){i+=m[0].length;return [parseFloat(m[0])];}
+    throw 0;}
+  if(!s)throw 0;const r=expr();if(i!==s.length)throw 0;return r;
+}
+// analyse la forme : développée ? réduite ? produits simplifiés ?
+function form(s,v){
+  if(/[()]/.test(s))return "par";
+  const parts=s.replace(/^\+/,"").split(/(?=[+-])/).filter(x=>x!=="");
+  const re=new RegExp("^[+-]?(\\d+(\\.\\d+)?)?("+v+"(\\^\\d+)?)?$");
+  const degs=[];
+  for(const p of parts){if(!re.test(p)||p==="+"||p==="-")return "simp";
+    const m=p.match(new RegExp(v+"(\\^(\\d+))?"));degs.push(m?(m[2]?+m[2]:1):0);
+    if(parts.length>1&&/^[+-]?0+(\.0+)?([a-z].*)?$/.test(p))return "red";}
+  if(new Set(degs).size!==degs.length)return "red";
+  return "ok";
+}
+/* ---------- générateurs ---------- */
+// chaque générateur renvoie {txt (HTML de l'énoncé), v, kind:'poly'|'num'|'qcm', sol, steps:[HTML], why?}
+const L=(name,html)=>M("<i>"+name+"</i> = "+html);
+function gProduitSomme(){
+  const v="x";const t=R(1,8);let txt,sol,steps;
+  const a=nz(-7,7),b=nz(-7,7),c=nz(-6,6),d=nz(-9,9);
+  switch(t){
+    case 1:txt=`${nb(a)}<i>x</i> × ${b<0?"("+nb(b)+"<i>x</i>)":b+"<i>x</i>"}`;sol=[0,0,a*b];steps=[`${nb(a)} × ${b<0?"("+nb(b)+")":b} = ${nb(a*b)} et <i>x</i> × <i>x</i> = <i>x</i><sup>2</sup>`];break;
+    case 2:{const k=nz(2,5)*sgn();txt=`${nb(k)} × ${Math.abs(a)}<i>x</i> × ${Math.abs(b)}<i>x</i>`;sol=[0,0,k*Math.abs(a*b)];steps=[`${nb(k)} × ${Math.abs(a)} × ${Math.abs(b)} = ${nb(k*Math.abs(a*b))} et <i>x</i> × <i>x</i> = <i>x</i><sup>2</sup>`];break;}
+    case 3:txt=`(${nb(a)}<i>x</i>)<sup>2</sup>`;sol=[0,0,a*a];steps=[`(${nb(a)}<i>x</i>)<sup>2</sup> = ${a<0?"("+nb(a)+")":a}<sup>2</sup> × <i>x</i><sup>2</sup>`];break;
+    case 4:{const k=Math.abs(a);txt=`${Math.abs(b)}<i>x</i> × ${k}<i>x</i><sup>2</sup>`;sol=[0,0,0,k*Math.abs(b)];steps=[`${Math.abs(b)} × ${k} = ${k*Math.abs(b)} et <i>x</i> × <i>x</i><sup>2</sup> = <i>x</i><sup>3</sup>`];break;}
+    case 5:txt=terms([[a,1],[b,1]],v);sol=[0,a+b];steps=[`On ajoute les coefficients : ${nb(a)} ${b<0?MINUS+" "+(-b):"+ "+b} = ${nb(a+b)}`];break;
+    case 6:txt=terms([[a,2],[c,1],[b,2]],v);sol=[0,c,a+b];steps=[`Termes en <i>x</i><sup>2</sup> : ${terms([[a,2],[b,2]],v)} = ${poly([0,0,a+b],v)}`];break;
+    case 7:txt=terms([[a,1],[d,0],[b,1],[c,0]],v);sol=[d+c,a+b];steps=[`Termes en <i>x</i> : ${terms([[a,1],[b,1]],v)} ; nombres : ${terms([[d,0],[c,0]],v)}`];break;
+    default:{const e=nz(-9,9);txt=terms([[a,2],[c,1],[d,0],[b,2],[e,1]],v);sol=[d,c+e,a+b];steps=[`On regroupe les termes en <i>x</i><sup>2</sup>, en <i>x</i>, puis les nombres.`];}
+  }
+  return {txt:M(txt),v,kind:"poly",sol:P.trim(sol),steps:steps.map(M).concat([M(poly(P.trim(sol),v))]),cons:t<=4?"Simplifier ce produit":"Réduire cette somme"};
+}
+function gSimple(){
+  const v=pick(["x","x","x","a","t"]);const t=R(1,4);let k=nz(-9,9),a=nz(-7,7),b=nz(-9,9),txt,raw;
+  if(k===1)k=3;
+  const par=(c,d)=>c<0||(d===0&&false)?`(${mono(c,d,v,true)})`:mono(c,d,v,true);
+  let kk=nb(k);
+  if(t===1){txt=`${k===-1?MINUS:nb(k)}(${linS(a,b,v)})`;raw=[[k*a,1],[k*b,0]];}
+  else if(t===2){k=-1;kk=`(${MINUS}1)`;txt=`${MINUS}(${linS(a,b,v)})`;raw=[[-a,1],[-b,0]];}
+  else if(t===3){kk=`${nb(k)}<i>${v}</i>`;txt=`${kk}(${linS(a,b,v)})`;raw=[[k*a,2],[k*b,1]];}
+  else{txt=`${nb(k)}(${linS(a,b,v,true)})`;raw=[[k*b,0],[k*a,1]];}
+  const sol=P.trim(t===3?[0,k*b,k*a]:[k*b,k*a]);
+  const f1=t===4?[par(b,0),par(a,1)]:[par(a,1),par(b,0)];
+  const steps=[L("A",`${kk} × ${f1[0]} + ${kk} × ${f1[1]}`),L("A",terms(raw,v))];
+  return {txt:L("A",txt),v,kind:"poly",sol,steps,cons:"Développer"+(t===2?" (le signe − devant la parenthèse est le facteur −1)":"")};
+}
+function rawDouble(a,b,c,d){return [[a*c,2],[a*d,1],[b*c,1],[b*d,0]];}
+function gDouble(){
+  const v=pick(["x","x","x","a"]);let a=nz(-5,5),b=nz(-9,9),c=nz(-5,5),d=nz(-9,9);
+  if(Math.random()<.5){a=Math.abs(a);}
+  const rev1=Math.random()<.2,rev2=Math.random()<.2;
+  const txt=`(${linS(a,b,v,rev1)})(${linS(c,d,v,rev2)})`;
+  const raw=rawDouble(a,b,c,d);const sol=P.mul(lin(a,b),lin(c,d));
+  return {txt:L("A",txt),v,kind:"poly",sol,steps:[L("A",terms(raw,v)),L("A",poly(sol,v))],cons:"Développer puis réduire",
+    why:"Chaque terme de la première parenthèse multiplie chaque terme de la seconde : 4 produits."};
+}
+function irSteps(type,a,b,v){ // (ax+b)², (ax−b)², (ax+b)(ax−b) avec a,b>0
+  const ax=a===1?`<i>${v}</i>`:`${a}<i>${v}</i>`,axp=a===1?`<i>${v}</i>`:`(${a}<i>${v}</i>)`;
+  if(type===1)return {s1:`${axp}<sup>2</sup> + 2 × ${ax} × ${b} + ${b}<sup>2</sup>`,sol:[b*b,2*a*b,a*a],name:"(a + b)² = a² + 2ab + b²"};
+  if(type===2)return {s1:`${axp}<sup>2</sup> ${MINUS} 2 × ${ax} × ${b} + ${b}<sup>2</sup>`,sol:[b*b,-2*a*b,a*a],name:"(a − b)² = a² − 2ab + b²"};
+  return {s1:`${axp}<sup>2</sup> ${MINUS} ${b}<sup>2</sup>`,sol:[-b*b,0,a*a],name:"(a + b)(a − b) = a² − b²"};
+}
+function gIR(){
+  const v=pick(["x","x","x","a","t"]);const type=R(1,3);const a=R(1,7),b=R(1,9);const ax=a===1?`<i>${v}</i>`:`${a}<i>${v}</i>`;
+  let txt;const swap=Math.random()<.25;
+  if(type===1)txt=swap?`(${b} + ${ax})<sup>2</sup>`:`(${ax} + ${b})<sup>2</sup>`;
+  else if(type===2)txt=`(${ax} ${MINUS} ${b})<sup>2</sup>`;
+  else txt=Math.random()<.5?`(${ax} + ${b})(${ax} ${MINUS} ${b})`:`(${ax} ${MINUS} ${b})(${ax} + ${b})`;
+  const r=irSteps(type,a,b,v);
+  return {txt:L("A",txt),v,kind:"poly",sol:P.trim(r.sol),steps:[L("A",r.s1),L("A",poly(P.trim(r.sol),v))],cons:"Développer à l'aide d'une identité remarquable",
+    why:"On utilise "+r.name+(swap?" (ici a = "+b+" et b = "+(a===1?v:a+v)+", l'ordre ne change rien)":"")+"."};
+}
+// bloc d'une expression composée : {txt, raw (termes développés), sol (polynôme), detail (ligne IR facultative)}
+function blocLin(v){const k=nz(-9,9),a=nz(-6,6),b=nz(-9,9);return {txt:`${Math.abs(k)===1?"":Math.abs(k)}(${linS(a,b,v)})`,k:Math.abs(k),raw:[[Math.abs(k)*a,1],[Math.abs(k)*b,0]],sol:P.scale(lin(a,b),Math.abs(k))};}
+function blocDouble(v){const a=nz(1,5),b=nz(-9,9),c=nz(-5,5),d=nz(-9,9);return {txt:`(${linS(a,b,v)})(${linS(c,d,v)})`,raw:rawDouble(a,b,c,d),sol:P.mul(lin(a,b),lin(c,d))};}
+function blocIR(v){const type=R(1,3),a=R(1,5),b=R(1,9);const ax=a===1?`<i>${v}</i>`:`${a}<i>${v}</i>`;
+  const txt=type===1?`(${ax} + ${b})<sup>2</sup>`:type===2?`(${ax} ${MINUS} ${b})<sup>2</sup>`:`(${ax} + ${b})(${ax} ${MINUS} ${b})`;
+  const r=irSteps(type,a,b,v);const sol=P.trim(r.sol);const raw=[];for(let d=2;d>=0;d--)if(sol[d])raw.push([sol[d],d]);return {txt,raw,sol,ir:r.s1};}
+function gMixte(){
+  const v="x";const kinds=[[blocDouble,blocDouble],[blocLin,blocDouble],[blocDouble,blocIR],[blocIR,blocDouble],[blocIR,blocIR],[blocLin,blocIR]];
+  const [f1,f2]=pick(kinds);const A=f1(v),B=f2(v);const s=Math.random()<.65?-1:1;
+  const txt=`${A.txt} ${s<0?MINUS:"+"} ${B.txt}`;
+  const sol=P.add(A.sol,P.scale(B.sol,s));
+  const steps=[];
+  if(A.ir||B.ir)steps.push(L("A",`${A.ir?"["+A.ir+"]":A.txt} ${s<0?MINUS:"+"} ${B.ir?"["+B.ir+"]":B.txt}`));
+  steps.push(L("A",`[${terms(A.raw,v)}] ${s<0?MINUS:"+"} [${terms(B.raw,v)}]`));
+  steps.push(L("A",terms(A.raw.concat(B.raw.map(([c,d])=>[s*c,d])),v)));
+  steps.push(L("A",poly(sol,v)));
+  return {txt:L("A",txt),v,kind:"poly",sol,steps,cons:"Développer puis réduire",
+    why:s<0?"Le signe − devant un crochet change tous les signes des termes qu'il contient.":"Un signe + devant un crochet ne change rien."};
+}
+function gMental(){
+  const t=R(1,3),base=pick([10,20,30,50,100,100,100,1000]);let k=R(1,base>=100?9:3);
+  if(t===1){const n=base+k;return {txt:M(`${n}<sup>2</sup>`),kind:"num",sol:n*n,cons:"Calculer mentalement avec une identité remarquable",
+    steps:[M(`${n}<sup>2</sup> = (${base} + ${k})<sup>2</sup> = ${base}<sup>2</sup> + 2 × ${base} × ${k} + ${k}<sup>2</sup>`),M(`= ${base*base} + ${2*base*k} + ${k*k} = <b>${n*n}</b>`)]};}
+  if(t===2){const n=base-k;return {txt:M(`${n}<sup>2</sup>`),kind:"num",sol:n*n,cons:"Calculer mentalement avec une identité remarquable",
+    steps:[M(`${n}<sup>2</sup> = (${base} ${MINUS} ${k})<sup>2</sup> = ${base}<sup>2</sup> ${MINUS} 2 × ${base} × ${k} + ${k}<sup>2</sup>`),M(`= ${base*base} ${MINUS} ${2*base*k} + ${k*k} = <b>${n*n}</b>`)]};}
+  return {txt:M(`${base-k} × ${base+k}`),kind:"num",sol:base*base-k*k,cons:"Calculer mentalement avec une identité remarquable",
+    steps:[M(`${base-k} × ${base+k} = (${base} ${MINUS} ${k})(${base} + ${k}) = ${base}<sup>2</sup> ${MINUS} ${k}<sup>2</sup>`),M(`= ${base*base} ${MINUS} ${k*k} = <b>${base*base-k*k}</b>`)]};
+}
+function gValeur(){
+  const v="x";let A,B,s,sol;
+  do{A=pick([blocDouble,blocIR])(v);B=blocIR(v);s=-1;sol=P.add(A.sol,P.scale(B.sol,s));}while(sol.length<2);
+  const x=pick([-3,-2,-1,2,3,4,5,10]);const val=P.val(sol,x);
+  const sub=[];for(let d=sol.length-1;d>=0;d--)if(sol[d]){const c=sol[d];const xs=x<0?`(${nb(x)})`:String(x);
+    const body=d===0?String(Math.abs(c)):(Math.abs(c)===1?"":Math.abs(c)+" × ")+xs+(d>1?"<sup>"+d+"</sup>":"");
+    sub.push((c<0?(sub.length?" "+MINUS+" ":MINUS):(sub.length?" + ":""))+body);}
+  return {txt:L("A",`${A.txt} ${MINUS} ${B.txt}`),kind:"num",sol:val,cons:`Calculer la valeur de A pour x = ${nb(x)} (astuce : développe et réduis d'abord)`,
+    steps:[L("A",poly(sol,v)),M(`Pour <i>x</i> = ${nb(x)} : <i>A</i> = ${sub.join("")}`),M(`<i>A</i> = <b>${nb(val)}</b>`)]};
+}
+function gEgal(){
+  const v="x";const a=R(1,5),b=R(1,9),type=R(1,3);const r=irSteps(type,a,b,v);const sol=P.trim(r.sol);
+  const ax=a===1?`<i>${v}</i>`:`${a}<i>${v}</i>`;
+  const lhs=type===1?`(${ax} + ${b})<sup>2</sup>`:type===2?`(${ax} ${MINUS} ${b})<sup>2</sup>`:`(${ax} + ${b})(${ax} ${MINUS} ${b})`;
+  const vrai=Math.random()<.5;let other=sol.slice();
+  if(!vrai){const traps=[[sol[0],0,sol[2]],[b*b,0,a*a],[-b*b,0,a*a],[sol[0],sol[1],a]];
+    other=P.trim(pick(traps.filter(t=>!P.eq(P.trim(t),sol))));}
+  return {txt:M(`<i>A</i> = ${lhs} &nbsp;et&nbsp; <i>B</i> = ${poly(other,v)}`),kind:"qcm",sol:vrai?"oui":"non",cons:"A et B sont-elles égales quelle que soit la valeur de x ?",
+    steps:[L("A",r.s1),L("A",poly(sol,v)),M(vrai?"Les formes développées sont identiques : <b>A = B</b> pour tout <i>x</i>.":"<i>A</i> ≠ <i>B</i> : les formes développées sont différentes.")]};
+}
+const TABS=[
+ {id:"t1",name:"Produits et sommes",gen:gProduitSomme,n:8,rappel:"<b>Simplifier un produit</b> : on multiplie les nombres entre eux et les lettres entre elles (<i>x</i> × <i>x</i> = <i>x</i>²).<br><b>Réduire une somme</b> : on regroupe les termes de même nature (en <i>x</i>², en <i>x</i>, nombres)."},
+ {id:"t2",name:"Simple distributivité",gen:gSimple,n:8,rappel:"<b>k(a + b) = ka + kb</b> &nbsp; et &nbsp; <b>k(a − b) = ka − kb</b>. Un signe − devant une parenthèse : c'est le facteur −1, tous les signes changent."},
+ {id:"t3",name:"Double distributivité",gen:gDouble,n:6,rappel:"<b>(a + b)(c + d) = ac + ad + bc + bd</b> : 4 produits, puis on réduit."},
+ {id:"t4",name:"Identités remarquables",gen:gIR,n:8,rappel:"<b>(a + b)² = a² + 2ab + b²</b> · <b>(a − b)² = a² − 2ab + b²</b> · <b>(a + b)(a − b) = a² − b²</b>"},
+ {id:"t5",name:"Développer et réduire",gen:gMixte,n:5,rappel:"On développe chaque produit <b>entre crochets</b>, on supprime les crochets (attention au signe − devant), puis on réduit."},
+ {id:"t6",name:"Applications",gen:()=>pick([gMental,gMental,gValeur,gEgal,gEgal])(),n:6,rappel:"Calcul mental : 99² = (100 − 1)². Valeur d'une expression : la forme développée demande moins de calculs. Égalité : on développe et on compare."}
+];
+/* ---------- interface ---------- */
+let cur=0;const state=TABS.map(()=>null);
+const list=document.getElementById("list"),tabs=document.getElementById("tabs");
+function serie(i){const t=TABS[i];const qs=[];const seen=new Set();let guard=0;
+  while(qs.length<t.n&&guard++<200){const q=t.gen();if(seen.has(q.txt))continue;seen.add(q.txt);q.st=null;q.val="";qs.push(q);}return qs;}
+function renderTabs(){tabs.innerHTML=TABS.map((t,i)=>{const s=state[i];const ok=s?s.filter(q=>q.st==="ok").length:0;
+  return `<button class="tab" role="tab" aria-selected="${i===cur}" data-tab="${i}">${t.name}<span class="n">${s?ok+"/"+s.length:""}</span></button>`;}).join("");}
+function render(){
+  if(!state[cur])state[cur]=serie(cur);
+  document.getElementById("rappel").innerHTML=TABS[cur].rappel;
+  const qs=state[cur];
+  list.innerHTML=qs.map((q,j)=>{
+    let ans;
+    if(q.kind==="qcm")ans=`<div class="choices">${["oui","non"].map(o=>`<button class="choice${q.val===o?" sel":""}" data-ch="${j}" data-o="${o}">${o==="oui"?"Oui, A = B":"Non, A ≠ B"}</button>`).join("")}</div>`;
+    else ans=`<span class="lbl m">${q.kind==="num"?"":"<i>A</i> ="}</span><input id="in${j}" data-j="${j}" autocomplete="off" spellcheck="false" inputmode="text" value="${q.val.replace(/"/g,"&quot;")}" aria-label="Réponse ${j+1}">`;
+    return `<div class="q ${q.st==="ok"?"ok":q.st==="bad"?"bad":""}" id="q${j}">
+      <div class="qhead"><span class="num">${j+1}</span><span class="consigne">${q.cons}</span></div>
+      <div class="expr">${q.txt}</div>
+      <div class="ans">${ans}<button class="btn" data-check="${j}">Vérifier</button><button class="btn" data-corr="${j}">Correction</button></div>
+      <div class="fb" id="fb${j}"></div><div class="corr" id="co${j}" hidden></div></div>`;}).join("");
+  qs.forEach((q,j)=>{if(q.fb)setFb(j,q.fb[0],q.fb[1]);});
+  renderTabs();tally();
+}
+function setFb(j,cls,msg){const f=document.getElementById("fb"+j);f.className="fb "+cls;f.innerHTML=msg;}
+function check(j,silent){
+  const q=state[cur][j];const box=document.getElementById("q"+j);let st="bad",fb;
+  if(q.kind==="qcm"){if(!q.val){if(!silent)setFb(j,"hint","Choisis une réponse.");return;}
+    st=q.val===q.sol?"ok":"bad";fb=st==="ok"?["ok","Bravo !"]:["bad","Non : développe A pour comparer (voir la correction)."];}
+  else{
+    const raw=q.val.trim();if(!raw){if(!silent)setFb(j,"hint","Écris ta réponse.");return;}
+    if(q.kind==="num"){const n=parseFloat(normalize(raw,"x").replace(/^\+/,""));
+      if(isNaN(n)||!/^[+-]?\d+(\.\d+)?$/.test(normalize(raw,"x"))){fb=["hint","Écris seulement un nombre."];st=null;}
+      else if(Math.abs(n-q.sol)<1e-9){st="ok";fb=["ok","Bravo !"];}else fb=["bad","Ce n'est pas le bon résultat."];}
+    else{const s=normalize(raw,q.v);let p=null;try{p=parse(s,q.v);}catch(e){}
+      if(!p){fb=["hint",`Je n'arrive pas à lire ta réponse. Exemple d'écriture : 3${q.v}² − 5${q.v} + 2`];st=null;}
+      else if(!P.eq(p,q.sol)){fb=["bad","Ce n'est pas le bon résultat. Vérifie les signes et les produits."];}
+      else{const f=form(s,q.v);
+        if(f==="ok"){st="ok";fb=["ok","Bravo !"];}
+        else{st="bad";fb=["hint",f==="par"?"C'est égal, mais il reste des parenthèses : développe complètement.":f==="simp"?"C'est égal, mais simplifie chaque terme (exemple : 6x² au lieu de 2x × 3x).":"C'est égal, mais pas encore réduit : regroupe les termes de même nature."];}}
+    }
+  }
+  q.st=st;q.fb=fb;box.classList.toggle("ok",st==="ok");box.classList.toggle("bad",st==="bad");setFb(j,fb[0],fb[1]);renderTabs();tally();
+}
+function corr(j){const q=state[cur][j];const c=document.getElementById("co"+j);
+  if(!c.hidden){c.hidden=true;return;}
+  c.innerHTML=q.steps.map(s=>`<span class="line">${s}</span>`).join("")+(q.why?`<span class="why">${q.why}</span>`:"");c.hidden=false;}
+function tally(){let tot=0,ok=0;state.forEach(s=>{if(s)s.forEach(q=>{tot++;if(q.st==="ok")ok++;});});
+  document.getElementById("score").textContent=`${ok} / ${tot} réussies`;document.getElementById("prog").style.width=(tot?100*ok/tot:0)+"%";}
+tabs.addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;cur=+b.dataset.tab;render();});
+list.addEventListener("click",e=>{
+  const c=e.target.closest("[data-check]");if(c){check(+c.dataset.check);return;}
+  const r=e.target.closest("[data-corr]");if(r){corr(+r.dataset.corr);return;}
+  const ch=e.target.closest("[data-ch]");if(ch){const j=+ch.dataset.ch;state[cur][j].val=ch.dataset.o;
+    ch.parentNode.querySelectorAll(".choice").forEach(x=>x.classList.toggle("sel",x===ch));check(j);}
+});
+list.addEventListener("input",e=>{const j=e.target.dataset.j;if(j==null)return;const q=state[cur][+j];q.val=e.target.value;q.st=null;q.fb=null;
+  const box=document.getElementById("q"+j);box.classList.remove("ok","bad");setFb(+j,"","");renderTabs();tally();});
+list.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.dataset.j!=null)check(+e.target.dataset.j);});
+let lastInput=null;list.addEventListener("focusin",e=>{if(e.target.tagName==="INPUT")lastInput=e.target;});
+document.getElementById("keys").innerHTML=["x","²","−","+","a","t"].map(k=>`<button class="key" data-k="${k}" type="button">${k}</button>`).join("");
+document.getElementById("keys").addEventListener("mousedown",e=>e.preventDefault());
+document.getElementById("keys").addEventListener("click",e=>{const b=e.target.closest("[data-k]");if(!b||!lastInput)return;
+  const k=b.dataset.k,s=lastInput.selectionStart??lastInput.value.length,en=lastInput.selectionEnd??s;
+  lastInput.value=lastInput.value.slice(0,s)+k+lastInput.value.slice(en);lastInput.focus();lastInput.setSelectionRange(s+k.length,s+k.length);
+  lastInput.dispatchEvent(new Event("input",{bubbles:true}));});
+document.getElementById("newSerie").addEventListener("click",()=>{state[cur]=serie(cur);render();});
+document.getElementById("checkAll").addEventListener("click",()=>{state[cur].forEach((q,j)=>check(j,true));});
+render();
+})();
+</script>
+</body>
+</html>

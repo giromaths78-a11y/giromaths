@@ -1,0 +1,376 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>La carte au trésor des triangles</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bitter:wght@600;800&display=swap">
+<style>
+/* Carte au trésor : la carte (quadrillage 1 cm) à gauche, les indices à droite. Outils : règle, compas, point. */
+:root{
+  --bg:#f6f8fb; --paper:#ffffff; --ink:#1b2433; --muted:#5b6676; --line:#c9d3e0;
+  --blue:#2563eb; --blue-soft:#e6eeff; --ok:#1b8a3a; --ok-soft:#e3f4e7; --bad:#c62f2b; --bad-soft:#fbe6e4; --warn:#a86200; --warn-soft:#fff2dc;
+  --sea:#cfe6f5; --sea-line:#b5d6ec; --sand:#f5e7c4; --sand-edge:#d8bf86; --grass:#cfe3b0; --gridc:rgba(90,70,30,.16);
+  --c1:#15803d; --c2:#dc2626; --c3:#7c3aed; --c4:#2563eb; --c5:#111827; --c6:#d97706;
+  --f-display:"Bitter",Georgia,serif; --f-body:"Atkinson Hyperlegible",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#111723; --paper:#1a2230; --ink:#e7edf5; --muted:#9aa6b8; --line:#33415a;
+  --blue:#7fb0ff; --blue-soft:#1f2f4a; --ok:#5fd08a; --ok-soft:#173324; --bad:#ff7a73; --bad-soft:#3a1d1d; --warn:#ffb547; --warn-soft:#3a2a12;
+  --sea:#16304a; --sea-line:#1f3d5c; --sand:#3a3424; --sand-edge:#6b5c35; --grass:#2c3a24; --gridc:rgba(255,240,200,.12);
+  --c1:#4ade80; --c2:#f87171; --c3:#c4a5ff; --c4:#7fb0ff; --c5:#e5e7eb; --c6:#fbbf24; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#111723; --paper:#1a2230; --ink:#e7edf5; --muted:#9aa6b8; --line:#33415a;
+  --blue:#7fb0ff; --blue-soft:#1f2f4a; --ok:#5fd08a; --ok-soft:#173324; --bad:#ff7a73; --bad-soft:#3a1d1d; --warn:#ffb547; --warn-soft:#3a2a12;
+  --sea:#16304a; --sea-line:#1f3d5c; --sand:#3a3424; --sand-edge:#6b5c35; --grass:#2c3a24; --gridc:rgba(255,240,200,.12);
+  --c1:#4ade80; --c2:#f87171; --c3:#c4a5ff; --c4:#7fb0ff; --c5:#e5e7eb; --c6:#fbbf24; color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--f-body)}
+.wrap{max-width:1280px;margin:0 auto;padding:16px max(16px,env(safe-area-inset-right,0px)) 32px max(16px,env(safe-area-inset-left,0px));display:flex;flex-direction:column;gap:12px}
+header{display:flex;flex-wrap:wrap;gap:8px 20px;align-items:flex-end;justify-content:space-between}
+.tag{font-size:.78rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+h1{font:800 clamp(1.5rem,3.6vw,2.2rem)/1.1 var(--f-display);margin:2px 0 0}
+.intro{margin:0;color:var(--muted);max-width:70ch}
+.grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(300px,1fr);gap:14px;align-items:start}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.card{background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:12px}
+/* barre d'outils */
+.tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px}
+button{font:inherit;cursor:pointer}
+.tool,.btn{border:1.5px solid var(--line);background:var(--paper);color:var(--ink);padding:6px 11px;border-radius:8px;font-weight:700;font-size:.95rem}
+.tool[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--paper)}
+.btn.main{background:var(--blue);border-color:var(--blue);color:var(--paper)}
+.btn:disabled{opacity:.45;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+.sep{flex:1}
+.status{min-height:1.6em;font-size:.95rem;color:var(--muted);margin:6px 2px 0}
+.status b{color:var(--ink)}
+.radius{display:none;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 8px;padding:6px 8px;border-radius:8px;background:var(--blue-soft)}
+.radius.on{display:flex}
+.radius input{width:6.5em;font:inherit;padding:4px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink)}
+/* carte */
+.mapbox{position:relative;border-radius:10px;overflow:hidden;border:1.5px solid var(--sand-edge);touch-action:manipulation}
+svg{display:block;width:100%;height:auto;user-select:none}
+svg text{font-family:var(--f-body)}
+.lbl{font-weight:700;font-size:.5px}
+.ico{font-size:.75px}
+/* indices */
+.steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.pill{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;border:2px solid var(--line);color:var(--muted);background:var(--paper)}
+.pill.cur{border-color:var(--blue);color:var(--blue)}
+.pill.done{background:var(--ok);border-color:var(--ok);color:var(--paper)}
+.clue h2{font:800 1.2rem/1.2 var(--f-display);margin:0 0 6px;display:flex;gap:8px;align-items:center}
+.dot{width:14px;height:14px;border-radius:50%;display:inline-block;flex:none}
+.parch{background:var(--sand);border:1px dashed var(--sand-edge);border-radius:8px;padding:10px 12px;font-style:italic;margin:0 0 10px}
+.q{margin:8px 0;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.q input{width:5.5em;font:inherit;padding:4px 6px;border:1.5px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink)}
+.q input.ok{border-color:var(--ok);background:var(--ok-soft)}
+.q input.bad{border-color:var(--bad);background:var(--bad-soft)}
+.choice{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0}
+.choice button[aria-pressed="true"]{background:var(--blue-soft);border-color:var(--blue)}
+.fb{border-radius:8px;padding:8px 10px;margin:8px 0;font-size:.95rem}
+.fb.ok{background:var(--ok-soft);color:var(--ok)}
+.fb.bad{background:var(--bad-soft);color:var(--bad)}
+.fb.info{background:var(--warn-soft);color:var(--warn)}
+.todo{margin:6px 0 0;padding-left:1.2em}
+.todo li{margin:2px 0}
+.todo li.ok{color:var(--ok)}
+.help summary{cursor:pointer;font-weight:700;color:var(--muted)}
+.help{font-size:.92rem}
+.win{text-align:center;padding:10px}
+.win .big{font-size:3rem}
+footer{color:var(--muted);font-size:.85rem;text-align:center}
+@media (prefers-reduced-motion:no-preference){.pulse{animation:pulse 1.2s ease-in-out infinite}@keyframes pulse{50%{opacity:.35}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div><div class="tag">6e · S6 · Constructions de triangles</div><h1>La carte au trésor des triangles</h1></div>
+  <p class="intro">Le capitaine a caché son trésor sur l'île. Suis ses indices : pour chaque lieu, vérifie d'abord que le triangle est constructible, puis construis-le sur la carte avec la règle et le compas. <b>1 carreau = 1 cm.</b></p>
+</header>
+
+<div class="grid">
+  <section class="card" aria-label="Carte de l'île">
+    <div class="tools" role="toolbar" aria-label="Outils">
+      <button class="tool" data-tool="regle" aria-pressed="true" title="Relier deux points et lire la longueur">📏 Règle</button>
+      <button class="tool" data-tool="compas" aria-pressed="false" title="Tracer un cercle de centre et de rayon choisis">⌒ Compas</button>
+      <button class="tool" data-tool="point" aria-pressed="false" title="Placer le point cherché à un croisement">✕ Placer le point</button>
+      <span class="sep"></span>
+      <button class="btn" id="undo">↶ Annuler</button>
+      <button class="btn" id="clear">Effacer les tracés</button>
+    </div>
+    <div class="radius" id="radiusBar">
+      <span>Compas : centre <b id="rc">?</b>, rayon</span>
+      <input id="rv" type="text" inputmode="decimal" placeholder="ex. 4,2" aria-label="Rayon en cm"> <span>cm</span>
+      <button class="btn main" id="rgo">Tracer le cercle</button>
+      <button class="btn" id="rno">Annuler</button>
+    </div>
+    <div class="mapbox"><svg id="map" viewBox="-0.5 -0.5 17 13" role="img" aria-label="Carte de l'île au trésor quadrillée"></svg></div>
+    <p class="status" id="status" aria-live="polite"></p>
+  </section>
+
+  <section class="card clue" aria-live="polite">
+    <div class="steps" id="pills"></div>
+    <div id="panel"></div>
+    <details class="help"><summary>Mode d'emploi</summary>
+      <ul class="todo">
+        <li><b>Règle</b> : clique sur un point, puis sur un autre. Le segment est tracé et sa longueur s'affiche.</li>
+        <li><b>Compas</b> : clique sur le centre (un point de la carte), écris le rayon en cm, puis « Tracer le cercle ».</li>
+        <li><b>Placer le point</b> : clique sur le croisement de deux tracés. Le point s'accroche au croisement le plus proche.</li>
+        <li>Lis bien l'indice : deux cercles se coupent souvent en <b>deux</b> points !</li>
+      </ul>
+    </details>
+  </section>
+</div>
+<footer>Activité inspirée de « La carte au trésor » d'Yvan Monka (maths-et-tiques.fr), entièrement réécrite.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const W=16, H=12, NS="http://www.w3.org/2000/svg";
+const $=s=>document.querySelector(s);
+const svg=$("#map");
+const fmt=x=>(Math.round(x*10)/10).toString().replace(".",",");
+const parse=s=>parseFloat(String(s).replace(",",".").trim());
+const dist=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y);
+const Y=y=>H-y;                         // repère : y vers le haut
+
+// ---------- lieux connus ----------
+const P0={
+  V:{x:1.5,y:10.5,ico:"🌋",nom:"le volcan"},
+  P:{x:8.5,y:11,ico:"🗼",nom:"le phare"},
+  M:{x:1.5,y:1,ico:"🌾",nom:"le moulin"},
+  A:{x:8.5,y:1,ico:"⚓",nom:"l'ancre"},
+  E:{x:13.5,y:1,ico:"⛵",nom:"l'épave"}
+};
+// ---------- les indices ----------
+function cc(c1,r1,c2,r2){const d=dist(c1,c2);if(d>r1+r2+1e-9||d<Math.abs(r1-r2)-1e-9||d===0)return[];
+  const a=(r1*r1-r2*r2+d*d)/(2*d),h=Math.sqrt(Math.max(0,r1*r1-a*a)),xm=c1.x+a*(c2.x-c1.x)/d,ym=c1.y+a*(c2.y-c1.y)/d;
+  return[{x:xm+h*(c2.y-c1.y)/d,y:ym-h*(c2.x-c1.x)/d},{x:xm-h*(c2.y-c1.y)/d,y:ym+h*(c2.x-c1.x)/d}];}
+const pick=(arr,f)=>arr.reduce((a,b)=>f(a)>=f(b)?a:b);
+const sol={};
+sol.H=pick(cc(P0.V,4.2,P0.P,5.3),p=>-p.y);
+sol.K=pick(cc(sol.H,9.5,P0.P,6),p=>p.x);
+sol.B=pick(cc(P0.M,4.3,P0.A,4.3),p=>p.y);
+sol.O=pick(cc(P0.A,5,P0.E,5),p=>p.y);
+function ss(a,b,c,d){const den=(a.x-b.x)*(c.y-d.y)-(a.y-b.y)*(c.x-d.x);if(Math.abs(den)<1e-9)return null;
+  const t=((a.x-c.x)*(c.y-d.y)-(a.y-c.y)*(c.x-d.x))/den,u=-((a.x-b.x)*(a.y-c.y)-(a.y-b.y)*(a.x-c.x))/den;
+  return(t<-1e-6||t>1+1e-6||u<-1e-6||u>1+1e-6)?null:{x:a.x+t*(b.x-a.x),y:a.y+t*(b.y-a.y)};}
+sol.T=ss(sol.H,sol.O,sol.K,sol.B);
+
+const STEPS=[
+ {id:"H",ico:"🛖",nom:"la cabane",col:"--c1",tri:["V","P","H"],
+  texte:"« La cabane du vieux marin H est à 4,2 cm du volcan V et à 5,3 cm du phare P. Elle se trouve au sud du segment [VP]. »",
+  refs:[["V",4.2],["P",5.3]],cote:"au sud de [VP]",
+  qs:[{l:"Mesure VP avec la règle : VP =",r:7,t:.1,u:"cm"},{l:"Plus grand côté du triangle VPH :",r:7,t:.1,u:"cm"},{l:"Somme des deux autres côtés :",r:9.5,t:.05,u:"cm"}],
+  ok:true},
+ {id:"K",ico:"💣",nom:"le canon",col:"--c2",tri:["H","P","K"],
+  texte:"« Le vieux canon K est à 9,5 cm de la cabane H et à 6 cm du phare P. Il est à l'est du phare. »",
+  refs:[["H",9.5],["P",6]],cote:"à l'est",
+  qs:[{l:"Longueur HP (déjà connue) :",r:5.3,t:.1,u:"cm"},{l:"Plus grand côté du triangle HPK :",r:9.5,t:.05,u:"cm"},{l:"Somme des deux autres côtés :",r:11.3,t:.05,u:"cm"}],
+  ok:true},
+ {id:"G",ico:"🕳️",nom:"la grotte",col:"--c3",tri:null,
+  texte:"« La grotte G est à 1,5 cm du volcan V et à 2 cm de la cabane H. »",
+  qs:[{l:"Longueur VH (déjà connue) :",r:4.2,t:.05,u:"cm"},{l:"Somme 1,5 + 2 =",r:3.5,t:.01,u:"cm"}],
+  ok:false},
+ {id:"B",ico:"🌳",nom:"le baobab",col:"--c4",tri:["M","A","B"],
+  texte:"« Le grand baobab B forme avec le moulin M et l'ancre A un triangle isocèle en B, avec BM = 4,3 cm. Il est au nord de [MA]. »",
+  refs:[["M",4.3],["A",4.3]],cote:"au nord de [MA]",
+  qs:[{l:"Isocèle en B, donc BA =",r:4.3,t:.01,u:"cm"},{l:"Mesure MA avec la règle : MA =",r:7,t:.1,u:"cm"},{l:"Somme BM + BA =",r:8.6,t:.01,u:"cm"}],
+  ok:true},
+ {id:"O",ico:"🪨",nom:"le rocher",col:"--c5",tri:["A","E","O"],
+  texte:"« Le rocher O forme avec l'ancre A et l'épave E un triangle équilatéral. Il est au nord de [AE]. »",
+  refs:[["A",5],["E",5]],cote:"au nord de [AE]",
+  qs:[{l:"Mesure AE avec la règle : AE =",r:5,t:.1,u:"cm"},{l:"Le triangle est équilatéral, donc OA =",r:5,t:.1,u:"cm"},{l:"et OE =",r:5,t:.1,u:"cm"}],
+  ok:true},
+ {id:"T",ico:"💰",nom:"le trésor",col:"--c6",tri:null,final:true,
+  texte:"« Mon trésor T est enterré au croisement du chemin [HO] et du chemin [KB]. »",
+  qs:[]}
+];
+const NOMS={};Object.entries(P0).forEach(([k,v])=>NOMS[k]=v.nom);STEPS.forEach(s=>NOMS[s.id]=s.nom);
+
+// ---------- état ----------
+let pts={};Object.keys(P0).forEach(k=>pts[k]={x:P0[k].x,y:P0[k].y,ico:P0[k].ico});
+let draws=[];      // {type:'seg',a,b} | {type:'cir',c,r,col}
+let cur=0, tool="regle", sel=null, checked={}, won=false, showSol=false;
+
+// ---------- dessin ----------
+function el(n,a,p){const e=document.createElementNS(NS,n);for(const k in a)e.setAttribute(k,a[k]);(p||svg).appendChild(e);return e;}
+function cssv(v){return getComputedStyle(document.documentElement).getPropertyValue(v).trim()||"#333";}
+function draw(){
+  svg.innerHTML="";
+  const g0=el("g",{});
+  el("rect",{x:-0.5,y:-0.5,width:17,height:13,fill:"var(--sea)"},g0);
+  for(let i=0;i<9;i++)el("path",{d:`M${-0.5+i*2} ${1.2+i%3*4} q.4 -.25 .8 0 t.8 0`,fill:"none",stroke:"var(--sea-line)","stroke-width":.06},g0);
+  el("path",{d:"M0.4 11.4 C0.2 8 -0.1 5 0.4 2.6 C0.7 0.9 2.2 0.3 4.5 0.4 C7 0.5 9.5 0.2 12 0.4 C14 0.5 15.6 0.9 15.7 2.6 C15.9 4.5 15.4 6.5 15.6 8.5 C15.7 10.6 14.6 11.8 12.5 11.7 C10 11.6 7.5 11.9 5 11.8 C2.8 11.7 0.6 12.1 0.4 11.4 Z",fill:"var(--sand)",stroke:"var(--sand-edge)","stroke-width":.06},g0);
+  el("path",{d:"M2 9 C3 7.5 5 8.2 6.5 7.6 C8 7 10 7.6 12 7.2 C13.5 7 14.6 7.8 14.8 6 C15 4.6 13.5 3.6 12 3.6 C10 3.6 8 4.2 6 3.8 C4.2 3.5 2 3.6 1.6 5.2 C1.3 6.6 1.3 8.4 2 9 Z",fill:"var(--grass)",opacity:.6},g0);
+  for(let x=0;x<=W;x++)el("line",{x1:x,y1:0,x2:x,y2:H,stroke:"var(--gridc)","stroke-width":.025},g0);
+  for(let y=0;y<=H;y++)el("line",{x1:0,y1:y,x2:W,y2:y,stroke:"var(--gridc)","stroke-width":.025},g0);
+  // rose des vents
+  const rv=el("g",{transform:"translate(14.9 1.7)"},g0);
+  el("path",{d:"M0 -.75 L.18 0 L0 .75 L-.18 0 Z",fill:"var(--ink)",opacity:.7},rv);
+  el("text",{x:0,y:-.85,"text-anchor":"middle","font-size":.45,"font-weight":700,fill:"var(--ink)"},rv).textContent="N";
+  // triangles validés
+  STEPS.forEach((s,i)=>{ if(s.tri && (i<cur||won||showSol) && pts[s.tri[2]]){
+      const q=s.tri.map(k=>pts[k]);
+      el("polygon",{points:q.map(p=>`${p.x},${Y(p.y)}`).join(" "),fill:cssv(s.col),"fill-opacity":.12,stroke:cssv(s.col),"stroke-width":.07,"stroke-linejoin":"round"});
+  }});
+  // solution (mode correction)
+  if(showSol){
+    STEPS.forEach(s=>{ if(s.refs) s.refs.forEach(([c,r])=>el("circle",{cx:P0[c]?P0[c].x:sol[c].x,cy:Y(P0[c]?P0[c].y:sol[c].y),r,fill:"none",stroke:cssv(s.col),"stroke-width":.035,"stroke-dasharray":".15 .1",opacity:.7})); });
+    [["H","O"],["K","B"]].forEach(([a,b])=>el("line",{x1:sol[a].x,y1:Y(sol[a].y),x2:sol[b].x,y2:Y(sol[b].y),stroke:cssv("--c6"),"stroke-width":.06,"stroke-dasharray":".25 .12"}));
+  }
+  // tracés de l'élève
+  draws.forEach(d=>{
+    if(d.type==="cir") el("circle",{cx:pts[d.c].x,cy:Y(pts[d.c].y),r:d.r,fill:"none",stroke:cssv(d.col),"stroke-width":.04,"stroke-dasharray":".18 .1"});
+    else{const a=pts[d.a],b=pts[d.b];
+      el("line",{x1:a.x,y1:Y(a.y),x2:b.x,y2:Y(b.y),stroke:"var(--ink)","stroke-width":.05});
+      const t=el("text",{x:(a.x+b.x)/2,y:Y((a.y+b.y)/2)-.18,"text-anchor":"middle","font-size":.38,fill:"var(--blue)","font-weight":700,"paint-order":"stroke",stroke:"var(--sand)","stroke-width":.12});
+      t.textContent=fmt(dist(a,b))+" cm";}
+  });
+  // points
+  const all=Object.assign({},pts); if(showSol) for(const k in sol) if(!all[k]) all[k]=Object.assign({ico:(STEPS.find(s=>s.id===k)||{}).ico,sol:true},sol[k]);
+  for(const k in all){const p=all[k],x=p.x,y=Y(p.y);
+    const g=el("g",{opacity:p.sol?.6:1});
+    el("text",{x:x-.05,y:y-.25,"text-anchor":"end","font-size":.7},g).textContent=p.ico||"";
+    el("path",{d:`M${x-.13} ${y-.13} L${x+.13} ${y+.13} M${x-.13} ${y+.13} L${x+.13} ${y-.13}`,stroke:k==="T"?cssv("--c6"):"var(--ink)","stroke-width":k==="T"?.09:.06});
+    el("text",{x:x+.15,y:y-.15,"font-size":.55,"font-weight":700,fill:"var(--ink)","paint-order":"stroke",stroke:"var(--sand)","stroke-width":.12},g).textContent=k;
+  }
+  if(sel){const p=pts[sel];el("circle",{cx:p.x,cy:Y(p.y),r:.3,fill:"none",stroke:"var(--blue)","stroke-width":.06,class:"pulse"});}
+}
+
+// ---------- interactions sur la carte ----------
+function toMap(ev){const r=svg.getBoundingClientRect(),vb=svg.viewBox.baseVal;
+  return{x:vb.x+(ev.clientX-r.left)*vb.width/r.width,y:H-(vb.y+(ev.clientY-r.top)*vb.height/r.height)};}
+function nearestPoint(m,max){let best=null,bd=max;for(const k in pts){const d=dist(pts[k],m);if(d<bd){bd=d;best=k;}}return best;}
+function crossings(){const out=[],C=draws.filter(d=>d.type==="cir"),S=draws.filter(d=>d.type==="seg");
+  for(let i=0;i<C.length;i++)for(let j=i+1;j<C.length;j++)out.push(...cc(pts[C[i].c],C[i].r,pts[C[j].c],C[j].r));
+  for(let i=0;i<S.length;i++)for(let j=i+1;j<S.length;j++){const q=ss(pts[S[i].a],pts[S[i].b],pts[S[j].a],pts[S[j].b]);if(q)out.push(q);}
+  return out;}
+function say(html){$("#status").innerHTML=html;}
+svg.addEventListener("click",ev=>{
+  if(won && tool!=="regle") return;
+  const m=toMap(ev);
+  if(tool==="regle"){
+    const k=nearestPoint(m,.6); if(!k){say("Clique sur un point de la carte.");return;}
+    if(!sel){sel=k;say(`Règle : départ en <b>${k}</b>. Clique sur le second point.`);}
+    else if(sel===k){sel=null;say("");}
+    else{const a=sel;sel=null;
+      if(!draws.some(d=>d.type==="seg"&&((d.a===a&&d.b===k)||(d.a===k&&d.b===a))))draws.push({type:"seg",a,b:k});
+      say(`Segment [${a}${k}] tracé : <b>${a}${k} = ${fmt(dist(pts[a],pts[k]))} cm</b>.`);}
+    draw();
+  } else if(tool==="compas"){
+    const k=nearestPoint(m,.6); if(!k){say("Clique d'abord sur le <b>centre</b> du cercle (un point de la carte).");return;}
+    sel=k;$("#rc").textContent=k;$("#radiusBar").classList.add("on");$("#rv").value="";$("#rv").focus();draw();
+    say(`Compas : centre <b>${k}</b>. Écris le rayon.`);
+  } else if(tool==="point"){ placePoint(m); }
+});
+$("#rgo").onclick=()=>{const r=parse($("#rv").value);if(!(r>0&&r<25)){$("#rv").focus();return;}
+  const s=STEPS[Math.min(cur,STEPS.length-1)];
+  draws.push({type:"cir",c:sel,r,col:s.col});say(`Cercle de centre <b>${sel}</b> et de rayon <b>${fmt(r)} cm</b> tracé.`);
+  sel=null;$("#radiusBar").classList.remove("on");draw();};
+$("#rv").addEventListener("keydown",e=>{if(e.key==="Enter")$("#rgo").click();});
+$("#rno").onclick=()=>{sel=null;$("#radiusBar").classList.remove("on");draw();};
+document.querySelectorAll(".tool").forEach(b=>b.onclick=()=>{tool=b.dataset.tool;sel=null;$("#radiusBar").classList.remove("on");
+  document.querySelectorAll(".tool").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  say({regle:"Règle : clique sur deux points pour les relier.",compas:"Compas : clique sur le centre du cercle.",point:"Clique sur le croisement où se trouve le point cherché."}[tool]);draw();});
+$("#undo").onclick=()=>{draws.pop();sel=null;draw();};
+$("#clear").onclick=()=>{draws=[];sel=null;draw();};
+
+// ---------- placer le point de l'étape ----------
+function placePoint(m){
+  const s=STEPS[cur]; if(!s||won) return;
+  if(s.id==="G"){say("La grotte : réponds d'abord à la question à droite.");return;}
+  if(!checked[cur]){say("Réponds d'abord aux questions de vérification, à droite.");return;}
+  const X=crossings();let best=null,bd=.7;X.forEach(q=>{const d=dist(q,m);if(d<bd){bd=d;best=q;}});
+  if(!best){say("Clique sur un <b>croisement</b> de deux tracés (cercles ou segments).");return;}
+  const target=sol[s.id];
+  if(dist(best,target)<.08){
+    pts[s.id]={x:target.x,y:target.y,ico:s.ico};
+    if(s.final){won=true;render();draw();return;}
+    cur++;draws=draws.filter(d=>d.type==="seg");say(`Bravo ! <b>${s.id}</b> est placé : ${s.nom} est trouvé${s.nom.startsWith("la")?"e":""}.`);render();draw();return;
+  }
+  // diagnostic
+  if(s.refs){
+    const ds=s.refs.map(([c,r])=>[c,r,dist(best,pts[c])]);
+    const faux=ds.filter(([c,r,d])=>Math.abs(d-r)>.08);
+    if(!faux.length) {fbMap(`Ce croisement est bien à la bonne distance de ${s.refs.map(x=>x[0]).join(" et de ")}… mais il y a <b>deux</b> croisements possibles. Relis l'indice : le point est <b>${s.cote}</b>.`,"info");return;}
+    fbMap(faux.map(([c,r,d])=>`Ce point est à ${fmt(d)} cm de ${c}, au lieu de ${fmt(r)} cm.`).join(" ")+" Vérifie le centre et le rayon de tes cercles.","bad");return;
+  }
+  if(s.final){fbMap("Ce n'est pas le croisement des chemins [HO] et [KB]. Trace ces deux segments avec la règle.","bad");}
+}
+function fbMap(html,cls){say(`<span class="fb ${cls}" style="display:inline-block;margin:0">${html}</span>`);}
+
+// ---------- panneau des indices ----------
+function render(){
+  $("#pills").innerHTML=STEPS.map((s,i)=>`<span class="pill ${i<cur||(won&&i===cur)?"done":i===cur?"cur":""}" title="${s.nom}">${i+1}</span>`).join("");
+  const p=$("#panel");
+  if(won){
+    p.innerHTML=`<div class="win"><div class="big">💰</div><h2 style="justify-content:center">Trésor trouvé !</h2>
+      <p>Le trésor est au croisement des chemins [HO] et [KB].</p>
+      <div class="q"><label for="fin">Dernière épreuve : mesure la distance entre le phare et le trésor. PT =</label><input id="fin" inputmode="decimal"> cm <button class="btn main" id="finb">Vérifier</button></div>
+      <div id="finfb"></div>
+      <p><button class="btn" id="again">Recommencer la chasse</button></p></div>`;
+    $("#finb").onclick=()=>{const v=parse($("#fin").value),r=dist(sol.T,P0.P);const ok=Math.abs(v-r)<=.1+1e-9;
+      $("#fin").className=ok?"ok":"bad";
+      $("#finfb").innerHTML=ok?`<div class="fb ok">Exact : PT ≈ ${fmt(r)} cm. Bravo, moussaillon !</div>`:`<div class="fb bad">Pas tout à fait. Utilise la règle : clique sur P puis sur T.</div>`;};
+    $("#again").onclick=reset;
+    return;
+  }
+  const s=STEPS[cur];
+  let h=`<h2><span class="dot" style="background:var(${s.col})"></span>Indice ${cur+1} : ${s.nom} ${s.ico}</h2><p class="parch">${s.texte}</p>`;
+  if(s.final){
+    h+=`<ol class="todo"><li>Avec la <b>règle</b>, trace le chemin [HO] puis le chemin [KB].</li><li>Avec <b>Placer le point</b>, clique sur leur croisement.</li></ol>`;
+    checked[cur]=true;
+  } else {
+    h+=`<p style="margin:4px 0"><b>1. Vérifie</b> ${s.ok===false?"si ce lieu peut exister":"que le triangle est constructible"} :</p>`;
+    s.qs.forEach((q,j)=>h+=`<div class="q"><label for="q${j}">${q.l}</label><input id="q${j}" inputmode="decimal" ${checked[cur]?"disabled":""}> ${q.u}</div>`);
+    h+=`<div class="choice" role="group" aria-label="Conclusion">
+      <button class="btn" data-c="1" ${checked[cur]?"disabled":""}>Le triangle est constructible</button>
+      <button class="btn" data-c="0" ${checked[cur]?"disabled":""}>Le triangle n'est pas constructible</button></div>
+      <div id="qfb"></div>`;
+    if(s.ok!==false) h+=`<div id="part2" ${checked[cur]?"":"hidden"}><p style="margin:8px 0 4px"><b>2. Construis</b> le point ${s.id} :</p>
+      <ol class="todo"><li>Avec le <b>compas</b>, trace les deux cercles qui conviennent.</li><li>Avec <b>Placer le point</b>, clique sur le bon croisement (${s.cote}).</li></ol></div>`;
+  }
+  p.innerHTML=h;
+  p.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>check(b.dataset.c==="1"));
+}
+function check(choice){
+  const s=STEPS[cur];let allok=true;
+  s.qs.forEach((q,j)=>{const i=$("#q"+j),v=parse(i.value),ok=Math.abs(v-q.r)<=q.t+1e-9;i.className=ok?"ok":"bad";if(!ok)allok=false;});
+  const fb=$("#qfb");
+  if(!allok){fb.innerHTML=`<div class="fb bad">Une ou plusieurs longueurs sont fausses (en rouge). Utilise la règle pour mesurer sur la carte.</div>`;return;}
+  if(choice!==s.ok){
+    fb.innerHTML=s.ok?`<div class="fb bad">Compare le plus grand côté à la somme des deux autres : la somme est-elle plus grande ?</div>`
+      :`<div class="fb bad">Compare VH à 1,5 + 2. Tu peux aussi tracer les deux cercles avec le compas : se coupent-ils ?</div>`;return;}
+  checked[cur]=true;
+  if(s.ok===false){
+    fb.innerHTML=`<div class="fb ok">Bien vu ! 1,5 + 2 = 3,5 et 3,5 &lt; 4,2 : les deux cercles ne se coupent pas. <b>La grotte n'existe pas, c'est une fausse piste !</b></div>
+      <button class="btn main" id="next">Indice suivant →</button>`;
+    $("#next").onclick=()=>{cur++;draws=draws.filter(d=>d.type==="seg");render();draw();};
+    s.qs.forEach((q,j)=>$("#q"+j).disabled=true);
+    $("#panel").querySelectorAll("[data-c]").forEach(b=>b.disabled=true);
+    return;
+  }
+  fb.innerHTML=`<div class="fb ok">Oui : le plus grand côté est plus petit que la somme des deux autres. On peut construire ce triangle !</div>`;
+  s.qs.forEach((q,j)=>$("#q"+j).disabled=true);
+  $("#panel").querySelectorAll("[data-c]").forEach(b=>b.disabled=true);
+  $("#part2").hidden=false;
+  document.querySelector('[data-tool="compas"]').click();
+}
+function reset(){pts={};Object.keys(P0).forEach(k=>pts[k]={x:P0[k].x,y:P0[k].y,ico:P0[k].ico});draws=[];cur=0;sel=null;checked={};won=false;showSol=false;say("");render();draw();}
+
+// mode professeur : ?correction dans l'adresse ou touche « c » trois fois
+let cs=0;document.addEventListener("keydown",e=>{if(e.target.tagName==="INPUT")return;if(e.key==="c"){cs++;if(cs>=3){showSol=!showSol;cs=0;draw();}}else cs=0;});
+if(/correction/.test(location.search)) showSol=true;
+matchMedia("(prefers-color-scheme: dark)").addEventListener("change",draw);
+render();draw();say("Règle : clique sur deux points pour les relier.");
+})();
+</script>
+</body>
+</html>
