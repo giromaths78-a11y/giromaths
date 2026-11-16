@@ -133,6 +133,28 @@ svg.fg text.ct{fill:var(--acc2);font:600 12px Inter,sans-serif}
 .choice.fig svg.fg .x,.choice.fig svg.fg .o{stroke-width:2.6}
 .choice.fig svg.fg .o.r{stroke-width:3.4}
 .choice.fig svg.fg .cd{stroke-width:2.6}
+table.t3{width:100%;border-collapse:collapse;flex:1 1 100%;table-layout:fixed;margin:2px 0}
+table.t3 th{background:var(--acc);color:var(--bg);font:600 .9rem Inter,sans-serif;padding:6px;border:1px solid var(--acc)}
+table.t3 td{border:1px solid var(--line);padding:6px;vertical-align:middle}
+table.t3 td.gv{background:var(--soft)}
+table.t3 td.ok{background:var(--oksoft);border-color:var(--ok)}table.t3 td.bad{background:var(--badsoft);border-color:var(--bad)}
+.tch{display:flex;flex-direction:column;gap:5px}
+.tch .choice{width:100%;font-size:.92rem;padding:5px 8px}
+.tch .choice.fig{padding:2px}
+.given{font-size:1rem}
+.given svg.fg,.tfigs svg.fg{max-width:100%}
+.given.gfig svg.fg text{font-size:22px}.given.gfig svg.fg text.nm{font-size:20px}
+table.t3 td input.wd2{width:100%;margin-bottom:5px}
+table.t3 .keys .key{min-width:30px;padding:2px 5px;font-size:.92rem}
+table.t3.sol{margin-top:6px}table.t3.sol td{background:var(--card)}
+.alt{font-size:.8rem;color:var(--muted);margin-top:3px}
+@media (max-width:640px){table.t3,table.t3 tbody,table.t3 tr,table.t3 td{display:block;width:100%}
+  table.t3 thead{display:none}table.t3 tr{margin-bottom:8px;border:2px solid var(--line);border-radius:8px;overflow:hidden}
+  table.t3 td{border:0;border-bottom:1px solid var(--line)}
+  table.t3 td::before{content:attr(data-label);display:block;font:700 .75rem "Space Grotesk",sans-serif;text-transform:uppercase;letter-spacing:.05em;color:var(--acc2);margin-bottom:3px}}
+svg.fg text{paint-order:stroke;stroke:var(--card);stroke-width:3px;stroke-linejoin:round}
+.choice.fig svg.fg text{stroke:var(--bg)}
+.given.gfig svg.fg text.ct,.choice.fig svg.fg text.ct,table.t3 svg.fg text.ct{font-size:13px}
 </style>
 </head>
 <body>
@@ -499,19 +521,91 @@ const modesCercle=[
   ()=>{const [A]=lettres(1);return ecrire(`Traduis avec un symbole :`,`« Le point ${M(A)} appartient au cercle ${M("𝒞")}. »`,[`${A}∈𝒞`,`${A}∈(𝒞)`],[M(`${A} ∈ 𝒞`)],`Utilise la touche ${M("𝒞")} du clavier ci-dessous.`);}
 ];
 
+/* ================= tableaux « Schéma / En français / Notation » =================
+ Une ligne = {F:{opts,sol}, P:{opts,sol}, N:{acc,show} ou {opts,sol,show}} ; la case donnée est choisie au hasard.
+*/
+const COLS=["Schéma","En français","Notation"];
+function ligne(it,given){const g=given==null?R(0,2):given;
+  const cF=g===0?{given:it.F.opts.find(o=>o[0]===it.F.sol)[1],fig:true}:{t:"fig",opts:shuffle(it.F.opts),sol:it.F.sol};
+  const cP=g===1?{given:it.P.opts.find(o=>o[0]===it.P.sol)[1]}:{t:"sel",opts:shuffle(it.P.opts),sol:it.P.sol};
+  const cN=g===2?{given:M(it.N.show)}:it.N.opts?{t:"sel",opts:shuffle(it.N.opts),sol:it.N.sol,m:true}:{t:"write",acc:it.N.acc};
+  return {cells:[cF,cP,cN],it};}
+function tabQ(items,why){const rows=items.map(([it,g])=>ligne(it,g));
+  return {cons:`Complète ${rows.length>1?"chaque ligne":"la ligne"} du tableau : les trois cases d'une même ligne disent <b>exactement la même chose</b>.`,txt:"",kind:"tab",rows,
+    steps:[],why:why||[...new Set(rows.map(r=>r.it.why).filter(Boolean))].join(" ")};}
+const OBJS=["seg","line","ray","rayBA"];
+const phrObj=(T,A,B)=>cap(T==="rayBA"?PHR.ray(B,A):PHR[T](A,B))+".";
+function itObj(T,A,B){const oth=shuffle(OBJS.filter(x=>x!==T&&(T==="ray"||x!=="rayBA"||Math.random()<.5))).slice(0,2);
+  return {F:{opts:[["ok",figObjet(T,A,B)],...oth.map((o,i)=>["x"+i,figObjet(o,A,B)])],sol:"ok"},
+    P:{opts:[["ok",phrObj(T,A,B)],...oth.map((o,i)=>["x"+i,phrObj(o,A,B)])],sol:"ok"},
+    N:{acc:ACC[T](A,B),show:NOT[T](A,B)},why:""};}
+function itMilieu(){const I=pick(MIL),[A,B]=lettres(2,I);const S=NOT.seg(A,B);
+  return {F:{opts:[["ok",figMilieu(A,B,I,"ok")],["h",figMilieu(A,B,I,"hors")],["d",figMilieu(A,B,I,"diff")]],sol:"ok"},
+    P:{opts:[["ok",`${M(I)} est le milieu du segment ${M(S)}.`],["a",`${M(A)} est le milieu du segment ${M(NOT.seg(I,B))}.`],["e",`${M(I)} est une extrémité du segment ${M(S)}.`]],sol:"ok"},
+    N:{opts:[["ok",M(`${I} ∈ ${S} et ${I}${A} = ${I}${B}`)],["eq",M(`${I}${A} = ${I}${B}`)],["in",M(`${I} ∈ ${S}`)]],sol:"ok",show:`${I} ∈ ${S} et ${I}${A} = ${I}${B}`},
+    why:`Milieu : il faut les deux conditions, ${M(I)} sur le segment ET à la même distance des extrémités.`};}
+function itAlignes(){const [A,B,C]=lettres(3);const oui=Math.random()<.6;const s=oui?"∈":"∉";const acc=[];
+  [[A,B,C],[B,A,C],[C,A,B]].forEach(([p,a,b])=>{acc.push(`${p}${s}(${a}${b})`,`${p}${s}(${b}${a})`);});
+  return {F:{opts:[["oui",figTrois(A,B,C,true)],["non",figTrois(A,B,C,false)]],sol:oui?"oui":"non"},
+    P:{opts:[["oui",`Les points ${M(A)}, ${M(B)} et ${M(C)} sont alignés.`],["non",`Les points ${M(A)}, ${M(B)} et ${M(C)} ne sont pas alignés.`]],sol:oui?"oui":"non"},
+    N:{acc:oui?acc:acc,show:`${B} ${s} (${A}${C})`},why:`Trois points sont alignés quand l'un appartient à la droite qui passe par les deux autres.`};}
+function figAppZ(X,Y,Z,T,cas){const b=base(15);const px=add(b.c,b.u,-45),py=add(b.c,b.u,25);let s=T==="ray"?G.ray(px,py,"o r"):G.seg(px,py,"o r");
+  s+=G.line(px,py,"o f");const tz=cas==="in"?(T==="ray"?R(60,85):R(-30,10)):(T==="ray"?-R(85,100):R(60,85));
+  s+=G.pt(px,X,offN(b))+G.pt(py,Y,offN(b))+G.pt(add(b.c,b.u,tz),Z,offN(b));return svg(s);}
+function itApp(){const [X,Y,Z]=lettres(3);const T=pick(["ray","ray","seg"]);const v=Math.random()<.5;const o=NOT[T](X,Y);const mot=T==="ray"?"à la demi-droite":"au segment";
+  return {F:{opts:[["in",figAppZ(X,Y,Z,T,"in")],["out",figAppZ(X,Y,Z,T,"out")]],sol:v?"in":"out"},
+    P:{opts:[["in",`Le point ${M(Z)} appartient ${mot} ${M(o)}.`],["out",`Le point ${M(Z)} n'appartient pas ${mot} ${M(o)}.`]],sol:v?"in":"out"},
+    N:{acc:T==="seg"?[`${Z}${sym(v)}[${X}${Y}]`,`${Z}${sym(v)}[${Y}${X}]`]:[`${Z}${sym(v)}[${X}${Y})`],show:`${Z} ${sym(v)} ${o}`},
+    why:T==="ray"?`La demi-droite ${M(o)} part de ${M(X)} et passe par ${M(Y)} : un point situé de l'autre côté de ${M(X)} n'y appartient pas.`:`Le segment ${M(o)} s'arrête en ${M(X)} et en ${M(Y)}.`};}
+function figCote(A,B,t){const b=base(18);const pa=add(b.c,b.u,-60),pb=add(b.c,b.u,60);return svg(G.seg(pa,pb,"o r")+G.pt(pa,A,offN(b,-14))+G.pt(pb,B,offN(b,-14))+G.cote(pa,pb,t));}
+function itLongueur(){const [A,B,C]=lettres(3);const n=longueurAuHasard();let m;do m=longueurAuHasard();while(m===n);
+  return {F:{opts:[["ok",figCote(A,B,f1(n)+" cm")],["m",figCote(A,B,f1(m)+" cm")],["c",figCote(A,C,f1(n)+" cm")]],sol:"ok"},
+    P:{opts:[["ok",`Le segment ${M(NOT.seg(A,B))} mesure ${f1(n)} cm.`],["m",`Le segment ${M(NOT.seg(A,B))} mesure ${f1(m)} cm.`],["c",`Le segment ${M(NOT.seg(A,C))} mesure ${f1(n)} cm.`]],sol:"ok"},
+    N:{acc:lgAcc(A,B,n),show:`${A}${B} = ${f1(n)} cm`},why:`Une longueur s'écrit sans crochets : ${M(A+B)}.`};}
+function itPos(P){const [n1,n2]=deuxNoms();const d1=M(dn(n1)),d2=M(dn(n2));
+  return {F:{opts:[["par",figPos(n1,n2,"par")],["perp",figPos(n1,n2,"perp")],["sec",figPos(n1,n2,"sec")]],sol:P},
+    P:{opts:[["par",`Les droites ${d1} et ${d2} sont parallèles.`],["perp",`Les droites ${d1} et ${d2} sont perpendiculaires.`],["sec",`Les droites ${d1} et ${d2} sont sécantes, sans former d'angle droit.`]],sol:P},
+    N:{acc:accPos(n1,n2,opP[P]),show:notPos(n1,n2,P)},why:P==="par"?`${M("//")} : « est parallèle à ».`:`${M("⊥")} : « est perpendiculaire à » ; le petit carré code l'angle droit.`};}
+function figC(rTxt,mode,P){const c=V(150,75),r=46;const a=R(0,359)*Math.PI/180;const q=V(c.x+r*Math.cos(a),c.y+r*Math.sin(a)),q2=V(2*c.x-q.x,2*c.y-q.y);
+  const n=nor(uv(c,q));let s=G.circ(c,r)+G.pt(c,"O",mode==="rayon"||mode==="diam"?add(V(0,0),n,-13):V(-12*Math.cos(a),-12*Math.sin(a)));
+  if(mode==="rayon"||mode==="diam"){s+=mode==="rayon"?G.seg(c,q,"o r"):G.seg(q2,q,"o r");const m=mode==="rayon"?add(c,uv(c,q),r*0.55):c;const t=add(m,n,16);s+=`<text x="${r2(t.x)}" y="${r2(t.y+5)}" class="ct">${rTxt}</text>`;}
+  else{const k=mode==="sur"?1:mode==="int"?0.55:1.28;const p=add(c,uv(c,q),r*k);s+=G.pt(p,P,add(V(0,0),uv(c,q),13));}
+  const cl=add(c,V(Math.cos(a+2.4),Math.sin(a+2.4)),r+10);return `<svg class="fg" viewBox="72 0 156 150" role="img" aria-label="cercle">${s+G.txt(cl,"𝒞","nm")}</svg>`;}
+function itCercle(){if(Math.random()<.5){const r=R(2,6);
+    return {F:{opts:[["ok",figC(r+" cm","rayon")],["d",figC(r+" cm","diam")],["r2",figC(2*r+" cm","rayon")]],sol:"ok"},
+      P:{opts:[["ok",`${M("𝒞")} est le cercle de centre ${M("O")} et de rayon ${r} cm.`],["d",`${M("𝒞")} est le cercle de centre ${M("O")} et de diamètre ${r} cm.`],["r2",`${M("𝒞")} est le cercle de centre ${M("O")} et de rayon ${2*r} cm.`]],sol:"ok"},
+      N:{acc:[`𝒞(O;${r}cm)`],show:`𝒞 (O ; ${r} cm)`},why:`On écrit d'abord le centre, puis le rayon. Diamètre = 2 × rayon.`};}
+  const [P]=lettres(1);
+  return {F:{opts:[["sur",figC("","sur",P)],["int",figC("","int",P)],["ext",figC("","ext",P)]],sol:"sur"},
+    P:{opts:[["sur",`Le point ${M(P)} appartient au cercle ${M("𝒞")}.`],["c",`Le point ${M(P)} est le centre du cercle ${M("𝒞")}.`],["int",`Le point ${M(P)} appartient au disque, mais pas au cercle ${M("𝒞")}.`]],sol:"sur"},
+    N:{acc:[`${P}∈𝒞`,`${P}∈(𝒞)`],show:`${P} ∈ 𝒞`},why:`Un point du cercle est exactement à la distance « rayon » du centre.`};}
+// questions-tableaux de chaque onglet
+const TAB={
+  segment:()=>pick([()=>{const [A,B]=lettres(2);return tabQ([[itObj("seg",A,B)]]);},()=>{const L=lettres(6);return tabQ([[itObj("seg",L[0],L[1])],[itObj("line",L[2],L[3])],[itObj("ray",L[4],L[5])]]);}])(),
+  droite:()=>pick([()=>{const [A,B]=lettres(2);return tabQ([[itObj("line",A,B)]]);},()=>{const L=lettres(6);return tabQ(shuffle([[itObj("line",L[0],L[1])],[itObj("seg",L[2],L[3])],[itObj("ray",L[4],L[5])]]));},()=>tabQ([[itPos(pick(["par","perp"])),R(1,2)]])])(),
+  "demi-droite":()=>pick([()=>{const [A,B]=lettres(2);return tabQ([[itObj("ray",A,B)]]);},()=>{const [A,B]=lettres(2);return tabQ(shuffle([[itObj("ray",A,B)],[itObj("ray",B,A)]]));},()=>tabQ([[itApp()]])])(),
+  milieu:()=>tabQ([[itMilieu()]]),
+  alignes:()=>tabQ([[itAlignes()]]),
+  appartenance:()=>pick([()=>tabQ([[itApp()]]),()=>tabQ([[itApp()],[itApp()]])])(),
+  longueur:()=>tabQ([[itLongueur()]]),
+  paralleles:()=>tabQ([[itPos("par")]]),
+  perpendiculaires:()=>tabQ([[itPos("perp")]]),
+  cercle:()=>pick([()=>tabQ([[itCercle()]]),()=>tabQ([[itCercle()],[itCercle()]])])()
+};
+
 /* ================= onglets ================= */
 const TABS=[
- {id:"segment",name:"Segment",gen:genObjet("seg"),n:8,rappel:`${M("[AB]")} : <b>le segment</b> d'extrémités ${M("A")} et ${M("B")}. Les crochets « [ ] » montrent que le segment s'arrête en ${M("A")} et en ${M("B")}. ${M("[AB]")} = ${M("[BA]")}.`},
- {id:"droite",name:"Droite",gen:genObjet("line"),n:8,rappel:`${M("(AB)")} : <b>la droite</b> qui passe par ${M("A")} et ${M("B")}, illimitée des deux côtés. Autres noms : une lettre ${M("(d)")} ou ${M("d")}, ou deux lettres minuscules aux bouts du tracé ${M("(xy)")}.`},
- {id:"demi-droite",name:"Demi-droite",gen:genObjet("ray"),n:8,rappel:`${M("[AB)")} : <b>la demi-droite</b> d'origine ${M("A")} qui passe par ${M("B")}. L'origine s'écrit en premier, du côté du crochet. ${M("[AB)")} ≠ ${M("[BA)")}.`},
- {id:"milieu",name:"Milieu",gen:k=>modesMilieu[ordre("mil",modesMilieu.length,k)](),n:7,rappel:`${M("I")} est <b>le milieu</b> de ${M("[AB]")} : ${M("I ∈ [AB] et IA = IB")}. Il faut les <b>deux</b> conditions. Alors ${M("AI = AB ÷ 2")}.`},
- {id:"alignes",name:"Points alignés",gen:k=>modesAlignes[ordre("ali",modesAlignes.length,k)](),n:6,rappel:`Des points sont <b>alignés</b> s'ils appartiennent à une même droite. « ${M("A")}, ${M("B")}, ${M("C")} sont alignés » s'écrit ${M("C ∈ (AB)")}.`},
- {id:"appartenance",name:"Appartient / n'appartient pas",gen:k=>modesApp[ordre("app",modesApp.length,k)](),n:8,rappel:`${M("∈")} : « appartient à », ${M("∉")} : « n'appartient pas à ». Pour une demi-droite ${M("[AB)")}, on part de l'origine ${M("A")} vers ${M("B")} : les points situés de l'autre côté de ${M("A")} n'appartiennent pas à ${M("[AB)")}.`},
- {id:"longueur",name:"Longueur",gen:k=>modesLongueur[ordre("lg",modesLongueur.length,k)](),n:7,rappel:`« Le segment ${M("[AB]")} mesure 3 cm » s'écrit ${M("AB = 3 cm")} : la longueur s'écrit <b>sans crochets</b>. Seul un segment a une longueur.`},
- {id:"paralleles",name:"Parallèles",gen:(()=>{const m=modesPos("par");return k=>m[ordre("par",m.length,k)]();})(),n:7,rappel:`Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes : ${M("(d) // (d')")} se lit « la droite ${M("(d)")} est parallèle à la droite ${M("(d')")} ».`},
- {id:"perpendiculaires",name:"Perpendiculaires",gen:(()=>{const m=modesPos("perp");return k=>m[ordre("perp",m.length,k)]();})(),n:7,rappel:`Deux droites sont <b>perpendiculaires</b> si elles se coupent en formant un angle droit : ${M("(d) ⊥ (d')")}. Le petit carré code l'angle droit.`},
- {id:"cercle",name:"Vocabulaire du cercle",gen:k=>modesCercle[ordre("cer",modesCercle.length,k)](),n:8,rappel:`<b>Rayon</b> : segment qui relie le centre à un point du cercle. <b>Corde</b> : segment qui relie deux points du cercle. <b>Diamètre</b> : corde qui passe par le centre. Diamètre = 2 × rayon.`},
- {id:"melange",name:"Mélange",gen:()=>{const t=pick(TABS.slice(0,10));return t.gen(R(0,15));},n:10,rappel:`Toutes les notions mélangées. Rappel : ${M("[AB]")} segment, ${M("(AB)")} droite, ${M("[AB)")} demi-droite, ${M("AB")} longueur ; ${M("∈")}, ${M("∉")}, ${M("//")}, ${M("⊥")}.`}
+ {id:"segment",tab:TAB["segment"],nTab:3,name:"Segment",gen:genObjet("seg"),n:8,rappel:`${M("[AB]")} : <b>le segment</b> d'extrémités ${M("A")} et ${M("B")}. Les crochets « [ ] » montrent que le segment s'arrête en ${M("A")} et en ${M("B")}. ${M("[AB]")} = ${M("[BA]")}.`},
+ {id:"droite",tab:TAB["droite"],nTab:3,name:"Droite",gen:genObjet("line"),n:8,rappel:`${M("(AB)")} : <b>la droite</b> qui passe par ${M("A")} et ${M("B")}, illimitée des deux côtés. Autres noms : une lettre ${M("(d)")} ou ${M("d")}, ou deux lettres minuscules aux bouts du tracé ${M("(xy)")}.`},
+ {id:"demi-droite",tab:TAB["demi-droite"],nTab:3,name:"Demi-droite",gen:genObjet("ray"),n:8,rappel:`${M("[AB)")} : <b>la demi-droite</b> d'origine ${M("A")} qui passe par ${M("B")}. L'origine s'écrit en premier, du côté du crochet. ${M("[AB)")} ≠ ${M("[BA)")}.`},
+ {id:"milieu",tab:TAB["milieu"],nTab:3,name:"Milieu",gen:k=>modesMilieu[ordre("mil",modesMilieu.length,k)](),n:7,rappel:`${M("I")} est <b>le milieu</b> de ${M("[AB]")} : ${M("I ∈ [AB] et IA = IB")}. Il faut les <b>deux</b> conditions. Alors ${M("AI = AB ÷ 2")}.`},
+ {id:"alignes",tab:TAB["alignes"],nTab:3,name:"Points alignés",gen:k=>modesAlignes[ordre("ali",modesAlignes.length,k)](),n:6,rappel:`Des points sont <b>alignés</b> s'ils appartiennent à une même droite. « ${M("A")}, ${M("B")}, ${M("C")} sont alignés » s'écrit ${M("C ∈ (AB)")}.`},
+ {id:"appartenance",tab:TAB["appartenance"],nTab:3,name:"Appartient / n'appartient pas",gen:k=>modesApp[ordre("app",modesApp.length,k)](),n:8,rappel:`${M("∈")} : « appartient à », ${M("∉")} : « n'appartient pas à ». Pour une demi-droite ${M("[AB)")}, on part de l'origine ${M("A")} vers ${M("B")} : les points situés de l'autre côté de ${M("A")} n'appartiennent pas à ${M("[AB)")}.`},
+ {id:"longueur",tab:TAB["longueur"],nTab:3,name:"Longueur",gen:k=>modesLongueur[ordre("lg",modesLongueur.length,k)](),n:7,rappel:`« Le segment ${M("[AB]")} mesure 3 cm » s'écrit ${M("AB = 3 cm")} : la longueur s'écrit <b>sans crochets</b>. Seul un segment a une longueur.`},
+ {id:"paralleles",tab:TAB["paralleles"],nTab:3,name:"Parallèles",gen:(()=>{const m=modesPos("par");return k=>m[ordre("par",m.length,k)]();})(),n:7,rappel:`Deux droites sont <b>parallèles</b> si elles ne sont pas sécantes : ${M("(d) // (d')")} se lit « la droite ${M("(d)")} est parallèle à la droite ${M("(d')")} ».`},
+ {id:"perpendiculaires",tab:TAB["perpendiculaires"],nTab:3,name:"Perpendiculaires",gen:(()=>{const m=modesPos("perp");return k=>m[ordre("perp",m.length,k)]();})(),n:7,rappel:`Deux droites sont <b>perpendiculaires</b> si elles se coupent en formant un angle droit : ${M("(d) ⊥ (d')")}. Le petit carré code l'angle droit.`},
+ {id:"cercle",tab:TAB["cercle"],nTab:3,name:"Vocabulaire du cercle",gen:k=>modesCercle[ordre("cer",modesCercle.length,k)](),n:8,rappel:`<b>Rayon</b> : segment qui relie le centre à un point du cercle. <b>Corde</b> : segment qui relie deux points du cercle. <b>Diamètre</b> : corde qui passe par le centre. Diamètre = 2 × rayon.`},
+ {id:"melange",name:"Mélange",gen:()=>{const t=pick(TABS.slice(0,10));return Math.random()<.35?t.tab():t.gen(R(0,15));},n:10,rappel:`Toutes les notions mélangées. Rappel : ${M("[AB]")} segment, ${M("(AB)")} droite, ${M("[AB)")} demi-droite, ${M("AB")} longueur ; ${M("∈")}, ${M("∉")}, ${M("//")}, ${M("⊥")}.`}
 ];
 
 /* ================= interface ================= */
@@ -519,12 +613,22 @@ let cur=0;const state=TABS.map(()=>null);
 const list=document.getElementById("list"),tabs=document.getElementById("tabs");
 (function(){const p=new URLSearchParams(location.search).get("onglet")||location.hash.slice(1);const i=TABS.findIndex(t=>t.id===p);if(i>=0)cur=i;})();
 function serie(i){const t=TABS[i];const qs=[];const seen=new Set();let g=0;
-  while(qs.length<t.n&&g++<400){const q=t.gen(qs.length+(g>t.n*3?g:0));const key=q.cons+q.txt+(q.items?q.items.map(x=>x.t).join():"");if(seen.has(key))continue;seen.add(key);
-    q.st=null;q.val=q.kind==="vf"?q.items.map(()=>null):"";qs.push(q);}return qs;}
+  const nT=t.nTab||0;
+  while(qs.length<t.n+nT&&g++<400){const k=qs.length;const q=k<nT?t.tab():t.gen(k-nT+(g>t.n*3?g:0));
+    const key=q.cons+q.txt+(q.items?q.items.map(x=>x.t).join():"")+(q.rows?JSON.stringify(q.rows.map(r=>r.cells.map(c=>c.given||c.sol||c.acc))):"");if(seen.has(key))continue;seen.add(key);
+    q.st=null;q.val=q.kind==="vf"?q.items.map(()=>null):q.kind==="tab"?q.rows.map(r=>r.cells.map(c=>c.given!=null?null:"")):"";qs.push(q);}return qs;}
 function renderTabs(){tabs.innerHTML=TABS.map((t,i)=>{const s=state[i];const ok=s?s.filter(q=>q.st==="ok").length:0;
   return `<button class="tab" role="tab" aria-selected="${i===cur}" data-tab="${i}">${t.name}<span class="n">${s?ok+"/"+s.length:""}</span></button>`;}).join("");}
 const KEYS=["[","]","(",")","∈","∉","//","⊥","=","cm","𝒞"];
+const keypad=(id)=>`<div class="keys">${KEYS.map(k=>`<button class="key" data-key="${esc(k)}" data-t="${id}" tabindex="-1">${k}</button>`).join("")}</div>`;
+function cellHTML(q,j,r,c){const cl=q.rows[r].cells[c],v=q.val[r][c];
+  if(cl.given!=null)return `<div class="given${cl.fig?" gfig":""}">${cl.given}</div>`;
+  if(cl.t==="write"){const id=`in${j}_${r}_${c}`;return `<input class="wd2" id="${id}" data-j="${j}" data-r="${r}" data-c="${c}" autocomplete="off" autocapitalize="off" spellcheck="false" value="${esc(v)}" aria-label="Notation">${keypad(id)}`;}
+  return `<div class="tch${cl.t==="fig"?" tfigs":""}">${cl.opts.map(([o,l])=>`<button class="choice${cl.t==="fig"?" fig":""}${v===o?" sel":""}" data-tc="${j}" data-r="${r}" data-c="${c}" data-o="${esc(o)}">${l}</button>`).join("")}</div>`;}
+function tabHTML(q,j){return `<table class="t3"><thead><tr>${COLS.map(c=>`<th>${c}</th>`).join("")}</tr></thead><tbody>${q.rows.map((row,r)=>`<tr>${row.cells.map((cl,c)=>`<td data-label="${COLS[c]}" id="tc${j}_${r}_${c}" class="${cl.given!=null?"gv":""}">${cellHTML(q,j,r,c)}</td>`).join("")}</tr>`).join("")}</tbody></table>`;}
+function markTab(q,j){q.rows.forEach((row,r)=>row.cells.forEach((cl,c)=>{const el=document.getElementById(`tc${j}_${r}_${c}`);if(!el)return;el.classList.remove("ok","bad");const m=q.marks&&q.marks[r][c];if(m)el.classList.add(m);}));}
 function ansHTML(q,j){
+  if(q.kind==="tab")return tabHTML(q,j);
   if(q.kind==="qcm")return `<div class="choices${q.figs?" figs":""}">${q.opts.map(([v,l])=>`<button class="choice${q.big?" big":""}${q.figs?" fig":""}${q.val===v?" sel":""}" data-ch="${j}" data-o="${esc(v)}">${l}</button>`).join("")}</div>`;
   if(q.kind==="vf")return `<div class="vfl">${q.items.map((it,k)=>`<div class="vfi" id="vf${j}_${k}"><span class="vft">${it.t}</span><span class="vfb"><button class="choice${q.val[k]===true?" sel":""}" data-vf="${j}" data-k="${k}" data-o="1">Vrai</button><button class="choice${q.val[k]===false?" sel":""}" data-vf="${j}" data-k="${k}" data-o="0">Faux</button></span></div>`).join("")}</div>`;
   if(q.kind==="num")return `<input class="md" id="in${j}" data-j="${j}" autocomplete="off" inputmode="decimal" value="${esc(q.val)}" aria-label="Réponse"><span class="lbl">cm</span>`;
@@ -534,13 +638,13 @@ function render(){
   document.getElementById("rappel").innerHTML=TABS[cur].rappel;
   try{history.replaceState(null,"","#"+TABS[cur].id);}catch(e){}
   const qs=state[cur];
-  list.innerHTML=qs.map((q,j)=>{const auto=q.kind==="qcm";
+  list.innerHTML=qs.map((q,j)=>{const auto=q.kind==="qcm";const wide=q.kind==="tab";
     return `<div class="q ${q.st==="ok"?"ok":q.st==="bad"?"bad":""}" id="q${j}">
       <div class="qhead"><span class="num">${j+1}</span><span class="consigne">${q.cons}</span></div>
       ${q.txt?`<div class="expr">${q.txt}</div>`:""}
       <div class="ans"><div class="ai" id="ai${j}">${ansHTML(q,j)}</div>${auto?"":`<button class="btn" data-check="${j}">Vérifier</button>`}<button class="btn" data-corr="${j}">Correction</button></div>
       <div class="fb" id="fb${j}"></div><div class="corr" id="co${j}" hidden></div></div>`;}).join("");
-  qs.forEach((q,j)=>{if(q.fb)setFb(j,q.fb[0],q.fb[1]);if(q.kind==="vf"&&q.marks)markVF(q,j);});
+  qs.forEach((q,j)=>{if(q.fb)setFb(j,q.fb[0],q.fb[1]);if(q.kind==="vf"&&q.marks)markVF(q,j);if(q.kind==="tab"&&q.marks)markTab(q,j);});
   renderTabs();tally();
 }
 function setFb(j,cls,msg){const f=document.getElementById("fb"+j);if(!f)return;f.className="fb "+cls;f.innerHTML=msg;}
@@ -565,6 +669,14 @@ function check(j,silent){const q=state[cur][j];let st="bad",fb;
     if(nb){fb=["bad",nb===1?"Une réponse est fausse (en rouge).":nb+" réponses sont fausses (en rouge)."];}
     else if(q.val.some(x=>x===null)){fb=["hint","C'est juste pour l'instant : réponds aux autres phrases."];st=null;}
     else{st="ok";fb=["ok","Bravo !"];}}
+  else if(q.kind==="tab"){const res=q.rows.map((row,r)=>row.cells.map((cl,c)=>{if(cl.given!=null)return null;const v=q.val[r][c];
+      if(cl.t==="write"){const x=verifEcrit({acc:cl.acc},v);return x[0]==="empty"?["empty"]:x;}return v===""||v==null?["empty"]:[v===cl.sol?"ok":"bad"];}));
+    const flat=res.flat().filter(Boolean);if(flat.every(x=>x[0]==="empty")){if(!silent)setFb(j,"hint","Complète les cases du tableau.");return;}
+    q.marks=res.map(row=>row.map(x=>x&&x[0]!=="empty"?x[0]:null));markTab(q,j);
+    const nb=flat.filter(x=>x[0]==="bad").length;const m=flat.find(x=>x[0]==="bad"&&x[1]);
+    if(nb)fb=["bad",(nb===1?"Une case est fausse (en rouge).":nb+" cases sont fausses (en rouge).")+(m?" "+m[1]:"")];
+    else if(flat.some(x=>x[0]==="empty")){fb=["hint","C'est juste pour l'instant : complète les autres cases."];st=null;}
+    else{st="ok";fb=["ok","Bravo !"];}}
   else if(q.kind==="num"){const s=String(q.val).trim();if(!s){if(!silent)setFb(j,"hint","Écris ta réponse.");return;}
     const n=lireNombre(s);if(n===null){st=null;fb=["hint","Écris seulement un nombre (avec une virgule si besoin)."];}else{st=n===q.sol?"ok":"bad";fb=st==="ok"?["ok","Bravo !"]:["bad","Ce n'est pas le bon résultat."];}}
   else{const r=verifEcrit(q,q.val);if(r[0]==="empty"){if(!silent)setFb(j,"hint","Écris ta réponse (tu peux utiliser les touches sous la case).");return;}
@@ -574,6 +686,8 @@ function corr(j){const q=state[cur][j];const c=document.getElementById("co"+j);i
   let h="";if(q.kind==="qcm"&&!q.figs){const o=q.opts.find(x=>x[0]===q.sol);h=`<span class="line"><b>Réponse :</b> ${o[1]}</span>`;}
   if(q.kind==="vf")h=`<span class="line"><b>Réponses :</b> ${q.items.map((it,k)=>`${k+1}) ${it.sol?"Vrai":"Faux"}`).join(" ; ")}</span>`;
   if(q.kind==="num")h=`<span class="line"><b>Réponse :</b> ${M(f1(q.sol)+" cm")}</span>`;
+  if(q.kind==="tab")h=`<table class="t3 sol"><thead><tr>${COLS.map(c=>`<th>${c}</th>`).join("")}</tr></thead><tbody>${q.rows.map(row=>{const it=row.it;
+      return `<tr><td data-label="${COLS[0]}"><div class="given gfig">${it.F.opts.find(o=>o[0]===it.F.sol)[1]}</div></td><td data-label="${COLS[1]}">${it.P.opts.find(o=>o[0]===it.P.sol)[1]}</td><td data-label="${COLS[2]}">${M(it.N.show)}${it.N.acc&&it.N.acc.length>1?`<div class="alt">Accepté aussi : ${it.N.acc.filter(a=>canon(a)!==canon(it.N.show)).slice(0,3).map(a=>M(esc(a))).join(", ")}${it.N.acc.length>4?"…":""}</div>`:""}</td></tr>`;}).join("")}</tbody></table>`;
   c.innerHTML=h+q.steps.map(s=>`<span class="line">${s}</span>`).join("")+(q.why?`<span class="why">${q.why}</span>`:"");c.hidden=false;}
 function tally(){let tot=0,ok=0;state.forEach(s=>{if(s)s.forEach(q=>{tot++;if(q.st==="ok")ok++;});});
   document.getElementById("score").textContent=`${ok} / ${tot} réussies`;document.getElementById("prog").style.width=(tot?100*ok/tot:0)+"%";}
@@ -583,14 +697,17 @@ list.addEventListener("click",e=>{
   const c=e.target.closest("[data-check]");if(c){check(+c.dataset.check);return;}
   const r=e.target.closest("[data-corr]");if(r){corr(+r.dataset.corr);return;}
   const ch=e.target.closest("[data-ch]");if(ch){const j=+ch.dataset.ch;state[cur][j].val=ch.dataset.o;ch.parentNode.querySelectorAll(".choice").forEach(x=>x.classList.toggle("sel",x===ch));check(j);return;}
+  const tc=e.target.closest("[data-tc]");if(tc){const j=+tc.dataset.tc,r=+tc.dataset.r,c=+tc.dataset.c,q=state[cur][j];q.val[r][c]=tc.dataset.o;tc.parentNode.querySelectorAll(".choice").forEach(x=>x.classList.toggle("sel",x===tc));
+    if(q.marks){q.marks[r][c]=null;markTab(q,j);}reset(j);renderTabs();tally();return;}
   const v=e.target.closest("[data-vf]");if(v){const j=+v.dataset.vf,k=+v.dataset.k,q=state[cur][j];q.val[k]=v.dataset.o==="1";v.parentNode.querySelectorAll(".choice").forEach(x=>x.classList.toggle("sel",x===v));
     if(q.marks){q.marks[k]=null;markVF(q,j);}reset(j);renderTabs();tally();return;}
-  const key=e.target.closest("[data-key]");if(key){const j=+key.dataset.j,inp=document.getElementById("in"+j);const t=key.dataset.key;
+  const key=e.target.closest("[data-key]");if(key){const inp=document.getElementById(key.dataset.t||("in"+key.dataset.j));const t=key.dataset.key;
     const a=inp.selectionStart??inp.value.length,b=inp.selectionEnd??inp.value.length;inp.value=inp.value.slice(0,a)+t+inp.value.slice(b);inp.focus();inp.setSelectionRange(a+t.length,a+t.length);
     inp.dispatchEvent(new Event("input",{bubbles:true}));}
 });
 list.addEventListener("mousedown",e=>{if(e.target.closest("[data-key]"))e.preventDefault();});
-list.addEventListener("input",e=>{const d=e.target.dataset;if(d.j==null||e.target.tagName!=="INPUT")return;const j=+d.j;state[cur][j].val=e.target.value;reset(j);renderTabs();tally();});
+list.addEventListener("input",e=>{const d=e.target.dataset;if(d.j==null||e.target.tagName!=="INPUT")return;const j=+d.j,q=state[cur][j];
+  if(d.r!=null){q.val[+d.r][+d.c]=e.target.value;if(q.marks){q.marks[+d.r][+d.c]=null;markTab(q,j);}}else q.val=e.target.value;reset(j);renderTabs();tally();});
 list.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.tagName==="INPUT")check(+e.target.dataset.j);});
 document.getElementById("newSerie").addEventListener("click",()=>{state[cur]=serie(cur);render();});
 document.getElementById("checkAll").addEventListener("click",()=>{state[cur].forEach((q,j)=>check(j,true));});
