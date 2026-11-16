@@ -4,7 +4,7 @@ Page du site : [3eme.html](../3eme.html)
 
 | N° | Séquence | Thème | Contenu |
 |---|---|---|---|
-| 01 | [Rappels · Relatifs, fractions, Pythagore](01-rappels-relatifs-fractions-pythagore/README.md) | Révisions | 11 ressources |
+| 01 | [Rappels · Relatifs, fractions, Pythagore](01-rappels-relatifs-fractions-pythagore/README.md) | Révisions | 12 ressources |
 | 02 | [Théorème de Thalès 1/2 · Le théorème](02-theoreme-de-thales-1-2-le-theoreme/README.md) | Espace et géométrie | 15 ressources |
 | 03 | [Calcul littéral 1/3 · Développement](03-calcul-litteral-1-3-developpement/README.md) | Nombres et calculs | 20 ressources |
 | 04 | [Fonctions 1/3 · Notions](04-fonctions-1-3-notions/README.md) | Fonctions | 15 ressources |

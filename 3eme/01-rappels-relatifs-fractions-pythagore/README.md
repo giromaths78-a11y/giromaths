@@ -28,6 +28,7 @@ Page du site : [index.html](index.html)
 - [Coloriage : calculs avec des fractions](exercices/coloriage-fractions.pdf) (Coloriage) · [corrigé](exercices/coloriage-fractions-corrige.pdf)
 - [Problèmes avec des fractions (10 problèmes, 2 par page)](exercices/problemes-fractions.pdf) (Problèmes) · [corrigé](exercices/problemes-fractions-corrige.pdf)
 - [Le théorème de Pythagore : 3 exercices (2 par page)](exercices/exercices-pythagore.pdf) (PDF) · [corrigé](exercices/exercices-pythagore-corrige.pdf)
+- [Pythagore : un travail dont tu es le héros (missions sur papier + aides à découper)](exercices/pythagore-heros.pdf) (Jeu) · [corrigé](exercices/pythagore-heros-corrige.pdf)
 
 ## Vidéos
 

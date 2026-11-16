@@ -318,7 +318,7 @@ main{min-height:calc(100vh - 140px)}
 .vis-t small{font-weight:400;color:var(--muted)}
 .vis-list a{flex:none;display:grid;place-items:center;width:40px;text-decoration:none;color:var(--muted);border-left:1px solid var(--line)}
 .vis-list a:hover{color:var(--c)}
-@media (max-width:600px){.vis-bar{top:auto;position:static}.vis-list{grid-template-columns:1fr}}
+@media (max-width:600px){.vis-bar{top:auto;position:static}.vis-list{grid-template-columns:minmax(0,1fr)}.vis-list label.vis-cor{padding:10px 8px}}
 .vis-login{max-width:420px;margin:24px auto 64px;text-align:center;background:var(--card);border:2px solid var(--ink);border-radius:20px;padding:28px 24px;box-shadow:6px 6px 0 #fbbf24;display:flex;flex-direction:column;align-items:center;gap:12px}
 .vis-login h2{margin:0}.vis-login label{display:flex;flex-direction:column;gap:6px;font-weight:600;width:100%}
 .vis-login input{font:inherit;padding:8px 12px;border:2px solid var(--line);border-radius:10px}
