@@ -37,7 +37,7 @@ Chaque sous-répertoire contient un `README.md` qui liste ses fichiers et ses li
 | `index.html` | page d'accueil |
 | `6eme.html` … `3eme.html` | liste des séquences d'un niveau |
 | `brevet.html`, `ressources/brevet/` | annales du brevet et automatismes |
-| `podcasts.html`, `culture.html`, `enigmes.html`, `methode.html`, `calculatrice.html`, `concours.html` | rubriques pour tous les niveaux |
+| `podcasts.html`, `culture.html`, `enigmes.html`, `methode.html`, `concours.html` | rubriques pour tous les niveaux |
 | `admin.html`, `visibilite.js` | ouvrir ou masquer les séquences au fil de l'année |
 | `ressources/` | fichiers des rubriques hors séquences |
 | `style.css` | design du site |

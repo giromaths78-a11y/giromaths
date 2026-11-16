@@ -1,0 +1,808 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Missions Scratch par niveau · GiroMaths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Caveat:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script src="visibilite.js"></script>
+</head>
+<body class="lvl scratch" style="--accent:#4d7c0f;--accent-light:#ecfccb">
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html"><svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+<rect x="2" y="2" width="17" height="17" rx="5" fill="#c026d3"/><rect x="21" y="2" width="17" height="17" rx="5" fill="#2563eb"/>
+<rect x="2" y="21" width="17" height="17" rx="5" fill="#ea580c"/><rect x="21" y="21" width="17" height="17" rx="5" fill="#0d9488"/>
+<path d="M6 32 Q 14 8 20 20 T 34 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span>Giro<b>Maths</b></span></a>
+    <nav class="main-nav"><a href="6eme.html" style="--c:#2563eb">6ème</a><a href="5eme.html" style="--c:#0d9488">5ème</a><a href="4eme.html" style="--c:#ea580c">4ème</a><a href="3eme.html" style="--c:#c026d3">3ème</a><a href="brevet.html" style="--c:#1e293b">Brevet</a><a href="concours.html" style="--c:#4f46e5">Concours</a><a href="podcasts.html" style="--c:#e11d48">Podcasts/Vidéos</a><a href="culture.html" style="--c:#0891b2">Culture</a><a href="enigmes.html" style="--c:#7c3aed">Énigmes</a><a href="methode.html" style="--c:#b45309">Méthode</a><a href="scratch.html" style="--c:#4d7c0f">Scratch</a></nav>
+  </div>
+</header>
+<main>
+<section class="level-hero sc-hero">
+  <div class="wrap"><p class="crumbs"><a href="index.html">Accueil</a> / Scratch</p>
+  <h1>Scratch</h1><p class="lead">Des missions de programmation pour faire des maths, niveau par niveau</p></div>
+  <svg class="sc-hero-art" viewBox="0 0 200 160" aria-hidden="true">
+<path d="M10 20h40a6 6 0 0 0 12 0h120v34H62a6 6 0 0 1-12 0H10z" fill="#fff" fill-opacity=".9"/>
+<path d="M30 62h40a6 6 0 0 0 12 0h100v34H82a6 6 0 0 1-12 0H30z" fill="#fff" fill-opacity=".7"/>
+<path d="M30 104h40a6 6 0 0 0 12 0h70v34H82a6 6 0 0 1-12 0H30z" fill="#fff" fill-opacity=".5"/>
+</svg>
+</section>
+<div class="wrap seq-page sc-page">
+  <div class="objectives"><b>Comment ça marche ?</b><div>Choisis ton niveau, lis la mission, puis programme dans Scratch. Compare avec « Ce que tu dois obtenir ». L'indice et la solution ne s'ouvrent que si tu cliques : cherche d'abord ! Coche « Mission réussie » pour suivre tes progrès (enregistré seulement sur cet appareil).</div></div>
+  <div class="sc-atelier-bar">
+    <a class="sc-btn" href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">Ouvrir Scratch dans un nouvel onglet ↗</a>
+    <button class="sc-btn sc-btn-alt" type="button" id="sc-atelier-toggle">Éditeur à côté des missions</button>
+    <details class="sc-aide"><summary>Aide Scratch</summary><ul>
+      <li>Le <b>stylo</b> est une extension : bouton bleu en bas à gauche, puis « Stylo ».</li>
+      <li>Les nombres décimaux s'écrivent avec un <b>point</b> : 2.5 et non 2,5.</li>
+      <li>La scène est un repère : x de −240 à 240, y de −180 à 180. Direction 90 = vers la droite, 0 = vers le haut.</li>
+      <li>Pour garder ton travail : menu Fichier, « Sauvegarder sur votre ordinateur ».</li>
+      <li>Sans Internet : l'application Scratch se télécharge sur <a href="https://scratch.mit.edu/download" target="_blank" rel="noopener">scratch.mit.edu/download</a>.</li>
+    </ul></details>
+  </div>
+  <div class="sc-tabs" role="tablist"><button class="sc-tab" role="tab" data-niv="6eme" style="--c:#2563eb;--cl:#e6eeff"><span class="sc-tab-sym">½</span>6ème<span class="sc-prog" data-niv="6eme">0/6</span></button><button class="sc-tab" role="tab" data-niv="5eme" style="--c:#0d9488;--cl:#e0f5f2"><span class="sc-tab-sym">±</span>5ème<span class="sc-prog" data-niv="5eme">0/6</span></button><button class="sc-tab" role="tab" data-niv="4eme" style="--c:#ea580c;--cl:#ffeddf"><span class="sc-tab-sym">x²</span>4ème<span class="sc-prog" data-niv="4eme">0/6</span></button><button class="sc-tab" role="tab" data-niv="3eme" style="--c:#c026d3;--cl:#fbe6fd"><span class="sc-tab-sym">√</span>3ème<span class="sc-prog" data-niv="3eme">0/6</span></button></div>
+  <section class="sc-panel" role="tabpanel" data-niv="6eme" style="--accent:#2563eb;--accent-light:#e6eeff" hidden>
+  <div class="sc-barre"><span style="width:0%"></span></div>
+  <article class="sc-mission" id="m-6eme-1" data-id="6eme-1">
+  <header class="sc-mhead">
+    <span class="sc-num">1</span>
+    <div><h3>Le carré parfait</h3><p class="sc-notion">Carré : 4 côtés égaux, 4 angles droits</p></div>
+    <span class="sc-meta" title="Difficulté">★☆☆<small>15 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Programme le lutin pour qu'il dessine un <b>carré de 100 pas de côté</b> quand on clique sur le drapeau vert.</p>
+      <ol class="sc-etapes"><li>Ajoute l'extension <b>Stylo</b> (bouton bleu en bas à gauche de Scratch).</li><li>Efface l'écran, place le lutin au point (−50 ; −50) et oriente-le vers la droite (90).</li><li>Pose le stylo, puis répète 4 fois : avancer, tourner.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">quand @greenFlag est cliqué</code><code class="b">effacer tout</code><code class="b">stylo en position d&#x27;écriture</code><code class="b">avancer de (100) pas</code><code class="b">tourner @turnRight de (90) degrés</code><code class="b">répéter (4) fois</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><div class="sc-fig"><svg class="sc-scene" viewBox="-240 -180 480 360" role="img" aria-label="Figure attendue sur la scène Scratch"><rect x="-240" y="-180" width="480" height="360" fill="#fff"/><g class="sc-grille"><line x1="-200" y1="-180" x2="-200" y2="180"/><line x1="-160" y1="-180" x2="-160" y2="180"/><line x1="-120" y1="-180" x2="-120" y2="180"/><line x1="-80" y1="-180" x2="-80" y2="180"/><line x1="-40" y1="-180" x2="-40" y2="180"/><line x1="0" y1="-180" x2="0" y2="180"/><line x1="40" y1="-180" x2="40" y2="180"/><line x1="80" y1="-180" x2="80" y2="180"/><line x1="120" y1="-180" x2="120" y2="180"/><line x1="160" y1="-180" x2="160" y2="180"/><line x1="200" y1="-180" x2="200" y2="180"/><line x1="240" y1="-180" x2="240" y2="180"/><line x1="-240" y1="-160" x2="240" y2="-160"/><line x1="-240" y1="-120" x2="240" y2="-120"/><line x1="-240" y1="-80" x2="240" y2="-80"/><line x1="-240" y1="-40" x2="240" y2="-40"/><line x1="-240" y1="0" x2="240" y2="0"/><line x1="-240" y1="40" x2="240" y2="40"/><line x1="-240" y1="80" x2="240" y2="80"/><line x1="-240" y1="120" x2="240" y2="120"/><line x1="-240" y1="160" x2="240" y2="160"/></g><line class="sc-axe" x1="-240" y1="0" x2="240" y2="0"/><line class="sc-axe" x1="0" y1="-180" x2="0" y2="180"/><g fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><polyline points="-50.0,50.0 50.0,50.0 50.0,150.0 -50.0,150.0 -50.0,50.0" stroke="#2563eb"/></g></svg></div></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>À chaque coin, le lutin doit tourner d'un <b>angle droit</b> : 90°. Le bloc « répéter » évite d'écrire 4 fois la même chose.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+effacer tout
+aller à x: (-50) y: (-50)
+s&#x27;orienter à (90)
+stylo en position d&#x27;écriture
+répéter (4) fois
+avancer de (100) pas
+tourner @turnRight de (90) degrés
+fin
+relever le stylo</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Le lutin a parcouru 4 × 100 = <b>400 pas</b> : c'est le périmètre du carré. Il a fait 4 quarts de tour, soit 4 × 90° = 360° : un tour complet.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Dessine un <b>rectangle</b> de 150 pas sur 80 pas. Combien de fois faut-il répéter, et quoi ? Calcule son périmètre (460 pas).</div>
+  <label class="sc-done"><input type="checkbox" data-id="6eme-1"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-6eme-2" data-id="6eme-2">
+  <header class="sc-mhead">
+    <span class="sc-num">2</span>
+    <div><h3>Le triangle équilatéral</h3><p class="sc-notion">Triangle équilatéral, angles</p></div>
+    <span class="sc-meta" title="Difficulté">★☆☆<small>15 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Dessine un <b>triangle équilatéral</b> de 120 pas de côté.</p>
+      <ol class="sc-etapes"><li>Un triangle équilatéral a 3 côtés de même longueur.</li><li>Essaie d'abord en tournant de 60°… et regarde ce qui se passe !</li><li>Trouve le bon angle pour que le triangle se ferme.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">répéter (3) fois</code><code class="b">avancer de (120) pas</code><code class="b">tourner @turnLeft de (120) degrés</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><div class="sc-fig"><svg class="sc-scene" viewBox="-240 -180 480 360" role="img" aria-label="Figure attendue sur la scène Scratch"><rect x="-240" y="-180" width="480" height="360" fill="#fff"/><g class="sc-grille"><line x1="-200" y1="-180" x2="-200" y2="180"/><line x1="-160" y1="-180" x2="-160" y2="180"/><line x1="-120" y1="-180" x2="-120" y2="180"/><line x1="-80" y1="-180" x2="-80" y2="180"/><line x1="-40" y1="-180" x2="-40" y2="180"/><line x1="0" y1="-180" x2="0" y2="180"/><line x1="40" y1="-180" x2="40" y2="180"/><line x1="80" y1="-180" x2="80" y2="180"/><line x1="120" y1="-180" x2="120" y2="180"/><line x1="160" y1="-180" x2="160" y2="180"/><line x1="200" y1="-180" x2="200" y2="180"/><line x1="240" y1="-180" x2="240" y2="180"/><line x1="-240" y1="-160" x2="240" y2="-160"/><line x1="-240" y1="-120" x2="240" y2="-120"/><line x1="-240" y1="-80" x2="240" y2="-80"/><line x1="-240" y1="-40" x2="240" y2="-40"/><line x1="-240" y1="0" x2="240" y2="0"/><line x1="-240" y1="40" x2="240" y2="40"/><line x1="-240" y1="80" x2="240" y2="80"/><line x1="-240" y1="120" x2="240" y2="120"/><line x1="-240" y1="160" x2="240" y2="160"/></g><line class="sc-axe" x1="-240" y1="0" x2="240" y2="0"/><line class="sc-axe" x1="0" y1="-180" x2="0" y2="180"/><g fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><polyline points="-60.0,50.0 60.0,50.0 0.0,-53.9 -60.0,50.0" stroke="#2563eb"/></g></svg></div></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Chaque angle du triangle mesure 60°, mais le lutin ne tourne pas de l'angle du triangle : il tourne de ce qu'il <b>manque pour faire demi-tour</b>, soit 180° − 60°.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+effacer tout
+aller à x: (-60) y: (-50)
+s&#x27;orienter à (90)
+stylo en position d&#x27;écriture
+répéter (3) fois
+avancer de (120) pas
+tourner @turnLeft de (120) degrés
+fin
+relever le stylo</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Les angles d'un triangle équilatéral mesurent tous 60°. Le lutin tourne de 180° − 60° = <b>120°</b> à chaque coin. Au total : 3 × 120° = 360°, un tour complet, comme pour le carré.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Avec un seul bloc « répéter », dessine un triangle de 60 pas de côté puis un de 180 pas. Les angles changent-ils ?</div>
+  <label class="sc-done"><input type="checkbox" data-id="6eme-2"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-6eme-3" data-id="6eme-3">
+  <header class="sc-mhead">
+    <span class="sc-num">3</span>
+    <div><h3>La fabrique de polygones</h3><p class="sc-notion">Polygones réguliers, division</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>25 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin <b>demande un nombre de côtés</b>, puis dessine le polygone régulier correspondant (tous les côtés égaux, tous les angles égaux).</p>
+      <ol class="sc-etapes"><li>Utilise le bloc « demander … et attendre » : le nombre tapé est rangé dans « réponse ».</li><li>Le lutin répète « réponse » fois : avancer de 60 pas, tourner.</li><li>De combien tourner ? Pour revenir au départ, il doit faire un tour complet (360°) en tout.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">demander [Combien de côtés ?] et attendre</code><code class="b">(réponse)</code><code class="b">((360) / (réponse))</code><code class="b">répéter (réponse) fois</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><div class="sc-fig"><svg class="sc-scene" viewBox="-240 -180 480 360" role="img" aria-label="Figure attendue sur la scène Scratch"><rect x="-240" y="-180" width="480" height="360" fill="#fff"/><g class="sc-grille"><line x1="-200" y1="-180" x2="-200" y2="180"/><line x1="-160" y1="-180" x2="-160" y2="180"/><line x1="-120" y1="-180" x2="-120" y2="180"/><line x1="-80" y1="-180" x2="-80" y2="180"/><line x1="-40" y1="-180" x2="-40" y2="180"/><line x1="0" y1="-180" x2="0" y2="180"/><line x1="40" y1="-180" x2="40" y2="180"/><line x1="80" y1="-180" x2="80" y2="180"/><line x1="120" y1="-180" x2="120" y2="180"/><line x1="160" y1="-180" x2="160" y2="180"/><line x1="200" y1="-180" x2="200" y2="180"/><line x1="240" y1="-180" x2="240" y2="180"/><line x1="-240" y1="-160" x2="240" y2="-160"/><line x1="-240" y1="-120" x2="240" y2="-120"/><line x1="-240" y1="-80" x2="240" y2="-80"/><line x1="-240" y1="-40" x2="240" y2="-40"/><line x1="-240" y1="0" x2="240" y2="0"/><line x1="-240" y1="40" x2="240" y2="40"/><line x1="-240" y1="80" x2="240" y2="80"/><line x1="-240" y1="120" x2="240" y2="120"/><line x1="-240" y1="160" x2="240" y2="160"/></g><line class="sc-axe" x1="-240" y1="0" x2="240" y2="0"/><line class="sc-axe" x1="0" y1="-180" x2="0" y2="180"/><g fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><polyline points="-190.0,60.0 -130.0,60.0 -111.5,2.9 -160.0,-32.3 -208.5,2.9 -190.0,60.0" stroke="#2563eb"/><polyline points="-70.0,60.0 -10.0,60.0 20.0,8.0 -10.0,-43.9 -70.0,-43.9 -100.0,8.0 -70.0,60.0" stroke="#7c3aed"/><polyline points="125.0,60.0 135.0,60.0 144.8,58.3 154.2,54.8 162.9,49.8 170.6,43.4 177.0,35.8 182.0,27.1 185.4,17.7 187.2,7.8 187.2,-2.2 185.4,-12.0 182.0,-21.4 177.0,-30.1 170.6,-37.7 162.9,-44.1 154.2,-49.1 144.8,-52.6 135.0,-54.3 125.0,-54.3 115.2,-52.6 105.8,-49.1 97.1,-44.1 89.4,-37.7 83.0,-30.1 78.0,-21.4 74.6,-12.0 72.8,-2.2 72.8,7.8 74.6,17.7 78.0,27.1 83.0,35.8 89.4,43.4 97.1,49.8 105.8,54.8 115.2,58.3 125.0,60.0" stroke="#ea580c"/></g></svg></div></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Un tour complet, c'est 360°, partagé en autant de virages que de côtés : le lutin tourne de 360 ÷ (nombre de côtés).</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+effacer tout
+demander [Combien de côtés ?] et attendre
+aller à x: (0) y: (-60)
+s&#x27;orienter à (90)
+stylo en position d&#x27;écriture
+répéter (réponse) fois
+avancer de (60) pas
+tourner @turnLeft de ((360) / (réponse)) degrés
+fin
+relever le stylo</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Pentagone : 360 ÷ 5 = 72°. Hexagone : 360 ÷ 6 = 60°. Octogone : 360 ÷ 8 = 45°. Sur la figure : pentagone, hexagone et polygone à 36 côtés.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Avec 36 côtés et des côtés de 10 pas, on obtient presque un <b>cercle</b> ! Quel est son périmètre ? (36 × 10 = 360 pas)</div>
+  <label class="sc-done"><input type="checkbox" data-id="6eme-3"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-6eme-4" data-id="6eme-4">
+  <header class="sc-mhead">
+    <span class="sc-num">4</span>
+    <div><h3>Le programme de calcul</h3><p class="sc-notion">Enchaîner des opérations</p></div>
+    <span class="sc-meta" title="Difficulté">★☆☆<small>15 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin demande un nombre, le <b>multiplie par 3</b>, <b>ajoute 5</b>, puis annonce le résultat.</p>
+      <ol class="sc-etapes"><li>Crée une variable « résultat » (catégorie Variables).</li><li>Range dans « résultat » le calcul fait avec « réponse ».</li><li>Fais dire le résultat avec une phrase.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">demander [Choisis un nombre] et attendre</code><code class="b">mettre [résultat v] à (0)</code><code class="b">((réponse) * (3))</code><code class="b">(() + (5))</code><code class="b">regrouper [Résultat : ] et (résultat)</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>4</td><td>17</td></tr><tr><td>10</td><td>35</td></tr><tr><td>0</td><td>5</td></tr><tr><td>2,5</td><td>12,5</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Dans Scratch, on emboîte les blocs : le bloc « × » se place <b>dans</b> la première case du bloc « + ». C'est le calcul le plus à l'intérieur qui est fait en premier.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+demander [Choisis un nombre] et attendre
+mettre [résultat v] à (((réponse) * (3)) + (5))
+dire (regrouper [Résultat : ] et (résultat)) pendant (3) secondes</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Avec 4 : 4 × 3 = 12, puis 12 + 5 = 17. Attention, dans Scratch on tape les décimaux avec un <b>point</b> : 2.5 et non 2,5.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Le lutin a annoncé 26. Quel nombre avait-on choisi ? Fais le calcul à l'envers (26 − 5 = 21, puis 21 ÷ 3 = 7) et vérifie avec ton programme.</div>
+  <label class="sc-done"><input type="checkbox" data-id="6eme-4"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-6eme-5" data-id="6eme-5">
+  <header class="sc-mhead">
+    <span class="sc-num">5</span>
+    <div><h3>La table qui défile</h3><p class="sc-notion">Tables de multiplication, variable compteur</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>20 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin demande un nombre puis récite sa <b>table de multiplication</b> de 1 à 10 : « 7 × 1 = 7 », « 7 × 2 = 14 », …</p>
+      <ol class="sc-etapes"><li>Crée une variable « i » qui commence à 1.</li><li>Répète 10 fois : dire le calcul, puis ajouter 1 à i.</li><li>Utilise « regrouper » pour fabriquer la phrase.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">mettre [i v] à (1)</code><code class="b">ajouter (1) à [i v] :: variables</code><code class="b">((réponse) * (i))</code><code class="b">regrouper [a] et [b]</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>7</td><td>7 × 1 = 7, 7 × 2 = 14, … , 7 × 10 = 70</td></tr><tr><td>9</td><td>9 × 1 = 9, … , 9 × 9 = 81, 9 × 10 = 90</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Pour fabriquer « 7 × 2 = 14 », il faut emboîter plusieurs « regrouper » : réponse, puis [ × ], puis i, puis [ = ], puis le produit.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+demander [Quelle table ?] et attendre
+mettre [i v] à (1)
+répéter (10) fois
+dire (regrouper (réponse) et (regrouper [ × ] et (regrouper (i) et (regrouper [ = ] et ((réponse) * (i)))))) pendant (1) secondes
+ajouter (1) à [i v] :: variables
+fin</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> La variable « i » sert de <b>compteur</b> : elle vaut 1, puis 2, puis 3… jusqu'à 10. C'est elle qui fait avancer la table.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Fais réciter la table « à l'envers », de 10 à 1 (commence à 10 et ajoute −1).</div>
+  <label class="sc-done"><input type="checkbox" data-id="6eme-5"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-6eme-6" data-id="6eme-6">
+  <header class="sc-mhead">
+    <span class="sc-num">6</span>
+    <div><h3>Le partage des bonbons</h3><p class="sc-notion">Division euclidienne</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>20 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">On partage des bonbons entre des amis, chacun en reçoit autant. Le lutin demande le nombre de bonbons et le nombre d'amis, puis dit <b>combien chacun en reçoit</b> (quotient) et <b>combien il en reste</b> (reste).</p>
+      <ol class="sc-etapes"><li>Range les deux réponses dans deux variables « bonbons » et « amis ».</li><li>Le quotient : l'arrondi par défaut de bonbons ÷ amis (fonction « plancher »).</li><li>Le reste : bloc « modulo ».</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">([plancher v] de ((bonbons) / (amis)))</code><code class="b">((bonbons) modulo (amis))</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>47 bonbons, 5 amis</td><td>9 chacun, il en reste 2</td></tr><tr><td>60 bonbons, 7 amis</td><td>8 chacun, il en reste 4</td></tr><tr><td>36 bonbons, 4 amis</td><td>9 chacun, il en reste 0</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>« 47 modulo 5 » donne le reste de la division euclidienne de 47 par 5. « plancher » enlève la partie décimale : plancher de 9,4 = 9.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+demander [Combien de bonbons ?] et attendre
+mettre [bonbons v] à (réponse)
+demander [Combien d&#x27;amis ?] et attendre
+mettre [amis v] à (réponse)
+dire (regrouper [Chacun en reçoit ] et ([plancher v] de ((bonbons) / (amis)))) pendant (3) secondes
+dire (regrouper [Il en reste ] et ((bonbons) modulo (amis))) pendant (3) secondes</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> 47 = 5 × <b>9</b> + <b>2</b>, et le reste 2 est bien plus petit que 5. C'est l'égalité de la division euclidienne : dividende = diviseur × quotient + reste.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Fais aussi dire au lutin l'égalité complète, par exemple « 47 = 5 × 9 + 2 ».</div>
+  <label class="sc-done"><input type="checkbox" data-id="6eme-6"> Mission réussie !</label>
+</article>
+</section><section class="sc-panel" role="tabpanel" data-niv="5eme" style="--accent:#0d9488;--accent-light:#e0f5f2" hidden>
+  <div class="sc-barre"><span style="width:0%"></span></div>
+  <article class="sc-mission" id="m-5eme-1" data-id="5eme-1">
+  <header class="sc-mhead">
+    <span class="sc-num">1</span>
+    <div><h3>Le rectangle aux coordonnées</h3><p class="sc-notion">Repérage dans le plan, nombres relatifs</p></div>
+    <span class="sc-meta" title="Difficulté">★☆☆<small>15 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">La scène de Scratch est un <b>repère</b> : x va de −240 à 240, y de −180 à 180. Fais tracer au lutin le rectangle ABCD avec A(−150 ; 100), B(150 ; 100), C(150 ; −100) et D(−150 ; −100).</p>
+      <ol class="sc-etapes"><li>Va en A <b>stylo levé</b>, puis pose le stylo.</li><li>Va en B, en C, en D, puis reviens en A avec le bloc « aller à x: y: ».</li><li>Vérifie le sens : x se lit en premier, y ensuite.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">aller à x: (-150) y: (100)</code><code class="b">stylo en position d&#x27;écriture</code><code class="b">relever le stylo</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><div class="sc-fig"><svg class="sc-scene" viewBox="-240 -180 480 360" role="img" aria-label="Figure attendue sur la scène Scratch"><rect x="-240" y="-180" width="480" height="360" fill="#fff"/><g class="sc-grille"><line x1="-200" y1="-180" x2="-200" y2="180"/><line x1="-160" y1="-180" x2="-160" y2="180"/><line x1="-120" y1="-180" x2="-120" y2="180"/><line x1="-80" y1="-180" x2="-80" y2="180"/><line x1="-40" y1="-180" x2="-40" y2="180"/><line x1="0" y1="-180" x2="0" y2="180"/><line x1="40" y1="-180" x2="40" y2="180"/><line x1="80" y1="-180" x2="80" y2="180"/><line x1="120" y1="-180" x2="120" y2="180"/><line x1="160" y1="-180" x2="160" y2="180"/><line x1="200" y1="-180" x2="200" y2="180"/><line x1="240" y1="-180" x2="240" y2="180"/><line x1="-240" y1="-160" x2="240" y2="-160"/><line x1="-240" y1="-120" x2="240" y2="-120"/><line x1="-240" y1="-80" x2="240" y2="-80"/><line x1="-240" y1="-40" x2="240" y2="-40"/><line x1="-240" y1="0" x2="240" y2="0"/><line x1="-240" y1="40" x2="240" y2="40"/><line x1="-240" y1="80" x2="240" y2="80"/><line x1="-240" y1="120" x2="240" y2="120"/><line x1="-240" y1="160" x2="240" y2="160"/></g><line class="sc-axe" x1="-240" y1="0" x2="240" y2="0"/><line class="sc-axe" x1="0" y1="-180" x2="0" y2="180"/><g fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><polyline points="-150.0,-100.0 150.0,-100.0 150.0,100.0 -150.0,100.0 -150.0,-100.0" stroke="#0d9488"/></g><circle cx="-150" cy="-100" r="5" fill="#0d9488"/><text x="-142" y="-108">A</text><circle cx="150" cy="-100" r="5" fill="#0d9488"/><text x="158" y="-108">B</text><circle cx="150" cy="100" r="5" fill="#0d9488"/><text x="158" y="92">C</text><circle cx="-150" cy="100" r="5" fill="#0d9488"/><text x="-142" y="92">D</text></svg></div></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Bouge la souris sur la scène : Scratch affiche les coordonnées x et y en bas à droite de la scène (ou regarde les valeurs du lutin).</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+effacer tout
+relever le stylo
+aller à x: (-150) y: (100)
+stylo en position d&#x27;écriture
+aller à x: (150) y: (100)
+aller à x: (150) y: (-100)
+aller à x: (-150) y: (-100)
+aller à x: (-150) y: (100)
+relever le stylo</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Longueur AB : de −150 à 150, il y a 300 pas. Largeur BC : de 100 à −100, il y a 200 pas. Périmètre : 2 × (300 + 200) = <b>1 000 pas</b> ; aire : 300 × 200 = <b>60 000</b> pas².</div>
+  <div class="sc-defi"><b>Défi bonus</b> Trace le losange de sommets (0 ; 150), (100 ; 0), (0 ; −150) et (−100 ; 0).</div>
+  <label class="sc-done"><input type="checkbox" data-id="5eme-1"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-5eme-2" data-id="5eme-2">
+  <header class="sc-mhead">
+    <span class="sc-num">2</span>
+    <div><h3>Le juge des priorités</h3><p class="sc-notion">Priorités opératoires</p></div>
+    <span class="sc-meta" title="Difficulté">★☆☆<small>15 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Fais calculer au lutin <b>3 + 4 × 5</b>, puis <b>(3 + 4) × 5</b>, puis <b>20 − 12 ÷ 4</b>. Prévois les résultats avant de cliquer !</p>
+      <ol class="sc-etapes"><li>Dans Scratch, il n'y a pas de parenthèses : c'est la façon d'<b>emboîter</b> les blocs qui donne l'ordre des calculs.</li><li>Le bloc le plus à l'intérieur est calculé en premier.</li><li>Compare avec ton calcul à la main.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">((3) + ((4) * (5)))</code><code class="b">(((3) + (4)) * (5))</code><code class="b">((20) - ((12) / (4)))</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>3 + 4 × 5</td><td>23</td></tr><tr><td>(3 + 4) × 5</td><td>35</td></tr><tr><td>20 − 12 ÷ 4</td><td>17</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Pour 3 + 4 × 5, la multiplication est prioritaire : le bloc « × » va <b>dans</b> la deuxième case du bloc « + ».</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+dire ((3) + ((4) * (5))) pendant (2) secondes
+dire (((3) + (4)) * (5)) pendant (2) secondes
+dire ((20) - ((12) / (4))) pendant (2) secondes</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> 3 + 4 × 5 = 3 + 20 = <b>23</b>, mais (3 + 4) × 5 = 7 × 5 = <b>35</b>. Et 20 − 12 ÷ 4 = 20 − 3 = <b>17</b>.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Construis le bloc de 2 × (10 − 3) + 6 ÷ 2 et vérifie qu'il donne 17.</div>
+  <label class="sc-done"><input type="checkbox" data-id="5eme-2"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-5eme-3" data-id="5eme-3">
+  <header class="sc-mhead">
+    <span class="sc-num">3</span>
+    <div><h3>Le détecteur de diviseurs</h3><p class="sc-notion">Multiples, diviseurs, critères de divisibilité</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>20 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin demande un nombre entier et dit s'il est <b>divisible par 3</b>.</p>
+      <ol class="sc-etapes"><li>« n modulo 3 » donne le reste de la division de n par 3.</li><li>n est divisible par 3 quand ce reste vaut 0.</li><li>Utilise le bloc « si … alors … sinon ».</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">&lt;((réponse) modulo (3)) = (0)&gt;</code><pre class="blocks petit">si &lt;&gt; alors
+sinon
+fin</pre></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>123</td><td>divisible par 3 (1 + 2 + 3 = 6)</td></tr><tr><td>124</td><td>pas divisible par 3</td></tr><tr><td>2025</td><td>divisible par 3 (2 + 0 + 2 + 5 = 9)</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Le bloc vert « = » se glisse dans l'emplacement hexagonal du « si ».</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+demander [Donne un nombre entier] et attendre
+si &lt;((réponse) modulo (3)) = (0)&gt; alors
+dire [Il est divisible par 3] pendant (2) secondes
+sinon
+dire [Il n&#x27;est pas divisible par 3] pendant (2) secondes
+fin</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Critère : un nombre est divisible par 3 quand la <b>somme de ses chiffres</b> est divisible par 3. Ton programme permet de le vérifier sur beaucoup d'exemples.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Fais afficher <b>tous les diviseurs</b> d'un nombre dans une liste : pour 36, on doit trouver 1, 2, 3, 4, 6, 9, 12, 18 et 36 (9 diviseurs).</div>
+  <label class="sc-done"><input type="checkbox" data-id="5eme-3"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-5eme-4" data-id="5eme-4">
+  <header class="sc-mhead">
+    <span class="sc-num">4</span>
+    <div><h3>L'étoile filante</h3><p class="sc-notion">Angles, figures</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>15 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Dessine une <b>étoile à 5 branches</b> d'un seul trait, avec des segments de 160 pas.</p>
+      <ol class="sc-etapes"><li>Répète 5 fois : avancer, tourner.</li><li>Essaie 72°, 108°, 144°… lequel donne une étoile ?</li><li>Compte combien de tours complets le lutin a faits.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">répéter (5) fois</code><code class="b">avancer de (160) pas</code><code class="b">tourner @turnRight de (144) degrés</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><div class="sc-fig"><svg class="sc-scene" viewBox="-240 -180 480 360" role="img" aria-label="Figure attendue sur la scène Scratch"><rect x="-240" y="-180" width="480" height="360" fill="#fff"/><g class="sc-grille"><line x1="-200" y1="-180" x2="-200" y2="180"/><line x1="-160" y1="-180" x2="-160" y2="180"/><line x1="-120" y1="-180" x2="-120" y2="180"/><line x1="-80" y1="-180" x2="-80" y2="180"/><line x1="-40" y1="-180" x2="-40" y2="180"/><line x1="0" y1="-180" x2="0" y2="180"/><line x1="40" y1="-180" x2="40" y2="180"/><line x1="80" y1="-180" x2="80" y2="180"/><line x1="120" y1="-180" x2="120" y2="180"/><line x1="160" y1="-180" x2="160" y2="180"/><line x1="200" y1="-180" x2="200" y2="180"/><line x1="240" y1="-180" x2="240" y2="180"/><line x1="-240" y1="-160" x2="240" y2="-160"/><line x1="-240" y1="-120" x2="240" y2="-120"/><line x1="-240" y1="-80" x2="240" y2="-80"/><line x1="-240" y1="-40" x2="240" y2="-40"/><line x1="-240" y1="0" x2="240" y2="0"/><line x1="-240" y1="40" x2="240" y2="40"/><line x1="-240" y1="80" x2="240" y2="80"/><line x1="-240" y1="120" x2="240" y2="120"/><line x1="-240" y1="160" x2="240" y2="160"/></g><line class="sc-axe" x1="-240" y1="0" x2="240" y2="0"/><line class="sc-axe" x1="0" y1="-180" x2="0" y2="180"/><g fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><polyline points="-80.0,-25.0 80.0,-25.0 -49.4,69.0 -0.0,-83.1 49.4,69.0 -80.0,-25.0" stroke="#0d9488"/></g></svg></div></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Avec 72°, on obtient un pentagone (un seul tour). Pour l'étoile, le lutin doit faire <b>deux tours</b> en tout : 720° partagés en 5 virages.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+effacer tout
+aller à x: (-80) y: (25)
+s&#x27;orienter à (90)
+stylo en position d&#x27;écriture
+répéter (5) fois
+avancer de (160) pas
+tourner @turnRight de (144) degrés
+fin
+relever le stylo</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> 5 × 144° = 720° = 2 × 360° : le lutin fait exactement deux tours et revient à son point de départ. Chaque pointe de l'étoile mesure 180° − 144° = <b>36°</b>.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Étoile à 7 branches : essaie de tourner de (720 / 7) puis de (1080 / 7) degrés. Combien de tours fait le lutin à chaque fois ?</div>
+  <label class="sc-done"><input type="checkbox" data-id="5eme-4"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-5eme-5" data-id="5eme-5">
+  <header class="sc-mhead">
+    <span class="sc-num">5</span>
+    <div><h3>Le troisième angle</h3><p class="sc-notion">Somme des angles d'un triangle</p></div>
+    <span class="sc-meta" title="Difficulté">★☆☆<small>15 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin demande deux angles d'un triangle (en degrés) et annonce le <b>troisième</b>. Si le triangle est impossible, il le dit !</p>
+      <ol class="sc-etapes"><li>Range les deux réponses dans « a » et « b ».</li><li>Le troisième angle vaut 180 − a − b.</li><li>Si a + b est supérieur ou égal à 180, le triangle n'existe pas.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">&lt;((a) + (b)) &lt; (180)&gt;</code><code class="b">((180) - ((a) + (b)))</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>50° et 60°</td><td>70°</td></tr><tr><td>90° et 45°</td><td>45°</td></tr><tr><td>90° et 100°</td><td>triangle impossible</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Utilise « si … alors … sinon » avec la condition a + b &lt; 180.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+demander [Premier angle ?] et attendre
+mettre [a v] à (réponse)
+demander [Deuxième angle ?] et attendre
+mettre [b v] à (réponse)
+si &lt;((a) + (b)) &lt; (180)&gt; alors
+dire (regrouper [Le troisième angle mesure ] et ((180) - ((a) + (b)))) pendant (3) secondes
+sinon
+dire [Ce triangle est impossible !] pendant (3) secondes
+fin</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Dans tout triangle, la somme des trois angles vaut <b>180°</b>. Donc 180 − 50 − 60 = 70°.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Ajoute un message si le triangle est rectangle (un angle de 90°) ou isocèle (deux angles égaux).</div>
+  <label class="sc-done"><input type="checkbox" data-id="5eme-5"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-5eme-6" data-id="5eme-6">
+  <header class="sc-mhead">
+    <span class="sc-num">6</span>
+    <div><h3>Le lutin sur la droite graduée</h3><p class="sc-notion">Addition de nombres relatifs</p></div>
+    <span class="sc-meta" title="Difficulté">★★★<small>25 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin part de 0 sur une droite graduée (1 unité = 20 pas). Il demande un relatif a, s'y place, demande un relatif b, puis <b>glisse de b unités</b> et annonce a + b.</p>
+      <ol class="sc-etapes"><li>Position du nombre a : x = a × 20.</li><li>Avancer de b unités : vers la droite si b est positif, vers la gauche s'il est négatif.</li><li>Prends des nombres entre −11 et 11 pour rester sur la scène.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">aller à x: ((a) * (20)) y: (0)</code><code class="b">glisser en (1) secondes à x: (((a) + (b)) * (20)) y: (0)</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><div class="sc-fig"><svg class="sc-scene" viewBox="-240 -180 480 360" role="img" aria-label="Figure attendue sur la scène Scratch"><rect x="-240" y="-180" width="480" height="360" fill="#fff"/><g class="sc-grille"><line x1="-200" y1="-180" x2="-200" y2="180"/><line x1="-160" y1="-180" x2="-160" y2="180"/><line x1="-120" y1="-180" x2="-120" y2="180"/><line x1="-80" y1="-180" x2="-80" y2="180"/><line x1="-40" y1="-180" x2="-40" y2="180"/><line x1="0" y1="-180" x2="0" y2="180"/><line x1="40" y1="-180" x2="40" y2="180"/><line x1="80" y1="-180" x2="80" y2="180"/><line x1="120" y1="-180" x2="120" y2="180"/><line x1="160" y1="-180" x2="160" y2="180"/><line x1="200" y1="-180" x2="200" y2="180"/><line x1="240" y1="-180" x2="240" y2="180"/><line x1="-240" y1="-160" x2="240" y2="-160"/><line x1="-240" y1="-120" x2="240" y2="-120"/><line x1="-240" y1="-80" x2="240" y2="-80"/><line x1="-240" y1="-40" x2="240" y2="-40"/><line x1="-240" y1="0" x2="240" y2="0"/><line x1="-240" y1="40" x2="240" y2="40"/><line x1="-240" y1="80" x2="240" y2="80"/><line x1="-240" y1="120" x2="240" y2="120"/><line x1="-240" y1="160" x2="240" y2="160"/></g><line class="sc-axe" x1="-240" y1="0" x2="240" y2="0"/><line class="sc-axe" x1="0" y1="-180" x2="0" y2="180"/><g fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><polyline points="-220.0,0.0 220.0,0.0" stroke="#0d9488"/><polyline points="-220.0,6.0 -220.0,-6.0" stroke="#0d9488"/><polyline points="-200.0,6.0 -200.0,-6.0" stroke="#0d9488"/><polyline points="-180.0,6.0 -180.0,-6.0" stroke="#0d9488"/><polyline points="-160.0,6.0 -160.0,-6.0" stroke="#0d9488"/><polyline points="-140.0,6.0 -140.0,-6.0" stroke="#0d9488"/><polyline points="-120.0,6.0 -120.0,-6.0" stroke="#0d9488"/><polyline points="-100.0,6.0 -100.0,-6.0" stroke="#0d9488"/><polyline points="-80.0,6.0 -80.0,-6.0" stroke="#0d9488"/><polyline points="-60.0,6.0 -60.0,-6.0" stroke="#0d9488"/><polyline points="-40.0,6.0 -40.0,-6.0" stroke="#0d9488"/><polyline points="-20.0,6.0 -20.0,-6.0" stroke="#0d9488"/><polyline points="0.0,6.0 0.0,-6.0" stroke="#0d9488"/><polyline points="20.0,6.0 20.0,-6.0" stroke="#0d9488"/><polyline points="40.0,6.0 40.0,-6.0" stroke="#0d9488"/><polyline points="60.0,6.0 60.0,-6.0" stroke="#0d9488"/><polyline points="80.0,6.0 80.0,-6.0" stroke="#0d9488"/><polyline points="100.0,6.0 100.0,-6.0" stroke="#0d9488"/><polyline points="120.0,6.0 120.0,-6.0" stroke="#0d9488"/><polyline points="140.0,6.0 140.0,-6.0" stroke="#0d9488"/><polyline points="160.0,6.0 160.0,-6.0" stroke="#0d9488"/><polyline points="180.0,6.0 180.0,-6.0" stroke="#0d9488"/><polyline points="200.0,6.0 200.0,-6.0" stroke="#0d9488"/><polyline points="220.0,6.0 220.0,-6.0" stroke="#0d9488"/><polyline points="-60.0,-30.0 40.0,-30.0" stroke="#ea580c"/></g></svg></div><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>(−3) + 5</td><td>2</td></tr><tr><td>(−4) + (−2)</td><td>−6</td></tr><tr><td>7 + (−9)</td><td>−2</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Un nombre négatif tapé dans Scratch s'écrit avec le signe moins : -4.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+aller à x: (0) y: (0)
+demander [Nombre de départ ?] et attendre
+mettre [a v] à (réponse)
+glisser en (1) secondes à x: ((a) * (20)) y: (0)
+demander [Combien j&#x27;ajoute ?] et attendre
+mettre [b v] à (réponse)
+glisser en (1) secondes à x: (((a) + (b)) * (20)) y: (0)
+dire (regrouper [J&#x27;arrive à ] et ((a) + (b))) pendant (3) secondes</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Ajouter un nombre négatif, c'est reculer : (−4) + (−2) = <b>−6</b>. Sur la figure : on part de −3 et on avance de 5, on arrive à <b>2</b>.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Dessine aussi la droite graduée avec le stylo (un petit trait tous les 20 pas).</div>
+  <label class="sc-done"><input type="checkbox" data-id="5eme-6"> Mission réussie !</label>
+</article>
+</section><section class="sc-panel" role="tabpanel" data-niv="4eme" style="--accent:#ea580c;--accent-light:#ffeddf" hidden>
+  <div class="sc-barre"><span style="width:0%"></span></div>
+  <article class="sc-mission" id="m-4eme-1" data-id="4eme-1">
+  <header class="sc-mhead">
+    <span class="sc-num">1</span>
+    <div><h3>Pythagore ou pas ?</h3><p class="sc-notion">Théorème de Pythagore et sa réciproque</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>20 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin demande les trois longueurs d'un triangle, <b>la plus grande en dernier</b>, et dit si le triangle est rectangle.</p>
+      <ol class="sc-etapes"><li>Range les longueurs dans a, b et c (c = le plus grand côté).</li><li>Compare a² + b² et c².</li><li>Égalité : rectangle (réciproque). Sinon : pas rectangle.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">&lt;(((a) * (a)) + ((b) * (b))) = ((c) * (c))&gt;</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>3 ; 4 ; 5</td><td>rectangle (9 + 16 = 25)</td></tr><tr><td>5 ; 12 ; 13</td><td>rectangle (25 + 144 = 169)</td></tr><tr><td>6 ; 7 ; 9</td><td>pas rectangle (36 + 49 = 85 ≠ 81)</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Le carré de a s'écrit (a) × (a) dans Scratch.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+demander [Premier petit côté ?] et attendre
+mettre [a v] à (réponse)
+demander [Deuxième petit côté ?] et attendre
+mettre [b v] à (réponse)
+demander [Plus grand côté ?] et attendre
+mettre [c v] à (réponse)
+si &lt;(((a) * (a)) + ((b) * (b))) = ((c) * (c))&gt; alors
+dire [Le triangle est rectangle.] pendant (3) secondes
+sinon
+dire [Le triangle n&#x27;est pas rectangle.] pendant (3) secondes
+fin</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Si a² + b² = c², le triangle est rectangle (<b>réciproque</b> du théorème de Pythagore). Sinon, il ne l'est pas : c'est la <b>contraposée</b> du théorème.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Fais trier les longueurs par le programme, pour qu'on puisse les taper dans n'importe quel ordre.</div>
+  <label class="sc-done"><input type="checkbox" data-id="4eme-1"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-4eme-2" data-id="4eme-2">
+  <header class="sc-mhead">
+    <span class="sc-num">2</span>
+    <div><h3>La machine à puissances</h3><p class="sc-notion">Puissances d'un nombre</p></div>
+    <span class="sc-meta" title="Difficulté">★☆☆<small>15 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin demande un nombre a et un exposant n (entier positif) puis calcule <b>a<sup>n</sup></b> en multipliant a par lui-même n fois.</p>
+      <ol class="sc-etapes"><li>Variable « résultat » : on part de 1.</li><li>Répète n fois : résultat devient résultat × a.</li><li>Teste avec l'exposant 0 : que se passe-t-il ?</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">mettre [résultat v] à (1)</code><code class="b">mettre [résultat v] à ((résultat) * (a))</code><code class="b">répéter (n) fois</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>2 et 10</td><td>1024</td></tr><tr><td>3 et 4</td><td>81</td></tr><tr><td>−2 et 3</td><td>−8</td></tr><tr><td>7 et 0</td><td>1</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Si on part de 0 au lieu de 1, le résultat sera toujours 0 : pourquoi ?</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+demander [Nombre a ?] et attendre
+mettre [a v] à (réponse)
+demander [Exposant n ?] et attendre
+mettre [n v] à (réponse)
+mettre [résultat v] à (1)
+répéter (n) fois
+mettre [résultat v] à ((résultat) * (a))
+fin
+dire (résultat) pendant (3) secondes</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> 2<sup>10</sup> = 1 024. (−2)<sup>3</sup> = (−2) × (−2) × (−2) = −8 : un nombre négatif à une puissance impaire reste négatif. Avec n = 0, la boucle ne tourne pas et on obtient 1 : c'est bien la convention a<sup>0</sup> = 1.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Calcule 10<sup>n</sup> pour n = 1 à 10. À partir de quand Scratch écrit-il le résultat en notation scientifique ?</div>
+  <label class="sc-done"><input type="checkbox" data-id="4eme-2"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-4eme-3" data-id="4eme-3">
+  <header class="sc-mhead">
+    <span class="sc-num">3</span>
+    <div><h3>Calcul littéral : le programme magique</h3><p class="sc-notion">Développer, réduire</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>20 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Programme : choisir un nombre, <b>ajouter 3</b>, <b>multiplier par 2</b>, <b>soustraire 6</b>. Teste-le avec plusieurs nombres : que remarques-tu ? Démontre-le !</p>
+      <ol class="sc-etapes"><li>Code le programme avec un seul bloc « mettre résultat à … ».</li><li>Teste au moins 5 nombres, dont des négatifs et des décimaux.</li><li>Écris le calcul avec x et réduis-le.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">mettre [résultat v] à ((((réponse) + (3)) * (2)) - (6))</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>5</td><td>10</td></tr><tr><td>−4</td><td>−8</td></tr><tr><td>1,5</td><td>3</td></tr><tr><td>100</td><td>200</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Compare chaque résultat au nombre de départ.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+demander [Choisis un nombre] et attendre
+mettre [résultat v] à ((((réponse) + (3)) * (2)) - (6))
+dire (regrouper [J&#x27;obtiens ] et (résultat)) pendant (3) secondes</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> On obtient toujours le <b>double</b> du nombre de départ. Preuve : (x + 3) × 2 − 6 = 2x + 6 − 6 = <b>2x</b>. Des tests ne suffisent pas à prouver, le calcul littéral, si.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Invente un programme de calcul qui redonne toujours le nombre de départ, code-le et démontre-le.</div>
+  <label class="sc-done"><input type="checkbox" data-id="4eme-3"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-4eme-4" data-id="4eme-4">
+  <header class="sc-mhead">
+    <span class="sc-num">4</span>
+    <div><h3>Le chasseur de nombres premiers</h3><p class="sc-notion">Nombres premiers, diviseurs</p></div>
+    <span class="sc-meta" title="Difficulté">★★★<small>25 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin demande un entier n et dit s'il est <b>premier</b> (il a exactement deux diviseurs : 1 et lui-même).</p>
+      <ol class="sc-etapes"><li>Compte les diviseurs : pour d allant de 1 à n, si n modulo d = 0, ajoute 1 au compteur.</li><li>n est premier si le compteur vaut exactement 2.</li><li>Teste 1, 2, 9, 17, 91 et 97.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">mettre [compteur v] à (0)</code><code class="b">&lt;((n) modulo (d)) = (0)&gt;</code><code class="b">&lt;(compteur) = (2)&gt;</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>1</td><td>pas premier (1 seul diviseur)</td></tr><tr><td>2</td><td>premier</td></tr><tr><td>9</td><td>pas premier (1, 3, 9)</td></tr><tr><td>17</td><td>premier</td></tr><tr><td>91</td><td>pas premier (91 = 7 × 13)</td></tr><tr><td>97</td><td>premier</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Attention à 1 : il n'a qu'un seul diviseur, il n'est donc pas premier.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+demander [Donne un entier] et attendre
+mettre [n v] à (réponse)
+mettre [compteur v] à (0)
+mettre [d v] à (1)
+répéter (n) fois
+si &lt;((n) modulo (d)) = (0)&gt; alors
+ajouter (1) à [compteur v] :: variables
+fin
+ajouter (1) à [d v] :: variables
+fin
+si &lt;(compteur) = (2)&gt; alors
+dire (regrouper (n) et [ est premier.]) pendant (3) secondes
+sinon
+dire (regrouper (n) et [ n&#x27;est pas premier.]) pendant (3) secondes
+fin</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Les nombres premiers inférieurs à 30 sont : 2, 3, 5, 7, 11, 13, 17, 19, 23 et 29. 91 = 7 × 13 n'est pas premier, même s'il en a l'air !</div>
+  <div class="sc-defi"><b>Défi bonus</b> Pour aller plus vite, il suffit de chercher un diviseur d entre 2 et la racine carrée de n. Modifie ton programme (par exemple « répéter jusqu'à ce que d × d &gt; n »).</div>
+  <label class="sc-done"><input type="checkbox" data-id="4eme-4"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-4eme-5" data-id="4eme-5">
+  <header class="sc-mhead">
+    <span class="sc-num">5</span>
+    <div><h3>La moyenne de la classe</h3><p class="sc-notion">Statistiques : moyenne</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>20 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin demande combien il y a de notes, les range dans une <b>liste</b>, puis calcule et annonce la <b>moyenne</b>.</p>
+      <ol class="sc-etapes"><li>Crée une liste « notes » et vide-la au départ.</li><li>Ajoute chaque note tapée à la liste, et à une variable « somme ».</li><li>Moyenne = somme ÷ nombre de notes.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">supprimer tous les éléments de la liste [notes v]</code><code class="b">ajouter (réponse) à [notes v] :: list</code><code class="b">((somme) / (longueur de [notes v] :: list))</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>12 ; 15 ; 9</td><td>12</td></tr><tr><td>14 ; 17</td><td>15,5 (Scratch affiche 15.5)</td></tr><tr><td>8 ; 10 ; 13 ; 17</td><td>12</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Pense à remettre « somme » à 0 au début, sinon les anciennes notes s'ajoutent !</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+supprimer tous les éléments de la liste [notes v]
+mettre [somme v] à (0)
+demander [Combien de notes ?] et attendre
+mettre [nombre v] à (réponse)
+répéter (nombre) fois
+demander [Note ?] et attendre
+ajouter (réponse) à [notes v] :: list
+ajouter (réponse) à [somme v] :: variables
+fin
+dire (regrouper [Moyenne : ] et ((somme) / (nombre))) pendant (3) secondes</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Moyenne = (12 + 15 + 9) ÷ 3 = 36 ÷ 3 = <b>12</b>. La moyenne n'est pas forcément une des notes : (14 + 17) ÷ 2 = 15,5.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Fais aussi annoncer la plus petite et la plus grande note, puis l'<b>étendue</b> (plus grande − plus petite).</div>
+  <label class="sc-done"><input type="checkbox" data-id="4eme-5"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-4eme-6" data-id="4eme-6">
+  <header class="sc-mhead">
+    <span class="sc-num">6</span>
+    <div><h3>La rosace</h3><p class="sc-notion">Rotation, blocs personnalisés</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>20 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Crée ton propre bloc « carré », puis fais tourner ce carré <b>12 fois de 30°</b> autour d'un de ses sommets pour obtenir une rosace.</p>
+      <ol class="sc-etapes"><li>Catégorie « Mes blocs » : crée un bloc « carré » qui dessine un carré de 70 pas.</li><li>Répète 12 fois : carré, puis tourner de 30°.</li><li>Chaque nouveau carré est l'image du précédent par une <b>rotation</b>.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">définir carré</code><code class="b">carré :: custom</code><code class="b">tourner @turnRight de (30) degrés</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><div class="sc-fig"><svg class="sc-scene" viewBox="-240 -180 480 360" role="img" aria-label="Figure attendue sur la scène Scratch"><rect x="-240" y="-180" width="480" height="360" fill="#fff"/><g class="sc-grille"><line x1="-200" y1="-180" x2="-200" y2="180"/><line x1="-160" y1="-180" x2="-160" y2="180"/><line x1="-120" y1="-180" x2="-120" y2="180"/><line x1="-80" y1="-180" x2="-80" y2="180"/><line x1="-40" y1="-180" x2="-40" y2="180"/><line x1="0" y1="-180" x2="0" y2="180"/><line x1="40" y1="-180" x2="40" y2="180"/><line x1="80" y1="-180" x2="80" y2="180"/><line x1="120" y1="-180" x2="120" y2="180"/><line x1="160" y1="-180" x2="160" y2="180"/><line x1="200" y1="-180" x2="200" y2="180"/><line x1="240" y1="-180" x2="240" y2="180"/><line x1="-240" y1="-160" x2="240" y2="-160"/><line x1="-240" y1="-120" x2="240" y2="-120"/><line x1="-240" y1="-80" x2="240" y2="-80"/><line x1="-240" y1="-40" x2="240" y2="-40"/><line x1="-240" y1="0" x2="240" y2="0"/><line x1="-240" y1="40" x2="240" y2="40"/><line x1="-240" y1="80" x2="240" y2="80"/><line x1="-240" y1="120" x2="240" y2="120"/><line x1="-240" y1="160" x2="240" y2="160"/></g><line class="sc-axe" x1="-240" y1="0" x2="240" y2="0"/><line class="sc-axe" x1="0" y1="-180" x2="0" y2="180"/><g fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><polyline points="0.0,0.0 0.0,-70.0 70.0,-70.0 70.0,-0.0 0.0,0.0 35.0,-60.6 95.6,-25.6 60.6,35.0 0.0,0.0 60.6,-35.0 95.6,25.6 35.0,60.6 0.0,0.0 70.0,0.0 70.0,70.0 0.0,70.0 0.0,0.0 60.6,35.0 25.6,95.6 -35.0,60.6 0.0,0.0 35.0,60.6 -25.6,95.6 -60.6,35.0 0.0,-0.0 0.0,70.0 -70.0,70.0 -70.0,0.0 -0.0,0.0 -35.0,60.6 -95.6,25.6 -60.6,-35.0 0.0,-0.0 -60.6,35.0 -95.6,-25.6 -35.0,-60.6 0.0,-0.0 -70.0,-0.0 -70.0,-70.0 0.0,-70.0 0.0,-0.0 -60.6,-35.0 -25.6,-95.6 35.0,-60.6 -0.0,-0.0 -35.0,-60.6 25.6,-95.6 60.6,-35.0 -0.0,0.0" stroke="#ea580c"/></g></svg></div></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Le carré doit se terminer là où il a commencé, dans la même direction : 4 × 90° = 360°.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">définir carré
+répéter (4) fois
+avancer de (70) pas
+tourner @turnRight de (90) degrés
+fin
+
+quand @greenFlag est cliqué
+effacer tout
+aller à x: (0) y: (0)
+s&#x27;orienter à (0)
+stylo en position d&#x27;écriture
+répéter (12) fois
+carré :: custom
+tourner @turnRight de (30) degrés
+fin
+relever le stylo</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> 12 × 30° = 360° : après 12 rotations de centre le point de départ et d'angle 30°, on revient au carré initial. Essaie 8 × 45° ou 6 × 60°.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Ajoute 10 à la couleur du stylo à chaque carré pour une rosace arc-en-ciel.</div>
+  <label class="sc-done"><input type="checkbox" data-id="4eme-6"> Mission réussie !</label>
+</article>
+</section><section class="sc-panel" role="tabpanel" data-niv="3eme" style="--accent:#c026d3;--accent-light:#fbe6fd" hidden>
+  <div class="sc-barre"><span style="width:0%"></span></div>
+  <article class="sc-mission" id="m-3eme-1" data-id="3eme-1">
+  <header class="sc-mhead">
+    <span class="sc-num">1</span>
+    <div><h3>Le traceur de droites</h3><p class="sc-notion">Fonctions affines, représentation graphique</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>25 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Fais tracer la représentation graphique de <b>f(x) = 0,5x + 20</b> pour x allant de −200 à 200, puis celle de <b>g(x) = −0,5x + 50</b> d'une autre couleur.</p>
+      <ol class="sc-etapes"><li>Variable x : commence à −200, stylo levé, va au point (x ; f(x)).</li><li>Pose le stylo puis répète 40 fois : ajouter 10 à x et aller au point (x ; f(x)).</li><li>Recommence pour g avec une autre couleur.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">aller à x: (x) y: (((0.5) * (x)) + (20))</code><code class="b">ajouter (10) à [x v] :: variables</code><code class="b">mettre la couleur du stylo à [#2563eb]</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><div class="sc-fig"><svg class="sc-scene" viewBox="-240 -180 480 360" role="img" aria-label="Figure attendue sur la scène Scratch"><rect x="-240" y="-180" width="480" height="360" fill="#fff"/><g class="sc-grille"><line x1="-200" y1="-180" x2="-200" y2="180"/><line x1="-160" y1="-180" x2="-160" y2="180"/><line x1="-120" y1="-180" x2="-120" y2="180"/><line x1="-80" y1="-180" x2="-80" y2="180"/><line x1="-40" y1="-180" x2="-40" y2="180"/><line x1="0" y1="-180" x2="0" y2="180"/><line x1="40" y1="-180" x2="40" y2="180"/><line x1="80" y1="-180" x2="80" y2="180"/><line x1="120" y1="-180" x2="120" y2="180"/><line x1="160" y1="-180" x2="160" y2="180"/><line x1="200" y1="-180" x2="200" y2="180"/><line x1="240" y1="-180" x2="240" y2="180"/><line x1="-240" y1="-160" x2="240" y2="-160"/><line x1="-240" y1="-120" x2="240" y2="-120"/><line x1="-240" y1="-80" x2="240" y2="-80"/><line x1="-240" y1="-40" x2="240" y2="-40"/><line x1="-240" y1="0" x2="240" y2="0"/><line x1="-240" y1="40" x2="240" y2="40"/><line x1="-240" y1="80" x2="240" y2="80"/><line x1="-240" y1="120" x2="240" y2="120"/><line x1="-240" y1="160" x2="240" y2="160"/></g><line class="sc-axe" x1="-240" y1="0" x2="240" y2="0"/><line class="sc-axe" x1="0" y1="-180" x2="0" y2="180"/><g fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><polyline points="-200.0,80.0 -190.0,75.0 -180.0,70.0 -170.0,65.0 -160.0,60.0 -150.0,55.0 -140.0,50.0 -130.0,45.0 -120.0,40.0 -110.0,35.0 -100.0,30.0 -90.0,25.0 -80.0,20.0 -70.0,15.0 -60.0,10.0 -50.0,5.0 -40.0,-0.0 -30.0,-5.0 -20.0,-10.0 -10.0,-15.0 0.0,-20.0 10.0,-25.0 20.0,-30.0 30.0,-35.0 40.0,-40.0 50.0,-45.0 60.0,-50.0 70.0,-55.0 80.0,-60.0 90.0,-65.0 100.0,-70.0 110.0,-75.0 120.0,-80.0 130.0,-85.0 140.0,-90.0 150.0,-95.0 160.0,-100.0 170.0,-105.0 180.0,-110.0 190.0,-115.0 200.0,-120.0" stroke="#c026d3"/><polyline points="-200.0,-150.0 -190.0,-145.0 -180.0,-140.0 -170.0,-135.0 -160.0,-130.0 -150.0,-125.0 -140.0,-120.0 -130.0,-115.0 -120.0,-110.0 -110.0,-105.0 -100.0,-100.0 -90.0,-95.0 -80.0,-90.0 -70.0,-85.0 -60.0,-80.0 -50.0,-75.0 -40.0,-70.0 -30.0,-65.0 -20.0,-60.0 -10.0,-55.0 0.0,-50.0 10.0,-45.0 20.0,-40.0 30.0,-35.0 40.0,-30.0 50.0,-25.0 60.0,-20.0 70.0,-15.0 80.0,-10.0 90.0,-5.0 100.0,-0.0 110.0,5.0 120.0,10.0 130.0,15.0 140.0,20.0 150.0,25.0 160.0,30.0 170.0,35.0 180.0,40.0 190.0,45.0 200.0,50.0" stroke="#2563eb"/></g></svg></div></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Dans Scratch, 0,5 s'écrit 0.5. Pour aller de −200 à 200 de 10 en 10, il faut 40 pas de 10.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+effacer tout
+cacher
+relever le stylo
+mettre [x v] à (-200)
+aller à x: (x) y: (((0.5) * (x)) + (20))
+stylo en position d&#x27;écriture
+répéter (40) fois
+ajouter (10) à [x v] :: variables
+aller à x: (x) y: (((0.5) * (x)) + (20))
+fin
+relever le stylo</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> On obtient des <b>droites</b> : f est affine. Les deux droites se coupent au point (30 ; 35), car 0,5 × 30 + 20 = 35 et −0,5 × 30 + 50 = 35 : x = 30 est la solution de l'équation 0,5x + 20 = −0,5x + 50.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Trace h(x) = 0,005x² − 100 pour x de −200 à 200 (dans Scratch : 0.005 × x × x − 100). Obtient-on encore une droite ?</div>
+  <label class="sc-done"><input type="checkbox" data-id="3eme-1"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-3eme-2" data-id="3eme-2">
+  <header class="sc-mhead">
+    <span class="sc-num">2</span>
+    <div><h3>La fraction irréductible</h3><p class="sc-notion">Diviseurs communs, fractions</p></div>
+    <span class="sc-meta" title="Difficulté">★★★<small>25 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin demande le numérateur et le dénominateur d'une fraction et la rend <b>irréductible</b> grâce à l'algorithme d'Euclide.</p>
+      <ol class="sc-etapes"><li>Algorithme d'Euclide : tant que b n'est pas 0, on remplace (a ; b) par (b ; a modulo b).</li><li>Quand b vaut 0, a est le plus grand diviseur commun.</li><li>On divise numérateur et dénominateur par ce nombre.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">répéter jusqu&#x27;à ce que &lt;(b) = (0)&gt;</code><code class="b">mettre [r v] à ((a) modulo (b))</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>84/60</td><td>7/5 (plus grand diviseur commun : 12)</td></tr><tr><td>126/90</td><td>7/5 (diviseur : 18)</td></tr><tr><td>35/49</td><td>5/7 (diviseur : 7)</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Il faut garder le numérateur et le dénominateur de départ dans d'autres variables, car a et b changent pendant l'algorithme.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+demander [Numérateur ?] et attendre
+mettre [num v] à (réponse)
+demander [Dénominateur ?] et attendre
+mettre [den v] à (réponse)
+mettre [a v] à (num)
+mettre [b v] à (den)
+répéter jusqu&#x27;à ce que &lt;(b) = (0)&gt;
+mettre [r v] à ((a) modulo (b))
+mettre [a v] à (b)
+mettre [b v] à (r)
+fin
+dire (regrouper ((num) / (a)) et (regrouper [/] et ((den) / (a)))) pendant (3) secondes</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> 84 = 60 × 1 + 24, puis 60 = 24 × 2 + 12, puis 24 = 12 × 2 + 0 : le dernier reste non nul est <b>12</b>. Donc 84/60 = (84 ÷ 12)/(60 ÷ 12) = <b>7/5</b>.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Affiche aussi chaque étape de l'algorithme dans une liste.</div>
+  <label class="sc-done"><input type="checkbox" data-id="3eme-2"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-3eme-3" data-id="3eme-3">
+  <header class="sc-mhead">
+    <span class="sc-num">3</span>
+    <div><h3>La décomposition en facteurs premiers</h3><p class="sc-notion">Nombres premiers, décomposition</p></div>
+    <span class="sc-meta" title="Difficulté">★★★<small>25 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Le lutin demande un entier n supérieur à 1 et range sa <b>décomposition en produit de facteurs premiers</b> dans une liste.</p>
+      <ol class="sc-etapes"><li>On essaie de diviser n par d = 2.</li><li>Si d divise n : on ajoute d à la liste et on remplace n par n ÷ d. Sinon, on passe à d + 1.</li><li>On s'arrête quand n vaut 1.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">répéter jusqu&#x27;à ce que &lt;(n) = (1)&gt;</code><code class="b">ajouter (d) à [facteurs v] :: list</code><code class="b">mettre [n v] à ((n) / (d))</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>360</td><td>2 × 2 × 2 × 3 × 3 × 5</td></tr><tr><td>1001</td><td>7 × 11 × 13</td></tr><tr><td>97</td><td>97 (97 est premier)</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>On ne passe à d + 1 que si d ne divise plus n : ainsi 2 peut apparaître plusieurs fois.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+supprimer tous les éléments de la liste [facteurs v]
+demander [Nombre à décomposer ?] et attendre
+mettre [n v] à (réponse)
+mettre [d v] à (2)
+répéter jusqu&#x27;à ce que &lt;(n) = (1)&gt;
+si &lt;((n) modulo (d)) = (0)&gt; alors
+ajouter (d) à [facteurs v] :: list
+mettre [n v] à ((n) / (d))
+sinon
+ajouter (1) à [d v] :: variables
+fin
+fin</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> 360 = 2 × 2 × 2 × 3 × 3 × 5 = 2<sup>3</sup> × 3<sup>2</sup> × 5. Les diviseurs trouvés sont forcément premiers : les plus petits facteurs ont déjà été retirés.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Utilise la liste pour simplifier une fraction, ou pour trouver le nombre de diviseurs de 360 (il y en a 24).</div>
+  <label class="sc-done"><input type="checkbox" data-id="3eme-3"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-3eme-4" data-id="3eme-4">
+  <header class="sc-mhead">
+    <span class="sc-num">4</span>
+    <div><h3>1 000 lancers de dé</h3><p class="sc-notion">Probabilités, fréquences</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>20 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Simule <b>1 000 lancers</b> d'un dé équilibré à 6 faces et calcule la <b>fréquence</b> d'apparition du 6. Compare avec la probabilité.</p>
+      <ol class="sc-etapes"><li>Un lancer : « nombre aléatoire entre 1 et 6 ».</li><li>Compte les 6 dans une variable.</li><li>Fréquence = nombre de 6 ÷ 1 000.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">(nombre aléatoire entre (1) et (6))</code><code class="b">&lt;(nombre aléatoire entre (1) et (6)) = (6)&gt;</code><code class="b">répéter (1000) fois</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>1 000 lancers</td><td>une fréquence proche de 0,17 (différente à chaque essai)</td></tr><tr><td>100 000 lancers</td><td>une fréquence encore plus proche de 1/6 ≈ 0,167</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Ne tire le nombre aléatoire qu'<b>une fois</b> par lancer.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+mettre [six v] à (0)
+répéter (1000) fois
+si &lt;(nombre aléatoire entre (1) et (6)) = (6)&gt; alors
+ajouter (1) à [six v] :: variables
+fin
+fin
+dire (regrouper [Fréquence du 6 : ] et ((six) / (1000))) pendant (3) secondes</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> La probabilité d'obtenir 6 est <b>1/6 ≈ 0,167</b>. Plus on fait de lancers, plus la fréquence se rapproche de cette probabilité, mais elle n'est presque jamais exactement égale.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Lance <b>deux</b> dés et compte les sommes égales à 7. La probabilité vaut 6/36 = 1/6. Et pour une somme égale à 12 ? (1/36)</div>
+  <label class="sc-done"><input type="checkbox" data-id="3eme-4"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-3eme-5" data-id="3eme-5">
+  <header class="sc-mhead">
+    <span class="sc-num">5</span>
+    <div><h3>L'équation par balayage</h3><p class="sc-notion">Équations, du second degré par essais</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>20 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Trouve tous les entiers x entre −20 et 20 tels que <b>x² + x = 56</b>, en les testant tous avec le lutin.</p>
+      <ol class="sc-etapes"><li>x commence à −20.</li><li>Répète 41 fois : si x × x + x = 56, le lutin dit x ; puis ajoute 1 à x.</li><li>Pourquoi 41 fois et pas 40 ?</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">mettre [x v] à (-20)</code><code class="b">&lt;(((x) * (x)) + (x)) = (56)&gt;</code><code class="b">répéter (41) fois</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><table class="sc-tests"><thead><tr><th>Tu tapes</th><th>Le lutin doit trouver</th></tr></thead><tbody><tr><td>x de −20 à 20</td><td>le lutin trouve −8 et 7</td></tr></tbody></table></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>De −20 à 20, il y a 20 nombres négatifs, 0, et 20 positifs : 41 nombres.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">quand @greenFlag est cliqué
+mettre [x v] à (-20)
+répéter (41) fois
+si &lt;(((x) * (x)) + (x)) = (56)&gt; alors
+dire (regrouper [Solution : ] et (x)) pendant (2) secondes
+fin
+ajouter (1) à [x v] :: variables
+fin</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Vérification : 7² + 7 = 49 + 7 = 56 et (−8)² + (−8) = 64 − 8 = 56. On peut le démontrer : x² + x − 56 = (x − 7)(x + 8), et ce <b>produit est nul</b> si x = 7 ou x = −8.</div>
+  <div class="sc-defi"><b>Défi bonus</b> Balaye de 0 à 10 avec un pas de 0.1 pour trouver une valeur approchée de la solution positive de x² = 50 (≈ 7,07).</div>
+  <label class="sc-done"><input type="checkbox" data-id="3eme-5"> Mission réussie !</label>
+</article><article class="sc-mission" id="m-3eme-6" data-id="3eme-6">
+  <header class="sc-mhead">
+    <span class="sc-num">6</span>
+    <div><h3>Agrandir avec l'homothétie</h3><p class="sc-notion">Homothétie, agrandissement, aires</p></div>
+    <span class="sc-meta" title="Difficulté">★★☆<small>20 min</small></span>
+  </header>
+  <div class="sc-body">
+    <div class="sc-col">
+      <p class="sc-but">Crée un bloc « carré (k) » qui dessine un carré de côté 40 × k depuis le même coin, puis trace les carrés pour <b>k = 1, 2 et 3</b>.</p>
+      <ol class="sc-etapes"><li>Crée un bloc personnalisé avec une entrée « k ».</li><li>Le côté est 40 × k.</li><li>Appelle le bloc trois fois, avec trois couleurs.</li></ol>
+      <p class="sc-label">Blocs utiles</p>
+      <div class="sc-blocs"><code class="b">définir carré (k)</code><code class="b">avancer de ((40) * (k)) pas</code><code class="b">carré (2) :: custom</code></div>
+    </div>
+    <div class="sc-col sc-attendu"><p class="sc-label">Ce que tu dois obtenir</p><div class="sc-fig"><svg class="sc-scene" viewBox="-240 -180 480 360" role="img" aria-label="Figure attendue sur la scène Scratch"><rect x="-240" y="-180" width="480" height="360" fill="#fff"/><g class="sc-grille"><line x1="-200" y1="-180" x2="-200" y2="180"/><line x1="-160" y1="-180" x2="-160" y2="180"/><line x1="-120" y1="-180" x2="-120" y2="180"/><line x1="-80" y1="-180" x2="-80" y2="180"/><line x1="-40" y1="-180" x2="-40" y2="180"/><line x1="0" y1="-180" x2="0" y2="180"/><line x1="40" y1="-180" x2="40" y2="180"/><line x1="80" y1="-180" x2="80" y2="180"/><line x1="120" y1="-180" x2="120" y2="180"/><line x1="160" y1="-180" x2="160" y2="180"/><line x1="200" y1="-180" x2="200" y2="180"/><line x1="240" y1="-180" x2="240" y2="180"/><line x1="-240" y1="-160" x2="240" y2="-160"/><line x1="-240" y1="-120" x2="240" y2="-120"/><line x1="-240" y1="-80" x2="240" y2="-80"/><line x1="-240" y1="-40" x2="240" y2="-40"/><line x1="-240" y1="0" x2="240" y2="0"/><line x1="-240" y1="40" x2="240" y2="40"/><line x1="-240" y1="80" x2="240" y2="80"/><line x1="-240" y1="120" x2="240" y2="120"/><line x1="-240" y1="160" x2="240" y2="160"/></g><line class="sc-axe" x1="-240" y1="0" x2="240" y2="0"/><line class="sc-axe" x1="0" y1="-180" x2="0" y2="180"/><g fill="none" stroke-width="4" stroke-linejoin="round" stroke-linecap="round"><polyline points="-60.0,60.0 -60.0,20.0 -20.0,20.0 -20.0,60.0 -60.0,60.0" stroke="#c026d3"/><polyline points="-60.0,60.0 -60.0,-20.0 20.0,-20.0 20.0,60.0 -60.0,60.0" stroke="#2563eb"/><polyline points="-60.0,60.0 -60.0,-60.0 60.0,-60.0 60.0,60.0 -60.0,60.0" stroke="#ea580c"/></g></svg></div></div>
+  </div>
+  <details class="sc-fold"><summary>Un indice</summary><p>Chaque carré doit commencer au même point (−60 ; −60) en regardant vers le haut.</p></details>
+  <details class="sc-fold sc-sol"><summary>Une solution</summary><pre class="blocks">définir carré (k)
+aller à x: (-60) y: (-60)
+s&#x27;orienter à (0)
+stylo en position d&#x27;écriture
+répéter (4) fois
+avancer de ((40) * (k)) pas
+tourner @turnRight de (90) degrés
+fin
+relever le stylo
+
+quand @greenFlag est cliqué
+effacer tout
+carré (1) :: custom
+carré (2) :: custom
+carré (3) :: custom</pre><p class="sc-note">D'autres programmes peuvent aussi être justes : l'important est que le lutin obtienne le bon résultat.</p></details>
+  <div class="sc-maths"><b>Le point de maths</b> Les grands carrés sont les images du petit par des <b>homothéties</b> de centre le coin commun et de rapports 2 et 3. Les longueurs sont multipliées par k, les aires par <b>k²</b> : 1 600, 6 400 (× 4) et 14 400 (× 9) pas².</div>
+  <div class="sc-defi"><b>Défi bonus</b> Essaie k = 0,5 puis k = −1 (tape -1) : que fait une homothétie de rapport négatif ?</div>
+  <label class="sc-done"><input type="checkbox" data-id="3eme-6"> Mission réussie !</label>
+</article>
+</section>
+  <p class="sc-credit">Blocs dessinés avec <a href="https://scratchblocks.github.io/" target="_blank" rel="noopener">scratchblocks</a> (licence MIT). Scratch est un projet de la Scratch Foundation, en partenariat avec le MIT Media Lab (<a href="https://scratch.mit.edu" target="_blank" rel="noopener">scratch.mit.edu</a>).</p>
+</div>
+<aside class="sc-atelier" id="sc-atelier" hidden>
+  <div class="sc-atelier-top"><b>Atelier Scratch</b><span>Si l'éditeur ne s'affiche pas, <a href="https://scratch.mit.edu/projects/editor/" target="_blank" rel="noopener">ouvre Scratch dans un nouvel onglet</a>.</span><button type="button" id="sc-atelier-close" aria-label="Fermer l'éditeur">×</button></div>
+  <iframe title="Éditeur compatible Scratch (TurboWarp)" data-src="https://turbowarp.org/editor" allow="fullscreen" loading="lazy"></iframe>
+</aside>
+<script src="ressources/scratch/scratchblocks.min.js"></script>
+<script src="ressources/scratch/scratchblocks-fr.js"></script>
+<script>
+(function(){
+  var opts={style:'scratch3',languages:['fr','en'],scale:.75};
+  scratchblocks.renderMatching('pre.blocks',opts);
+  scratchblocks.renderMatching('code.b',Object.assign({inline:true},opts));
+  var KEY='giromaths-scratch-faites', faites={};
+  try{faites=JSON.parse(localStorage.getItem(KEY))||{};}catch(e){}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(faites));}catch(e){}}
+  function maj(){
+    document.querySelectorAll('.sc-panel').forEach(function(p){
+      var n=p.dataset.niv, boxes=p.querySelectorAll('.sc-done input'), ok=0;
+      boxes.forEach(function(b){b.checked=!!faites[b.dataset.id];b.closest('.sc-mission').classList.toggle('faite',b.checked);if(b.checked)ok++;});
+      p.querySelector('.sc-barre span').style.width=(100*ok/boxes.length)+'%';
+      document.querySelector('.sc-prog[data-niv="'+n+'"]').textContent=ok+'/'+boxes.length;
+    });
+  }
+  document.querySelectorAll('.sc-done input').forEach(function(b){b.addEventListener('change',function(){if(b.checked)faites[b.dataset.id]=1;else delete faites[b.dataset.id];save();maj();});});
+  function ouvre(niv){
+    document.querySelectorAll('.sc-tab').forEach(function(t){var on=t.dataset.niv===niv;t.classList.toggle('on',on);t.setAttribute('aria-selected',on);});
+    document.querySelectorAll('.sc-panel').forEach(function(p){p.hidden=p.dataset.niv!==niv;});
+    try{localStorage.setItem(KEY+'-niveau',niv);}catch(e){}
+  }
+  document.querySelectorAll('.sc-tab').forEach(function(t){t.addEventListener('click',function(){ouvre(t.dataset.niv);});});
+  var q=new URLSearchParams(location.search).get('niveau'), mem=null;
+  try{mem=localStorage.getItem(KEY+'-niveau');}catch(e){}
+  var niveaux=['6eme','5eme','4eme','3eme'];
+  ouvre(niveaux.indexOf(q)>=0?q:(niveaux.indexOf(mem)>=0?mem:'6eme'));
+  maj();
+  var at=document.getElementById('sc-atelier'), fr=at.querySelector('iframe');
+  function atelier(on){
+    if(on&&!fr.src)fr.src=fr.dataset.src;
+    at.hidden=!on;document.body.classList.toggle('sc-atelier-on',on);
+    document.getElementById('sc-atelier-toggle').textContent=on?'Fermer l\'éditeur':'Éditeur à côté des missions';
+  }
+  document.getElementById('sc-atelier-toggle').addEventListener('click',function(){atelier(at.hidden);});
+  document.getElementById('sc-atelier-close').addEventListener('click',function(){atelier(false);});
+})();
+</script>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span class="logo small"><svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+<rect x="2" y="2" width="17" height="17" rx="5" fill="#c026d3"/><rect x="21" y="2" width="17" height="17" rx="5" fill="#2563eb"/>
+<rect x="2" y="21" width="17" height="17" rx="5" fill="#ea580c"/><rect x="21" y="21" width="17" height="17" rx="5" fill="#0d9488"/>
+<path d="M6 32 Q 14 8 20 20 T 34 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span>Giro<b>Maths</b></span></span><span>Cours de mathématiques de la 6ème à la 3ème</span><p class="copyright">© 2026 Stéphane GIROLD - Professeur Certifié de Mathématiques - Collège Claude DEBUSSY - ST. GERMAIN-EN-LAYE. Tous droits réservés.</p></div></footer>
+</body>
+</html>
