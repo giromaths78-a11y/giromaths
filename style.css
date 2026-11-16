@@ -700,3 +700,41 @@ body.sc-atelier-on .sc-body{grid-template-columns:minmax(0,1fr)}
 .sc-blocs code.b{max-width:100%;overflow-x:auto;display:inline-block}
 .sc-fold{overflow:hidden;min-width:0}
 body.sc-atelier-on .site-header{margin-right:58vw}body.sc-atelier-on .sc-hero-art{display:none}
+/* Scratch : atelier de briques (ressources/scratch/atelier.js) */
+.sc-assembler{display:inline-flex;align-items:center;gap:8px;margin-top:12px;background:var(--accent);color:#fff;border:2px solid var(--ink);border-radius:12px;padding:9px 16px;font:700 1rem var(--font-title);cursor:pointer;box-shadow:3px 3px 0 var(--ink);transition:transform .1s}
+.sc-assembler:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--ink)}
+body.at-ouvert{overflow:hidden}
+.at{position:fixed;inset:0;z-index:60;display:flex;flex-direction:column;background:#fff;--at:#4d7c0f}
+.at[hidden]{display:none}
+.at-top{display:flex;align-items:center;gap:12px;padding:8px 14px;background:var(--at);color:#fff}
+.at-num{font-size:.8rem;background:rgba(255,255,255,.2);border-radius:999px;padding:2px 10px;white-space:nowrap}
+.at-titre{font:700 1.15rem var(--font-title);flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.at-btn{background:#fff;color:var(--at);border:none;border-radius:9px;padding:6px 12px;font:600 .9rem var(--font);cursor:pointer}
+.at-x{background:none;border:2px solid #fff;color:#fff;border-radius:9px;width:36px;height:36px;font-size:1.4rem;line-height:1;cursor:pointer}
+.at-main{flex:1;display:flex;min-height:0}
+.at-ws{flex:1 1 58%;min-width:0;position:relative}
+.at-side{flex:0 0 min(42%,560px);display:flex;flex-direction:column;gap:8px;padding:10px 12px;border-left:2px solid var(--line);overflow-y:auto;background:var(--bg)}
+.at-ctrl{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.at-go,.at-stop{display:inline-flex;align-items:center;gap:6px;border:2px solid var(--ink);border-radius:10px;padding:6px 14px;font:700 .95rem var(--font);cursor:pointer;background:#fff}
+.at-go img{width:20px;height:20px}
+.at-go{background:#dcfce7}.at.at-run .at-go{box-shadow:0 0 0 3px #4cbf56}
+.at-stop{color:#dc2626}
+.at-etat{font-size:.85rem;color:var(--muted)}
+.at-stage{position:relative;width:100%;aspect-ratio:4/3;border:2px solid var(--ink);border-radius:8px;overflow:hidden;background:#fff}
+.at-c{position:absolute;inset:0;width:100%;height:100%}
+.at-mon{position:absolute;left:6px;top:6px;display:flex;flex-direction:column;gap:4px;align-items:flex-start;max-height:94%;overflow:hidden;pointer-events:none}
+.at-v{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;font-size:.72rem;padding:1px 3px 1px 6px;display:flex;gap:6px;align-items:center}
+.at-v b{background:#FF8C1A;color:#fff;border-radius:5px;padding:0 6px;min-width:22px;text-align:center}
+.at-l{background:#f1f5f9;border:1px solid #cbd5e1;border-radius:6px;font-size:.72rem;padding:3px 6px;min-width:80px}
+.at-l ol{margin:2px 0;padding-left:18px;max-height:120px;overflow:hidden}.at-l li::marker{color:#64748b}
+.at-l li{background:#FF661A;color:#fff;border-radius:4px;padding:0 5px;margin:1px 0}
+.at-l small{color:#64748b}
+.at-bulle{position:absolute;transform:translateX(-10%);background:#fff;border:2px solid #94a3b8;border-radius:14px;padding:5px 10px;font-weight:600;font-size:.9rem;max-width:60%;box-shadow:0 2px 6px rgba(0,0,0,.1);pointer-events:none}
+.at-ask{position:absolute;left:8px;right:8px;bottom:8px;display:flex;gap:6px;background:#fff;border:2px solid #5CB1D6;border-radius:12px;padding:5px}
+.at-ask[hidden]{display:none}
+.at-ask input{flex:1;min-width:0;border:1px solid #cbd5e1;border-radius:8px;padding:6px 10px;font:1rem var(--font)}
+.at-ask button{background:#5CB1D6;color:#fff;border:none;border-radius:50%;width:34px;height:34px;font-size:1.1rem;cursor:pointer}
+.at-aide{margin:0;font-size:.85rem;color:var(--muted)}
+.at-mission .sc-but{margin:0 0 6px;font-size:.95rem}
+.at-mission .sc-tests{font-size:.85rem}.at-mission .sc-tests th{background:var(--at)}
+@media (max-width:820px){.at-main{flex-direction:column}.at-side{flex:0 0 auto;order:-1;border-left:none;border-bottom:2px solid var(--line);max-height:46vh}.at-stage{max-width:340px;align-self:center}.at-mission,.at-aide{display:none}.at-num{display:none}}

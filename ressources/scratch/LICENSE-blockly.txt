@@ -1,0 +1,2 @@
+Blockly — Copyright Google LLC — Licence Apache 2.0 (https://www.apache.org/licenses/LICENSE-2.0)
+Fichiers : blockly_compressed.js, blockly-fr.js, blockly-media/ (paquet npm blockly 11.2.2, non modifiés).
