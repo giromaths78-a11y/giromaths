@@ -1,0 +1,587 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta name="robots" content="noindex, nofollow">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plan de classe · GiroMaths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Caveat:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=25cd7c40">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script src="visibilite.js"></script>
+</head>
+<body class="lvl plan-classe" style="--accent:#0369a1;--accent-light:#e0f2fe">
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html"><svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+<rect x="2" y="2" width="17" height="17" rx="5" fill="#c026d3"/><rect x="21" y="2" width="17" height="17" rx="5" fill="#2563eb"/>
+<rect x="2" y="21" width="17" height="17" rx="5" fill="#ea580c"/><rect x="21" y="21" width="17" height="17" rx="5" fill="#0d9488"/>
+<path d="M6 32 Q 14 8 20 20 T 34 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span>Giro<b>Maths</b></span></a>
+    <nav class="main-nav"><a href="6eme.html" style="--c:#2563eb">6ème</a><a href="5eme.html" style="--c:#0d9488">5ème</a><a href="4eme.html" style="--c:#ea580c">4ème</a><a href="3eme.html" style="--c:#c026d3">3ème</a><a href="brevet.html" style="--c:#1e293b">Brevet</a><a href="concours.html" style="--c:#4f46e5">Concours</a><a href="podcasts.html" style="--c:#e11d48">Podcasts/Vidéos</a><a href="culture.html" style="--c:#0891b2">Culture</a><a href="enigmes.html" style="--c:#7c3aed">Énigmes</a><a href="methode.html" style="--c:#b45309">Méthode</a><a href="scratch.html" style="--c:#4d7c0f">Scratch</a></nav>
+  </div>
+</header>
+<main>
+<style>
+.pc-page{padding-top:22px;padding-bottom:56px}
+.pc-lock{max-width:520px;margin:24px auto 64px;text-align:center;background:var(--card);border:2px solid var(--ink);border-radius:20px;padding:28px 24px;box-shadow:6px 6px 0 #0369a1}
+.pc-lock a{font-weight:700}
+.pc-layout{display:grid;grid-template-columns:330px 1fr;gap:22px;align-items:start}
+@media (max-width:900px){.pc-layout{grid-template-columns:1fr}}
+.pc-side{display:flex;flex-direction:column;gap:14px}
+.pc-box{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:12px 14px;box-shadow:4px 4px 0 #0369a1}
+.pc-box h2{font-size:1.05rem;margin:0 0 8px}
+.pc-box details>summary{cursor:pointer;font:700 1.05rem var(--font-title);color:var(--ink)}
+.pc-box details[open]>summary{margin-bottom:8px}
+.pc-row{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:6px 0}
+.pc-row label{display:flex;gap:4px;align-items:center;font-size:.92rem}
+.pc-page input[type=text],.pc-page input[type=number],.pc-page select,.pc-page textarea{font:inherit;font-size:.92rem;padding:5px 8px;border:2px solid var(--line);border-radius:8px;background:#fff;color:var(--text);min-width:0}
+.pc-page input[type=number]{width:58px}
+.pc-page textarea{width:100%;min-height:90px;resize:vertical}
+.pc-btn{font:700 .9rem var(--font-title);cursor:pointer;background:#fff;color:var(--ink);border:2px solid var(--ink);border-radius:999px;padding:5px 14px}
+.pc-btn:hover{background:#e0f2fe}
+.pc-btn.main{background:#0369a1;border-color:#0369a1;color:#fff;font-size:1rem;padding:8px 20px}
+.pc-btn.main:hover{background:#075985}
+.pc-btn.danger{border-color:#b91c1c;color:#b91c1c}
+.pc-btn.small{padding:2px 10px;font-size:.8rem}
+.pc-eleves{list-style:none;margin:6px 0 0;padding:0;max-height:330px;overflow:auto;border-top:1px solid var(--line)}
+.pc-eleves li{display:flex;align-items:center;gap:6px;padding:3px 0;border-bottom:1px solid var(--line);font-size:.9rem}
+.pc-eleves li .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pc-eleves select{padding:1px 2px;font-size:.8rem}
+.pc-eleves label{font-size:.78rem;display:flex;align-items:center;gap:2px;color:var(--muted)}
+.pc-x{cursor:pointer;border:0;background:none;color:#b91c1c;font-size:1rem;line-height:1;padding:0 2px}
+.pc-contraintes{list-style:none;margin:6px 0 0;padding:0;font-size:.9rem}
+.pc-contraintes li{display:flex;gap:6px;align-items:center;padding:2px 0}
+.pc-contraintes li span{flex:1}
+.pc-tag{flex:none;font-size:.72rem;font-weight:700;border-radius:6px;padding:1px 6px;color:#fff}
+.pc-tag.sep{background:#b91c1c}.pc-tag.ens{background:#15803d}
+.pc-note{font-size:.84rem;color:var(--muted);margin:6px 0 0}
+.pc-main{min-width:0}
+.pc-tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.pc-msg{margin:0 0 10px;font-size:.92rem;min-height:1.2em}
+.pc-msg.ok{color:#15803d}.pc-msg.warn{color:#b45309}.pc-msg.err{color:#b91c1c}
+.pc-sheet{background:#fff;border:1px solid var(--line);border-radius:12px;padding:16px 14px 10px;overflow-x:auto}
+.pc-title{text-align:center;font:500 1.5rem var(--font-title);color:var(--ink);margin:0 0 14px;outline:none}
+.pc-room{display:flex;flex-direction:column;gap:14px;min-width:560px}
+.pc-rang{display:flex;justify-content:space-between;gap:12px}
+.pc-table{flex:1;display:flex;border:1.5px solid #2f5f98;background:#b8d3ee;min-width:0}
+.pc-seat{position:relative;flex:1;min-width:0;height:56px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:.88rem;color:#111;cursor:pointer;padding:0 2px;user-select:none}
+.pc-seat+.pc-seat{border-left:1.5px solid #2f5f98}
+.pc-seat .n{overflow:hidden;max-width:100%;line-height:1.15;overflow-wrap:break-word;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.pc-seat.sel{outline:3px solid #f59e0b;outline-offset:-3px;background:#fde68a}
+.pc-seat.lock{background:#dbeafe}
+.pc-seat.lock::after{content:"🔒";position:absolute;top:1px;left:3px;font-size:.65rem}
+.pc-seat.off{background:repeating-linear-gradient(45deg,#e5e7eb 0 6px,#f3f4f6 6px 12px);color:#9ca3af;cursor:pointer}
+.pc-seat.devant .n{font-weight:600}
+.pc-seat.aesh{background:#ede9fe;font-weight:700;color:#5b21b6}
+.pc-seat.aide .n::after{content:" ★";color:#7c3aed;font-size:.75em}
+.pc-seat{touch-action:none}
+.pc-seat.part{opacity:.35}
+.pc-seat.cible{background:#bbf7d0;outline:3px dashed #15803d;outline-offset:-3px}
+.pc-fantome{position:fixed;z-index:1000;pointer-events:none;transform:translate(-50%,-50%) rotate(-3deg);background:#fde68a;border:2px solid #b45309;border-radius:8px;padding:8px 14px;font-weight:600;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.pc-seat.alerte{box-shadow:inset 0 0 0 3px #dc2626}
+.pc-seat .ic{position:absolute;bottom:1px;right:2px;display:none;gap:2px}
+.pc-seat:hover .ic{display:flex}
+.pc-seat .ic button{border:0;background:rgba(255,255,255,.85);border-radius:4px;cursor:pointer;font-size:.7rem;padding:0 3px;line-height:1.3}
+.pc-front{display:flex;flex-direction:column;align-items:center;gap:6px;margin:6px 0}
+.pc-bureau{width:24%;min-width:120px;height:44px;display:grid;place-items:center;background:#5b9bd5;color:#fff;border:1.5px solid #2f5f98;font-size:1rem}
+.pc-tableau{width:100%;height:16px;display:grid;place-items:center;background:#5b9bd5;border:1.5px solid #2f5f98;font-size:.72rem;color:#111;line-height:1}
+.pc-legende{font-size:.82rem;color:var(--muted);margin:8px 0 0}
+.pc-cache{display:none}
+@media print{
+  @page{size:A4 landscape;margin:10mm}
+  body{background:#fff}
+  .site-header,.site-footer,.level-hero,.pc-side,.pc-tools,.pc-msg,.pc-legende,.pc-seat .ic{display:none!important}
+  .pc-page{padding:0;max-width:none}.pc-layout{display:block}
+  .pc-sheet{border:0;padding:0;overflow:visible}
+  .pc-room{min-width:0}
+  .pc-seat{height:62px;font-size:1rem}
+  .pc-seat.sel{outline:0;background:none}
+  .pc-seat.lock{background:none}.pc-seat.lock::after{content:none}
+  .pc-seat.alerte{box-shadow:none}
+  .pc-seat.off{background:none}
+  .pc-seat.aide .n::after{content:none}
+  .pc-seat.aesh{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pc-table,.pc-bureau,.pc-tableau{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+<section class="level-hero small">
+  <div class="wrap"><p class="crumbs"><a href="index.html">Accueil</a> / <a href="admin.html">Administration</a> / Plan de classe</p>
+  <h1>Plan de classe</h1><p class="lead">Placer les élèves automatiquement, avec tes règles, puis imprimer.</p></div>
+  <span class="hero-sym" aria-hidden="true">▦</span>
+</section>
+<div class="wrap pc-page">
+<div class="pc-lock" id="pc-lock" hidden>
+  <p style="font-size:2rem;margin:0">🔒</p>
+  <h2>Outil réservé au professeur</h2>
+  <p>Connecte-toi d'abord sur la page <a href="admin.html">Administration</a> (même mot de passe), puis reviens ici.</p>
+</div>
+<div class="pc-layout" id="pc-app" hidden>
+<aside class="pc-side">
+  <div class="pc-box">
+    <h2>Classe</h2>
+    <div class="pc-row"><select id="pc-classe" style="flex:1"></select>
+      <button class="pc-btn small" id="pc-new" type="button">+ Nouvelle</button></div>
+    <div class="pc-row"><button class="pc-btn small" id="pc-ren" type="button">Renommer</button>
+      <button class="pc-btn small danger" id="pc-del" type="button">Supprimer</button></div>
+  </div>
+  <div class="pc-box">
+    <details id="pc-d-eleves" open><summary>Élèves <span id="pc-nb" class="pc-note"></span></summary>
+    <textarea id="pc-coller" placeholder="Colle la liste : un élève par ligne.&#10;Facultatif : ajoute ;F ou ;G après le prénom.&#10;Ajoute aussi « AESH » si besoin d'une place."></textarea>
+    <div class="pc-row"><button class="pc-btn small" id="pc-ajout" type="button">Ajouter à la liste</button>
+      <button class="pc-btn small danger" id="pc-vider" type="button">Vider la liste</button></div>
+    <ul class="pc-eleves" id="pc-eleves"></ul>
+    <p class="pc-note" id="pc-note-aesh" hidden>Coche « AESH » pour chaque élève aidé : il est placé à la table de l'AESH ou juste à côté (devant, derrière ou à la table voisine).</p>
+    <p class="pc-note">« Devant » = dans les 2 premières rangées (vue, attention). F/G sert à la mixité des tables.</p>
+    </details>
+  </div>
+  <div class="pc-box">
+    <details id="pc-d-regles" open><summary>Règles</summary>
+    <div class="pc-row"><select id="pc-a" style="flex:1"></select><select id="pc-b" style="flex:1"></select></div>
+    <div class="pc-row"><button class="pc-btn small" id="pc-sep" type="button">Séparer</button>
+      <button class="pc-btn small" id="pc-ens" type="button">Même table</button></div>
+    <ul class="pc-contraintes" id="pc-contraintes"></ul>
+    <div class="pc-row"><label><input type="checkbox" id="pc-mixite"> Tables mixtes (F/G) si possible</label></div>
+    <div class="pc-row"><label><input type="checkbox" id="pc-nouveaux" checked> Changer de voisin de table par rapport au plan précédent</label></div>
+    <div class="pc-row"><label><input type="checkbox" id="pc-remplir" checked> Remplir d'abord les rangées de devant (places vides au fond)</label></div>
+    <p class="pc-note">Séparer = ni à la même table, ni juste à côté, ni juste devant ou derrière. « Même table » sert aussi pour l'AESH et l'élève accompagné.</p>
+    </details>
+  </div>
+  <div class="pc-box">
+    <details id="pc-d-salle"><summary>Salle</summary>
+    <div class="pc-row"><label>Nom <input type="text" id="pc-salle" style="width:90px"></label></div>
+    <div class="pc-row"><label>Rangées <input type="number" id="pc-rangees" min="1" max="10"></label>
+      <label>Tables par rangée <input type="number" id="pc-tables" min="1" max="8"></label></div>
+    <div class="pc-row"><label>Élèves par table <input type="number" id="pc-places" min="1" max="4"></label>
+      <button class="pc-btn small" id="pc-204" type="button">Salle 204</button></div>
+    <p class="pc-note">Salle 204 : 4 rangées de 4 tables de 2 = 32 places. Pour une place à ne pas utiliser, survole-la et clique ⊘.</p>
+    </details>
+  </div>
+  <div class="pc-box">
+    <details><summary>Sauvegarde</summary>
+    <p class="pc-note" style="margin-top:0">Les noms restent <b>uniquement dans ce navigateur</b>, sur cet ordinateur : rien n'est envoyé sur Internet. Pour les retrouver sur un autre ordinateur, ou par sécurité, télécharge une sauvegarde.</p>
+    <div class="pc-row"><button class="pc-btn small" id="pc-export" type="button">Télécharger la sauvegarde</button>
+      <label class="pc-btn small" style="cursor:pointer">Importer…<input type="file" id="pc-import" accept=".json,application/json" class="pc-cache"></label></div>
+    </details>
+  </div>
+</aside>
+<section class="pc-main">
+  <div class="pc-tools">
+    <button class="pc-btn main" id="pc-gen" type="button">🎲 Générer le plan</button>
+    <select id="pc-vue" title="Orientation du plan">
+      <option value="prof">Vue du professeur (bureau en bas)</option>
+      <option value="eleve">Vue des élèves (tableau en haut)</option>
+    </select>
+    <select id="pc-aff" title="Noms affichés sur le plan">
+      <option value="prenom">Prénoms seuls</option>
+      <option value="complet">Nom et prénom</option>
+    </select>
+    <button class="pc-btn" id="pc-print" type="button">🖨 Imprimer / PDF</button>
+    <button class="pc-btn danger" id="pc-effacer" type="button">Vider le plan</button>
+  </div>
+  <p class="pc-msg" id="pc-msg" role="status"></p>
+  <div class="pc-sheet">
+    <h2 class="pc-title" id="pc-titre"></h2>
+    <div class="pc-room" id="pc-room"></div>
+  </div>
+  <p class="pc-legende"><b>Glisse un élève</b> sur une autre place pour le déplacer (si la place est prise, les deux élèves échangent), à la souris ou au doigt. Tu peux aussi cliquer sur une place puis sur une autre pour <b>échanger</b> les deux élèves (ou déplacer vers une place vide). Survole une place : 🔒 la <b>verrouille</b> (l'élève y reste quand tu relances), ⊘ la <b>ferme</b> (place inutilisée). Un cadre rouge signale une règle non respectée. ★ = élève aidé par l'AESH (case violette).</p>
+</section>
+</div>
+</div>
+<script>
+(function () {
+  var CLE = 'giro-plan-classe';
+  var $ = function (s) { return document.querySelector(s); };
+  var admin = false; try { admin = localStorage.getItem('giro-admin') === '1'; } catch (e) {}
+  if (!admin) { $('#pc-lock').hidden = false; return; }
+  $('#pc-app').hidden = false;
+
+  var SALLE204 = { nom: '204', rangees: 4, tables: 4, places: 2 };
+  var S;
+  function nouvelleClasse(nom) {
+    return { nom: nom, salle: JSON.parse(JSON.stringify(SALLE204)), eleves: [], regles: [],
+      plan: {}, verrous: [], fermees: [], anciensVoisins: [], mixite: false, nouveaux: true, remplir: true };
+  }
+  function charger() {
+    try { S = JSON.parse(localStorage.getItem(CLE)); } catch (e) { S = null; }
+    if (!S || !S.classes || !S.classes.length) S = { classes: [nouvelleClasse('Ma classe')], courante: 0, vue: 'prof' };
+    if (S.courante >= S.classes.length) S.courante = 0;
+  }
+  function sauver() { try { localStorage.setItem(CLE, JSON.stringify(S)); } catch (e) { msg("Impossible d'enregistrer dans ce navigateur (navigation privée ?). Pense à télécharger une sauvegarde.", 'err'); } }
+  function C() { return S.classes[S.courante]; }
+  function msg(t, type) { var m = $('#pc-msg'); m.textContent = t || ''; m.className = 'pc-msg ' + (type || ''); }
+  function el(tag, cls, txt) { var e = document.createElement(tag); if (cls) e.className = cls; if (txt != null) e.textContent = txt; return e; }
+
+  // ---------- Places
+  function places(c) {
+    var L = [], s = c.salle;
+    for (var r = 0; r < s.rangees; r++) for (var t = 0; t < s.tables; t++) for (var p = 0; p < s.places; p++)
+      L.push({ k: r + '-' + t + '-' + p, r: r, t: t, p: p, col: t * s.places + p });
+    return L;
+  }
+  function pos(k) { var a = k.split('-').map(Number); return { r: a[0], t: a[1], p: a[2] }; }
+  function memeTable(a, b) { return a.r === b.r && a.t === b.t; }
+  function voisins(a, b, P) {
+    var ca = a.t * P + a.p, cb = b.t * P + b.p;
+    return Math.abs(a.r - b.r) <= 1 && Math.abs(ca - cb) <= 1;
+  }
+  function nettoyer(c) {
+    var ok = {}; places(c).forEach(function (x) { ok[x.k] = 1; });
+    var noms = {}; c.eleves.forEach(function (e) { noms[e.n] = 1; });
+    Object.keys(c.plan).forEach(function (k) { if (!ok[k] || !noms[c.plan[k]]) delete c.plan[k]; });
+    c.verrous = c.verrous.filter(function (k) { return ok[k] && c.plan[k]; });
+    c.fermees = c.fermees.filter(function (k) { return ok[k]; });
+    c.regles = c.regles.filter(function (g) { return noms[g.a] && noms[g.b]; });
+  }
+
+  // ---------- Coût d'un placement
+  function evaluer(c, plan, detail) {
+    var P = c.salle.places, ou = {}, cout = 0, alertes = {}, pb = [];
+    Object.keys(plan).forEach(function (k) { ou[plan[k]] = pos(k); });
+    var info = {}; c.eleves.forEach(function (e) { info[e.n] = e; });
+    c.regles.forEach(function (g) {
+      var a = ou[g.a], b = ou[g.b]; if (!a || !b) return;
+      if (g.type === 'sep') {
+        if (memeTable(a, b)) { cout += 100; pb.push(g.a + ' et ' + g.b + ' sont à la même table'); alertes[g.a] = alertes[g.b] = 1; }
+        else if (voisins(a, b, P)) { cout += 30; pb.push(g.a + ' et ' + g.b + ' sont côte à côte ou l’un derrière l’autre'); alertes[g.a] = alertes[g.b] = 1; }
+      } else if (!memeTable(a, b)) { cout += 100; pb.push(g.a + ' et ' + g.b + ' ne sont pas à la même table'); alertes[g.a] = alertes[g.b] = 1; }
+    });
+    Object.keys(ou).forEach(function (n) {
+      var e = info[n]; if (e && e.devant && ou[n].r > 1) { cout += 40 + 10 * ou[n].r; pb.push(n + ' n’est pas devant'); alertes[n] = 1; }
+    });
+    var aesh = Object.keys(ou).filter(estAESH);
+    if (aesh.length) Object.keys(ou).forEach(function (n) {
+      var e = info[n]; if (!e || !e.aide) return;
+      var m = Infinity;
+      aesh.forEach(function (x) { var a = ou[x], b = ou[n]; m = Math.min(m, memeTable(a, b) ? 0 : voisins(a, b, P) ? 5 : 40); });
+      cout += m; if (m >= 40) { pb.push(n + ' n\u2019est pas près de l\u2019AESH'); alertes[n] = 1; }
+    });
+    var tables = {};
+    Object.keys(plan).forEach(function (k) { var q = pos(k), id = q.r + '-' + q.t; (tables[id] = tables[id] || []).push(plan[k]); });
+    var anc = {}; (c.anciensVoisins || []).forEach(function (x) { anc[x] = 1; });
+    Object.keys(tables).forEach(function (id) {
+      var L = tables[id];
+      for (var i = 0; i < L.length; i++) for (var j = i + 1; j < L.length; j++) {
+        var x = info[L[i]], y = info[L[j]];
+        if (c.mixite && x && y && x.s && y.s && x.s === y.s) cout += 4;
+        if (c.nouveaux && anc[paire(L[i], L[j])]) cout += 6;
+      }
+    });
+    return detail ? { cout: cout, pb: pb, alertes: alertes } : cout;
+  }
+  function estAESH(n) { return /^AESH\b/i.test(n); }
+  function paire(a, b) { return a < b ? a + '|' + b : b + '|' + a; }
+  function voisinsDeTable(c) {
+    var t = {}, out = [];
+    Object.keys(c.plan).forEach(function (k) { var q = pos(k), id = q.r + '-' + q.t; (t[id] = t[id] || []).push(c.plan[k]); });
+    Object.keys(t).forEach(function (id) { var L = t[id]; for (var i = 0; i < L.length; i++) for (var j = i + 1; j < L.length; j++) out.push(paire(L[i], L[j])); });
+    return out;
+  }
+  // Pronote : « NOM Prénom » (nom en majuscules). Prénom seul, + initiale du nom si deux prénoms identiques.
+  function decouper(n) {
+    var m = n.split(' '), i = 0;
+    while (i < m.length - 1 && /[A-Z]/.test(m[i]) && m[i] === m[i].toUpperCase()) i++;
+    return i ? { nom: m.slice(0, i).join(' '), pre: m.slice(i).join(' ') } : { nom: '', pre: n };
+  }
+  function etiquettes(c) {
+    var E = {}, compte = {};
+    c.eleves.forEach(function (e) { var d = decouper(e.n); compte[d.pre.toLowerCase()] = (compte[d.pre.toLowerCase()] || 0) + 1; });
+    c.eleves.forEach(function (e) {
+      var d = decouper(e.n);
+      E[e.n] = S.aff === 'complet' || !d.nom ? e.n : (compte[d.pre.toLowerCase()] > 1 ? d.pre + ' ' + d.nom.charAt(0) + '.' : d.pre);
+    });
+    return E;
+  }
+  function melanger(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+
+  // ---------- Génération
+  function generer() {
+    var c = C(); nettoyer(c);
+    if (!c.eleves.length) { msg('Ajoute d’abord les élèves de la classe.', 'warn'); return; }
+    var fermees = {}; c.fermees.forEach(function (k) { fermees[k] = 1; });
+    var verrou = {}, fixes = {};
+    c.verrous.forEach(function (k) { if (c.plan[k] && !fermees[k]) { verrou[k] = 1; fixes[c.plan[k]] = k; } });
+    var libres = places(c).filter(function (x) { return !fermees[x.k] && !verrou[x.k]; });
+    var gens = c.eleves.map(function (e) { return e.n; }).filter(function (n) { return !fixes[n]; });
+    if (gens.length > libres.length) { msg('Pas assez de places : ' + (gens.length + Object.keys(fixes).length) + ' élèves pour ' + (libres.length + Object.keys(fixes).length) + ' places ouvertes. Agrandis la salle ou rouvre des places.', 'err'); return; }
+    c.anciensVoisins = voisinsDeTable(c);
+    // places utilisées : devant d'abord, tables complètes, places vides au fond
+    var choisies;
+    if (c.remplir) {
+      var parRang = {};
+      libres.forEach(function (x) { (parRang[x.r] = parRang[x.r] || {}); (parRang[x.r][x.t] = parRang[x.r][x.t] || []).push(x); });
+      var ordre = [];
+      Object.keys(parRang).map(Number).sort(function (a, b) { return a - b; }).forEach(function (r) {
+        var tabs = Object.keys(parRang[r]).map(function (t) { return parRang[r][t]; });
+        // tables partiellement verrouillées d'abord (on complète l'élève verrouillé), puis au hasard
+        melanger(tabs).sort(function (A, B) { return (A.length === c.salle.places) - (B.length === c.salle.places); });
+        tabs.forEach(function (T) { ordre = ordre.concat(T); });
+      });
+      choisies = ordre.slice(0, gens.length);
+    } else choisies = melanger(libres.slice()).slice(0, gens.length);
+    var cles = choisies.map(function (x) { return x.k; });
+    var meilleur = null, meilleurCout = Infinity;
+    for (var essai = 0; essai < 6 && meilleurCout > 0; essai++) {
+      var g = melanger(gens.slice()), plan = {};
+      Object.keys(verrou).forEach(function (k) { plan[k] = c.plan[k]; });
+      cles.forEach(function (k, i) { plan[k] = g[i]; });
+      var cout = evaluer(c, plan), T = 20;
+      for (var it = 0; it < 6000 && cout > 0; it++) {
+        var i = Math.floor(Math.random() * cles.length), j = Math.floor(Math.random() * cles.length);
+        if (i === j) continue;
+        var a = plan[cles[i]]; plan[cles[i]] = plan[cles[j]]; plan[cles[j]] = a;
+        var n = evaluer(c, plan);
+        if (n <= cout || Math.random() < Math.exp((cout - n) / T)) cout = n;
+        else { a = plan[cles[i]]; plan[cles[i]] = plan[cles[j]]; plan[cles[j]] = a; }
+        T = Math.max(0.05, T * 0.999);
+      }
+      if (cout < meilleurCout) { meilleurCout = cout; meilleur = JSON.parse(JSON.stringify(plan)); }
+    }
+    c.plan = meilleur; sauver(); dessiner();
+    var d = evaluer(c, c.plan, true);
+    if (d.pb.length) msg('Plan généré, mais impossible de tout respecter : ' + d.pb.join(' ; ') + '. Relance ou ajuste à la main.', 'warn');
+    else msg('Plan généré : toutes les règles sont respectées. Relance pour un autre plan.', 'ok');
+  }
+
+  // ---------- Dessin du plan
+  var selection = null;
+  function dessiner() {
+    var c = C(), s = c.salle, room = $('#pc-room'), prof = S.vue === 'prof';
+    $('#pc-titre').textContent = 'Salle ' + s.nom + ' – ' + c.nom;
+    room.innerHTML = '';
+    var d = evaluer(c, c.plan, true);
+    var info = {}; c.eleves.forEach(function (e) { info[e.n] = e; });
+    var E = etiquettes(c);
+    var fermees = {}; c.fermees.forEach(function (k) { fermees[k] = 1; });
+    var verrous = {}; c.verrous.forEach(function (k) { verrous[k] = 1; });
+    function avant() {
+      var f = el('div', 'pc-front');
+      var b = el('div', 'pc-bureau', 'Bureau'), t = el('div', 'pc-tableau', 'tableau');
+      if (prof) { f.appendChild(b); f.appendChild(t); } else { f.appendChild(t); f.appendChild(b); }
+      return f;
+    }
+    if (!prof) room.appendChild(avant());
+    var rangs = []; for (var r = 0; r < s.rangees; r++) rangs.push(r);
+    var tabs = []; for (var t = 0; t < s.tables; t++) tabs.push(t);
+    var pls = []; for (var p = 0; p < s.places; p++) pls.push(p);
+    // vue prof = plan tourné d'un demi-tour (rangée de devant en bas, gauche et droite échangées)
+    if (prof) { rangs.reverse(); tabs.reverse(); pls.reverse(); }
+    rangs.forEach(function (r) {
+      var R = el('div', 'pc-rang');
+      tabs.forEach(function (t) {
+        var T = el('div', 'pc-table');
+        pls.forEach(function (p) {
+          var k = r + '-' + t + '-' + p, n = c.plan[k];
+          var S_ = el('div', 'pc-seat'); S_.dataset.k = k;
+          if (fermees[k]) { S_.classList.add('off'); S_.title = 'Place fermée'; }
+          if (verrous[k]) S_.classList.add('lock');
+          if (n && info[n] && info[n].devant) S_.classList.add('devant');
+          if (n && estAESH(n)) S_.classList.add('aesh');
+          if (n && info[n] && info[n].aide) S_.classList.add('aide');
+          if (n && d.alertes[n]) S_.classList.add('alerte');
+          if (selection === k) S_.classList.add('sel');
+          S_.appendChild(el('span', 'n', n ? (E[n] || n) : '')); if (n) S_.title = n;
+          var ic = el('span', 'ic');
+          if (n) { var bl = el('button', '', verrous[k] ? '🔓' : '🔒'); bl.type = 'button'; bl.title = verrous[k] ? 'Déverrouiller' : 'Verrouiller : l’élève reste ici quand on relance'; bl.dataset.act = 'lock'; ic.appendChild(bl); }
+          var bf = el('button', '', fermees[k] ? '✓' : '⊘'); bf.type = 'button'; bf.title = fermees[k] ? 'Rouvrir la place' : 'Fermer la place (non utilisée)'; bf.dataset.act = 'off'; ic.appendChild(bf);
+          S_.appendChild(ic);
+          T.appendChild(S_);
+        });
+        R.appendChild(T);
+      });
+      room.appendChild(R);
+    });
+    if (prof) room.appendChild(avant());
+  }
+  $('#pc-room').addEventListener('click', function (e) {
+    var seat = e.target.closest('.pc-seat'); if (!seat) return;
+    var c = C(), k = seat.dataset.k, act = e.target.dataset && e.target.dataset.act;
+    if (act === 'lock') {
+      var i = c.verrous.indexOf(k); if (i >= 0) c.verrous.splice(i, 1); else c.verrous.push(k);
+      sauver(); dessiner(); return;
+    }
+    if (act === 'off') {
+      var j = c.fermees.indexOf(k);
+      if (j >= 0) c.fermees.splice(j, 1);
+      else { c.fermees.push(k); if (c.plan[k]) msg(c.plan[k] + ' n’a plus de place : relance la génération ou place-le à la main.', 'warn'); delete c.plan[k]; c.verrous = c.verrous.filter(function (x) { return x !== k; }); }
+      if (selection === k) selection = null;
+      sauver(); dessiner(); return;
+    }
+    if (c.fermees.indexOf(k) >= 0) return;
+    if (selection === null) { if (c.plan[k]) selection = k; else { var sans = sansPlace(c); if (sans.length) { c.plan[k] = sans[0]; sauver(); msg(sans[0] + ' placé ici.', 'ok'); } } dessiner(); return; }
+    if (selection !== k) echanger(selection, k);
+    selection = null; dessiner();
+  });
+  function echanger(k1, k2) {
+    var c = C(), a = c.plan[k1], b = c.plan[k2];
+    if (b) c.plan[k1] = b; else delete c.plan[k1];
+    if (a) c.plan[k2] = a; else delete c.plan[k2];
+    var v1 = c.verrous.indexOf(k1) >= 0, v2 = c.verrous.indexOf(k2) >= 0;
+    c.verrous = c.verrous.filter(function (x) { return x !== k1 && x !== k2; });
+    if (v1 && c.plan[k2]) c.verrous.push(k2); if (v2 && c.plan[k1]) c.verrous.push(k1);
+    sauver();
+    var d = evaluer(c, c.plan, true), quoi = b ? 'Échange fait.' : 'Élève déplacé.';
+    if (d.pb.length) msg(quoi + ' Attention : ' + d.pb.join(' ; ') + '.', 'warn'); else msg(quoi, 'ok');
+  }
+  // Glisser-déposer (souris, tablette, tableau numérique) : on attrape un élève et on le lâche sur une autre place.
+  var glisse = null, sansClic = false;
+  $('#pc-room').addEventListener('pointerdown', function (e) {
+    var seat = e.target.closest('.pc-seat');
+    if (!seat || e.target.closest('button') || e.button > 0 || !C().plan[seat.dataset.k]) return;
+    glisse = { k: seat.dataset.k, x: e.clientX, y: e.clientY, fant: null, src: seat, id: e.pointerId };
+  });
+  document.addEventListener('pointermove', function (e) {
+    if (!glisse || e.pointerId !== glisse.id) return;
+    if (!glisse.fant) {
+      if (Math.abs(e.clientX - glisse.x) + Math.abs(e.clientY - glisse.y) < 8) return;
+      var f = el('div', 'pc-fantome', glisse.src.querySelector('.n').textContent);
+      document.body.appendChild(f); glisse.fant = f; glisse.src.classList.add('part');
+      selection = null; document.querySelectorAll('.pc-seat.sel').forEach(function (x) { x.classList.remove('sel'); });
+    }
+    e.preventDefault();
+    glisse.fant.style.left = e.clientX + 'px'; glisse.fant.style.top = e.clientY + 'px';
+    document.querySelectorAll('.pc-seat.cible').forEach(function (x) { x.classList.remove('cible'); });
+    var sous = document.elementFromPoint(e.clientX, e.clientY), t = sous && sous.closest('.pc-seat');
+    if (t && !t.classList.contains('off') && t.dataset.k !== glisse.k) t.classList.add('cible');
+  }, { passive: false });
+  function finGlisse(e) {
+    if (!glisse || e.pointerId !== glisse.id) return;
+    var g = glisse; glisse = null;
+    if (!g.fant) return;
+    g.fant.remove(); sansClic = true; setTimeout(function () { sansClic = false; }, 50);
+    var sous = document.elementFromPoint(e.clientX, e.clientY), t = sous && sous.closest('.pc-seat');
+    if (e.type === 'pointerup' && t && !t.classList.contains('off') && t.dataset.k !== g.k) echanger(g.k, t.dataset.k);
+    dessiner();
+  }
+  document.addEventListener('pointerup', finGlisse);
+  document.addEventListener('pointercancel', finGlisse);
+  $('#pc-room').addEventListener('click', function (e) { if (sansClic) { e.stopImmediatePropagation(); } }, true);
+  function sansPlace(c) {
+    var placés = {}; Object.keys(c.plan).forEach(function (k) { placés[c.plan[k]] = 1; });
+    return c.eleves.map(function (e) { return e.n; }).filter(function (n) { return !placés[n]; });
+  }
+
+  // ---------- Panneau de gauche
+  function remplirPanneau() {
+    var c = C();
+    var sel = $('#pc-classe'); sel.innerHTML = '';
+    S.classes.forEach(function (k, i) { var o = el('option', '', k.nom); o.value = i; sel.appendChild(o); });
+    sel.value = S.courante;
+    var ul = $('#pc-eleves'); ul.innerHTML = '';
+    var nbPlaces = places(c).length - c.fermees.length;
+    $('#pc-nb').textContent = '(' + c.eleves.length + ' pour ' + nbPlaces + ' places)';
+    var avecAESH = c.eleves.some(function (e) { return estAESH(e.n); });
+    $('#pc-note-aesh').hidden = !avecAESH;
+    c.eleves.forEach(function (e, i) {
+      var li = el('li'); li.appendChild(el('span', 'nm', e.n));
+      var sx = el('select'); [['', '–'], ['F', 'F'], ['G', 'G']].forEach(function (o) { var op = el('option', '', o[1]); op.value = o[0]; sx.appendChild(op); });
+      sx.value = e.s || ''; sx.title = 'Fille / Garçon (pour la mixité)';
+      sx.onchange = function () { e.s = sx.value; sauver(); dessiner(); };
+      var lb = el('label'), cb = el('input'); cb.type = 'checkbox'; cb.checked = !!e.devant;
+      cb.onchange = function () { e.devant = cb.checked; sauver(); dessiner(); };
+      lb.appendChild(cb); lb.appendChild(document.createTextNode('devant'));
+      var la = null;
+      if (avecAESH && !estAESH(e.n)) {
+        la = el('label'); var ca = el('input'); ca.type = 'checkbox'; ca.checked = !!e.aide;
+        ca.onchange = function () { e.aide = ca.checked; sauver(); dessiner(); };
+        la.title = 'Élève aidé par l\u2019AESH : placé à côté d\u2019elle'; la.appendChild(ca); la.appendChild(document.createTextNode('AESH'));
+      }
+      var x = el('button', 'pc-x', '×'); x.type = 'button'; x.title = 'Retirer ' + e.n;
+      x.onclick = function () { c.eleves.splice(i, 1); nettoyer(c); sauver(); tout(); };
+      li.appendChild(sx); li.appendChild(lb); if (la) li.appendChild(la); li.appendChild(x); ul.appendChild(li);
+    });
+    ['#pc-a', '#pc-b'].forEach(function (id) {
+      var s = $(id), v = s.value; s.innerHTML = '';
+      s.appendChild(el('option', '', 'Élève…')).value = '';
+      c.eleves.forEach(function (e) { var o = el('option', '', e.n); o.value = e.n; s.appendChild(o); });
+      s.value = v;
+    });
+    var ug = $('#pc-contraintes'); ug.innerHTML = '';
+    c.regles.forEach(function (g, i) {
+      var li = el('li'); li.appendChild(el('span', 'pc-tag ' + (g.type === 'sep' ? 'sep' : 'ens'), g.type === 'sep' ? 'séparer' : 'même table'));
+      li.appendChild(el('span', '', g.a + ' · ' + g.b));
+      var x = el('button', 'pc-x', '×'); x.type = 'button'; x.title = 'Supprimer la règle';
+      x.onclick = function () { c.regles.splice(i, 1); sauver(); tout(); };
+      li.appendChild(x); ug.appendChild(li);
+    });
+    $('#pc-mixite').checked = !!c.mixite; $('#pc-nouveaux').checked = c.nouveaux !== false; $('#pc-remplir').checked = c.remplir !== false;
+    $('#pc-salle').value = c.salle.nom; $('#pc-rangees').value = c.salle.rangees; $('#pc-tables').value = c.salle.tables; $('#pc-places').value = c.salle.places;
+    $('#pc-vue').value = S.vue; $('#pc-aff').value = S.aff || 'prenom';
+  }
+  function tout() { remplirPanneau(); dessiner(); }
+
+  $('#pc-classe').onchange = function () { S.courante = +this.value; selection = null; sauver(); msg(''); tout(); };
+  $('#pc-new').onclick = function () {
+    var n = prompt('Nom de la classe (ex. 6ème2) :'); if (!n || !n.trim()) return;
+    S.classes.push(nouvelleClasse(n.trim())); S.courante = S.classes.length - 1; sauver(); tout();
+  };
+  $('#pc-ren').onclick = function () { var n = prompt('Nouveau nom :', C().nom); if (!n || !n.trim()) return; C().nom = n.trim(); sauver(); tout(); };
+  $('#pc-del').onclick = function () {
+    if (!confirm('Supprimer la classe « ' + C().nom + ' », sa liste et son plan ?')) return;
+    S.classes.splice(S.courante, 1); if (!S.classes.length) S.classes.push(nouvelleClasse('Ma classe'));
+    S.courante = 0; sauver(); tout();
+  };
+  $('#pc-ajout').onclick = function () {
+    var c = C(), deja = {}, ajout = 0, doublons = [];
+    c.eleves.forEach(function (e) { deja[e.n.toLowerCase()] = 1; });
+    $('#pc-coller').value.split(/\r?\n/).forEach(function (l) {
+      var m = l.split(/[;\t]/), n = (m[0] || '').replace(/\s+/g, ' ').trim(), sx = ((m[1] || '').trim().toUpperCase())[0] || '';
+      if (!n) return;
+      if (deja[n.toLowerCase()]) { doublons.push(n); return; }
+      deja[n.toLowerCase()] = 1; c.eleves.push({ n: n, s: sx === 'F' || sx === 'G' ? sx : '', devant: false }); ajout++;
+    });
+    $('#pc-coller').value = ''; sauver(); tout();
+    msg(ajout + ' élève(s) ajouté(s).' + (doublons.length ? ' Déjà dans la liste (ajoute l’initiale du nom pour les distinguer) : ' + doublons.join(', ') + '.' : ''), doublons.length ? 'warn' : 'ok');
+  };
+  $('#pc-vider').onclick = function () { if (!confirm('Vider la liste des élèves de ' + C().nom + ' ?')) return; var c = C(); c.eleves = []; c.plan = {}; c.verrous = []; c.regles = []; c.anciensVoisins = []; sauver(); tout(); };
+  function regle(type) {
+    var a = $('#pc-a').value, b = $('#pc-b').value, c = C();
+    if (!a || !b || a === b) { msg('Choisis deux élèves différents.', 'warn'); return; }
+    c.regles = c.regles.filter(function (g) { return paire(g.a, g.b) !== paire(a, b); });
+    c.regles.push({ type: type, a: a, b: b }); sauver(); tout(); msg('Règle ajoutée. Clique sur « Générer le plan » pour l’appliquer.', 'ok');
+  }
+  $('#pc-sep').onclick = function () { regle('sep'); };
+  $('#pc-ens').onclick = function () { regle('ens'); };
+  $('#pc-mixite').onchange = function () { C().mixite = this.checked; sauver(); };
+  $('#pc-nouveaux').onchange = function () { C().nouveaux = this.checked; sauver(); };
+  $('#pc-remplir').onchange = function () { C().remplir = this.checked; sauver(); };
+  function salle() {
+    var c = C(), b = function (v, lo, hi, d) { v = parseInt(v, 10); return isNaN(v) ? d : Math.max(lo, Math.min(hi, v)); };
+    c.salle = { nom: $('#pc-salle').value.trim() || c.salle.nom, rangees: b($('#pc-rangees').value, 1, 10, 4), tables: b($('#pc-tables').value, 1, 8, 4), places: b($('#pc-places').value, 1, 4, 2) };
+    nettoyer(c); sauver(); tout();
+  }
+  ['#pc-salle', '#pc-rangees', '#pc-tables', '#pc-places'].forEach(function (id) { $(id).onchange = salle; });
+  $('#pc-204').onclick = function () { C().salle = JSON.parse(JSON.stringify(SALLE204)); nettoyer(C()); sauver(); tout(); };
+  $('#pc-aff').onchange = function () { S.aff = this.value; sauver(); dessiner(); };
+  $('#pc-vue').onchange = function () { S.vue = this.value; sauver(); dessiner(); };
+  $('#pc-gen').onclick = generer;
+  $('#pc-print').onclick = function () { window.print(); };
+  $('#pc-effacer').onclick = function () { if (!confirm('Vider le plan (la liste des élèves est gardée) ?')) return; C().plan = {}; C().verrous = []; sauver(); dessiner(); msg(''); };
+  $('#pc-export').onclick = function () {
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([JSON.stringify(S, null, 1)], { type: 'application/json' }));
+    a.download = 'plans-de-classe-' + new Date().toISOString().slice(0, 10) + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+  };
+  $('#pc-import').onchange = function () {
+    var f = this.files[0]; if (!f) return; var lec = new FileReader();
+    lec.onload = function () {
+      try { var d = JSON.parse(lec.result); if (!d.classes || !d.classes.length) throw 0; }
+      catch (e) { msg('Ce fichier n’est pas une sauvegarde de plans de classe.', 'err'); return; }
+      if (!confirm('Remplacer les classes de ce navigateur par celles du fichier (' + d.classes.length + ' classe(s)) ?')) return;
+      S = d; if (!S.vue) S.vue = 'prof'; S.courante = 0; S.classes.forEach(nettoyer); sauver(); tout(); msg('Sauvegarde importée.', 'ok');
+    };
+    lec.readAsText(f); this.value = '';
+  };
+
+  charger(); S.classes.forEach(nettoyer); tout();
+})();
+</script>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span class="logo small"><svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+<rect x="2" y="2" width="17" height="17" rx="5" fill="#c026d3"/><rect x="21" y="2" width="17" height="17" rx="5" fill="#2563eb"/>
+<rect x="2" y="21" width="17" height="17" rx="5" fill="#ea580c"/><rect x="21" y="21" width="17" height="17" rx="5" fill="#0d9488"/>
+<path d="M6 32 Q 14 8 20 20 T 34 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span>Giro<b>Maths</b></span></span><span>Cours de mathématiques de la 6ème à la 3ème</span><p class="copyright">© 2026 Stéphane GIROLD - Professeur Certifié de Mathématiques - Collège Claude DEBUSSY - ST. GERMAIN-EN-LAYE. Tous droits réservés.</p></div></footer>
+</body>
+</html>
