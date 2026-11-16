@@ -18,9 +18,9 @@ Page du site : [index.html](index.html)
 
 ## Cours élève
 
-- [Fiche de synthèse – Les nombres relatifs](cours-prof/fiche-cours-relatifs.pdf) (PDF)
-- [Fiche de synthèse – Les fractions](cours-prof/fiche-cours-fractions.pdf) (PDF)
-- [Fiche de synthèse – Le théorème de Pythagore](cours-prof/fiche-cours-pythagore.pdf) (PDF)
+- [Cours élève à compléter – Les nombres relatifs](cours-eleve/cours-eleve-relatifs.pdf) (PDF)
+- [Cours élève à compléter – Les fractions](cours-eleve/cours-eleve-fractions.pdf) (PDF)
+- [Cours élève à compléter – Le théorème de Pythagore et les modèles de rédaction](cours-eleve/cours-eleve-pythagore.pdf) (PDF)
 
 ## Fiches d'exercices
 
