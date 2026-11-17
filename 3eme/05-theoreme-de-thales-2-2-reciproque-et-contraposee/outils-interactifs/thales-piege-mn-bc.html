@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Réciproque de Thalès : le piège de MN/BC</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Outil GiroMaths 3e, séquence 5 : réciproque de Thalès et ordre des points (4 cas). */
+:root{
+  --paper:#fbfcfe; --ink:#16202e; --muted:#5d6878; --grid:#e3e9f1; --line:#cfd9e5; --panel:#eef3f9; --card:#fff;
+  --d1:#1e6ec8; --d2:#c25e00; --bc:#16202e;
+  --ok:#14703c; --ok-fill:#e2f3e8; --no:#b3261e; --no-fill:#fbe9e7; --trap:#7a3fb0; --trap-fill:#f1e8fa;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#111a29; --ink:#e4ebf5; --muted:#9aabc4; --grid:#1a2538; --line:#2c3b55; --panel:#17233a; --card:#162133;
+  --d1:#7fb0f5; --d2:#f0a35e; --bc:#e4ebf5;
+  --ok:#5fd394; --ok-fill:#14301f; --no:#ff8a80; --no-fill:#3a1715; --trap:#c9a2f0; --trap-fill:#2a1d3a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#111a29; --ink:#e4ebf5; --muted:#9aabc4; --grid:#1a2538; --line:#2c3b55; --panel:#17233a; --card:#162133;
+  --d1:#7fb0f5; --d2:#f0a35e; --bc:#e4ebf5;
+  --ok:#5fd394; --ok-fill:#14301f; --no:#ff8a80; --no-fill:#3a1715; --trap:#c9a2f0; --trap-fill:#2a1d3a; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:20px 20px}
+.wrap{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0 0 10px}
+h1{font-size:clamp(1.6rem,4.5vw,2.3rem)}
+h2{font-size:1.3rem;margin-top:6px}
+.kick{display:inline-block;font:700 .8rem var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:3px 10px;border-radius:6px;transform:rotate(-1.5deg);margin-bottom:8px}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:16px 18px;margin:18px 0;box-shadow:5px 5px 0 var(--d1)}
+.enonce{font-size:1.05rem}
+.donnees{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.donnees span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-weight:700}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin:0 3px;font-weight:700}
+.frac b{border-bottom:2px solid currentColor;padding:0 3px}
+.rap{display:flex;flex-wrap:wrap;gap:22px;align-items:center;margin:10px 0}
+.rap .eq{font-size:1.15rem}
+.etape{display:none}.etape.on{display:block}
+.btn{font:700 .95rem var(--display);cursor:pointer;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 16px}
+.btn:hover{background:var(--panel)}
+.btn.main{background:var(--d1);border-color:var(--d1);color:#fff}
+.grid2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:780px){.grid2{grid-template-columns:1fr}}
+.fig{background:var(--paper);border:1px solid var(--line);border-radius:12px;width:100%;height:auto;display:block;touch-action:none}
+.choix{margin:0 0 12px}
+.choix p{margin:0 0 6px;font-weight:700}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:600 .9rem var(--body);cursor:pointer;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:5px 10px}
+.seg button[aria-pressed=true]{border-color:var(--ink);background:var(--panel);box-shadow:inset 0 -3px 0 var(--d1)}
+.seg.n button[aria-pressed=true]{box-shadow:inset 0 -3px 0 var(--d2)}
+.ordre{font-family:var(--display);font-size:1.05rem;margin:4px 0}
+.ordre .d1{color:var(--d1)}.ordre .d2{color:var(--d2)}
+.verdict{border-radius:12px;padding:10px 12px;margin-top:10px;border:2px solid}
+.verdict.ok{background:var(--ok-fill);border-color:var(--ok)}
+.verdict.no{background:var(--no-fill);border-color:var(--no)}
+.verdict h3{font-size:1.05rem;margin:0 0 4px}
+.verdict p{margin:4px 0}
+.note{font-size:.88rem;color:var(--muted)}
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.cas{border:2px solid var(--line);border-radius:14px;padding:10px;background:var(--card)}
+.cas h3{font-size:1rem;margin:0 0 6px}
+.cas svg{width:100%;height:auto;display:block;background:var(--paper);border-radius:8px;border:1px solid var(--line)}
+.cas label{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:.88rem;margin:6px 0}
+.cas select{font:inherit;font-size:.88rem;padding:3px 4px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.cas.juste{border-color:var(--ok)}.cas.faux{border-color:var(--no)}
+.ex-fb{font-weight:700;min-height:1.3em;margin:6px 0}.ex-fb.oui{color:var(--ok)}.ex-fb.non{color:var(--no)}.ex-fb.warn{color:var(--d2)}
+.cas .fb{font-size:.84rem;min-height:1.2em;margin:4px 0 0}
+.cas.juste .fb{color:var(--ok)}.cas.faux .fb{color:var(--no)}
+.score{font:700 1.05rem var(--display);margin:10px 0 0}
+.redac{background:var(--panel);border-left:5px solid var(--d1);border-radius:8px;padding:10px 14px;margin:10px 0}
+.redac.piege{border-left-color:var(--no)}
+.redac p{margin:4px 0}
+.tbl{border-collapse:collapse;width:100%;font-size:.95rem;margin:8px 0}
+.tbl th,.tbl td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+.tbl th{background:var(--panel);font-family:var(--display)}
+.oui{color:var(--ok);font-weight:700}.non{color:var(--no);font-weight:700}
+svg text{font-family:var(--display);font-weight:700}
+</style>
+<style>
+.outils{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 10px}
+.outils button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.compas-zone{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:8px 10px;margin:0 0 10px;font-size:.9rem}
+.compas-zone input{width:70px;font:inherit;padding:3px 6px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.calc{font-size:1.1rem;margin:6px 0}
+</style>
+</head>
+<body>
+<div class="wrap">
+<span class="kick">3e · Thalès 2/2 · Piège n° 2</span>
+<h1>MN/BC = AM/AB… et pourtant ?</h1>
+
+<div class="card enonce">
+  <p>Les points A, M, B sont alignés, et N est un point de la droite (AC). On donne :</p>
+  <div class="donnees"><span>AB = 8 cm</span><span>AM = 6 cm</span><span>BC = 6 cm</span><span>AC = 10 cm</span></div>
+  <p>On veut placer N pour que <span class="frac"><b>MN</b><span>BC</span></span> = <span class="frac"><b>AM</b><span>AB</span></span>.</p>
+  <p class="calc">Il faut donc <b>MN</b> = BC × <span class="frac"><b>AM</b><span>AB</span></span> = 6 × <span class="frac"><b>6</b><span>8</span></span> = <b>4,5 cm</b>.</p>
+  <p><b>Ta mission :</b> avec le <b>compas</b>, trouve les <b>2 points N</b> de la droite (AC) tels que MN = 4,5 cm. Pour chacun, dis si (MN) et (BC) sont parallèles.</p>
+</div>
+
+<div class="card">
+  <div class="grid2">
+    <div>
+      <div class="outils">
+        <button class="btn" type="button" id="o-compas" aria-pressed="false">🧭 Compas</button>
+        <button class="btn" type="button" id="o-n" aria-pressed="true">✋ Déplacer N</button>
+        <button class="btn" type="button" id="o-effacer">Effacer les cercles</button>
+      </div>
+      <div class="compas-zone" id="compas-aide">Choisis un outil. Avec le compas : clique d'abord sur la <b>pointe</b> (le centre), puis écarte le compas et clique pour tracer.</div>
+      <svg class="fig" id="fig" viewBox="0 0 600 460" role="img" aria-label="Figure : placer N avec le compas"></svg>
+      <p class="note">Les droites sont graduées tous les 1 cm. N reste sur la droite (AC) ; il s'accroche aux points d'intersection avec tes cercles.</p>
+    </div>
+    <div>
+      <p class="ordre">AN = <span class="d2" id="v-an"></span> cm · MN = <span id="v-mn"></span> cm</p>
+      <p><button class="btn main" id="valider" type="button">Valider ce point N</button></p>
+      <p class="ex-fb" id="fb" role="status"></p>
+      <div id="q" class="cas" hidden>
+        <label>(MN) // (BC) ? <select id="q-par"><option value="">?</option><option value="1">oui, parallèles</option><option value="0">non, pas parallèles</option></select></label>
+        <p><button class="btn" id="repondre" type="button">Répondre</button></p>
+      </div>
+      <p class="score" id="score"></p>
+      <p><button class="btn" id="recommencer" type="button">Recommencer</button></p>
+    </div>
+  </div>
+</div>
+
+<div class="card etape" id="conclusion">
+  <h2>Conclusion : MN/BC = AM/AB ne suffit pas</h2>
+  <p>Le cercle de centre M et de rayon 4,5 cm coupe la droite (AC) en <b>deux points</b>. Pour les deux, MN/BC = 4,5/6 = 0,75 = AM/AB.</p>
+  <table class="tbl">
+    <tr><th>Point</th><th>AN</th><th>AN/AC</th><th>= AM/AB = 0,75 ?</th><th>(MN) // (BC) ?</th></tr>
+    <tr><td style="color:var(--ok);font-weight:700">N₁</td><td>7,5 cm</td><td>0,75</td><td class="oui">oui</td><td class="oui">oui</td></tr>
+    <tr><td style="color:var(--no);font-weight:700">N₂</td><td>2,1 cm</td><td>0,21</td><td class="non">non</td><td class="non">non</td></tr>
+  </table>
+  <div class="redac piege">
+    <p><b>Le piège :</b> on ne peut <b>pas</b> utiliser MN/BC pour la réciproque. Il y a deux points N qui donnent le même rapport MN/BC, et un seul donne des droites parallèles.</p>
+  </div>
+  <div class="redac">
+    <p><b>Pour montrer que (MN) // (BC)</b>, on compare les deux rapports qui partent du point A : <b>AM/AB et AN/AC</b>, et on vérifie que les points sont alignés <b>dans le même ordre</b>.</p>
+    <p class="note">Pour N₂ : AN/AC = 2,1/10 = 0,21 ≠ 0,75 = AM/AB, donc d'après la contraposée du théorème de Thalès, (MN₂) et (BC) ne sont pas parallèles.</p>
+  </div>
+</div>
+</div>
+
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var W = 600, H = 460, NS = 'http://www.w3.org/2000/svg';
+  // Figure : A(0;0), B(8;0), C(8;6) tournés de 18° : AB = 8, BC = 6, AC = 10 (triangle 6-8-10).
+  var th = 18 * Math.PI / 180, al = Math.atan2(6, 8);
+  var u = [Math.cos(th), Math.sin(th)], v = [Math.cos(th + al), Math.sin(th + al)];
+  function P(d, w) { return [d * w[0], d * w[1]]; }
+  var A = [0, 0], B = P(8, u), C = P(10, v), M = P(6, u), MN = 4.5;
+  var SOL = [7.5, 2.1]; // MN² = (s − 6·cos α)² + (6·sin α)² = 4,5²  ⇔  s = 7,5 ou s = 2,1
+  var pts = { A: A, B: B, C: C, M: M };
+  function mk(tag, at, txt) { var e = document.createElementNS(NS, tag); for (var k in at) e.setAttribute(k, at[k]); if (txt != null) e.textContent = txt; return e; }
+  function col(x) { return getComputedStyle(document.documentElement).getPropertyValue(x).trim(); }
+  var ext = [P(-3, u), P(11, u), P(-3, v), P(12, v), [0, 0]];
+  var xs = ext.map(function (p) { return p[0]; }), ys = ext.map(function (p) { return p[1]; });
+  var minx = Math.min.apply(0, xs), maxx = Math.max.apply(0, xs), miny = Math.min.apply(0, ys), maxy = Math.max.apply(0, ys);
+  var k = Math.min((W - 50) / (maxx - minx), (H - 50) / (maxy - miny));
+  var ox = (W - k * (maxx - minx)) / 2 - k * minx, oy = (H + k * (maxy - miny)) / 2 + k * miny;
+  function T(p) { return [ox + k * p[0], oy - k * p[1]]; }
+  function Tinv(q) { return [(q[0] - ox) / k, (oy - q[1]) / k]; }
+
+  var st = { outil: 'n', s: 4, cercles: [], centre: null, souris: null, trouves: {}, attente: null, drag: false };
+  function dist(p, q) { return Math.hypot(p[0] - q[0], p[1] - q[1]); }
+  function fmt(x) { return String(Math.round(x * 10) / 10).replace('.', ','); }
+  function N() { return P(st.s, v); }
+
+  function dessin() {
+    var svg = $('#fig'); svg.innerHTML = '';
+    function ln(p, q, c, w, op, dash) { var a = T(p), b = T(q), at = { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: c, 'stroke-width': w, 'stroke-linecap': 'round', 'stroke-opacity': op || 1 }; if (dash) at['stroke-dasharray'] = dash; svg.appendChild(mk('line', at)); }
+    ln(P(-30, u), P(30, u), col('--d1'), 1.6, .55); ln(P(-30, v), P(30, v), col('--d2'), 1.6, .55);
+    [[u, col('--d1')], [v, col('--d2')]].forEach(function (x) {
+      var w = x[0], n = [-w[1], w[0]];
+      for (var i = -3; i <= 12; i++) { if (!i) continue; var c = P(i, w); ln([c[0] + .12 * n[0], c[1] + .12 * n[1]], [c[0] - .12 * n[0], c[1] - .12 * n[1]], x[1], 1, .6); }
+    });
+    st.cercles.forEach(function (c) { var a = T(c.c); svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: c.r * k, fill: 'none', stroke: col('--trap'), 'stroke-width': 1.5, 'stroke-opacity': .8 })); });
+    if (st.outil === 'compas' && st.centre && st.souris) { // compas en cours d'ouverture
+      var a = T(st.centre), r = Math.round(dist(st.centre, st.souris) * 10) / 10, b = T(st.souris);
+      svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: r * k, fill: 'none', stroke: col('--trap'), 'stroke-width': 1.2, 'stroke-dasharray': '5 5' }));
+      svg.appendChild(mk('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: col('--trap'), 'stroke-width': 2 }));
+      svg.appendChild(mk('text', { x: (a[0] + b[0]) / 2, y: (a[1] + b[1]) / 2 - 12, fill: col('--trap'), 'font-size': 16, 'text-anchor': 'middle' }, fmt(r) + ' cm'));
+    }
+    ln(B, C, col('--bc'), 2.6);
+    // points déjà trouvés
+    [['n1', SOL[0], '--ok', 'N₁'], ['n2', SOL[1], '--no', 'N₂']].forEach(function (z) {
+      if (!st.trouves[z[0]]) return;
+      var p = P(z[1], v); ln(M, p, col(z[2]), 2.2, 1, '7 5');
+      var a = T(p); svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: 6, fill: col(z[2]) }));
+      svg.appendChild(mk('text', { x: a[0] - 22, y: a[1] - 4, fill: col(z[2]), 'font-size': 17, 'text-anchor': 'middle' }, z[3]));
+    });
+    ln(M, N(), col('--muted'), 2.4);
+    function pt(p, nom, c, dx, dy, handle) {
+      var a = T(p);
+      if (handle) svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: 15, fill: c, 'fill-opacity': .15, stroke: c, 'stroke-width': 1.5, style: 'cursor:grab' }));
+      svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: 4.5, fill: c }));
+      svg.appendChild(mk('text', { x: a[0] + dx, y: a[1] + dy, fill: c, 'font-size': 19, 'text-anchor': 'middle', 'dominant-baseline': 'middle' }, nom));
+    }
+    pt(A, 'A', col('--bc'), -6, 18); pt(B, 'B', col('--d1'), 8, 18); pt(C, 'C', col('--d2'), -16, -8); pt(M, 'M', col('--d1'), 4, 20);
+    pt(N(), 'N', col('--d2'), 18, -16, st.outil === 'n');
+    if (st.outil === 'compas' && st.centre) { var c0 = T(st.centre); svg.appendChild(mk('circle', { cx: c0[0], cy: c0[1], r: 7, fill: 'none', stroke: col('--trap'), 'stroke-width': 2.5 })); }
+    $('#v-an').textContent = fmt(Math.abs(st.s)) + (st.s < 0 ? ' (de l’autre côté de A)' : '');
+    $('#v-mn').textContent = fmt(dist(M, N()));
+  }
+  function svgPt(e) { var r = $('#fig').getBoundingClientRect(); return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; }
+  function aimantPoint(q) { // pointe du compas : s'accroche aux points nommés
+    var best = null;
+    Object.keys(pts).forEach(function (n) { var a = T(pts[n]); if (Math.hypot(a[0] - q[0], a[1] - q[1]) < 18) best = pts[n]; });
+    return best || Tinv(q);
+  }
+  // N sur (AC) : s'accroche aux intersections avec les cercles tracés, sinon au mm
+  function placerN(s) {
+    var best = null;
+    st.cercles.forEach(function (c) {
+      var w = [c.c[0], c.c[1]], b = w[0] * v[0] + w[1] * v[1], cc = w[0] * w[0] + w[1] * w[1] - c.r * c.r, D = b * b - cc;
+      if (D < 0) return;
+      [b - Math.sqrt(D), b + Math.sqrt(D)].forEach(function (x) { if (Math.abs(x - s) < .25 && (best === null || Math.abs(x - s) < Math.abs(best - s))) best = x; });
+    });
+    s = best !== null ? best : Math.round(s * 10) / 10;
+    st.s = Math.max(-3, Math.min(12, s)) || .1;
+  }
+  var fig = $('#fig');
+  fig.style.touchAction = 'none';
+  fig.addEventListener('pointerdown', function (e) {
+    var q = svgPt(e);
+    if (st.outil === 'compas') {
+      if (!st.centre) { st.centre = aimantPoint(q); st.souris = st.centre; aide('Pointe posée. Écarte le compas puis clique pour tracer le cercle.'); }
+      else {
+        var r = Math.round(dist(st.centre, Tinv(q)) * 10) / 10;
+        if (r > 0) st.cercles.push({ c: st.centre, r: r });
+        st.centre = null; st.souris = null; aide('Cercle tracé (rayon ' + fmt(r) + ' cm). Clique sur une nouvelle pointe, ou passe à « Déplacer N ».');
+      }
+      dessin(); return;
+    }
+    var n = T(N()); if (Math.hypot(q[0] - n[0], q[1] - n[1]) > 32) return;
+    st.drag = true; fig.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  fig.addEventListener('pointermove', function (e) {
+    var q = svgPt(e);
+    if (st.outil === 'compas') { if (st.centre) { st.souris = Tinv(q); dessin(); } return; }
+    if (!st.drag) return;
+    var p = Tinv(q); placerN(p[0] * v[0] + p[1] * v[1]);
+    fb(''); $('#q').hidden = true; st.attente = null; dessin();
+  });
+  ['pointerup', 'pointercancel'].forEach(function (t) { fig.addEventListener(t, function () { st.drag = false; }); });
+  function aide(t) { $('#compas-aide').innerHTML = t; }
+  function outil(o) { st.outil = o; st.centre = null; $('#o-compas').setAttribute('aria-pressed', o === 'compas'); $('#o-n').setAttribute('aria-pressed', o === 'n'); aide(o === 'compas' ? 'Compas : clique d’abord sur la <b>pointe</b> (le centre du cercle).' : 'Fais glisser N le long de la droite (AC).'); dessin(); }
+  $('#o-compas').onclick = function () { outil('compas'); };
+  $('#o-n').onclick = function () { outil('n'); };
+  $('#o-effacer').onclick = function () { st.cercles = []; st.centre = null; dessin(); };
+  function fb(t, c) { var f = $('#fb'); f.textContent = t; f.className = 'ex-fb ' + (c || ''); }
+
+  $('#valider').onclick = function () {
+    $('#q').hidden = true;
+    var d = dist(M, N()), cle = null;
+    if (Math.abs(st.s - SOL[0]) < .06) cle = 'n1'; else if (Math.abs(st.s - SOL[1]) < .06) cle = 'n2';
+    if (!cle) { fb('MN = ' + fmt(d) + ' cm : ce n’est pas 4,5 cm. Astuce : trace le cercle de centre M et de rayon 4,5 cm.', 'non'); return; }
+    if (st.trouves[cle]) { fb('Tu as déjà trouvé ce point. Il y en a un autre !', 'warn'); return; }
+    st.attente = cle; $('#q-par').value = ''; fb('Bien placé : MN = 4,5 cm, donc MN/BC = 0,75 = AM/AB.', 'oui'); $('#q').hidden = false;
+  };
+  $('#repondre').onclick = function () {
+    if (!st.attente) return;
+    var r = $('#q-par').value, bon = st.attente === 'n1' ? '1' : '0';
+    if (!r) { fb('Choisis oui ou non.', 'warn'); return; }
+    if (r !== bon) { fb('Regarde bien la figure : (MN) a-t-elle la même direction que (BC) ?', 'non'); return; }
+    st.trouves[st.attente] = 1;
+    fb(st.attente === 'n1' ? 'Juste : (MN) // (BC). Ce point s’appelle N₁.' : 'Juste : MN/BC = AM/AB, et pourtant (MN) et (BC) ne sont pas parallèles ! Ce point s’appelle N₂.', 'oui');
+    st.attente = null; $('#q').hidden = true; bilan(); dessin();
+  };
+  function bilan() {
+    var n = Object.keys(st.trouves).length;
+    $('#score').textContent = 'Points trouvés : ' + n + ' / 2' + (n === 2 ? ' — bravo !' : '');
+    $('#conclusion').classList.toggle('on', n === 2);
+    if (n === 2) $('#conclusion').scrollIntoView({ behavior: 'smooth' });
+  }
+  $('#recommencer').onclick = function () { st.trouves = {}; st.cercles = []; st.s = 4; st.attente = null; $('#q').hidden = true; fb(''); outil('n'); bilan(); };
+  outil('n'); bilan();
+})();
+</script>
+</body>
+</html>

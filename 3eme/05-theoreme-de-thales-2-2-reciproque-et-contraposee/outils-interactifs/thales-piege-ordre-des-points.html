@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Réciproque de Thalès : le piège de l'ordre des points</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Outil GiroMaths 3e, séquence 5 : réciproque de Thalès et ordre des points (4 cas). */
+:root{
+  --paper:#fbfcfe; --ink:#16202e; --muted:#5d6878; --grid:#e3e9f1; --line:#cfd9e5; --panel:#eef3f9; --card:#fff;
+  --d1:#1e6ec8; --d2:#c25e00; --bc:#16202e;
+  --ok:#14703c; --ok-fill:#e2f3e8; --no:#b3261e; --no-fill:#fbe9e7; --trap:#7a3fb0; --trap-fill:#f1e8fa;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#111a29; --ink:#e4ebf5; --muted:#9aabc4; --grid:#1a2538; --line:#2c3b55; --panel:#17233a; --card:#162133;
+  --d1:#7fb0f5; --d2:#f0a35e; --bc:#e4ebf5;
+  --ok:#5fd394; --ok-fill:#14301f; --no:#ff8a80; --no-fill:#3a1715; --trap:#c9a2f0; --trap-fill:#2a1d3a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#111a29; --ink:#e4ebf5; --muted:#9aabc4; --grid:#1a2538; --line:#2c3b55; --panel:#17233a; --card:#162133;
+  --d1:#7fb0f5; --d2:#f0a35e; --bc:#e4ebf5;
+  --ok:#5fd394; --ok-fill:#14301f; --no:#ff8a80; --no-fill:#3a1715; --trap:#c9a2f0; --trap-fill:#2a1d3a; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:20px 20px}
+.wrap{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0 0 10px}
+h1{font-size:clamp(1.6rem,4.5vw,2.3rem)}
+h2{font-size:1.3rem;margin-top:6px}
+.kick{display:inline-block;font:700 .8rem var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:3px 10px;border-radius:6px;transform:rotate(-1.5deg);margin-bottom:8px}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:16px 18px;margin:18px 0;box-shadow:5px 5px 0 var(--d1)}
+.enonce{font-size:1.05rem}
+.donnees{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.donnees span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-weight:700}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin:0 3px;font-weight:700}
+.frac b{border-bottom:2px solid currentColor;padding:0 3px}
+.rap{display:flex;flex-wrap:wrap;gap:22px;align-items:center;margin:10px 0}
+.rap .eq{font-size:1.15rem}
+.etape{display:none}.etape.on{display:block}
+.btn{font:700 .95rem var(--display);cursor:pointer;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 16px}
+.btn:hover{background:var(--panel)}
+.btn.main{background:var(--d1);border-color:var(--d1);color:#fff}
+.grid2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:780px){.grid2{grid-template-columns:1fr}}
+.fig{background:var(--paper);border:1px solid var(--line);border-radius:12px;width:100%;height:auto;display:block;touch-action:none}
+.choix{margin:0 0 12px}
+.choix p{margin:0 0 6px;font-weight:700}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:600 .9rem var(--body);cursor:pointer;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:5px 10px}
+.seg button[aria-pressed=true]{border-color:var(--ink);background:var(--panel);box-shadow:inset 0 -3px 0 var(--d1)}
+.seg.n button[aria-pressed=true]{box-shadow:inset 0 -3px 0 var(--d2)}
+.ordre{font-family:var(--display);font-size:1.05rem;margin:4px 0}
+.ordre .d1{color:var(--d1)}.ordre .d2{color:var(--d2)}
+.verdict{border-radius:12px;padding:10px 12px;margin-top:10px;border:2px solid}
+.verdict.ok{background:var(--ok-fill);border-color:var(--ok)}
+.verdict.no{background:var(--no-fill);border-color:var(--no)}
+.verdict h3{font-size:1.05rem;margin:0 0 4px}
+.verdict p{margin:4px 0}
+.note{font-size:.88rem;color:var(--muted)}
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.cas{border:2px solid var(--line);border-radius:14px;padding:10px;background:var(--card)}
+.cas h3{font-size:1rem;margin:0 0 6px}
+.cas svg{width:100%;height:auto;display:block;background:var(--paper);border-radius:8px;border:1px solid var(--line)}
+.cas label{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:.88rem;margin:6px 0}
+.cas select{font:inherit;font-size:.88rem;padding:3px 4px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.cas.juste{border-color:var(--ok)}.cas.faux{border-color:var(--no)}
+.ex-fb{font-weight:700;min-height:1.3em;margin:6px 0}.ex-fb.oui{color:var(--ok)}.ex-fb.non{color:var(--no)}.ex-fb.warn{color:var(--d2)}
+.cas .fb{font-size:.84rem;min-height:1.2em;margin:4px 0 0}
+.cas.juste .fb{color:var(--ok)}.cas.faux .fb{color:var(--no)}
+.score{font:700 1.05rem var(--display);margin:10px 0 0}
+.redac{background:var(--panel);border-left:5px solid var(--d1);border-radius:8px;padding:10px 14px;margin:10px 0}
+.redac.piege{border-left-color:var(--no)}
+.redac p{margin:4px 0}
+.tbl{border-collapse:collapse;width:100%;font-size:.95rem;margin:8px 0}
+.tbl th,.tbl td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+.tbl th{background:var(--panel);font-family:var(--display)}
+.oui{color:var(--ok);font-weight:700}.non{color:var(--no);font-weight:700}
+svg text{font-family:var(--display);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+<span class="kick">3e · Thalès 2/2 · Piège n° 1</span>
+<h1>AM/AB = AN/AC… mais où sont M et N ?</h1>
+
+<div class="card enonce">
+  <p>Les droites (AB) et (AC) sont sécantes en A. On donne :</p>
+  <div class="donnees"><span>AB = 8 cm</span><span>AC = 10 cm</span><span>AM = 6 cm</span><span>AN = 7,5 cm</span></div>
+  <p>On a bien <span class="frac"><b>AM</b><span>AB</span></span> = <span class="frac"><b>6</b><span>8</span></span> = 0,75 et <span class="frac"><b>AN</b><span>AC</span></span> = <span class="frac"><b>7,5</b><span>10</span></span> = 0,75 : les deux rapports sont égaux.</p>
+  <p><b>Ta mission :</b> place M sur la droite (AB) et N sur la droite (AC) pour respecter AM = 6 cm et AN = 7,5 cm. Il y a <b>4 façons</b> de le faire : trouve-les toutes ! Pour chaque cas, dis si (MN) et (BC) sont parallèles.</p>
+</div>
+
+<div class="card">
+  <div class="grid2">
+    <div>
+      <svg class="fig" id="fig" viewBox="0 0 600 440" role="img" aria-label="Place M et N"></svg>
+      <p class="note">Fais glisser M et N (les ronds) le long des droites. Graduations : 1 cm.</p>
+    </div>
+    <div>
+      <p class="ordre">AM = <span class="d1" id="v-am"></span> cm · AN = <span class="d2" id="v-an"></span> cm</p>
+      <p><button class="btn main" id="valider" type="button">Valider ma position</button></p>
+      <p class="ex-fb" id="fb" role="status"></p>
+      <div id="q" class="cas" hidden>
+        <p style="margin:0 0 6px"><b>Pour cette position :</b></p>
+        <label>(MN) // (BC) ? <select id="q-par"><option value="">?</option><option value="1">oui, parallèles</option><option value="0">non, pas parallèles</option></select></label>
+        <p><button class="btn" id="repondre" type="button">Répondre</button></p>
+      </div>
+      <p class="score" id="score"></p>
+      <p><button class="btn" id="recommencer" type="button">Recommencer</button></p>
+    </div>
+  </div>
+  <div class="cases" id="cases" style="margin-top:12px"></div>
+</div>
+
+<div class="card etape" id="condition">
+  <h2>La condition sur l'ordre des points</h2>
+  <p>Dans les 4 cas, <b>AM/AB = AN/AC = 0,75</b>. Pourtant, seuls 2 cas donnent des droites parallèles. Regarde l'ordre des points :</p>
+  <table class="tbl">
+    <tr><th>Cas</th><th>Sur (AB)</th><th>Sur (AC)</th><th>Même ordre ?</th><th>(MN) // (BC) ?</th></tr>
+    <tr><td>M du côté de B, N du côté de C</td><td>A, M, B</td><td>A, N, C</td><td class="oui">oui</td><td class="oui">oui</td></tr>
+    <tr><td>M et N de l'autre côté de A (papillon)</td><td>M, A, B</td><td>N, A, C</td><td class="oui">oui</td><td class="oui">oui</td></tr>
+    <tr><td>M du côté de B, N de l'autre côté de A</td><td>A, M, B</td><td>N, A, C</td><td class="non">non</td><td class="non">non</td></tr>
+    <tr><td>M de l'autre côté de A, N du côté de C</td><td>M, A, B</td><td>A, N, C</td><td class="non">non</td><td class="non">non</td></tr>
+  </table>
+  <div class="redac">
+    <p><b>Réciproque du théorème de Thalès</b></p>
+    <p>Si <b>AM/AB = AN/AC</b> <u>et</u> si les points A, M, B et les points A, N, C sont alignés <b>dans le même ordre</b>, alors les droites (MN) et (BC) sont parallèles.</p>
+  </div>
+  <div class="redac piege">
+    <p><b>Le piège :</b> l'égalité des rapports ne suffit pas. Il faut <b>toujours</b> vérifier (et écrire dans la rédaction) que les points sont alignés dans le même ordre.</p>
+  </div>
+</div>
+</div>
+
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var AB = 8, AC = 10, AM = 6, AN = 7.5, A1 = -12, A2 = 38, W = 600, H = 440, NS = 'http://www.w3.org/2000/svg';
+  var ex = { t: 2, s: 3, drag: null, trouves: {}, attente: null };
+  function rad(d) { return d * Math.PI / 180; }
+  function mk(tag, at, txt) { var e = document.createElementNS(NS, tag); for (var k in at) e.setAttribute(k, at[k]); if (txt != null) e.textContent = txt; return e; }
+  function col(v) { return getComputedStyle(document.documentElement).getPropertyValue(v).trim(); }
+  var u = [Math.cos(rad(A1)), Math.sin(rad(A1))], v = [Math.cos(rad(A2)), Math.sin(rad(A2))];
+  function P(d, w) { return [d * w[0], d * w[1]]; }
+  // repère écran : toutes les positions possibles de M (−9 à 11) et N tiennent dans le cadre
+  function repere(w0, h0, pad, ext) {
+    var xs = ext.map(function (p) { return p[0]; }), ys = ext.map(function (p) { return p[1]; });
+    var minx = Math.min.apply(0, xs), maxx = Math.max.apply(0, xs), miny = Math.min.apply(0, ys), maxy = Math.max.apply(0, ys);
+    var k = Math.min((w0 - 2 * pad) / (maxx - minx), (h0 - 2 * pad) / (maxy - miny));
+    var ox = (w0 - k * (maxx - minx)) / 2 - k * minx, oy = (h0 + k * (maxy - miny)) / 2 + k * miny;
+    return { k: k, T: function (p) { return [ox + k * p[0], oy - k * p[1]]; } };
+  }
+  var R = repere(W, H, 25, [P(-8, u), P(10.5, u), P(-8.5, v), P(11, v)]);
+
+  function dessin(svg, R, t, s, small, ticks) {
+    var A = [0, 0], B = P(AB, u), C = P(AC, v), M = P(t, u), N = P(s, v), T = R.T;
+    svg.innerHTML = '';
+    function ln(p, q, c, w, op, dash) { var a = T(p), b = T(q), at = { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: c, 'stroke-width': w, 'stroke-linecap': 'round', 'stroke-opacity': op || 1 }; if (dash) at['stroke-dasharray'] = dash; svg.appendChild(mk('line', at)); }
+    ln(P(-30, u), P(30, u), col('--d1'), 1.6, .55); ln(P(-30, v), P(30, v), col('--d2'), 1.6, .55);
+    if (ticks) [[u, col('--d1')], [v, col('--d2')]].forEach(function (x) {
+      var w = x[0], n = [-w[1], w[0]];
+      for (var i = -9; i <= 11; i++) { if (!i) continue; var c = P(i, w); ln([c[0] + .12 * n[0], c[1] + .12 * n[1]], [c[0] - .12 * n[0], c[1] - .12 * n[1]], x[1], 1, .6); }
+    });
+    ln(B, C, col('--bc'), small ? 2 : 2.6);
+    // (MN) prolongée en pointillés pour juger du parallélisme
+    var d = [N[0] - M[0], N[1] - M[1]];
+    ln([M[0] - 3 * d[0], M[1] - 3 * d[1]], [N[0] + 3 * d[0], N[1] + 3 * d[1]], col('--trap'), 1, .45, '4 4');
+    ln(M, N, col('--trap'), small ? 2 : 2.4);
+    function pt(p, nom, c, dx, dy, handle) {
+      var a = T(p);
+      if (handle) svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: 15, fill: c, 'fill-opacity': .15, stroke: c, 'stroke-width': 1.5, style: 'cursor:grab' }));
+      svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: small ? 3 : 4.5, fill: c }));
+      svg.appendChild(mk('text', { x: a[0] + dx, y: a[1] + dy, fill: c, 'font-size': small ? 13 : 19, 'text-anchor': 'middle', 'dominant-baseline': 'middle' }, nom));
+    }
+    var f = small ? .6 : 1;
+    pt(A, 'A', col('--bc'), -12 * f, 16 * f); pt(B, 'B', col('--d1'), 4 * f, 18 * f); pt(C, 'C', col('--d2'), -16 * f, -6 * f);
+    pt(M, 'M', col('--d1'), 0, -24 * f, !small); pt(N, 'N', col('--d2'), 0, -24 * f, !small);
+  }
+  function fmt1(x) { return String(Math.round(Math.abs(x) * 10) / 10).replace('.', ','); }
+  function maj() { dessin($('#fig'), R, ex.t, ex.s, false, true); $('#v-am').textContent = fmt1(ex.t); $('#v-an').textContent = fmt1(ex.s); }
+  function arrondi(x, cible) { x = Math.round(x * 10) / 10; if (Math.abs(x - cible) <= .3) return cible; if (Math.abs(x + cible) <= .3) return -cible; return x || .1; }
+  function fb(t, c) { var f = $('#fb'); f.textContent = t; f.className = 'ex-fb ' + (c || ''); }
+
+  var fig = $('#fig');
+  function svgPt(e) { var r = fig.getBoundingClientRect(); return [(e.clientX - r.left) * W / r.width, (e.clientY - r.top) * H / r.height]; }
+  fig.addEventListener('pointerdown', function (e) {
+    var p = svgPt(e), m = R.T(P(ex.t, u)), n = R.T(P(ex.s, v));
+    var dm = Math.hypot(p[0] - m[0], p[1] - m[1]), dn = Math.hypot(p[0] - n[0], p[1] - n[1]);
+    if (Math.min(dm, dn) > 32) return;
+    ex.drag = dm <= dn ? 'M' : 'N'; fig.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  fig.addEventListener('pointermove', function (e) {
+    if (!ex.drag) return;
+    var p = svgPt(e), a = R.T([0, 0]), w = ex.drag === 'M' ? u : v;
+    var d = Math.max(-9, Math.min(11, ((p[0] - a[0]) * w[0] - (p[1] - a[1]) * w[1]) / R.k));
+    if (ex.drag === 'M') ex.t = arrondi(d, AM); else ex.s = arrondi(d, AN);
+    fb(''); $('#q').hidden = true; ex.attente = null; maj();
+  });
+  ['pointerup', 'pointercancel'].forEach(function (t) { fig.addEventListener(t, function () { ex.drag = null; }); });
+
+  $('#valider').onclick = function () {
+    $('#q').hidden = true;
+    if (Math.abs(ex.t) !== AM || Math.abs(ex.s) !== AN) { fb('Relis la consigne : il faut AM = 6 cm et AN = 7,5 cm. Pour l’instant, AM = ' + fmt1(ex.t) + ' cm et AN = ' + fmt1(ex.s) + ' cm.', 'non'); return; }
+    var cle = (ex.t > 0 ? 'p' : 'm') + (ex.s > 0 ? 'p' : 'm');
+    if (ex.trouves[cle]) { fb('Tu as déjà trouvé ce cas. Cherche une autre position pour M ou pour N.', 'warn'); return; }
+    ex.attente = cle; $('#q-par').value = ''; fb('Bien placé !', 'oui'); $('#q').hidden = false;
+  };
+  $('#repondre').onclick = function () {
+    if (!ex.attente) return;
+    var m = ex.t > 0 ? 1 : -1, n = ex.s > 0 ? 1 : -1, r = $('#q-par').value;
+    if (!r) { fb('Choisis oui ou non.', 'warn'); return; }
+    if (r !== (m === n ? '1' : '0')) { fb('Regarde bien la figure : prolonge (MN) (les pointillés) et compare avec (BC).', 'non'); return; }
+    ex.trouves[ex.attente] = { m: m, n: n }; ex.attente = null; $('#q').hidden = true;
+    fb(m === n ? 'Juste : (MN) et (BC) sont parallèles.' : 'Juste : les rapports sont égaux, et pourtant (MN) et (BC) ne sont pas parallèles !', 'oui');
+    liste();
+  };
+  function ordre(sg, X, Y) { return sg === 1 ? 'A, ' + X + ', ' + Y : X + ', A, ' + Y; }
+  function liste() {
+    var box = $('#cases'), cles = Object.keys(ex.trouves), fini = cles.length === 4; box.innerHTML = '';
+    cles.forEach(function (c, i) {
+      var t = ex.trouves[c], d = document.createElement('div'); d.className = 'cas ' + (t.m === t.n ? 'juste' : 'faux');
+      d.innerHTML = '<h3>Cas n° ' + (i + 1) + '</h3><svg viewBox="0 0 240 190"></svg><p class="fb">' +
+        (fini ? ordre(t.m, 'M', 'B') + ' · ' + ordre(t.n, 'N', 'C') + '<br>' : '') + (t.m === t.n ? '(MN) // (BC)' : '(MN) et (BC) pas parallèles') + '</p>';
+      box.appendChild(d);
+      var r = repere(240, 190, 14, [P(t.m * AM, u), P(AB, u), P(t.n * AN, v), P(AC, v), [0, 0]]);
+      dessin(d.querySelector('svg'), r, t.m * AM, t.n * AN, true, false);
+    });
+    $('#score').textContent = 'Cas trouvés : ' + cles.length + ' / 4' + (fini ? ' — bravo ! Lis maintenant la condition sur l’ordre des points.' : '');
+    $('#condition').classList.toggle('on', fini);
+    if (fini) $('#condition').scrollIntoView({ behavior: 'smooth' });
+  }
+  $('#recommencer').onclick = function () { ex.trouves = {}; ex.t = 2; ex.s = 3; ex.attente = null; $('#q').hidden = true; fb(''); liste(); maj(); };
+  maj(); liste();
+})();
+</script>
+</body>
+</html>

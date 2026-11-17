@@ -37,8 +37,8 @@ Page du site : [index.html](index.html)
 ## Outils interactifs
 
 - [Parallèles ou pas ?](outils-interactifs/paralleles-ou-pas.html) (Interactif)
-- [Le piège de l'ordre des points : les 4 cas](outils-interactifs/thales-ordre-des-points.html) (Interactif)
-- [MN/BC = AN/AC : parallèles ou pas ?](outils-interactifs/thales-ordre-des-points.html?partie=mn) (Interactif)
+- [Piège de la réciproque n° 1 : AM/AB = AN/AC, où placer M et N ? (4 cas)](outils-interactifs/thales-piege-ordre-des-points.html) (Interactif)
+- [Piège de la réciproque n° 2 : MN/BC = AM/AB, placer N au compas](outils-interactifs/thales-piege-mn-bc.html) (Interactif)
 - [Thalès : exercices interactifs](outils-interactifs/thales-exercices.html) (Exercices)
 
 [← Toutes les séquences de 3ème](../README.md)
