@@ -67,6 +67,7 @@ h2{font-size:1.3rem;margin-top:6px}
 .cas label{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:.88rem;margin:6px 0}
 .cas select{font:inherit;font-size:.88rem;padding:3px 4px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
 .cas.juste{border-color:var(--ok)}.cas.faux{border-color:var(--no)}
+.ex-fb{font-weight:700;min-height:1.3em;margin:6px 0}.ex-fb.oui{color:var(--ok)}.ex-fb.non{color:var(--no)}.ex-fb.warn{color:var(--d2)}
 .cas .fb{font-size:.84rem;min-height:1.2em;margin:4px 0 0}
 .cas.juste .fb{color:var(--ok)}.cas.faux .fb{color:var(--no)}
 .score{font:700 1.05rem var(--display);margin:10px 0 0}
@@ -98,13 +99,38 @@ svg text{font-family:var(--display);font-weight:700}
       <span class="eq"><span class="frac"><b>AN</b><span>AC</span></span> = <span class="frac"><b>7,5</b><span>10</span></span> = 0,75</span>
     </div>
     <p>Les deux rapports sont <b>égaux</b>. On a envie de conclure tout de suite que (MN) // (BC)… <b>Attention !</b> L'énoncé dit seulement que les points sont alignés : il ne dit pas <b>où</b> sont M et N.</p>
-    <p>M est sur la droite (AB) à 6 cm de A : il peut être <b>du côté de B</b> ou <b>de l'autre côté de A</b>. Pareil pour N sur la droite (AC). Cela fait <b>4 cas</b>.</p>
-    <button class="btn main" id="voir-fig" type="button">2. Explorer les 4 cas</button>
+    <p>M est sur la droite (AB) à 6 cm de A : il peut être <b>du côté de B</b> ou <b>de l'autre côté de A</b>. Pareil pour N sur la droite (AC). À toi de trouver toutes les possibilités !</p>
+    <button class="btn main" id="voir-fig" type="button">2. Placer M et N</button>
   </div>
 </div>
 
+<div class="card etape" id="etape-quiz">
+  <h2>À toi : place M et N</h2>
+  <p><b>Consigne :</b> place M sur la droite (AB) et N sur la droite (AC) pour que <b>AM = 6 cm</b> et <b>AN = 7,5 cm</b>. Il y a <b>4 façons</b> de le faire : trouve-les toutes ! Pour chacune, dis si (MN) et (BC) sont parallèles.</p>
+  <div class="grid2">
+    <div>
+      <svg class="fig" id="fig-ex" viewBox="0 0 600 440" role="img" aria-label="Place M et N"></svg>
+      <p class="note">Fais glisser M et N (les ronds). Les graduations sont tous les 1 cm. AB = 8 cm et AC = 10 cm.</p>
+    </div>
+    <div>
+      <p class="ordre">AM = <span class="d1" id="ex-am"></span> cm · AN = <span class="d2" id="ex-an"></span> cm</p>
+      <p><button class="btn main" id="ex-valider" type="button">Valider ma position</button></p>
+      <p class="ex-fb" id="ex-fb" role="status"></p>
+      <div id="ex-q" class="cas" hidden>
+        <label>Ordre sur (AB) <select data-q="ab"><option value="">?</option><option value="1">A, M, B</option><option value="-1">M, A, B</option></select></label>
+        <label>Ordre sur (AC) <select data-q="ac"><option value="">?</option><option value="1">A, N, C</option><option value="-1">N, A, C</option></select></label>
+        <label>(MN) // (BC) ? <select data-q="par"><option value="">?</option><option value="1">oui</option><option value="0">non</option></select></label>
+        <p><button class="btn" id="ex-repondre" type="button">Répondre</button></p>
+      </div>
+      <p class="score" id="score"></p>
+      <p><button class="btn" id="ex-recommencer" type="button">Recommencer</button> <button class="btn" id="ex-corr" type="button">Voir la correction</button></p>
+    </div>
+  </div>
+  <div class="cases" id="cases" style="margin-top:12px"></div>
+</div>
+
 <div class="card etape" id="etape-fig">
-  <h2>Explore les 4 cas</h2>
+  <h2>Vérifie : les 4 cas en mouvement</h2>
   <div class="grid2">
     <div>
       <svg class="fig" id="fig" viewBox="0 0 600 440" role="img" aria-label="Figure de Thalès"></svg>
@@ -123,13 +149,6 @@ svg text{font-family:var(--display);font-weight:700}
   </div>
 </div>
 
-<div class="card etape" id="etape-quiz">
-  <h2>À toi : retrouve les 4 cas</h2>
-  <p>Pour chaque figure, donne l'ordre des points sur chaque droite, puis dis si (MN) et (BC) sont parallèles. Les longueurs sont toujours AB = 8, AM = 6, AC = 10 et AN = 7,5.</p>
-  <div class="cases" id="cases"></div>
-  <p><button class="btn main" id="verifier" type="button">Vérifier</button> <button class="btn" id="melanger" type="button">Nouvelles figures</button></p>
-  <p class="score" id="score"></p>
-</div>
 
 <div class="card etape" id="etape-mn">
   <h2>Et si on compare MN/BC et AN/AC ?</h2>
@@ -264,8 +283,8 @@ svg text{font-family:var(--display);font-weight:700}
   // ---------- Étapes
   $('#voir-rap').onclick = function () { $('#etape-rap').classList.add('on'); this.hidden = true; };
   $('#voir-fig').onclick = function () {
-    ['#etape-fig', '#etape-quiz', '#etape-mn', '#etape-bilan'].forEach(function (s) { $(s).classList.add('on'); });
-    this.hidden = true; maj(); nouveauxCas(); maj2(); $('#etape-fig').scrollIntoView({ behavior: 'smooth' });
+    $('#etape-quiz').classList.add('on');
+    this.hidden = true; maj(); maj2(); dessinEx(); listeCas(); $('#etape-quiz').scrollIntoView({ behavior: 'smooth' });
   };
 
   // ---------- Figure principale
@@ -312,41 +331,107 @@ svg text{font-family:var(--display);font-weight:700}
   fig.addEventListener('pointerup', function () { drag = null; });
   fig.addEventListener('pointercancel', function () { drag = null; });
 
-  // ---------- Exercice : retrouver les 4 cas
-  var CAS = [[1, 1], [-1, -1], [1, -1], [-1, 1]], tirage = [];
-  function melanger(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
-  function nouveauxCas() {
-    var box = $('#cases'); box.innerHTML = ''; $('#score').textContent = '';
-    tirage = melanger(CAS.slice()).map(function (c) {
-      var a1 = Math.random() * 360, a2 = a1 + (Math.random() < .5 ? 1 : -1) * (35 + Math.random() * 70);
-      return { m: c[0], n: c[1], a1: a1, a2: a2 };
-    });
-    tirage.forEach(function (t, i) {
-      var d = document.createElement('div'); d.className = 'cas';
-      d.innerHTML = '<h3>Figure ' + (i + 1) + '</h3><svg viewBox="0 0 240 190"></svg>' +
-        '<label>Sur (AB) <select data-q="ab"><option value="">?</option><option value="1">A, M, B</option><option value="-1">M, A, B</option></select></label>' +
-        '<label>Sur (AC) <select data-q="ac"><option value="">?</option><option value="1">A, N, C</option><option value="-1">N, A, C</option></select></label>' +
-        '<label>(MN) // (BC) ? <select data-q="par"><option value="">?</option><option value="1">oui</option><option value="0">non</option></select></label>' +
-        '<p class="fb"></p>';
-      box.appendChild(d);
-      dessiner(d.querySelector('svg'), 240, 190, t.m, t.n, t.a1, t.a2, { small: true, pad: 22 });
-    });
+  // ---------- Exercice : l'élève place M et N (AM = 6, AN = 7,5) et doit trouver les 4 cas
+  var ex = { a1: -12, a2: 38, t: 2, s: -3, drag: null, trouves: {}, attente: null };
+  var fx = $('#fig-ex'), FW = 600, FH = 440, TX;
+  function exGeo() {
+    var u = [Math.cos(rad(ex.a1)), Math.sin(rad(ex.a1))], v = [Math.cos(rad(ex.a2)), Math.sin(rad(ex.a2))];
+    var ext = [[-8 * u[0], -8 * u[1]], [10.5 * u[0], 10.5 * u[1]], [-8.5 * v[0], -8.5 * v[1]], [11 * v[0], 11 * v[1]]];
+    var xs = ext.map(function (p) { return p[0]; }), ys = ext.map(function (p) { return p[1]; });
+    var minx = Math.min.apply(0, xs), maxx = Math.max.apply(0, xs), miny = Math.min.apply(0, ys), maxy = Math.max.apply(0, ys);
+    var k = Math.min((FW - 50) / (maxx - minx), (FH - 50) / (maxy - miny));
+    var ox = (FW - k * (maxx - minx)) / 2 - k * minx, oy = (FH + k * (maxy - miny)) / 2 + k * miny;
+    return { u: u, v: v, k: k, T: function (p) { return [ox + k * p[0], oy - k * p[1]]; } };
   }
-  $('#melanger').onclick = nouveauxCas;
-  $('#verifier').onclick = function () {
-    var bons = 0;
-    document.querySelectorAll('.cas').forEach(function (d, i) {
-      var t = tirage[i], q = function (x) { return d.querySelector('[data-q=' + x + ']').value; };
-      var ok1 = q('ab') === String(t.m), ok2 = q('ac') === String(t.n), ok3 = q('par') === (t.m === t.n ? '1' : '0');
-      var ok = ok1 && ok2 && ok3; if (ok) bons++;
-      d.classList.toggle('juste', ok); d.classList.toggle('faux', !ok);
-      var fb = d.querySelector('.fb');
-      if (ok) fb.textContent = 'Juste ! ' + (t.m === t.n ? 'Même ordre, donc parallèles.' : 'Pas le même ordre, donc pas parallèles.');
-      else if (!ok1 || !ok2) fb.textContent = 'Regarde où est A : entre M et B (ou N et C), ou bien à une extrémité ?';
-      else fb.textContent = t.m === t.n ? 'Les points sont dans le même ordre et les rapports égaux : la réciproque s’applique.' : 'Les rapports sont égaux, mais l’ordre n’est pas le même : pas parallèles.';
+  function arrondi(x, cible) { // au mm, avec un aimant sur ±cible
+    x = Math.round(x * 10) / 10;
+    if (Math.abs(x - cible) <= 0.3) return cible;
+    if (Math.abs(x + cible) <= 0.3) return -cible;
+    return x;
+  }
+  function fmt1(x) { return String(Math.round(Math.abs(x) * 10) / 10).replace('.', ','); }
+  function dessinEx() {
+    var g = TX = exGeo(), css = getComputedStyle(document.documentElement), col = function (v) { return css.getPropertyValue(v).trim(); };
+    var P = function (d, w) { return [d * w[0], d * w[1]]; };
+    var A = [0, 0], B = P(AB, g.u), C = P(AC, g.v), M = P(ex.t, g.u), N = P(ex.s, g.v);
+    fx.innerHTML = '';
+    function ln(p, q, c, w, op) { var a = g.T(p), b = g.T(q); fx.appendChild(mk('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: c, 'stroke-width': w, 'stroke-linecap': 'round', 'stroke-opacity': op || 1 })); }
+    ln(P(-30, g.u), P(30, g.u), col('--d1'), 1.6, .55); ln(P(-30, g.v), P(30, g.v), col('--d2'), 1.6, .55);
+    // graduations tous les 1 cm sur chaque droite (comme une règle)
+    [[g.u, col('--d1')], [g.v, col('--d2')]].forEach(function (x) {
+      var w = x[0], n = [-w[1], w[0]];
+      for (var i = -9; i <= 11; i++) { if (!i) continue; var c = P(i, w), a = g.T([c[0] + .12 * n[0], c[1] + .12 * n[1]]), b = g.T([c[0] - .12 * n[0], c[1] - .12 * n[1]]);
+        fx.appendChild(mk('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: x[1], 'stroke-width': 1, 'stroke-opacity': .6 })); }
     });
-    $('#score').textContent = bons + ' / 4' + (bons === 4 ? ' — bravo, tu as trouvé les 4 cas !' : '');
+    ln(B, C, col('--bc'), 2.6);
+    ln(M, N, col('--trap'), 2.4, .85);
+    function pt(p, nom, c, dx, dy, r, poignee) {
+      var a = g.T(p);
+      if (poignee) fx.appendChild(mk('circle', { cx: a[0], cy: a[1], r: 15, fill: c, 'fill-opacity': .15, stroke: c, 'stroke-width': 1.5, style: 'cursor:grab' }));
+      fx.appendChild(mk('circle', { cx: a[0], cy: a[1], r: r || 4.5, fill: c }));
+      fx.appendChild(mk('text', { x: a[0] + dx, y: a[1] + dy, fill: c, 'font-size': 19, 'text-anchor': 'middle', 'dominant-baseline': 'middle' }, nom));
+    }
+    pt(A, 'A', col('--bc'), -12, 16); pt(B, 'B', col('--d1'), 4, 18); pt(C, 'C', col('--d2'), -16, -6);
+    pt(M, 'M', col('--d1'), 0, -24, 5, true); pt(N, 'N', col('--d2'), 0, -24, 5, true);
+    $('#ex-am').textContent = fmt1(ex.t); $('#ex-an').textContent = fmt1(ex.s);
+  }
+  function exPt(e) { var r = fx.getBoundingClientRect(); return [(e.clientX - r.left) * FW / r.width, (e.clientY - r.top) * FH / r.height]; }
+  fx.addEventListener('pointerdown', function (e) {
+    var p = exPt(e), g = exGeo(), m = g.T([ex.t * g.u[0], ex.t * g.u[1]]), n = g.T([ex.s * g.v[0], ex.s * g.v[1]]);
+    var dm = Math.hypot(p[0] - m[0], p[1] - m[1]), dn = Math.hypot(p[0] - n[0], p[1] - n[1]);
+    if (Math.min(dm, dn) > 32) return;
+    ex.drag = dm <= dn ? 'M' : 'N'; fx.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  fx.addEventListener('pointermove', function (e) {
+    if (!ex.drag) return;
+    var p = exPt(e), g = TX, a = g.T([0, 0]), w = ex.drag === 'M' ? g.u : g.v;
+    var d = ((p[0] - a[0]) * w[0] - (p[1] - a[1]) * w[1]) / g.k; // projection sur la droite, en cm
+    d = Math.max(-9, Math.min(11, d));
+    if (ex.drag === 'M') ex.t = arrondi(d, AM); else ex.s = arrondi(d, AN);
+    if (ex.t === 0) ex.t = 0.1; if (ex.s === 0) ex.s = 0.1;
+    $('#ex-fb').textContent = ''; $('#ex-q').hidden = true; ex.attente = null;
+    dessinEx();
+  });
+  fx.addEventListener('pointerup', function () { ex.drag = null; });
+  fx.addEventListener('pointercancel', function () { ex.drag = null; });
+  function exFb(t, cls) { var f = $('#ex-fb'); f.textContent = t; f.className = 'ex-fb ' + (cls || ''); }
+  $('#ex-valider').onclick = function () {
+    $('#ex-q').hidden = true;
+    if (Math.abs(ex.t) !== AM || Math.abs(ex.s) !== AN) {
+      exFb('Relis la consigne : il faut AM = 6 cm et AN = 7,5 cm. Pour l’instant, AM = ' + fmt1(ex.t) + ' cm et AN = ' + fmt1(ex.s) + ' cm.', 'non'); return;
+    }
+    var cle = (ex.t > 0 ? 'p' : 'm') + (ex.s > 0 ? 'p' : 'm');
+    if (ex.trouves[cle]) { exFb('Tu as déjà trouvé ce cas. Cherche une autre position pour M ou pour N.', 'warn'); return; }
+    ex.attente = cle; exFb('Bien placé ! Maintenant, réponds :', 'oui');
+    document.querySelectorAll('#ex-q select').forEach(function (s) { s.value = ''; });
+    $('#ex-q').hidden = false;
   };
+  $('#ex-repondre').onclick = function () {
+    if (!ex.attente) return;
+    var m = ex.t > 0 ? 1 : -1, n = ex.s > 0 ? 1 : -1, q = function (x) { return $('#ex-q [data-q=' + x + ']').value; };
+    if (!q('ab') || !q('ac') || !q('par')) { exFb('Réponds aux trois questions.', 'warn'); return; }
+    var e = [];
+    if (q('ab') !== String(m)) e.push('l’ordre sur (AB)');
+    if (q('ac') !== String(n)) e.push('l’ordre sur (AC)');
+    if (q('par') !== (m === n ? '1' : '0')) e.push('la conclusion');
+    if (e.length) { exFb('Regarde encore ' + e.join(' et ') + '. Où est A : entre les deux points, ou à une extrémité ?', 'non'); return; }
+    ex.trouves[ex.attente] = { m: m, n: n }; ex.attente = null; $('#ex-q').hidden = true;
+    exFb(m === n ? 'Juste ! Même ordre et rapports égaux : (MN) // (BC).' : 'Juste ! Les rapports sont égaux, mais les points ne sont pas dans le même ordre : pas parallèles.', 'oui');
+    listeCas();
+  };
+  function listeCas() {
+    var box = $('#cases'), cles = Object.keys(ex.trouves); box.innerHTML = '';
+    cles.forEach(function (c, i) {
+      var t = ex.trouves[c], d = document.createElement('div'); d.className = 'cas juste';
+      d.innerHTML = '<h3>Cas trouvé n° ' + (i + 1) + '</h3><svg viewBox="0 0 240 190"></svg><p class="fb">' + ordre(t.m, 'M', 'B') + ' · ' + ordre(t.n, 'N', 'C') + '<br>' + (t.m === t.n ? '(MN) // (BC)' : '(MN) et (BC) pas parallèles') + '</p>';
+      box.appendChild(d);
+      dessiner(d.querySelector('svg'), 240, 190, t.m, t.n, ex.a1, ex.a2, { small: true, pad: 22 });
+    });
+    $('#score').textContent = 'Cas trouvés : ' + cles.length + ' / 4' + (cles.length === 4 ? ' — bravo, tu as trouvé les 4 cas ! Vérifie avec la figure animée ci-dessous.' : '');
+    if (cles.length === 4) ['#etape-fig', '#etape-mn', '#etape-bilan'].forEach(function (s) { $(s).classList.add('on'); });
+  }
+  $('#ex-corr').onclick = function () { ['#etape-fig', '#etape-mn', '#etape-bilan'].forEach(function (s) { $(s).classList.add('on'); }); $('#etape-fig').scrollIntoView({ behavior: 'smooth' }); };
+  $('#ex-recommencer').onclick = function () { ex.trouves = {}; ex.t = 2; ex.s = -3; ex.attente = null; $('#ex-q').hidden = true; exFb(''); listeCas(); dessinEx(); };
   // ---------- MN/BC = AN/AC ne suffit pas (A(0;0), B(8;0), C(6;8) : AC = 10, BC = √68 ; N(4,5;6) : AN = 7,5)
   // M(x;0) : MN² = (x − 4,5)² + 36 = 0,5625 × 68 = 38,25 ⇔ x = 3 ou x = 6.
   var trouves = {};
