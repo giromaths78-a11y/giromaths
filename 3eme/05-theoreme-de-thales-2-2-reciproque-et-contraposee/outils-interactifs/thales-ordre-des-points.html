@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Thalès : le piège de l'ordre des points</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<style>
+/* Outil GiroMaths 3e, séquence 5 : réciproque de Thalès et ordre des points (4 cas). */
+:root{
+  --paper:#fbfcfe; --ink:#16202e; --muted:#5d6878; --grid:#e3e9f1; --line:#cfd9e5; --panel:#eef3f9; --card:#fff;
+  --d1:#1e6ec8; --d2:#c25e00; --bc:#16202e;
+  --ok:#14703c; --ok-fill:#e2f3e8; --no:#b3261e; --no-fill:#fbe9e7; --trap:#7a3fb0; --trap-fill:#f1e8fa;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Segoe UI",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#111a29; --ink:#e4ebf5; --muted:#9aabc4; --grid:#1a2538; --line:#2c3b55; --panel:#17233a; --card:#162133;
+  --d1:#7fb0f5; --d2:#f0a35e; --bc:#e4ebf5;
+  --ok:#5fd394; --ok-fill:#14301f; --no:#ff8a80; --no-fill:#3a1715; --trap:#c9a2f0; --trap-fill:#2a1d3a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#111a29; --ink:#e4ebf5; --muted:#9aabc4; --grid:#1a2538; --line:#2c3b55; --panel:#17233a; --card:#162133;
+  --d1:#7fb0f5; --d2:#f0a35e; --bc:#e4ebf5;
+  --ok:#5fd394; --ok-fill:#14301f; --no:#ff8a80; --no-fill:#3a1715; --trap:#c9a2f0; --trap-fill:#2a1d3a; color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.5 var(--body);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:20px 20px}
+.wrap{max-width:980px;margin:0 auto;padding:24px 16px 64px}
+h1,h2,h3{font-family:var(--display);line-height:1.15;margin:0 0 10px}
+h1{font-size:clamp(1.6rem,4.5vw,2.3rem)}
+h2{font-size:1.3rem;margin-top:6px}
+.kick{display:inline-block;font:700 .8rem var(--display);letter-spacing:.06em;text-transform:uppercase;background:var(--ink);color:var(--paper);padding:3px 10px;border-radius:6px;transform:rotate(-1.5deg);margin-bottom:8px}
+.card{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:16px 18px;margin:18px 0;box-shadow:5px 5px 0 var(--d1)}
+.enonce{font-size:1.05rem}
+.donnees{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.donnees span{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-weight:700}
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.1;margin:0 3px;font-weight:700}
+.frac b{border-bottom:2px solid currentColor;padding:0 3px}
+.rap{display:flex;flex-wrap:wrap;gap:22px;align-items:center;margin:10px 0}
+.rap .eq{font-size:1.15rem}
+.etape{display:none}.etape.on{display:block}
+.btn{font:700 .95rem var(--display);cursor:pointer;border:2px solid var(--ink);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 16px}
+.btn:hover{background:var(--panel)}
+.btn.main{background:var(--d1);border-color:var(--d1);color:#fff}
+.grid2{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:780px){.grid2{grid-template-columns:1fr}}
+.fig{background:var(--paper);border:1px solid var(--line);border-radius:12px;width:100%;height:auto;display:block;touch-action:none}
+.choix{margin:0 0 12px}
+.choix p{margin:0 0 6px;font-weight:700}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:600 .9rem var(--body);cursor:pointer;border:2px solid var(--line);background:var(--card);color:var(--ink);border-radius:10px;padding:5px 10px}
+.seg button[aria-pressed=true]{border-color:var(--ink);background:var(--panel);box-shadow:inset 0 -3px 0 var(--d1)}
+.seg.n button[aria-pressed=true]{box-shadow:inset 0 -3px 0 var(--d2)}
+.ordre{font-family:var(--display);font-size:1.05rem;margin:4px 0}
+.ordre .d1{color:var(--d1)}.ordre .d2{color:var(--d2)}
+.verdict{border-radius:12px;padding:10px 12px;margin-top:10px;border:2px solid}
+.verdict.ok{background:var(--ok-fill);border-color:var(--ok)}
+.verdict.no{background:var(--no-fill);border-color:var(--no)}
+.verdict h3{font-size:1.05rem;margin:0 0 4px}
+.verdict p{margin:4px 0}
+.note{font-size:.88rem;color:var(--muted)}
+.cases{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:14px}
+.cas{border:2px solid var(--line);border-radius:14px;padding:10px;background:var(--card)}
+.cas h3{font-size:1rem;margin:0 0 6px}
+.cas svg{width:100%;height:auto;display:block;background:var(--paper);border-radius:8px;border:1px solid var(--line)}
+.cas label{display:flex;justify-content:space-between;align-items:center;gap:6px;font-size:.88rem;margin:6px 0}
+.cas select{font:inherit;font-size:.88rem;padding:3px 4px;border:2px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.cas.juste{border-color:var(--ok)}.cas.faux{border-color:var(--no)}
+.cas .fb{font-size:.84rem;min-height:1.2em;margin:4px 0 0}
+.cas.juste .fb{color:var(--ok)}.cas.faux .fb{color:var(--no)}
+.score{font:700 1.05rem var(--display);margin:10px 0 0}
+.redac{background:var(--panel);border-left:5px solid var(--d1);border-radius:8px;padding:10px 14px;margin:10px 0}
+.redac.piege{border-left-color:var(--no)}
+.redac p{margin:4px 0}
+.tbl{border-collapse:collapse;width:100%;font-size:.95rem;margin:8px 0}
+.tbl th,.tbl td{border:1px solid var(--line);padding:6px 8px;text-align:center}
+.tbl th{background:var(--panel);font-family:var(--display)}
+.oui{color:var(--ok);font-weight:700}.non{color:var(--no);font-weight:700}
+svg text{font-family:var(--display);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+<span class="kick">3e · Thalès 2/2</span>
+<h1>Le piège de l'ordre des points</h1>
+<p>Même quand les deux rapports sont égaux, les droites ne sont pas toujours parallèles. Tout dépend de <b>l'ordre des points</b>.</p>
+
+<div class="card enonce">
+  <h2>L'énoncé</h2>
+  <p>Les points A, B, M et les points A, C, N sont alignés.</p>
+  <div class="donnees"><span>AB = 8 cm</span><span>AM = 6 cm</span><span>AC = 10 cm</span><span>AN = 7,5 cm</span></div>
+  <p>Les droites (MN) et (BC) sont-elles parallèles ?</p>
+  <button class="btn main" id="voir-rap" type="button">1. Calculer les rapports</button>
+  <div class="etape" id="etape-rap">
+    <div class="rap">
+      <span class="eq"><span class="frac"><b>AM</b><span>AB</span></span> = <span class="frac"><b>6</b><span>8</span></span> = 0,75</span>
+      <span class="eq"><span class="frac"><b>AN</b><span>AC</span></span> = <span class="frac"><b>7,5</b><span>10</span></span> = 0,75</span>
+    </div>
+    <p>Les deux rapports sont <b>égaux</b>. On a envie de conclure tout de suite que (MN) // (BC)… <b>Attention !</b> L'énoncé dit seulement que les points sont alignés : il ne dit pas <b>où</b> sont M et N.</p>
+    <p>M est sur la droite (AB) à 6 cm de A : il peut être <b>du côté de B</b> ou <b>de l'autre côté de A</b>. Pareil pour N sur la droite (AC). Cela fait <b>4 cas</b>.</p>
+    <button class="btn main" id="voir-fig" type="button">2. Explorer les 4 cas</button>
+  </div>
+</div>
+
+<div class="card etape" id="etape-fig">
+  <h2>Explore les 4 cas</h2>
+  <div class="grid2">
+    <div>
+      <svg class="fig" id="fig" viewBox="0 0 600 440" role="img" aria-label="Figure de Thalès"></svg>
+      <p class="note">Tu peux faire glisser les points B et C pour changer la figure : les longueurs ne changent pas.</p>
+    </div>
+    <div>
+      <div class="choix"><p>Où est M ?</p>
+        <div class="seg" id="segM"><button type="button" data-v="1">Du côté de B</button><button type="button" data-v="-1">De l'autre côté de A</button></div></div>
+      <div class="choix"><p>Où est N ?</p>
+        <div class="seg n" id="segN"><button type="button" data-v="1">Du côté de C</button><button type="button" data-v="-1">De l'autre côté de A</button></div></div>
+      <p class="ordre">Sur (AB) : <span class="d1" id="ordreM"></span></p>
+      <p class="ordre">Sur (AC) : <span class="d2" id="ordreN"></span></p>
+      <div class="verdict" id="verdict"></div>
+      <p class="note" id="legende-pointilles"></p>
+    </div>
+  </div>
+</div>
+
+<div class="card etape" id="etape-quiz">
+  <h2>À toi : retrouve les 4 cas</h2>
+  <p>Pour chaque figure, donne l'ordre des points sur chaque droite, puis dis si (MN) et (BC) sont parallèles. Les longueurs sont toujours AB = 8, AM = 6, AC = 10 et AN = 7,5.</p>
+  <div class="cases" id="cases"></div>
+  <p><button class="btn main" id="verifier" type="button">Vérifier</button> <button class="btn" id="melanger" type="button">Nouvelles figures</button></p>
+  <p class="score" id="score"></p>
+</div>
+
+<div class="card etape" id="etape-bilan">
+  <h2>Ce qu'il faut retenir</h2>
+  <table class="tbl">
+    <tr><th>Cas</th><th>Sur (AB)</th><th>Sur (AC)</th><th>Même ordre ?</th><th>(MN) // (BC) ?</th></tr>
+    <tr><td>1</td><td>A, M, B</td><td>A, N, C</td><td class="oui">oui</td><td class="oui">oui</td></tr>
+    <tr><td>2 (papillon)</td><td>M, A, B</td><td>N, A, C</td><td class="oui">oui</td><td class="oui">oui</td></tr>
+    <tr><td>3</td><td>A, M, B</td><td>N, A, C</td><td class="non">non</td><td class="non">non</td></tr>
+    <tr><td>4</td><td>M, A, B</td><td>A, N, C</td><td class="non">non</td><td class="non">non</td></tr>
+  </table>
+  <p>Dans les 4 cas, <b>AM/AB = AN/AC = 0,75</b>. L'égalité des rapports ne suffit donc pas : pour utiliser la réciproque, il faut <b>aussi</b> que les points soient alignés <b>dans le même ordre</b>.</p>
+  <div class="redac">
+    <p><b>Rédaction (cas 1 ou 2)</b></p>
+    <p>D'une part, AM/AB = 6/8 = 0,75. D'autre part, AN/AC = 7,5/10 = 0,75.</p>
+    <p>Donc AM/AB = AN/AC.</p>
+    <p>De plus, les points A, M, B et les points A, N, C sont alignés dans le même ordre.</p>
+    <p>D'après la réciproque du théorème de Thalès, les droites (MN) et (BC) sont parallèles.</p>
+  </div>
+  <div class="redac piege">
+    <p><b>Cas 3 ou 4 : pourquoi ce n'est pas parallèle ?</b></p>
+    <p>Les points ne sont pas dans le même ordre : on ne peut pas utiliser la réciproque.</p>
+    <p>Traçons la parallèle à (BC) passant par M : elle coupe (AC) en un point N'. D'après le théorème de Thalès, AN'/AC = AM/AB = 0,75, donc AN' = 7,5 cm, et N' est placé par rapport à A comme M (A, N', C dans le même ordre que A, M, B).</p>
+    <p>Or N est à 7,5 cm de A <b>de l'autre côté</b> : N et N' sont symétriques par rapport à A, donc N ≠ N'. La droite (MN) n'est pas la parallèle à (BC) passant par M : (MN) et (BC) ne sont pas parallèles.</p>
+  </div>
+  <p class="note">Au brevet, l'énoncé précise en général « alignés dans le même ordre », ou bien la figure le montre. Il faut le citer dans la rédaction.</p>
+</div>
+</div>
+
+<script>
+(function () {
+  var $ = function (s) { return document.querySelector(s); };
+  var AB = 8, AM = 6, AC = 10, AN = 7.5;
+  var etat = { m: 1, n: 1, a1: -12, a2: 38 }; // angles en degrés des demi-droites [AB) et [AC)
+  var SVGNS = 'http://www.w3.org/2000/svg';
+
+  function rad(d) { return d * Math.PI / 180; }
+  function points(m, n, a1, a2) {
+    var u = [Math.cos(rad(a1)), Math.sin(rad(a1))], v = [Math.cos(rad(a2)), Math.sin(rad(a2))];
+    return {
+      A: [0, 0], B: [AB * u[0], AB * u[1]], C: [AC * v[0], AC * v[1]],
+      M: [m * AM * u[0], m * AM * u[1]], N: [n * AN * v[0], n * AN * v[1]],
+      Np: [m * AN * v[0], m * AN * v[1]], u: u, v: v // N' : point de (AC) tel que (MN') // (BC)
+    };
+  }
+  function ordre(s, X, Y) { return s === 1 ? 'A, ' + X + ', ' + Y : X + ', A, ' + Y; }
+
+  function mk(tag, at, txt) {
+    var e = document.createElementNS(SVGNS, tag);
+    for (var k in at) e.setAttribute(k, at[k]);
+    if (txt != null) e.textContent = txt;
+    return e;
+  }
+  // Dessine une figure dans un svg (W x H) ; renvoie la transformation pour le glisser-déposer.
+  function dessiner(svg, W, H, m, n, a1, a2, opts) {
+    opts = opts || {};
+    var P = points(m, n, a1, a2), css = getComputedStyle(document.documentElement);
+    var c1 = css.getPropertyValue('--d1').trim(), c2 = css.getPropertyValue('--d2').trim(), cb = css.getPropertyValue('--bc').trim();
+    var cok = css.getPropertyValue('--ok').trim(), cno = css.getPropertyValue('--no').trim(), ctrap = css.getPropertyValue('--trap').trim(), cm = css.getPropertyValue('--muted').trim();
+    var pts = [P.A, P.B, P.C, P.M, P.N];
+    if (opts.aide) pts.push(P.Np);
+    var xs = pts.map(function (p) { return p[0]; }), ys = pts.map(function (p) { return p[1]; });
+    var minx = Math.min.apply(0, xs), maxx = Math.max.apply(0, xs), miny = Math.min.apply(0, ys), maxy = Math.max.apply(0, ys);
+    var pad = opts.pad || 34, k = Math.min((W - 2 * pad) / (maxx - minx || 1), (H - 2 * pad) / (maxy - miny || 1));
+    var ox = (W - k * (maxx - minx)) / 2 - k * minx, oy = (H + k * (maxy - miny)) / 2 + k * miny;
+    var T = function (p) { return [ox + k * p[0], oy - k * p[1]]; }; // y vers le haut
+    svg.innerHTML = '';
+    function droite(u, col) { // droite passant par A de direction u, coupée au cadre
+      var L = 40, a = T([-L * u[0], -L * u[1]]), b = T([L * u[0], L * u[1]]);
+      svg.appendChild(mk('line', { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: col, 'stroke-width': 1.6, 'stroke-opacity': .55 }));
+    }
+    function seg(p, q, col, w, dash) {
+      var a = T(p), b = T(q), at = { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: col, 'stroke-width': w, 'stroke-linecap': 'round' };
+      if (dash) at['stroke-dasharray'] = dash;
+      svg.appendChild(mk('line', at));
+    }
+    droite(P.u, c1); droite(P.v, c2);
+    var par = m === n;
+    if (opts.aide && !par) {
+      // parallèle à (BC) passant par M (pointillés) et point N'
+      var d = [P.C[0] - P.B[0], P.C[1] - P.B[1]], L = 3;
+      seg([P.M[0] - L * d[0], P.M[1] - L * d[1]], [P.M[0] + L * d[0], P.M[1] + L * d[1]], ctrap, 1.6, '6 5');
+    }
+    seg(P.B, P.C, cb, 2.6);
+    seg(P.M, P.N, opts.small ? ctrap : (par ? cok : cno), 3); // exercice : couleur neutre, pour ne pas donner la réponse
+    function pt(p, nom, col, dx, dy) {
+      var a = T(p);
+      svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: opts.small ? 3 : 4.5, fill: col }));
+      svg.appendChild(mk('text', { x: a[0] + dx, y: a[1] + dy, fill: col, 'font-size': opts.small ? 14 : 19, 'text-anchor': 'middle', 'dominant-baseline': 'middle' }, nom));
+    }
+    // étiquettes décalées perpendiculairement à la droite, côté opposé à l'autre droite
+    function lab(p, u, autre, nom, col) {
+      var nx = -u[1], ny = u[0];
+      if (nx * autre[0] + ny * autre[1] > 0) { nx = -nx; ny = -ny; }
+      var s = opts.small ? 13 : 18;
+      pt(p, nom, col, nx * s, -ny * s);
+    }
+    pt(P.A, 'A', cb, -14 * (P.u[0] + P.v[0]) / 1.2, 14 * (P.u[1] + P.v[1]) / 1.2);
+    lab(P.B, P.u, P.v, 'B', c1); lab(P.M, P.u, P.v, 'M', c1);
+    lab(P.C, P.v, P.u, 'C', c2); lab(P.N, P.v, P.u, 'N', c2);
+    if (opts.aide && !par) lab(P.Np, P.v, P.u, "N'", ctrap);
+    return { T: T, k: k, ox: ox, oy: oy };
+  }
+
+  // ---------- Étapes
+  $('#voir-rap').onclick = function () { $('#etape-rap').classList.add('on'); this.hidden = true; };
+  $('#voir-fig').onclick = function () {
+    ['#etape-fig', '#etape-quiz', '#etape-bilan'].forEach(function (s) { $(s).classList.add('on'); });
+    this.hidden = true; maj(); nouveauxCas(); $('#etape-fig').scrollIntoView({ behavior: 'smooth' });
+  };
+
+  // ---------- Figure principale
+  var fig = $('#fig'), geo;
+  function maj() {
+    geo = dessiner(fig, 600, 440, etat.m, etat.n, etat.a1, etat.a2, { aide: true, pad: 40 });
+    [['#segM', etat.m], ['#segN', etat.n]].forEach(function (x) {
+      document.querySelectorAll(x[0] + ' button').forEach(function (b) { b.setAttribute('aria-pressed', +b.dataset.v === x[1] ? 'true' : 'false'); });
+    });
+    $('#ordreM').textContent = ordre(etat.m, 'M', 'B');
+    $('#ordreN').textContent = ordre(etat.n, 'N', 'C');
+    var v = $('#verdict'), par = etat.m === etat.n;
+    var cas = etat.m === 1 ? (etat.n === 1 ? 1 : 3) : (etat.n === 1 ? 4 : 2);
+    v.className = 'verdict ' + (par ? 'ok' : 'no');
+    v.innerHTML = '<h3>Cas ' + cas + (cas === 2 ? ' (papillon)' : '') + ' : ' + (par ? 'même ordre ✓' : 'pas le même ordre ✗') + '</h3>' +
+      '<p>AM/AB = AN/AC = 0,75 (comme dans tous les cas).</p>' +
+      (par ? '<p>Les points sont alignés dans le même ordre : d’après la réciproque du théorème de Thalès, <b>(MN) // (BC)</b>.</p>'
+           : '<p>Les rapports sont égaux, mais les points ne sont pas dans le même ordre : <b>(MN) et (BC) ne sont pas parallèles</b>. La réciproque ne s’applique pas.</p>');
+    $('#legende-pointilles').textContent = par ? '' : 'En pointillés violets : la vraie parallèle à (BC) passant par M. Elle coupe (AC) en N′, le symétrique de N par rapport à A.';
+  }
+  document.querySelectorAll('#segM button').forEach(function (b) { b.onclick = function () { etat.m = +b.dataset.v; maj(); }; });
+  document.querySelectorAll('#segN button').forEach(function (b) { b.onclick = function () { etat.n = +b.dataset.v; maj(); }; });
+
+  // glisser B ou C : on change seulement la direction de la demi-droite
+  var drag = null;
+  function svgPt(e) {
+    var r = fig.getBoundingClientRect();
+    return [(e.clientX - r.left) * 600 / r.width, (e.clientY - r.top) * 440 / r.height];
+  }
+  fig.addEventListener('pointerdown', function (e) {
+    var p = svgPt(e), P = points(etat.m, etat.n, etat.a1, etat.a2), b = geo.T(P.B), c = geo.T(P.C);
+    var db = Math.hypot(p[0] - b[0], p[1] - b[1]), dc = Math.hypot(p[0] - c[0], p[1] - c[1]);
+    if (Math.min(db, dc) > 30) return;
+    drag = db < dc ? 'a1' : 'a2'; fig.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  fig.addEventListener('pointermove', function (e) {
+    if (!drag) return;
+    var p = svgPt(e), a = geo.T([0, 0]);
+    var ang = Math.atan2(-(p[1] - a[1]), p[0] - a[0]) * 180 / Math.PI;
+    var autre = drag === 'a1' ? etat.a2 : etat.a1, diff = ((ang - autre) % 360 + 540) % 360 - 180;
+    if (Math.abs(diff) < 18 || Math.abs(diff) > 162) return; // droites trop proches : figure illisible
+    etat[drag] = ang; maj();
+  });
+  fig.addEventListener('pointerup', function () { drag = null; });
+  fig.addEventListener('pointercancel', function () { drag = null; });
+
+  // ---------- Exercice : retrouver les 4 cas
+  var CAS = [[1, 1], [-1, -1], [1, -1], [-1, 1]], tirage = [];
+  function melanger(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  function nouveauxCas() {
+    var box = $('#cases'); box.innerHTML = ''; $('#score').textContent = '';
+    tirage = melanger(CAS.slice()).map(function (c) {
+      var a1 = Math.random() * 360, a2 = a1 + (Math.random() < .5 ? 1 : -1) * (35 + Math.random() * 70);
+      return { m: c[0], n: c[1], a1: a1, a2: a2 };
+    });
+    tirage.forEach(function (t, i) {
+      var d = document.createElement('div'); d.className = 'cas';
+      d.innerHTML = '<h3>Figure ' + (i + 1) + '</h3><svg viewBox="0 0 240 190"></svg>' +
+        '<label>Sur (AB) <select data-q="ab"><option value="">?</option><option value="1">A, M, B</option><option value="-1">M, A, B</option></select></label>' +
+        '<label>Sur (AC) <select data-q="ac"><option value="">?</option><option value="1">A, N, C</option><option value="-1">N, A, C</option></select></label>' +
+        '<label>(MN) // (BC) ? <select data-q="par"><option value="">?</option><option value="1">oui</option><option value="0">non</option></select></label>' +
+        '<p class="fb"></p>';
+      box.appendChild(d);
+      dessiner(d.querySelector('svg'), 240, 190, t.m, t.n, t.a1, t.a2, { small: true, pad: 22 });
+    });
+  }
+  $('#melanger').onclick = nouveauxCas;
+  $('#verifier').onclick = function () {
+    var bons = 0;
+    document.querySelectorAll('.cas').forEach(function (d, i) {
+      var t = tirage[i], q = function (x) { return d.querySelector('[data-q=' + x + ']').value; };
+      var ok1 = q('ab') === String(t.m), ok2 = q('ac') === String(t.n), ok3 = q('par') === (t.m === t.n ? '1' : '0');
+      var ok = ok1 && ok2 && ok3; if (ok) bons++;
+      d.classList.toggle('juste', ok); d.classList.toggle('faux', !ok);
+      var fb = d.querySelector('.fb');
+      if (ok) fb.textContent = 'Juste ! ' + (t.m === t.n ? 'Même ordre, donc parallèles.' : 'Pas le même ordre, donc pas parallèles.');
+      else if (!ok1 || !ok2) fb.textContent = 'Regarde où est A : entre M et B (ou N et C), ou bien à une extrémité ?';
+      else fb.textContent = t.m === t.n ? 'Les points sont dans le même ordre et les rapports égaux : la réciproque s’applique.' : 'Les rapports sont égaux, mais l’ordre n’est pas le même : pas parallèles.';
+    });
+    $('#score').textContent = bons + ' / 4' + (bons === 4 ? ' — bravo, tu as trouvé les 4 cas !' : '');
+  };
+})();
+</script>
+</body>
+</html>
