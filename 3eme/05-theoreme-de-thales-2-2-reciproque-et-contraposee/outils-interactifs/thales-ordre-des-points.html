@@ -85,7 +85,8 @@ svg text{font-family:var(--display);font-weight:700}
 <div class="wrap">
 <span class="kick">3e · Thalès 2/2</span>
 <h1>Le piège de l'ordre des points</h1>
-<p>Même quand les deux rapports sont égaux, les droites ne sont pas toujours parallèles. Tout dépend de <b>l'ordre des points</b>.</p>
+<p>Même quand les deux rapports sont égaux, les droites ne sont pas toujours parallèles. Tout dépend de <b>l'ordre des points</b>… et des <b>rapports</b> que l'on compare.</p>
+<p class="seg" style="margin:6px 0 0"><button type="button" id="aller-1" aria-pressed="true">Partie 1 : l'ordre des points</button><button type="button" id="aller-2" aria-pressed="false">Partie 2 : MN/BC = AN/AC, parallèles ou pas ?</button></p>
 
 <div class="card enonce">
   <h2>L'énoncé</h2>
@@ -151,8 +152,8 @@ svg text{font-family:var(--display);font-weight:700}
 
 
 <div class="card etape" id="etape-mn">
-  <h2>Et si on compare MN/BC et AN/AC ?</h2>
-  <p>Nouvelle figure, avec les mêmes longueurs : AB = 8 cm, AC = 10 cm, AN = 7,5 cm, et N est sur [AC]. Ici BC = √68 cm ≈ 8,25 cm. On cherche où placer M sur la droite (AB) pour avoir <span class="frac"><b>MN</b><span>BC</span></span> = <span class="frac"><b>AN</b><span>AC</span></span> = 0,75.</p>
+  <h2>Partie 2 : si MN/BC = AN/AC, sont-elles parallèles ?</h2>
+  <p>Nouvelle figure, avec les mêmes longueurs : AB = 8 cm, AC = 10 cm, AN = 7,5 cm, et N est sur [AC]. Ici BC = √68 cm ≈ 8,25 cm. <b>Fais glisser M</b> sur la droite (AB) (ou utilise le curseur) et cherche où le placer pour avoir <span class="frac"><b>MN</b><span>BC</span></span> = <span class="frac"><b>AN</b><span>AC</span></span> = 0,75.</p>
   <div class="grid2">
     <div><svg class="fig" id="fig2" viewBox="0 0 600 420" role="img" aria-label="Figure : M se déplace sur la droite (AB)"></svg></div>
     <div>
@@ -459,6 +460,7 @@ svg text{font-family:var(--display);font-weight:700}
     var svg = $('#fig2'), W = 600, H = 420, minx = -4.5, maxx = 11.5, miny = -1.2, maxy = 9;
     var k = Math.min((W - 60) / (maxx - minx), (H - 50) / (maxy - miny)), ox = (W - k * (maxx - minx)) / 2 - k * minx, oy = (H + k * (maxy - miny)) / 2 + k * miny;
     var T = function (p) { return [ox + k * p[0], oy - k * p[1]]; };
+    geo2 = { k: k, ox: ox };
     svg.innerHTML = '';
     function ln(p, q, c, w, dash, op) { var a = T(p), b = T(q), at = { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: c, 'stroke-width': w, 'stroke-linecap': 'round' }; if (dash) at['stroke-dasharray'] = dash; if (op) at['stroke-opacity'] = op; svg.appendChild(mk('line', at)); }
     ln([-4.5, 0], [11.5, 0], col('--d1'), 1.6, null, .55);
@@ -468,9 +470,34 @@ svg text{font-family:var(--display);font-weight:700}
     ln(M, N, x === 6 ? col('--ok') : x === 3 ? col('--no') : col('--muted'), 3);
     function pt(p, nom, c, dx, dy) { var a = T(p); svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: 4.5, fill: c })); svg.appendChild(mk('text', { x: a[0] + dx, y: a[1] + dy, fill: c, 'font-size': 19, 'text-anchor': 'middle', 'dominant-baseline': 'middle' }, nom)); }
     pt(A, 'A', col('--bc'), -6, 18); pt(B, 'B', col('--d1'), 6, 18); pt(C, 'C', col('--d2'), -14, -10); pt(N, 'N', col('--d2'), -16, -6);
-    pt(M, 'M', col('--d1'), 0, -16);
+    var mm = T(M); svg.appendChild(mk('circle', { cx: mm[0], cy: mm[1], r: 15, fill: col('--d1'), 'fill-opacity': .15, stroke: col('--d1'), 'stroke-width': 1.5, style: 'cursor:grab' }));
+    pt(M, 'M', col('--d1'), 0, -24);
   }
   $('#am').addEventListener('input', maj2);
+  // glisser M directement sur la figure (M reste sur la droite (AB), qui est horizontale ici)
+  var geo2 = null, drag2 = false, f2 = $('#fig2');
+  function x2(e) { var r = f2.getBoundingClientRect(); return ((e.clientX - r.left) * 600 / r.width - geo2.ox) / geo2.k; }
+  f2.addEventListener('pointerdown', function (e) {
+    var x = +$('#am').value; if (!geo2) return;
+    var r = f2.getBoundingClientRect(), px = (e.clientX - r.left) * 600 / r.width, py = (e.clientY - r.top) * 420 / r.height;
+    var mx = geo2.ox + geo2.k * x, my = null;
+    var c = f2.querySelector('circle[r="15"]'); if (c) { mx = +c.getAttribute('cx'); my = +c.getAttribute('cy'); }
+    if (Math.hypot(px - mx, py - my) > 34) return;
+    drag2 = true; f2.setPointerCapture(e.pointerId); e.preventDefault();
+  });
+  f2.addEventListener('pointermove', function (e) { if (!drag2) return; $('#am').value = Math.max(-4, Math.min(11, x2(e))); maj2(); });
+  f2.addEventListener('pointerup', function () { drag2 = false; });
+  f2.addEventListener('pointercancel', function () { drag2 = false; });
+  f2.style.touchAction = 'none';
+  // navigation entre les deux parties (et ?partie=mn pour ouvrir directement la partie 2)
+  function partie(n) {
+    $('#aller-1').setAttribute('aria-pressed', n === 1 ? 'true' : 'false'); $('#aller-2').setAttribute('aria-pressed', n === 2 ? 'true' : 'false');
+    if (n === 2) { $('#etape-mn').classList.add('on'); maj2(); $('#etape-mn').scrollIntoView({ behavior: 'smooth' }); }
+    else window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  $('#aller-1').onclick = function () { partie(1); };
+  $('#aller-2').onclick = function () { partie(2); };
+  if (/[?&]partie=mn\b/.test(location.search)) setTimeout(function () { partie(2); }, 50);
 })();
 </script>
 </body>

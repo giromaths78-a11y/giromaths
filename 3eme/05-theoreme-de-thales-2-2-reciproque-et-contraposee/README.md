@@ -38,6 +38,7 @@ Page du site : [index.html](index.html)
 
 - [Parallèles ou pas ?](outils-interactifs/paralleles-ou-pas.html) (Interactif)
 - [Le piège de l'ordre des points : les 4 cas](outils-interactifs/thales-ordre-des-points.html) (Interactif)
+- [MN/BC = AN/AC : parallèles ou pas ?](outils-interactifs/thales-ordre-des-points.html?partie=mn) (Interactif)
 - [Thalès : exercices interactifs](outils-interactifs/thales-exercices.html) (Exercices)
 
 [← Toutes les séquences de 3ème](../README.md)
