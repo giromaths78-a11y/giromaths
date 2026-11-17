@@ -131,6 +131,33 @@ svg text{font-family:var(--display);font-weight:700}
   <p class="score" id="score"></p>
 </div>
 
+<div class="card etape" id="etape-mn">
+  <h2>Et si on compare MN/BC et AN/AC ?</h2>
+  <p>Nouvelle figure, avec les mêmes longueurs : AB = 8 cm, AC = 10 cm, AN = 7,5 cm, et N est sur [AC]. Ici BC = √68 cm ≈ 8,25 cm. On cherche où placer M sur la droite (AB) pour avoir <span class="frac"><b>MN</b><span>BC</span></span> = <span class="frac"><b>AN</b><span>AC</span></span> = 0,75.</p>
+  <div class="grid2">
+    <div><svg class="fig" id="fig2" viewBox="0 0 600 420" role="img" aria-label="Figure : M se déplace sur la droite (AB)"></svg></div>
+    <div>
+      <div class="choix"><p>Déplace M sur la droite (AB) : AM = <span id="am-val"></span> cm</p>
+        <input type="range" id="am" min="-4" max="11" step="0.1" value="1" style="width:100%;accent-color:var(--d1)">
+        <p class="note">Ordre sur (AB) : <b id="ordre2"></b> · sur (AC) : <b>A, N, C</b></p></div>
+      <table class="tbl">
+        <tr><th></th><th>valeur</th><th>= 0,75 ?</th></tr>
+        <tr><td>MN/BC</td><td id="r-mn"></td><td id="ok-mn"></td></tr>
+        <tr><td>AM/AB</td><td id="r-am"></td><td id="ok-am"></td></tr>
+      </table>
+      <div class="verdict" id="verdict2"></div>
+      <p class="note" id="trouves"></p>
+    </div>
+  </div>
+  <div class="redac piege" id="conclu-mn" hidden>
+    <p><b>Conclusion : MN/BC = AN/AC ne suffit pas.</b></p>
+    <p>Il y a <b>deux</b> places de M sur la demi-droite [AB) où MN/BC = 0,75, toutes les deux avec A, M, B dans le même ordre que A, N, C :</p>
+    <p>• AM = 6 cm : alors AM/AB = 0,75 = AN/AC, et (MN) // (BC) (réciproque) ;</p>
+    <p>• AM = 3 cm : alors AM/AB = 3/8 = 0,375 ≠ 0,75 = AN/AC, donc (MN) et (BC) ne sont <b>pas</b> parallèles (contraposée), alors que MN/BC = 0,75 !</p>
+    <p>C'est le cercle de centre N et de rayon 0,75 × BC qui coupe la droite (AB) en deux points. Pour la réciproque, on compare donc toujours <b>AM/AB et AN/AC</b> (les deux rapports qui partent du point A).</p>
+  </div>
+</div>
+
 <div class="card etape" id="etape-bilan">
   <h2>Ce qu'il faut retenir</h2>
   <table class="tbl">
@@ -154,6 +181,7 @@ svg text{font-family:var(--display);font-weight:700}
     <p>Traçons la parallèle à (BC) passant par M : elle coupe (AC) en un point N'. D'après le théorème de Thalès, AN'/AC = AM/AB = 0,75, donc AN' = 7,5 cm, et N' est placé par rapport à A comme M (A, N', C dans le même ordre que A, M, B).</p>
     <p>Or N est à 7,5 cm de A <b>de l'autre côté</b> : N et N' sont symétriques par rapport à A, donc N ≠ N'. La droite (MN) n'est pas la parallèle à (BC) passant par M : (MN) et (BC) ne sont pas parallèles.</p>
   </div>
+  <p><b>Et le 3e rapport ?</b> MN/BC = AN/AC ne permet <b>pas</b> d'utiliser la réciproque (voir la partie précédente). En revanche, pour la contraposée, MN/BC ≠ AN/AC suffit à prouver que les droites ne sont pas parallèles, car si elles l'étaient, les trois rapports seraient égaux.</p>
   <p class="note">Au brevet, l'énoncé précise en général « alignés dans le même ordre », ou bien la figure le montre. Il faut le citer dans la rédaction.</p>
 </div>
 </div>
@@ -236,8 +264,8 @@ svg text{font-family:var(--display);font-weight:700}
   // ---------- Étapes
   $('#voir-rap').onclick = function () { $('#etape-rap').classList.add('on'); this.hidden = true; };
   $('#voir-fig').onclick = function () {
-    ['#etape-fig', '#etape-quiz', '#etape-bilan'].forEach(function (s) { $(s).classList.add('on'); });
-    this.hidden = true; maj(); nouveauxCas(); $('#etape-fig').scrollIntoView({ behavior: 'smooth' });
+    ['#etape-fig', '#etape-quiz', '#etape-mn', '#etape-bilan'].forEach(function (s) { $(s).classList.add('on'); });
+    this.hidden = true; maj(); nouveauxCas(); maj2(); $('#etape-fig').scrollIntoView({ behavior: 'smooth' });
   };
 
   // ---------- Figure principale
@@ -319,6 +347,45 @@ svg text{font-family:var(--display);font-weight:700}
     });
     $('#score').textContent = bons + ' / 4' + (bons === 4 ? ' — bravo, tu as trouvé les 4 cas !' : '');
   };
+  // ---------- MN/BC = AN/AC ne suffit pas (A(0;0), B(8;0), C(6;8) : AC = 10, BC = √68 ; N(4,5;6) : AN = 7,5)
+  // M(x;0) : MN² = (x − 4,5)² + 36 = 0,5625 × 68 = 38,25 ⇔ x = 3 ou x = 6.
+  var trouves = {};
+  function maj2() {
+    var x = Math.round(+$('#am').value * 10) / 10;
+    if (Math.abs(x - 3) < 0.25) x = 3; else if (Math.abs(x - 6) < 0.25) x = 6; // aimant sur les deux solutions
+    $('#am').value = x;
+    var css = getComputedStyle(document.documentElement), col = function (v) { return css.getPropertyValue(v).trim(); };
+    var A = [0, 0], B = [8, 0], C = [6, 8], N = [4.5, 6], M = [x, 0], BC = Math.sqrt(68);
+    var MN = Math.hypot(M[0] - N[0], M[1] - N[1]), rmn = MN / BC, ram = x / 8;
+    var fmt = function (v) { return (Math.round(v * 1000) / 1000).toString().replace('.', ','); };
+    var egal = function (v) { return Math.abs(v - 0.75) < 1e-9; };
+    $('#am-val').textContent = fmt(Math.abs(x));
+    $('#ordre2').textContent = x > 0 ? (x < 8 ? 'A, M, B' : 'A, B, M') : (x < 0 ? 'M, A, B' : 'M = A');
+    $('#r-mn').textContent = (egal(rmn) ? '' : '≈ ') + fmt(rmn); $('#ok-mn').innerHTML = egal(rmn) ? '<span class="oui">oui</span>' : '<span class="non">non</span>';
+    $('#r-am').textContent = fmt(ram); $('#ok-am').innerHTML = egal(ram) ? '<span class="oui">oui</span>' : '<span class="non">non</span>';
+    var v = $('#verdict2');
+    if (x === 6) { v.className = 'verdict ok'; v.innerHTML = '<p>MN/BC = 0,75 <b>et</b> AM/AB = 0,75 : (MN) // (BC).</p>'; trouves[6] = 1; }
+    else if (x === 3) { v.className = 'verdict no'; v.innerHTML = '<p><b>Piège !</b> MN/BC = 0,75 = AN/AC, mais AM/AB = 0,375 ≠ 0,75 : (MN) et (BC) ne sont <b>pas</b> parallèles. Regarde la figure.</p>'; trouves[3] = 1; }
+    else { v.className = 'verdict'; v.innerHTML = '<p>Cherche les positions de M où MN/BC = 0,75. Il y en a deux.</p>'; }
+    var nb = Object.keys(trouves).length;
+    $('#trouves').textContent = 'Positions trouvées : ' + nb + ' / 2';
+    $('#conclu-mn').hidden = nb < 2;
+    // figure
+    var svg = $('#fig2'), W = 600, H = 420, minx = -4.5, maxx = 11.5, miny = -1.2, maxy = 9;
+    var k = Math.min((W - 60) / (maxx - minx), (H - 50) / (maxy - miny)), ox = (W - k * (maxx - minx)) / 2 - k * minx, oy = (H + k * (maxy - miny)) / 2 + k * miny;
+    var T = function (p) { return [ox + k * p[0], oy - k * p[1]]; };
+    svg.innerHTML = '';
+    function ln(p, q, c, w, dash, op) { var a = T(p), b = T(q), at = { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: c, 'stroke-width': w, 'stroke-linecap': 'round' }; if (dash) at['stroke-dasharray'] = dash; if (op) at['stroke-opacity'] = op; svg.appendChild(mk('line', at)); }
+    ln([-4.5, 0], [11.5, 0], col('--d1'), 1.6, null, .55);
+    ln([-0.75 * 6 / 8 * 0 - 6 * 0.45, -8 * 0.45], [6 * 1.15, 8 * 1.15], col('--d2'), 1.6, null, .55);
+    var c = T(N); svg.appendChild(mk('circle', { cx: c[0], cy: c[1], r: k * Math.sqrt(38.25), fill: 'none', stroke: col('--trap'), 'stroke-width': 1.3, 'stroke-dasharray': '5 5', 'stroke-opacity': .7 }));
+    ln(B, C, col('--bc'), 2.6);
+    ln(M, N, x === 6 ? col('--ok') : x === 3 ? col('--no') : col('--muted'), 3);
+    function pt(p, nom, c, dx, dy) { var a = T(p); svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: 4.5, fill: c })); svg.appendChild(mk('text', { x: a[0] + dx, y: a[1] + dy, fill: c, 'font-size': 19, 'text-anchor': 'middle', 'dominant-baseline': 'middle' }, nom)); }
+    pt(A, 'A', col('--bc'), -6, 18); pt(B, 'B', col('--d1'), 6, 18); pt(C, 'C', col('--d2'), -14, -10); pt(N, 'N', col('--d2'), -16, -6);
+    pt(M, 'M', col('--d1'), 0, -16);
+  }
+  $('#am').addEventListener('input', maj2);
 })();
 </script>
 </body>
