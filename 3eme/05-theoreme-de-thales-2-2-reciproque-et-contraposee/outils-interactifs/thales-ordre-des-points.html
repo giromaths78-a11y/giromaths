@@ -167,10 +167,12 @@ svg text{font-family:var(--display);font-weight:700}
       </table>
       <div class="verdict" id="verdict2"></div>
       <p class="note" id="trouves"></p>
+      <p><button class="btn" id="montrer2" type="button">Montrer les deux points</button></p>
     </div>
   </div>
   <div class="redac piege" id="conclu-mn" hidden>
     <p><b>Conclusion : MN/BC = AN/AC ne suffit pas.</b></p>
+    <p>Sur la figure : <b style="color:var(--ok)">M₁</b> (AM = 6 cm) donne le parallélisme, <b style="color:var(--no)">M₂</b> (AM = 3 cm) ne le donne pas.</p>
     <p>Il y a <b>deux</b> places de M sur la demi-droite [AB) où MN/BC = 0,75, toutes les deux avec A, M, B dans le même ordre que A, N, C :</p>
     <p>• AM = 6 cm : alors AM/AB = 0,75 = AN/AC, et (MN) // (BC) (réciproque) ;</p>
     <p>• AM = 3 cm : alors AM/AB = 3/8 = 0,375 ≠ 0,75 = AN/AC, donc (MN) et (BC) ne sont <b>pas</b> parallèles (contraposée), alors que MN/BC = 0,75 !</p>
@@ -435,7 +437,7 @@ svg text{font-family:var(--display);font-weight:700}
   $('#ex-recommencer').onclick = function () { ex.trouves = {}; ex.t = 2; ex.s = -3; ex.attente = null; $('#ex-q').hidden = true; exFb(''); listeCas(); dessinEx(); };
   // ---------- MN/BC = AN/AC ne suffit pas (A(0;0), B(8;0), C(6;8) : AC = 10, BC = √68 ; N(4,5;6) : AN = 7,5)
   // M(x;0) : MN² = (x − 4,5)² + 36 = 0,5625 × 68 = 38,25 ⇔ x = 3 ou x = 6.
-  var trouves = {};
+  var trouves = {}, montrer = false;
   function maj2() {
     var x = Math.round(+$('#am').value * 10) / 10;
     if (Math.abs(x - 3) < 0.25) x = 3; else if (Math.abs(x - 6) < 0.25) x = 6; // aimant sur les deux solutions
@@ -466,6 +468,25 @@ svg text{font-family:var(--display);font-weight:700}
     ln([-4.5, 0], [11.5, 0], col('--d1'), 1.6, null, .55);
     ln([-0.75 * 6 / 8 * 0 - 6 * 0.45, -8 * 0.45], [6 * 1.15, 8 * 1.15], col('--d2'), 1.6, null, .55);
     var c = T(N); svg.appendChild(mk('circle', { cx: c[0], cy: c[1], r: k * Math.sqrt(38.25), fill: 'none', stroke: col('--trap'), 'stroke-width': 1.3, 'stroke-dasharray': '5 5', 'stroke-opacity': .7 }));
+    // graduations de la droite (AB), tous les 1 cm
+    for (var g = -4; g <= 11; g++) { if (!g) continue; var a = T([g, 0]); svg.appendChild(mk('line', { x1: a[0], y1: a[1] - 4, x2: a[0], y2: a[1] + 4, stroke: col('--d1'), 'stroke-width': 1, 'stroke-opacity': .6 })); }
+    // les deux solutions, quand elles sont trouvées (ou montrées)
+    [[6, '--ok', 'M\u2081', 'AM = 6 : parallèles ✓'], [3, '--no', 'M\u2082', 'AM = 3 : pas parallèles ✗']].forEach(function (z) {
+      if (!trouves[z[0]] && !montrer) return;
+      var P2 = [z[0], 0], c2 = col(z[1]), a = T(P2), nn = T(N);
+      svg.appendChild(mk('line', { x1: a[0], y1: a[1], x2: nn[0], y2: nn[1], stroke: c2, 'stroke-width': 2.2, 'stroke-dasharray': '7 5' }));
+      svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: 7, fill: c2 }));
+      svg.appendChild(mk('text', { x: a[0], y: a[1] + 22, fill: c2, 'font-size': 18, 'text-anchor': 'middle', 'dominant-baseline': 'middle' }, z[2]));
+      var tx = mk('text', { x: a[0] + (z[0] === 6 ? 20 : -20), y: a[1] + 44, fill: c2, 'font-size': 14, 'text-anchor': z[0] === 6 ? 'start' : 'end', 'dominant-baseline': 'middle' }, z[3]);
+      svg.appendChild(tx);
+    });
+    if (trouves[6] || montrer) { // flèches de parallélisme sur [BC] et [M₁N]
+      [[B, C], [[6, 0], N]].forEach(function (sg) {
+        var m = T([(sg[0][0] + sg[1][0]) / 2, (sg[0][1] + sg[1][1]) / 2]), d = [sg[1][0] - sg[0][0], sg[1][1] - sg[0][1]], L = Math.hypot(d[0], d[1]);
+        var ux = d[0] / L, uy = -d[1] / L, h = 7;
+        svg.appendChild(mk('path', { d: 'M' + (m[0] - h * ux - h * uy) + ' ' + (m[1] - h * uy + h * ux) + ' L' + m[0] + ' ' + m[1] + ' L' + (m[0] - h * ux + h * uy) + ' ' + (m[1] - h * uy - h * ux), fill: 'none', stroke: col('--ok'), 'stroke-width': 2.2 }));
+      });
+    }
     ln(B, C, col('--bc'), 2.6);
     ln(M, N, x === 6 ? col('--ok') : x === 3 ? col('--no') : col('--muted'), 3);
     function pt(p, nom, c, dx, dy) { var a = T(p); svg.appendChild(mk('circle', { cx: a[0], cy: a[1], r: 4.5, fill: c })); svg.appendChild(mk('text', { x: a[0] + dx, y: a[1] + dy, fill: c, 'font-size': 19, 'text-anchor': 'middle', 'dominant-baseline': 'middle' }, nom)); }
@@ -474,6 +495,7 @@ svg text{font-family:var(--display);font-weight:700}
     pt(M, 'M', col('--d1'), 0, -24);
   }
   $('#am').addEventListener('input', maj2);
+  $('#montrer2').onclick = function () { montrer = true; trouves[3] = trouves[6] = 1; maj2(); };
   // glisser M directement sur la figure (M reste sur la droite (AB), qui est horizontale ici)
   var geo2 = null, drag2 = false, f2 = $('#fig2');
   function x2(e) { var r = f2.getBoundingClientRect(); return ((e.clientX - r.left) * 600 / r.width - geo2.ox) / geo2.k; }
