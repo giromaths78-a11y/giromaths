@@ -12,7 +12,7 @@ Page du site : [6eme.html](../6eme.html)
 | 06 | [Construction de triangles et propriétés](06-construction-de-triangles-et-proprietes/README.md) | Géométrie | 18 ressources |
 | 07 | [Multiplier des nombres décimaux · Problèmes](07-multiplier-des-nombres-decimaux-problemes/README.md) | Nombres et calculs | en préparation |
 | 08 | [Raisonner avec des droites et des médiatrices](08-raisonner-avec-des-droites-et-des-mediatrices/README.md) | Géométrie | en préparation |
-| 09 | [Division euclidienne](09-division-euclidienne/README.md) | Nombres et calculs | en préparation |
+| 09 | [Division euclidienne](09-division-euclidienne/README.md) | Nombres et calculs | 9 ressources |
 | 10 | [Propriétés des angles](10-proprietes-des-angles/README.md) | Géométrie | en préparation |
 | 11 | [Organisation de données](11-organisation-de-donnees/README.md) | Organisation de données | en préparation |
 | 12 | [Division décimale](12-division-decimale/README.md) | Nombres et calculs | en préparation |

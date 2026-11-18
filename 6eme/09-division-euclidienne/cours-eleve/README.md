@@ -2,4 +2,4 @@
 
 [← Retour à la séquence](../README.md)
 
-_Bientôt disponible._
+- [Cours élève à compléter – Division euclidienne, multiples et diviseurs](cours-division-euclidienne-eleve.pdf) (PDF)

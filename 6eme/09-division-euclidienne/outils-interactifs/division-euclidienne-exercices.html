@@ -1,0 +1,342 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Division euclidienne</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--acc:#2563eb;--acc2:#1e40af;--soft:#e6eeff;--bg:#f7f9ff;--card:#fff;--ink:#15203a;--muted:#5b6782;--line:#d6e0f5;
+  --ok:#15803d;--oksoft:#dcfce7;--bad:#b91c1c;--badsoft:#fee2e2;--hint:#7c3aed;--pad:#94a3b8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--acc:#7aa5ff;--acc2:#a9c4ff;--soft:#1b2a47;--bg:#0f1522;--card:#172033;--ink:#e8eefb;--muted:#a3b0c8;--line:#2c3a55;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;--pad:#64748b;color-scheme:dark}}
+:root[data-theme="dark"]{--acc:#7aa5ff;--acc2:#a9c4ff;--soft:#1b2a47;--bg:#0f1522;--card:#172033;--ink:#e8eefb;--muted:#a3b0c8;--line:#2c3a55;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;--pad:#64748b;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+header.hero{background:linear-gradient(135deg,#2563eb,#1e3a8a);color:#fff;border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
+header.hero::after{content:"637 = 15 × 42 + 7";position:absolute;right:14px;bottom:-12px;font:700 54px/1 "Space Grotesk",sans-serif;opacity:.15;white-space:nowrap}
+.eyebrow{font:600 .8rem "Space Grotesk",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+h1{font:700 clamp(1.6rem,4.5vw,2.3rem)/1.1 "Space Grotesk",sans-serif;margin:4px 0 6px}
+header.hero p{margin:0;max-width:60ch;opacity:.95;position:relative;z-index:1}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 10px}
+.tab{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font:600 .9rem Inter,sans-serif;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:var(--bg)}
+.tab .n{font-variant-numeric:tabular-nums;opacity:.8;font-weight:500;margin-left:4px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);margin-bottom:12px}
+.score{font:700 1rem "Space Grotesk",sans-serif;font-variant-numeric:tabular-nums}
+.progress{flex:1 1 160px;height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:120px}
+.progress span{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.btn{border:1.5px solid var(--acc);background:var(--card);color:var(--acc);border-radius:8px;padding:5px 12px;font:600 .88rem Inter,sans-serif;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--acc);color:var(--bg)}
+.btn:focus-visible,input:focus-visible,.tab:focus-visible,.choice:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.rappel{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.95rem}
+.rappel b{color:var(--acc2)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.q.ok{border-color:var(--ok);box-shadow:inset 4px 0 0 var(--ok)}
+.q.bad{border-color:var(--bad);box-shadow:inset 4px 0 0 var(--bad)}
+.qhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.num{font:700 .85rem "Space Grotesk",sans-serif;background:var(--soft);color:var(--acc2);border-radius:6px;padding:1px 8px}
+.consigne{color:var(--muted);font-size:.9rem}
+.expr{font-size:1.15rem;margin:6px 0 8px}
+.expr.txt{font-size:1rem}
+.m{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;white-space:nowrap}
+.ans{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.ans input{font:1.1rem "Cambria Math","Times New Roman",serif;padding:6px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:8.5em;max-width:100%;text-align:center}
+.ans .lbl{font-size:1.15rem}
+.ans input.sm{width:5.2em}
+.choices{display:flex;gap:8px;flex-wrap:wrap}
+.choice{border:1.5px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 14px;cursor:pointer;font:600 1rem Inter,sans-serif;color:var(--ink);min-width:44px}
+.choice.big{font:700 1.25rem "Cambria Math","Times New Roman",serif;min-width:52px}
+.choice.sel{border-color:var(--acc);background:var(--soft)}
+.choice .rk{display:inline-block;min-width:1.4em;margin-right:4px;border-radius:50%;background:var(--acc);color:var(--bg);font:700 .8rem/1.4em Inter,sans-serif;text-align:center}
+.seq{font-size:1.15rem;min-height:1.6em;margin:2px 0}
+.fb{margin-top:6px;font-size:.92rem}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}.fb.hint{color:var(--hint)}
+.corr{margin-top:8px;background:var(--soft);border-radius:8px;padding:8px 12px;font-size:1rem}
+.corr .line{display:block;margin:2px 0}
+.corr .why{display:block;font:italic .88rem Inter,sans-serif;color:var(--muted);margin-top:4px}
+.ai{display:contents}
+.ans input.ok{border-color:var(--ok);background:var(--oksoft)}
+.ans input.bad{border-color:var(--bad);background:var(--badsoft)}
+.ans input.wide{width:16em}
+.ans input.sm{width:5em}
+.etoiles{color:#f59e0b;letter-spacing:2px;font-size:1rem;margin-left:4px}
+.aide{font-size:.85rem;color:var(--muted);margin:0 0 10px}
+.expert{display:inline-flex;align-items:center;gap:8px;border:1.5px solid #f59e0b;border-radius:999px;padding:4px 12px;font:600 .9rem Inter,sans-serif;cursor:pointer;background:var(--card);user-select:none}
+.expert input{width:18px;height:18px;accent-color:#f59e0b;cursor:pointer;margin:0}
+.expert.on{background:#fef3c7;color:#92400e}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .expert.on{background:#3b2a07;color:#fcd34d}}
+:root[data-theme="dark"] .expert.on{background:#3b2a07;color:#fcd34d}
+.tog{border:1.5px solid var(--line);background:var(--bg);border-radius:8px;padding:5px 14px;cursor:pointer;font:700 1.1rem "Cambria Math","Times New Roman",serif;color:var(--ink);min-width:48px}
+.tog.sel{border-color:var(--acc);background:var(--soft);color:var(--acc2)}
+.potence{display:inline-grid;grid-template-columns:auto auto;margin:4px 0 2px;font:1.15rem "Cambria Math","Times New Roman",serif}
+.potence .dd{padding:0 10px 0 4px;border-right:2px solid var(--ink)}
+.potence .dv{padding:0 4px 0 10px;border-bottom:2px solid var(--ink)}
+.potence .qq{padding:0 4px 0 10px;font-weight:700;color:var(--acc2)}
+.potence .rr{padding:0 10px 0 4px;border-right:2px solid var(--ink);text-align:right;color:var(--ok);font-weight:700}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">6ème · S9 · Division euclidienne<span id="eyeExpert"></span></div>
+  <h1>Division euclidienne, multiples et diviseurs</h1>
+  <p>Des séries d'exercices qui changent à chaque fois. Réponds, vérifie, puis regarde la correction détaillée si besoin. Coche « Niveau expert » pour des questions plus difficiles.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<div class="bar">
+  <span class="score" id="score">0 / 0</span>
+  <div class="progress"><span id="prog"></span></div>
+  <label class="expert" id="expLab"><input type="checkbox" id="expert"> Niveau expert <span class="etoiles">★★★★</span></label>
+  <button class="btn" id="newSerie">Nouvelle série</button>
+  <button class="btn primary" id="checkAll">Tout vérifier</button>
+</div>
+<div class="rappel" id="rappel"></div>
+<p class="aide" id="aide"></p>
+<div id="list"></div>
+<footer>GiroMaths · 6ème S9 · Division euclidienne, multiples et diviseurs · © 2026</footer>
+</div>
+<script>
+(function(){
+"use strict";
+/* ---------- outils ---------- */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const F=n=>String(n).replace(/\B(?=(\d{3})+(?!\d))/g," ");          // 12 345
+const M=s=>'<span class="m">'+s+'</span>';
+const X=" × ",LT=" &lt; ",LE=" ≤ ";
+const sumDig=n=>String(n).split("").reduce((s,c)=>s+ +c,0);
+const divs=n=>{const d=[];for(let k=1;k<=n;k++)if(n%k===0)d.push(k);return d;};
+const eq=(a,b,q,r)=>M(`${F(a)} = (${F(b)}${X}${F(q)}) + ${F(r)}`);
+let EXPERT=false;
+function lire(s){s=String(s).replace(/[\s  .]/g,"");return /^\d+$/.test(s)?parseInt(s,10):null;}
+function lireListe(s){const t=String(s).replace(/(\d)[\s  ](?=\d{3}\b)/g,"$1");const m=t.match(/\d+/g);return m?m.map(Number):[];}
+function potence(a,b,q,r){return `<div class="potence"><span class="dd">${F(a)}</span><span class="dv">${F(b)}</span><span class="rr">${F(r)}</span><span class="qq">${F(q)}</span></div>`;}
+// étapes de recherche du quotient
+function encadre(a,b){const q=Math.floor(a/b),r=a%b;
+  return [`${M(`${F(b)}${X}${F(q)} = ${F(b*q)}`)} et ${M(`${F(b)}${X}${F(q+1)} = ${F(b*(q+1))}`)}, donc ${M(`${F(b*q)}${LE}${F(a)}${LT}${F(b*(q+1))}`)} : le quotient est ${F(q)}.`,
+    `Reste : ${M(`${F(a)} − ${F(b*q)} = ${F(r)}`)}, et ${M(`${F(r)}${LT}${F(b)}`)}.`,
+    `${eq(a,b,q,r)}`];}
+/* ---------- 1. Quotient et reste ---------- */
+function gQR(){
+  let b,q,r;
+  if(EXPERT){b=R(11,48);q=R(12,250);r=R(0,b-1);}
+  else{b=R(2,9);q=Math.random()<.1?0:R(2,12);r=R(0,b-1);if(q===0&&r===0)r=R(1,b-1);}
+  const a=b*q+r;
+  return {txt:`Division euclidienne de ${M(F(a))} par ${M(F(b))}`,kind:"qr",labs:["quotient","reste"],sol:[q,r],cons:EXPERT?"Pose la division sur ton cahier, puis donne le quotient et le reste":"Calcule mentalement le quotient et le reste",
+    steps:[potence(a,b,q,r)].concat(encadre(a,b)),why:q===0?`${b} n'est contenu aucune fois dans ${a} : le quotient est 0 et le reste est ${a}.`:""};
+}
+/* ---------- 2. Égalité ou pas ? ---------- */
+function gEgal(){
+  const b=EXPERT?R(11,40):R(3,12),q=EXPERT?R(11,60):R(3,12);let r=R(0,b-1);const a=b*q+r;
+  const t=R(0,EXPERT?3:2);let txt,sol,steps,why="";
+  if(t===0){txt=eq(a,b,q,r);sol="oui";steps=[`${M(`${F(b)}${X}${F(q)} + ${F(r)} = ${F(a)}`)} : l'égalité est juste.`,`Le reste ${F(r)} est plus petit que le diviseur ${F(b)} : c'est bien la division euclidienne.`];}
+  else if(t===1){const q2=q-1,r2=r+b;txt=eq(a,b,q2,r2);sol="non";
+    steps=[`L'égalité ${eq(a,b,q2,r2)} est juste, mais le reste ${F(r2)} n'est pas plus petit que ${F(b)}.`,`On peut encore enlever ${F(b)} : ${eq(a,b,q,r)}.`];why="Le reste doit toujours être plus petit que le diviseur.";}
+  else if(t===2){let r2;do{r2=R(0,b-1);}while(r2===r);txt=eq(a,b,q,r2);sol="non";
+    steps=[`${M(`${F(b)}${X}${F(q)} + ${F(r2)} = ${F(b*q+r2)}`)}, et non ${F(a)} : l'égalité est fausse.`,`La bonne égalité est ${eq(a,b,q,r)}.`];}
+  else{// expert : division par l'autre facteur
+    txt=eq(a,b,q,r);sol=r<q?"oui":"non";
+    const Q=Math.floor(a/q),RR=a%q;
+    steps=[`Pour la division par ${F(q)}, le diviseur est ${F(q)} : il faut que le reste ${F(r)} soit plus petit que ${F(q)}.`,
+      r<q?`C'est le cas : ${M(`${F(a)} = (${F(q)}${X}${F(b)}) + ${F(r)}`)}, quotient ${F(b)}, reste ${F(r)}.`:`Ce n'est pas le cas (${F(r)} ≥ ${F(q)}). La division de ${F(a)} par ${F(q)} donne : ${M(`${F(a)} = (${F(q)}${X}${F(Q)}) + ${F(RR)}`)}.`];
+    return {txt,kind:"qcm",opts:[["oui","Oui"],["non","Non"]],sol,cons:`Cette égalité traduit-elle la division euclidienne de <b>${F(a)} par ${F(q)}</b> ?`,steps,why:"Attention : ici on divise par le facteur de droite."};}
+  return {txt,kind:"qcm",opts:[["oui","Oui"],["non","Non"]],sol,cons:`Cette égalité traduit-elle la division euclidienne de <b>${F(a)} par ${F(b)}</b> ?`,steps,why};
+}
+/* ---------- 3. Problèmes ---------- */
+const NOMS=["Léa","Nour","Tom","Inès","Hugo","Maël","Sami","Jade"];
+const JOURS=["lundi","mardi","mercredi","jeudi","vendredi","samedi","dimanche"];
+const PBN=[
+ ()=>{const k=R(3,9),q=R(5,30),r=R(1,k-1),n=k*q+r,obj=pick(["billes","cartes","bonbons","images"]);
+  return {txt:`On partage équitablement ${n} ${obj} entre ${k} enfants. Combien chaque enfant reçoit-il de ${obj} ? Combien en reste-t-il ?`,kind:"qr",labs:["chaque enfant","il reste"],sol:[q,r],
+   steps:[eq(n,k,q,r),`Chaque enfant reçoit <b>${q} ${obj}</b> et il en reste <b>${r}</b>.`],why:"Situation de partage : on connaît le nombre de parts, on cherche la valeur d'une part."};},
+ ()=>{const k=pick([4,6,8,10,12]),q=R(5,40),r=R(1,k-1),n=k*q+r;
+  return {txt:`On range ${n} œufs dans des boîtes de ${k}. Combien de boîtes sont complètement remplies ?`,kind:"num",sol:q,
+   steps:[eq(n,k,q,r),`On remplit <b>${q} boîtes</b> (et il reste ${r} œuf${r>1?"s":""}).`],why:"Situation de groupement : on connaît la valeur d'une part, on cherche le nombre de parts."};},
+ ()=>{const k=pick([40,45,48,50,52,55,60]),q=R(2,12),r=R(1,k-1),n=k*q+r;
+  return {txt:`${n} élèves partent en sortie. Chaque car a ${k} places. Combien de cars faut-il réserver, au minimum ?`,kind:"num",sol:q+1,
+   steps:[eq(n,k,q,r),`${q} cars sont pleins, mais il reste ${r} élève${r>1?"s":""} : il faut un car de plus, soit <b>${q+1} cars</b>.`],why:"Piège : la réponse n'est pas le quotient, il ne faut oublier personne !"};},
+ ()=>{const k=pick([4,5,6,8]),q=R(8,25),r=R(1,k-1),n=k*q+r;
+  return {txt:`${n} élèves déjeunent à la cantine sur des tables de ${k} places. Combien d'élèves sont à la table incomplète ?`,kind:"num",sol:r,
+   steps:[eq(n,k,q,r),`${q} tables sont complètes ; <b>${r}</b> élève${r>1?"s sont":" est"} à la table incomplète.`],why:"Ici, c'est le reste qui répond à la question."};}];
+const PBE=[
+ ()=>{const m=R(4,59),s=R(1,59),S=60*m+s;
+  return {txt:`Un morceau de musique dure ${F(S)} secondes. Convertis cette durée en minutes et secondes.`,kind:"qr",labs:["min","s"],sol:[m,s],
+   steps:[eq(S,60,m,s),`1 min = 60 s, donc ${F(S)} s = <b>${m} min ${s} s</b>.`],why:""};},
+ ()=>{const j=R(0,6),n=R(20,400),k=(j+n)%7;
+  return {txt:`Aujourd'hui, nous sommes ${JOURS[j]}. Quel jour de la semaine serons-nous dans ${n} jours ?`,kind:"qcm",opts:JOURS.map(x=>[x,x]),sol:JOURS[k],
+   steps:[eq(n,7,Math.floor(n/7),n%7),`Dans ${7*Math.floor(n/7)} jours (${Math.floor(n/7)} semaines), on sera encore ${JOURS[j]}. Puis ${n%7} jour${n%7>1?"s":""} de plus : <b>${JOURS[k]}</b>.`],why:"Une semaine dure 7 jours : seul le reste compte."};},
+ ()=>{const b=R(6,30),q=R(10,90),r=R(1,b-1),a=b*q+r;
+  return {txt:`Dans une division euclidienne, le diviseur est ${b}, le quotient est ${q} et le reste est ${r}. Quel est le dividende ?`,kind:"num",sol:a,
+   steps:[`Dividende = (diviseur × quotient) + reste = ${M(`(${b}${X}${q}) + ${r} = ${F(b*q)} + ${r} = ${F(a)}`)}.`],why:`On vérifie que le reste ${r} est bien plus petit que ${b}.`};},
+ ()=>{const C=shuffle(["rouge","bleue","verte","jaune","noire","blanche"]).slice(0,R(3,5)),k=C.length,n=R(40,200),r=n%k,col=C[(n-1)%k];
+  return {txt:`Zoé enfile des perles en répétant le motif : ${C.join(", ")}, puis de nouveau ${C.join(", ")}… De quelle couleur est la ${n}<sup>e</sup> perle ?`,kind:"qcm",opts:C.map(x=>[x,x]),sol:col,
+   steps:[eq(n,k,Math.floor(n/k),r),r===0?`La ${n}<sup>e</sup> perle termine le ${Math.floor(n/k)}<sup>e</sup> motif : c'est la dernière couleur, <b>${col}</b>.`:`Après ${Math.floor(n/k)} motifs complets, la ${n}<sup>e</sup> perle est la ${r}<sup>e</sup> du motif : <b>${col}</b>.`],why:"Le motif a "+k+" perles : on divise par "+k+"."};},
+ ()=>{const k=R(25,45),L=R(8,20)*100,q=Math.floor(L/k),r=L%k,ans=r?q+1:q;
+  return {txt:`Une grenouille avance par sauts de ${k} cm. Combien de sauts doit-elle faire, au minimum, pour parcourir au moins ${L/100} m ?`,kind:"num",sol:ans,
+   steps:[`${L/100} m = ${F(L)} cm.`,eq(L,k,q,r),r?`En ${q} sauts, il manque ${r} cm : il faut <b>${ans} sauts</b>.`:`${q} sauts tombent pile : <b>${ans} sauts</b>.`],why:""};}];
+let pbOrder=[];
+function gPb(i){if(i===0)pbOrder=shuffle((EXPERT?PBE:PBN).map((f,k)=>k));const L=EXPERT?PBE:PBN;
+  const q=L[pbOrder[i%L.length]]();q.cons="Problème";q.txtp=true;return q;}
+/* ---------- 4. Vrai ou faux ---------- */
+function gVF(){
+  let b=EXPERT?R(6,25):R(2,12),m=EXPERT?R(4,40):R(2,12),a=b*m;const vrai=Math.random()<.5;
+  if(!vrai)a+=R(1,b-1);
+  const t=R(0,EXPERT?6:4);let txt,sol,steps,why="";
+  const lien=vrai?`${M(`${F(a)} = ${F(b)}${X}${F(m)}`)} (le reste est nul).`:`${eq(a,b,Math.floor(a/b),a%b)} : le reste n'est pas nul.`;
+  if(t===0){txt=`${F(a)} est un multiple de ${F(b)}.`;sol=vrai?"v":"f";steps=[lien];}
+  else if(t===1){txt=`${F(b)} est un diviseur de ${F(a)}.`;sol=vrai?"v":"f";steps=[lien];}
+  else if(t===2){txt=`${F(a)} est divisible par ${F(b)}.`;sol=vrai?"v":"f";steps=[lien];}
+  else if(t===3){a=b*m;txt=`${F(b)} est un multiple de ${F(a)}.`;sol="f";steps=[`${M(`${F(a)} = ${F(b)}${X}${F(m)}`)} : c'est l'inverse ! ${F(a)} est un multiple de ${F(b)}.`];why="Un multiple de "+F(a)+" (non nul) est au moins égal à "+F(a)+".";}
+  else if(t===4){a=b*m;txt=`${F(a)} est un diviseur de ${F(b)}.`;sol="f";steps=[`${M(`${F(a)} = ${F(b)}${X}${F(m)}`)} : c'est ${F(b)} qui est un diviseur de ${F(a)}.`];why="Un diviseur d'un nombre (non nul) n'est jamais plus grand que lui.";}
+  else if(t===5){const s=pick([[`0 est un multiple de ${F(b)}.`,"v",`${M(`${F(b)}${X}0 = 0`)}.`],[`1 est un diviseur de ${F(a)}.`,"v",`${M(`${F(a)} = 1${X}${F(a)}`)}.`],[`${F(a)} est un diviseur de ${F(a)}.`,"v",`${M(`${F(a)} = ${F(a)}${X}1`)}.`],[`Le plus grand diviseur de ${F(a)} est ${F(Math.floor(a/2))}.`,"f",`Le plus grand diviseur de ${F(a)} est ${F(a)} lui-même.`]]);
+    txt=s[0];sol=s[1];steps=[s[2]];}
+  else{const n=pick([7,9,11,13,15,17,19,21,23,25,27,29,31,33,37,39,41,49,51]);const d=divs(n);
+    txt=`${n} a exactement deux diviseurs.`;sol=d.length===2?"v":"f";steps=[`Les diviseurs de ${n} sont : ${d.join(" ; ")}.`];why=d.length===2?`${n} n'est divisible que par 1 et par lui-même.`:"";}
+  return {txt:M(txt),kind:"qcm",opts:[["v","Vrai"],["f","Faux"]],sol,cons:"Vrai ou faux ?",steps,why};
+}
+/* ---------- 5. Multiples ---------- */
+function gMult(){
+  if(!EXPERT){const b=R(3,12);let n;do{n=R(b+1,12*b);}while(n%b===0);const lo=b*Math.floor(n/b);
+    return {txt:`Encadre ${M(F(n))} entre deux multiples consécutifs de ${M(b)}.`,kind:"pair",n,sol:[lo,lo+b],cons:"Multiples consécutifs",
+      steps:[`Table de ${b} : … ${lo-b>=0?F(lo-b)+" ; ":""}${F(lo)} ; ${F(lo+b)} ; ${F(lo+2*b)} …`,M(`${F(lo)}${LT}${F(n)}${LT}${F(lo+b)}`)],why:""};}
+  const b=R(6,25),x=R(5,40)*b+R(1,b-1);let y;do{y=x+b*R(3,6)+R(0,b-1);}while(y%b===0);const L=[];for(let k=Math.ceil(x/b)*b;k<=y;k+=b)L.push(k);
+  return {txt:`Écris tous les multiples de ${M(b)} compris entre ${M(F(x))} et ${M(F(y))}.`,kind:"list",sol:L,cons:"Sépare les nombres par des points-virgules",
+    steps:[`${eq(x,b,Math.floor(x/b),x%b)} : le premier multiple après ${F(x)} est ${M(`${F(b)}${X}${Math.ceil(x/b)} = ${F(L[0])}`)}.`,`On ajoute ${b} à chaque fois : ${L.map(F).join(" ; ")}.`],why:""};
+}
+/* ---------- 6. Liste des diviseurs ---------- */
+const NDN=[6,8,10,12,14,15,16,18,20,21,24,25,27,28,30,32,35,36,40];
+const NDE=[42,45,48,54,56,60,63,64,66,70,72,75,78,80,84,88,90,96,98,100,105,108,112,120,126,132,144,150];
+function gDiv(){const n=pick(EXPERT?NDE:NDN),d=divs(n);const pairs=[];for(const k of d){if(k*k>n)break;pairs.push(`${k}${X}${n/k}`);}
+  return {txt:`Écris <b>tous</b> les diviseurs de ${M(F(n))}.`,kind:"list",sol:d,cons:"Sépare les nombres par des points-virgules",
+    steps:[`On cherche les produits égaux à ${n} : ${M(`${n} = `+pairs.join(" = "))}.`,`Diviseurs de ${n} : <b>${d.join(" ; ")}</b> (${d.length} diviseurs).`],why:"On essaie 1, 2, 3… et on s'arrête quand les facteurs se croisent."};}
+/* ---------- 7. Critères ---------- */
+function gCrit(){
+  const D=EXPERT?[2,3,4,5,9,10]:[2,3,5,9,10];
+  const base=pick(EXPERT?[1,2,3,4,5,9,10,12,18,20,36,45,90,7,11,13]:[1,2,3,5,9,10,15,18,30,45,90,7,11]);
+  let n;do{n=base*(EXPERT?R(150,90000):R(12,999));}while(n<(EXPERT?1000:20)||n>(EXPERT?999999:9999));
+  const sol=D.filter(d=>n%d===0),u=n%10,s=sumDig(n),dd=n%100;
+  const st=[`Chiffre des unités : <b>${u}</b> → ${n%2===0?"divisible":"pas divisible"} par 2, ${n%5===0?"divisible":"pas divisible"} par 5, ${n%10===0?"divisible":"pas divisible"} par 10.`,
+    `Somme des chiffres : ${M(String(n).split("").join(" + ")+" = "+s)} → ${s%3===0?"divisible":"pas divisible"} par 3, ${s%9===0?"divisible":"pas divisible"} par 9.`];
+  if(EXPERT)st.push(`Deux derniers chiffres : <b>${String(dd).padStart(2,"0")}</b> → ${dd%4===0?"divisible":"pas divisible"} par 4, donc ${F(n)} ${n%4===0?"est":"n'est pas"} divisible par 4.`);
+  st.push(sol.length?`${F(n)} est divisible par : <b>${sol.join(", ")}</b>.`:`${F(n)} n'est divisible par aucun de ces nombres.`);
+  return {txt:`Par quels nombres ${M(F(n))} est-il divisible ?`,kind:"multi",opts:D,sol,cons:"Sélectionne <b>toutes</b> les bonnes réponses (ou aucune), puis vérifie",steps:st,why:""};
+}
+/* ---------- 8. Chiffres cachés ---------- */
+function gCache(){
+  if(!EXPERT){const d=pick([2,5,10]);const pre=R(1,999);const sol=[0,1,2,3,4,5,6,7,8,9].filter(c=>(pre*10+c)%d===0);
+    return {txt:`${M(F(pre)+"□")} est divisible par ${d}.`,kind:"list",sol,cons:"Quels chiffres peut-on mettre à la place de □ ? Écris-les tous",
+      steps:[`Pour être divisible par ${d}, le chiffre des unités doit être ${d===2?"0, 2, 4, 6 ou 8":d===5?"0 ou 5":"0"}.`,`Chiffres possibles : <b>${sol.join(" ; ")}</b>.`],why:""};}
+  const t=R(0,2);
+  if(t<2){const d=t?9:3;const len=R(3,5),pos=R(1,len-1);let digs;do{digs=Array.from({length:len},(v,i)=>i===0?R(1,9):R(0,9));}while(false);
+    const show=digs.map((c,i)=>i===pos?"□":c).join(""),S=sumDig(+digs.map((c,i)=>i===pos?0:c).join(""));
+    const sol=[0,1,2,3,4,5,6,7,8,9].filter(c=>(S+c)%d===0);
+    return {txt:`${M(show)} est divisible par ${d}.`,kind:"list",sol,cons:"Quels chiffres peut-on mettre à la place de □ ? Écris-les tous",
+      steps:[`Somme des chiffres connus : ${S}. Il faut que ${M(S+" + □")} soit un multiple de ${d}.`,`Chiffres possibles : <b>${sol.join(" ; ")}</b> (sommes : ${sol.map(c=>S+c).join(" ; ")}).`],why:""};}
+  const pre=R(10,999),S=sumDig(pre);const sol=[0,2,4,6,8].filter(c=>(S+c)%3===0);
+  return {txt:`${M(F(pre)+"□")} est divisible par 2 <b>et</b> par 3.`,kind:"list",sol,cons:"Quels chiffres peut-on mettre à la place de □ ? Écris-les tous",
+    steps:[`Par 2 : □ vaut 0, 2, 4, 6 ou 8.`,`Par 3 : ${M(S+" + □")} doit être un multiple de 3.`,`Chiffres possibles : <b>${sol.join(" ; ")}</b>.`],why:""};
+}
+const TABS=[
+ {name:"Quotient et reste",gen:gQR,n:8,rappel:"<b>dividende = (diviseur × quotient) + reste</b>, avec <b>reste &lt; diviseur</b>. On cherche combien de fois le diviseur est contenu dans le dividende."},
+ {name:"Égalité ou pas ?",gen:gEgal,n:6,rappel:"Une égalité traduit la division euclidienne si elle est <b>juste</b> et si le <b>reste est plus petit que le diviseur</b>."},
+ {name:"Problèmes",gen:gPb,n:5,rappel:"<b>Partage</b> : on connaît le nombre de parts, on cherche la valeur d'une part. <b>Groupement</b> : on connaît la valeur d'une part, on cherche le nombre de parts. Demande-toi toujours ce que représentent le quotient et le reste."},
+ {name:"Vrai ou faux",gen:gVF,n:8,rappel:"Si la division de a par b a un <b>reste nul</b> : a est <b>divisible</b> par b, b est un <b>diviseur</b> de a, a est un <b>multiple</b> de b."},
+ {name:"Multiples",gen:gMult,n:5,rappel:"Les multiples de 7 sont les résultats de la table de 7 : 0 ; 7 ; 14 ; 21 ; 28 ; …"},
+ {name:"Liste des diviseurs",gen:gDiv,n:4,rappel:"Pour trouver tous les diviseurs de 36 : 36 = 1 × 36 = 2 × 18 = 3 × 12 = 4 × 9 = 6 × 6. Diviseurs : 1 ; 2 ; 3 ; 4 ; 6 ; 9 ; 12 ; 18 ; 36."},
+ {name:"Critères",gen:gCrit,n:6,rappel:"Divisible par <b>2</b> : unités 0, 2, 4, 6, 8. Par <b>5</b> : unités 0 ou 5. Par <b>10</b> : unités 0. Par <b>3</b> (ou <b>9</b>) : la somme des chiffres est divisible par 3 (ou 9). Par <b>4</b> : les deux derniers chiffres forment un multiple de 4."},
+ {name:"Chiffres cachés",gen:gCache,n:5,rappel:"Utilise les critères de divisibilité. Il peut y avoir plusieurs chiffres possibles : écris-les tous."}
+];
+/* ---------- interface ---------- */
+let cur=0;let state=TABS.map(()=>null);
+const list=document.getElementById("list"),tabs=document.getElementById("tabs");
+const esc=s=>String(s).replace(/"/g,"&quot;");
+function serie(i){const t=TABS[i];const qs=[];const seen=new Set();let guard=0;
+  while(qs.length<t.n&&guard++<300){const q=t.gen(qs.length);if(seen.has(q.txt))continue;seen.add(q.txt);q.st=null;q.val=q.kind==="qr"||q.kind==="pair"?["",""]:q.kind==="multi"?[]:"";qs.push(q);}return qs;}
+function renderTabs(){tabs.innerHTML=TABS.map((t,i)=>{const s=state[i];const ok=s?s.filter(q=>q.st==="ok").length:0;
+  return `<button class="tab" role="tab" aria-selected="${i===cur}" data-tab="${i}">${t.name}<span class="n">${s?ok+"/"+s.length:""}</span></button>`;}).join("");}
+function ansHTML(q,j){
+  if(q.kind==="qcm")return `<div class="choices">${q.opts.map(([v,l])=>`<button class="choice${q.val===v?" sel":""}" data-ch="${j}" data-o="${esc(v)}">${l}</button>`).join("")}</div>`;
+  if(q.kind==="multi")return `<div class="choices">${q.opts.map(d=>`<button class="tog${q.val.includes(d)?" sel":""}" data-tg="${j}" data-o="${d}" aria-pressed="${q.val.includes(d)}">${d}</button>`).join("")}</div>`;
+  if(q.kind==="qr")return q.labs.map((l,k)=>`<span class="lbl">${l} :</span><input class="sm" id="in${j}_${k}" data-j="${j}" data-k="${k}" autocomplete="off" inputmode="numeric" value="${esc(q.val[k])}" aria-label="${l}">`).join("");
+  if(q.kind==="pair")return `<input class="sm" id="in${j}_0" data-j="${j}" data-k="0" autocomplete="off" inputmode="numeric" value="${esc(q.val[0])}" aria-label="Multiple inférieur"><span class="lbl m">&lt; ${F(q.n)} &lt;</span><input class="sm" id="in${j}_1" data-j="${j}" data-k="1" autocomplete="off" inputmode="numeric" value="${esc(q.val[1])}" aria-label="Multiple supérieur">`;
+  if(q.kind==="list")return `<input class="wide" id="in${j}" data-j="${j}" autocomplete="off" value="${esc(q.val)}" placeholder="ex. 1 ; 2 ; 3" aria-label="Réponse ${j+1}">`;
+  return `<input id="in${j}" data-j="${j}" autocomplete="off" inputmode="numeric" value="${esc(q.val)}" aria-label="Réponse ${j+1}">`;
+}
+function render(){
+  if(!state[cur])state[cur]=serie(cur);
+  document.getElementById("rappel").innerHTML=TABS[cur].rappel;
+  const k=state[cur][0]&&state[cur][0].kind;
+  document.getElementById("aide").textContent=EXPERT?"Niveau expert : des nombres plus grands et des questions plus difficiles. Décoche la case pour revenir au niveau normal.":"Écris seulement des nombres entiers. Pour une liste, sépare les nombres par des points-virgules (exemple : 1 ; 2 ; 4).";
+  const qs=state[cur];
+  list.innerHTML=qs.map((q,j)=>{const auto=q.kind==="qcm";
+    return `<div class="q ${q.st==="ok"?"ok":q.st==="bad"?"bad":""}" id="q${j}">
+      <div class="qhead"><span class="num">${j+1}</span><span class="consigne">${q.cons}</span></div>
+      <div class="expr${q.txtp?" txt":""}">${q.txt}</div>
+      <div class="ans"><div class="ai" id="ai${j}">${ansHTML(q,j)}</div>${auto?"":`<button class="btn" data-check="${j}">Vérifier</button>`}<button class="btn" data-corr="${j}">Correction</button></div>
+      <div class="fb" id="fb${j}"></div><div class="corr" id="co${j}" hidden></div></div>`;}).join("");
+  qs.forEach((q,j)=>{if(q.fb)setFb(j,q.fb[0],q.fb[1]);});
+  renderTabs();tally();
+}
+function setFb(j,cls,msg){const f=document.getElementById("fb"+j);f.className="fb "+cls;f.innerHTML=msg;}
+const ILLISIBLE=["hint","Écris seulement un nombre entier (exemple : 12)."];
+const sameSet=(a,b)=>{const A=[...new Set(a)].sort((x,y)=>x-y),B=[...new Set(b)].sort((x,y)=>x-y);return A.length===B.length&&A.every((v,i)=>v===B[i]);};
+function check(j,silent){
+  const q=state[cur][j];let st="bad",fb;
+  if(q.kind==="qcm"){if(!q.val){if(!silent)setFb(j,"hint","Choisis une réponse.");return;}
+    st=q.val===q.sol?"ok":"bad";fb=st==="ok"?["ok","Bravo !"]:["bad","Ce n'est pas la bonne réponse (regarde la correction)."];}
+  else if(q.kind==="multi"){
+    const ok=sameSet(q.val,q.sol);st=ok?"ok":"bad";
+    const manque=q.sol.filter(d=>!q.val.includes(d)).length,trop=q.val.filter(d=>!q.sol.includes(d)).length;
+    fb=ok?["ok",q.sol.length?"Bravo !":"Bravo ! Il n'est divisible par aucun de ces nombres."]:["bad",trop?"Au moins un nombre sélectionné ne convient pas.":`Il manque ${manque} réponse${manque>1?"s":""}.`];}
+  else if(q.kind==="qr"||q.kind==="pair"){
+    if(!q.val[0].trim()||!q.val[1].trim()){if(!silent)setFb(j,"hint","Complète les deux cases.");return;}
+    const v=q.val.map(lire);if(v.includes(null)){fb=ILLISIBLE;st=null;}
+    else{let all=true;v.forEach((x,k)=>{const el=document.getElementById(`in${j}_${k}`);const g=x===q.sol[k];el.classList.remove("ok","bad");el.classList.add(g?"ok":"bad");if(!g)all=false;});
+      if(all){st="ok";fb=["ok","Bravo !"];}
+      else if(q.kind==="pair"&&v[0]<q.n&&v[1]>q.n&&v[0]%(q.sol[1]-q.sol[0])===0&&v[1]%(q.sol[1]-q.sol[0])===0)fb=["bad","Ce sont bien des multiples qui encadrent le nombre, mais ils ne sont pas consécutifs."];
+      else fb=["bad","Une réponse est fausse (case en rouge)."];}}
+  else if(q.kind==="list"){
+    const raw=q.val.trim();if(!raw){if(!silent)setFb(j,"hint","Écris ta réponse.");return;}
+    const v=lireListe(raw);const ok=sameSet(v,q.sol);st=ok?"ok":"bad";
+    const trop=v.filter(x=>!q.sol.includes(x)),manque=q.sol.filter(x=>!v.includes(x));
+    fb=ok?["ok","Bravo !"]:["bad",trop.length?`${trop.map(F).join(" ; ")} ne convien${trop.length>1?"nent":"t"} pas.`+(manque.length?` Et il en manque ${manque.length}.`:""):`Il en manque ${manque.length}.`];}
+  else{const raw=q.val.trim();if(!raw){if(!silent)setFb(j,"hint","Écris ta réponse.");return;}
+    const n=lire(raw);if(n===null){fb=ILLISIBLE;st=null;}else if(n===q.sol){st="ok";fb=["ok","Bravo !"];}else fb=["bad","Ce n'est pas la bonne réponse."];}
+  q.st=st;q.fb=fb;const box=document.getElementById("q"+j);box.classList.toggle("ok",st==="ok");box.classList.toggle("bad",st==="bad");setFb(j,fb[0],fb[1]);renderTabs();tally();
+}
+function corr(j){const q=state[cur][j];const c=document.getElementById("co"+j);
+  if(!c.hidden){c.hidden=true;return;}
+  c.innerHTML=q.steps.map(s=>s.startsWith("<div")?s:`<span class="line">${s}</span>`).join("")+(q.why?`<span class="why">${q.why}</span>`:"");c.hidden=false;}
+function tally(){let tot=0,ok=0;state.forEach(s=>{if(s)s.forEach(q=>{tot++;if(q.st==="ok")ok++;});});
+  document.getElementById("score").textContent=`${ok} / ${tot} réussies`;document.getElementById("prog").style.width=(tot?100*ok/tot:0)+"%";}
+function reset(j){const q=state[cur][j];q.st=null;q.fb=null;const box=document.getElementById("q"+j);box.classList.remove("ok","bad");setFb(j,"","");}
+tabs.addEventListener("click",e=>{const b=e.target.closest("[data-tab]");if(!b)return;cur=+b.dataset.tab;render();});
+list.addEventListener("click",e=>{
+  const c=e.target.closest("[data-check]");if(c){check(+c.dataset.check);return;}
+  const r=e.target.closest("[data-corr]");if(r){corr(+r.dataset.corr);return;}
+  const ch=e.target.closest("[data-ch]");if(ch){const j=+ch.dataset.ch;state[cur][j].val=ch.dataset.o;
+    ch.parentNode.querySelectorAll(".choice").forEach(x=>x.classList.toggle("sel",x===ch));check(j);return;}
+  const tg=e.target.closest("[data-tg]");if(tg){const j=+tg.dataset.tg,d=+tg.dataset.o,q=state[cur][j];
+    q.val=q.val.includes(d)?q.val.filter(x=>x!==d):q.val.concat([d]);tg.classList.toggle("sel");tg.setAttribute("aria-pressed",q.val.includes(d));reset(j);renderTabs();tally();}
+});
+list.addEventListener("input",e=>{const t=e.target;if(t.dataset.j==null)return;const j=+t.dataset.j,q=state[cur][j];
+  if(t.dataset.k!=null)q.val[+t.dataset.k]=t.value;else q.val=t.value;t.classList.remove("ok","bad");if(q.st)reset(j);});
+list.addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.dataset.j!=null)check(+e.target.dataset.j);});
+document.getElementById("newSerie").addEventListener("click",()=>{state[cur]=null;render();});
+document.getElementById("checkAll").addEventListener("click",()=>{state[cur].forEach((q,j)=>{if(q.kind!=="qcm"||q.val)check(j,true);});});
+const exp=document.getElementById("expert"),expLab=document.getElementById("expLab");
+function setExpert(on){EXPERT=on;exp.checked=on;expLab.classList.toggle("on",on);document.getElementById("eyeExpert").textContent=on?" · Niveau expert ★★★★":"";state=TABS.map(()=>null);render();
+  try{const u=new URL(location.href);if(on)u.searchParams.set("expert","");else u.searchParams.delete("expert");history.replaceState(null,"",u.toString().replace("expert=","expert"));}catch(e){}}
+exp.addEventListener("change",()=>setExpert(exp.checked));
+setExpert(/[?&]expert/.test(location.search));
+})();
+</script>
+</body>
+</html>
