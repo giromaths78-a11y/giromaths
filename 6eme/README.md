@@ -8,7 +8,7 @@ Page du site : [6eme.html](../6eme.html)
 | 02 | [Droites et cercles](02-droites-et-cercles/README.md) | Géométrie | 10 ressources |
 | 03 | [Nombres décimaux](03-nombres-decimaux/README.md) | Nombres et calculs | 4 ressources |
 | 04 | [Angles](04-angles/README.md) | Géométrie | 9 ressources |
-| 05 | [Comparer, additionner et soustraire des nombres décimaux](05-comparer-additionner-et-soustraire-des-nombres-decimaux/README.md) | Nombres et calculs | 19 ressources |
+| 05 | [Comparer, additionner et soustraire des nombres décimaux](05-comparer-additionner-et-soustraire-des-nombres-decimaux/README.md) | Nombres et calculs | 20 ressources |
 | 06 | [Construction de triangles et propriétés](06-construction-de-triangles-et-proprietes/README.md) | Géométrie | 18 ressources |
 | 07 | [Multiplier des nombres décimaux · Problèmes](07-multiplier-des-nombres-decimaux-problemes/README.md) | Nombres et calculs | en préparation |
 | 08 | [Raisonner avec des droites et des médiatrices](08-raisonner-avec-des-droites-et-des-mediatrices/README.md) | Géométrie | en préparation |
