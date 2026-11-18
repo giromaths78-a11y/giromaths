@@ -24,6 +24,7 @@ Page du site : [index.html](index.html)
 ## Fiches d'exercices
 
 - [Fiche d'exercices (difficulté ★ à ★★★) : p. 1 comparer, encadrer, arrondir ; p. 2 additionner, soustraire](exercices/fiche-exercices-decimaux.pdf) (PDF) · [corrigé](exercices/fiche-exercices-decimaux-corrige.pdf)
+- [Fiche niveau expert (★★★★) : p. 1 comparer, encadrer, arrondir ; p. 2 additionner, soustraire](exercices/fiche-expert-decimaux.pdf) (PDF) · [corrigé](exercices/fiche-expert-decimaux-corrige.pdf)
 
 ## Vidéos
 
