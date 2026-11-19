@@ -23,7 +23,7 @@ Page du site : [index.html](index.html)
 
 ## Fiches d'exercices
 
-- [Fiche d'exercices (21 exercices, difficulté ★ à ★★★★) : fréquence, moyenne, étendue, médiane, classes, diagrammes, niveau expert](exercices/fiche-exercices-statistiques.pdf) (PDF) · [corrigé](exercices/fiche-exercices-statistiques-corrige.pdf)
+- [Fiche d'exercices (25 exercices, difficulté ★ à ★★★★) : fréquence, moyenne, étendue, médiane, diagrammes en bâtons, circulaires, histogramme, niveau expert](exercices/fiche-exercices-statistiques.pdf) (PDF) · [corrigé](exercices/fiche-exercices-statistiques-corrige.pdf)
 
 ## Vidéos
 
