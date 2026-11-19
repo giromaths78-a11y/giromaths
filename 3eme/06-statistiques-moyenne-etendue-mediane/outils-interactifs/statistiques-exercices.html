@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Statistiques 3e</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--acc:#c026d3;--acc2:#86198f;--soft:#fbe6fd;--bg:#fdf7fe;--card:#fff;--ink:#2a1530;--muted:#6b5873;--line:#ecd5f0;
+  --ok:#15803d;--oksoft:#dcfce7;--bad:#b91c1c;--badsoft:#fee2e2;--hint:#7c3aed;--star:#f59e0b;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--acc:#e879f9;--acc2:#f5d0fe;--soft:#3a1740;--bg:#170e1a;--card:#221626;--ink:#f6eaf8;--muted:#bfa9c6;--line:#43294a;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;--star:#fbbf24;color-scheme:dark}}
+:root[data-theme="dark"]{--acc:#e879f9;--acc2:#f5d0fe;--soft:#3a1740;--bg:#170e1a;--card:#221626;--ink:#f6eaf8;--muted:#bfa9c6;--line:#43294a;
+  --ok:#4ade80;--oksoft:#0f2e1b;--bad:#f87171;--badsoft:#3a1414;--hint:#c4b5fd;--star:#fbbf24;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+header.hero{background:linear-gradient(135deg,#c026d3,#701a75);color:#fff;border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
+header.hero::after{content:"M = (13 + 14) ÷ 2";position:absolute;right:14px;bottom:-12px;font:700 50px/1 "Space Grotesk",sans-serif;opacity:.15;white-space:nowrap}
+.eyebrow{font:600 .8rem "Space Grotesk",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+h1{font:700 clamp(1.6rem,4.5vw,2.3rem)/1.1 "Space Grotesk",sans-serif;margin:4px 0 6px}
+header.hero p{margin:0;max-width:62ch;opacity:.95;position:relative;z-index:1}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 10px}
+.tab{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font:600 .9rem Inter,sans-serif;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--line);margin-bottom:12px}
+.score{font:700 1rem "Space Grotesk",sans-serif;font-variant-numeric:tabular-nums}
+.progress{flex:1 1 140px;height:8px;background:var(--line);border-radius:4px;overflow:hidden;min-width:100px}
+.progress span{display:block;height:100%;width:0;background:var(--ok);transition:width .3s}
+.niveaux{display:inline-flex;border:1.5px solid var(--star);border-radius:999px;overflow:hidden}
+.niv{border:0;background:var(--card);color:var(--star);font:700 .9rem Inter,sans-serif;padding:4px 10px;cursor:pointer;letter-spacing:1px}
+.niv+.niv{border-left:1px solid var(--star)}
+.niv[aria-pressed="true"]{background:var(--star);color:#fff}
+.btn{border:1.5px solid var(--acc);background:var(--card);color:var(--acc);border-radius:8px;padding:5px 12px;font:600 .88rem Inter,sans-serif;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--acc);color:#fff}
+.btn:focus-visible,input:focus-visible,.tab:focus-visible,.choice:focus-visible,.niv:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.rappel{background:var(--card);border:1px solid var(--line);border-left:5px solid var(--acc);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:.95rem}
+.rappel b{color:var(--acc2)}
+.q{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:12px}
+.q.ok{border-color:var(--ok);box-shadow:inset 4px 0 0 var(--ok)}
+.q.bad{border-color:var(--bad);box-shadow:inset 4px 0 0 var(--bad)}
+.qhead{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+.num{font:700 .85rem "Space Grotesk",sans-serif;background:var(--soft);color:var(--acc2);border-radius:6px;padding:1px 8px}
+.consigne{color:var(--muted);font-size:.92rem}
+.expr{font-size:1.08rem;margin:6px 0 8px}
+.m{font-family:"Cambria Math","STIX Two Math","Times New Roman",serif;white-space:nowrap}
+.serie{font:1.12rem "Cambria Math","Times New Roman",serif;letter-spacing:.02em}
+.tw{overflow-x:auto;max-width:100%}
+table.t{border-collapse:collapse;margin:4px 0 8px;font-variant-numeric:tabular-nums}
+table.t th,table.t td{border:1px solid var(--line);padding:4px 10px;text-align:center;min-width:44px}
+table.t th{background:var(--soft);color:var(--acc2);text-align:left;font-weight:600;white-space:nowrap}
+table.t input{width:3.6em;font:1rem Inter,sans-serif;padding:3px 4px;text-align:center;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
+.ans{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center}
+.ans label{display:inline-flex;align-items:center;gap:6px}
+.ans input{font:1.05rem Inter,sans-serif;padding:5px 8px;border:1.5px solid var(--line);border-radius:8px;background:var(--bg);color:var(--ink);width:6.5em;text-align:center}
+input.ok{border-color:var(--ok)!important;background:var(--oksoft)!important}
+input.bad{border-color:var(--bad)!important;background:var(--badsoft)!important}
+.choices{display:flex;flex-direction:column;gap:6px}
+.choice{border:1.5px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 12px;cursor:pointer;font:500 .97rem Inter,sans-serif;color:var(--ink);text-align:left}
+.choice.sel{border-color:var(--acc);background:var(--soft)}
+.choice.good{border-color:var(--ok);background:var(--oksoft)}
+.fb{margin-top:6px;font-size:.92rem}
+.fb.ok{color:var(--ok)}.fb.bad{color:var(--bad)}
+.corr{margin-top:8px;background:var(--soft);border-radius:8px;padding:8px 12px;font-size:.98rem}
+.corr .line{display:block;margin:2px 0}
+.corr .why{display:block;font:italic .88rem Inter,sans-serif;color:var(--muted);margin-top:4px}
+.qfoot{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+.aide{font-size:.85rem;color:var(--muted);margin:0 0 10px}
+footer{margin-top:30px;font-size:.8rem;color:var(--muted);text-align:center}
+.frac{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;margin:0 2px}
+.frac>span:first-child{border-bottom:1px solid currentColor;padding:0 3px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">3ème · S6 · Statistiques</div>
+  <h1>Statistiques : je m'entraîne</h1>
+  <p>Des petites séries (10 données au plus) qui changent à chaque fois. Choisis ton niveau de ★ à ★★★★, réponds, vérifie, puis lis la correction rédigée comme dans le cours.</p>
+</header>
+<nav class="tabs" role="tablist" id="tabs"></nav>
+<div class="bar">
+  <span class="score" id="score">0 / 0</span>
+  <div class="progress"><span id="prog"></span></div>
+  <span class="niveaux" role="group" aria-label="Niveau de difficulté" id="niveaux"></span>
+  <button class="btn" id="newSerie">Nouvelle série</button>
+  <button class="btn primary" id="checkAll">Tout vérifier</button>
+</div>
+<div class="rappel" id="rappel"></div>
+<p class="aide">Écris les nombres décimaux avec une virgule (ex. : 12,5). Les pourcentages s'écrivent sans le signe %.</p>
+<div id="list"></div>
+<footer>GiroMaths · 3ème S6 · Statistiques · © 2026</footer>
+</div>
+<script>
+(function(){
+"use strict";
+/* ---------- outils ---------- */
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const rd=(x,d)=>Math.round(x*Math.pow(10,d)+1e-9)/Math.pow(10,d);
+// écriture française : 12,5 ; 1 250
+const F=x=>{let s=String(rd(x,6));let neg=s[0]==="-";if(neg)s=s.slice(1);let [e,d]=s.split(".");e=e.replace(/\B(?=(\d{3})+(?!\d))/g," ");return (neg?"−":"")+e+(d?","+d:"");};
+const M=s=>'<span class="m">'+s+'</span>';
+const fr=(a,b)=>`<span class="frac m"><span>${a}</span><span>${b}</span></span>`;
+const eme=n=>n===1?"1<sup>re</sup>":n+"<sup>e</sup>";
+const sum=a=>a.reduce((s,x)=>s+x,0);
+function lire(s){s=String(s).trim().replace(/[\s  %]/g,"").replace(",",".").replace("−","-");if(!/^-?\d+(\.\d+)?$/.test(s))return null;return parseFloat(s);}
+let NIV=1;
+const CTX=[ // nom (pluriel), individu, unité, caractère
+  {pop:"élèves",ind:"élève",u:"",car:"note",carP:"notes",lo:4,hi:20,dec:false,phr:(c,x)=>`ont eu ${x} ${c}`},
+  {pop:"joueurs",ind:"joueur",u:" points",car:"nombre de points",carP:"points marqués",lo:2,hi:30,dec:false,phr:(c,x)=>`ont marqué ${x} points ${c}`},
+  {pop:"élèves",ind:"élève",u:" min",car:"temps de trajet",carP:"temps de trajet (en min)",lo:5,hi:40,dec:false,phr:(c,x)=>`mettent ${x} min ${c} pour venir au collège`},
+  {pop:"plantules",ind:"plantule",u:" cm",car:"taille",carP:"tailles (en cm)",lo:6,hi:24,dec:false,phr:(c,x)=>`mesurent ${x} cm ${c}`},
+];
+/* ---------- génération de séries ---------- */
+function serieListe(n,lo,hi,dec){const a=[];for(let i=0;i<n;i++)a.push(dec?rd(R(lo*10,hi*10)/10,1):R(lo,hi));return a;}
+function medianeInfo(sorted){const n=sorted.length;if(n%2){const p=(n+1)/2;return {n,pair:false,p,M:sorted[p-1]};}const p=n/2;return {n,pair:true,p,M:rd((sorted[p-1]+sorted[p])/2,6)};}
+function redacMed(sorted,info,tableau){
+  const L=[];const n=info.n;
+  L.push(`Effectif total : ${M("N = "+n)}.`);
+  if(info.pair){L.push(`${n} est pair, donc on calcule ${fr(n,2)} ${M("= "+info.p)}.`);
+    L.push(`La médiane est la moyenne de la ${eme(info.p)} et de la ${eme(info.p+1)} donnée de la série ordonnée.`);
+    const a=sorted[info.p-1],b=sorted[info.p];
+    L.push((tableau?`Par lecture du tableau, la ${eme(info.p)} donnée correspond à la valeur ${F(a)} et la ${eme(info.p+1)} donnée à la valeur ${F(b)}, donc `:"Donc ")+M(`M = (${F(a)} + ${F(b)}) ÷ 2 = ${F(info.M)}`)+".");}
+  else{L.push(`${n} est impair, donc on calcule ${fr(n+" + 1",2)} ${M("= "+info.p)}.`);
+    L.push(`La médiane est la ${eme(info.p)} donnée de la série ordonnée.`);
+    L.push((tableau?`Par lecture du tableau, la ${eme(info.p)} donnée correspond à la valeur ${F(info.M)}, donc `:"Donc ")+M(`M = ${F(info.M)}`)+".");}
+  return L;}
+function tableHTML(rows){return '<div class="tw"><table class="t">'+rows.map(r=>'<tr><th>'+r[0]+'</th>'+r.slice(1).map(c=>'<td>'+c+'</td>').join("")+'</tr>').join("")+'</table></div>';}
+// tableau d'effectifs : k valeurs croissantes, effectifs ≥1, total N
+function tabEff(k,N,lo,step,hi){let v;for(let t=0;t<60;t++){v=[];let x=lo;const st=t<40?step:1;for(let i=0;i<k;i++){v.push(x);x+=st*R(1,2);}if(!hi||v[k-1]<=hi)break;}
+  let e=Array(k).fill(1);for(let i=k;i<N;i++)e[R(0,k-1)]++;return {v,e};}
+/* ---------- 1. Donnée ou valeur ---------- */
+function gDonnee(){
+  const n=[6,7,8,10][NIV-1],k=Math.min(n-2,[3,3,4,5][NIV-1]);const c=pick(CTX);
+  let vals=[];while(vals.length<k){const x=R(c.lo,c.hi);if(!vals.includes(x))vals.push(x);}
+  let d=vals.slice();while(d.length<n)d.push(pick(vals));d=shuffle(d);
+  const v=pick(vals),ef=d.filter(x=>x===v).length;
+  return {cons:`On a relevé les ${c.carP} de ${n} ${c.pop}.`,txt:`<div class="serie">${d.map(F).join(" ; ")}</div>`,
+    fields:[["Nombre de données",n],["Nombre de valeurs différentes",k],[`Effectif de la valeur ${F(v)}`,ef]],
+    steps:[`Il y a une donnée par ${c.ind} : la série compte ${M(n)} données.`,`Valeurs différentes : ${vals.slice().sort((a,b)=>a-b).map(F).join(" ; ")}, soit ${M(k)} valeurs.`,`La valeur ${F(v)} apparaît dans ${ef} donnée${ef>1?"s":""} : son effectif est ${M(ef)}.`],
+    why:"Une donnée = un résultat relevé (autant que d'individus). Une valeur = un résultat possible ; plusieurs données peuvent avoir la même valeur.",
+    data:{type:"donnee",d,v}};
+}
+/* ---------- 2. Fréquence ---------- */
+function gFreq(){
+  const N=[10,20,25,40][NIV-1],k=[3,4,4,5][NIV-1];const c=pick(CTX);
+  const {v,e}=tabEff(k,N,R(c.lo,c.lo+3),R(1,3),c.hi);const i=R(0,k-1);
+  const f=e[i]/N,p=rd(100*f,4);
+  const fx=(()=>{let a=e[i],b=N;const g=(x,y)=>y?g(y,x%y):x;const d=g(a,b);return [a/d,b/d];})();
+  return {cons:`Le tableau donne la répartition des ${c.carP} de ${N} ${c.pop}. Calcule l'effectif total, puis la fréquence de la valeur ${F(v[i])} en pourcentage.`,
+    txt:tableHTML([[c.car.charAt(0).toUpperCase()+c.car.slice(1)].concat(v.map(F)),["Effectif"].concat(e)]),
+    fields:[["Effectif total",N],[`Fréquence de ${F(v[i])} (en %)`,p]],
+    steps:[`Effectif de la valeur ${F(v[i])} : ${e[i]}`,`Effectif total : ${M(e.join(" + ")+" = "+N)}`,
+      `${M("f =")} ${fr(e[i],N)}${fx[1]!==N?" "+M("=")+" "+fr(fx[0],fx[1]):""} ${M("= "+F(f)+" = "+F(p)+" %")}`,`La fréquence de la valeur ${F(v[i])} est de ${F(p)} %.`],
+    data:{type:"freq",v,e,i}};
+}
+/* ---------- 3. Moyenne d'une liste ---------- */
+function gMoy(){
+  const n=[4,5,6,8][NIV-1];const c=pick(CTX);let d,m;
+  for(let t=0;t<500;t++){d=serieListe(n,c.lo,c.hi,false);m=sum(d)/n;if(NIV<=2?Number.isInteger(m):Number.isInteger(m*10))break;}
+  const arr=NIV===4&&!Number.isInteger(m*10);
+  const sol=arr?rd(m,1):rd(m,6);
+  return {cons:`Voici les ${c.carP} de ${n} ${c.pop}. Calcule la moyenne${arr?" (arrondie au dixième)":""}.`,txt:`<div class="serie">${d.map(F).join(" ; ")}</div>`,
+    fields:[["Effectif total",n],["Moyenne",sol]],
+    steps:[`Effectif total : ${n}`,`${M("x̄ =")} ${fr(d.map(F).join(" + "),n)} ${M("=")} ${fr(F(sum(d)),n)} ${M((arr?"≈ ":"= ")+F(sol))}`,`La moyenne est ${arr?"d'environ ":"de "}${F(sol)}${c.u}.`,`Interprétation : « C'est comme si les ${n} ${c.pop} avaient tous ${F(sol)}${c.u}. »`],
+    data:{type:"moy",d,arr}};
+}
+/* ---------- 4. Moyenne pondérée ---------- */
+function gMoyP(){
+  const k=[3,3,4,4][NIV-1],N=[10,12,16,20][NIV-1];const c=pick(CTX);let T,m;
+  for(let t=0;t<500;t++){T=tabEff(k,N,R(c.lo,c.lo+4),R(1,3),c.hi);m=sum(T.v.map((x,i)=>x*T.e[i]))/N;if(NIV<=2?Number.isInteger(m*10):true)break;}
+  const arr=!Number.isInteger(rd(m*100,6));const sol=arr?rd(m,1):rd(m,6);const S=sum(T.v.map((x,i)=>x*T.e[i]));
+  return {cons:`Le tableau donne les ${c.carP} de ${N} ${c.pop}. Calcule la moyenne${arr?" (arrondie au dixième)":""}.`,
+    txt:tableHTML([[c.car.charAt(0).toUpperCase()+c.car.slice(1)].concat(T.v.map(F)),["Effectif"].concat(T.e)]),
+    fields:[["Effectif total",N],["Moyenne",sol]],
+    steps:[`Effectif total : ${M(T.e.join(" + ")+" = "+N)}`,`${M("x̄ =")} ${fr(T.v.map((x,i)=>F(x)+" × "+T.e[i]).join(" + "),N)} ${M("=")} ${fr(F(S),N)} ${M((arr?"≈ ":"= ")+F(sol))}`,
+      `La moyenne est ${arr?"d'environ ":"de "}${F(sol)}${c.u}.`,`Interprétation : « C'est comme si les ${N} ${c.pop} avaient tous ${F(sol)}${c.u}. »`],
+    why:"On multiplie chaque valeur par son effectif, puis on divise par l'effectif total.",data:{type:"moyp",v:T.v,e:T.e,arr}};
+}
+/* ---------- 5. Étendue ---------- */
+function gEtendue(){
+  const n=[5,6,7,8][NIV-1];let d,u="",ctx;
+  if(NIV===4){ctx="Températures relevées à 7 h (en °C)";d=serieListe(n,-8,12,false);u=" °C";}
+  else if(NIV===3){ctx="Performances au lancer de poids (en m)";d=serieListe(n,5,11,true);u=" m";}
+  else{const c=pick(CTX);ctx=c.carP.charAt(0).toUpperCase()+c.carP.slice(1)+" de "+n+" "+c.pop;d=serieListe(n,c.lo,c.hi,false);u=c.u;}
+  const mx=Math.max(...d),mn=Math.min(...d),E=rd(mx-mn,6);
+  return {cons:`${ctx}. Calcule l'étendue de la série.`,txt:`<div class="serie">${d.map(F).join(" ; ")}</div>`,fields:[["Étendue",E]],
+    steps:[`Plus grande valeur : ${F(mx)} ; plus petite valeur : ${F(mn)}.`,M(`E = ${F(mx)} − ${mn<0?"("+F(mn)+")":F(mn)} = ${F(E)}`),`L'étendue de la série est de ${F(E)}${u}.`,`Interprétation : « L'écart entre la plus grande et la plus petite valeur est de ${F(E)}${u}. »`],
+    data:{type:"etendue",d}};
+}
+/* ---------- 6. Médiane d'une liste ---------- */
+function gMedListe(){
+  let n;if(NIV===1)n=pick([5,7]);else if(NIV===2)n=pick([6,8]);else if(NIV===3)n=R(7,9);else n=R(8,10);
+  const c=pick(CTX);const dec=NIV===4&&Math.random()<.5;
+  const d=dec?serieListe(n,1,4,true):serieListe(n,c.lo,c.hi,false);const s=d.slice().sort((a,b)=>a-b);const info=medianeInfo(s);
+  return {cons:`Détermine la médiane de la série ${dec?"(sauts en hauteur, en m)":"des "+c.carP}. Suis la rédaction modèle : effectif total, position, médiane.`,
+    txt:`<div class="serie">${d.map(F).join(" ; ")}</div>`,
+    fields:[["Effectif total N",n],[info.pair?"N ÷ 2":"(N + 1) ÷ 2",info.p],["Médiane M",info.M]],
+    steps:[`On range la série dans l'ordre croissant : ${M(s.map(F).join(" ; "))}`].concat(redacMed(s,info,false)),
+    why:info.pair?"N pair : la médiane est entre deux données, on fait la moyenne des deux.":"N impair : la médiane est une donnée de la série ordonnée.",
+    data:{type:"medl",d}};
+}
+/* ---------- 7. Médiane d'un tableau ---------- */
+function gMedTab(){
+  const k=[4,4,5,5][NIV-1];const N=NIV===1?pick([9,11,13]):NIV===2?pick([10,12,14]):R(13,20);const c=pick(CTX);
+  const T=tabEff(k,N,R(c.lo,c.lo+3),R(1,3),c.hi);const ecc=[];T.e.reduce((s,x,i)=>(ecc[i]=s+x),0);
+  const s=[];T.v.forEach((x,i)=>{for(let j=0;j<T.e[i];j++)s.push(x);});const info=medianeInfo(s);
+  const rangs=T.v.map((x,i)=>{const a=(i?ecc[i-1]:0)+1,b=ecc[i];return a===b?String(a):a+" → "+b;});
+  const head=c.car.charAt(0).toUpperCase()+c.car.slice(1);
+  return {cons:`Le tableau donne les ${c.carP} de ${N} ${c.pop}. Complète la ligne des effectifs cumulés croissants (ECC), puis détermine la médiane.`,
+    txt:tableHTML([[head].concat(T.v.map(F)),["Effectif"].concat(T.e)]),
+    eccFields:ecc,
+    fields:[["Effectif total N",N],[info.pair?"N ÷ 2":"(N + 1) ÷ 2",info.p],["Médiane M",info.M]],
+    steps:[tableHTML([[head].concat(T.v.map(F)),["Effectif"].concat(T.e),["ECC"].concat(ecc),["Rangs des données"].concat(rangs)])].concat(redacMed(s,info,true)),
+    data:{type:"medt",v:T.v,e:T.e}};
+}
+/* ---------- 8. Interpréter ---------- */
+function gInterp(){
+  const ctxs=[
+    {intro:x=>`Dans un lot de 200 pommes, la masse médiane est de ${x} g.`,t:"med",x:R(150,210),
+      bon:x=>`Au moins la moitié des pommes pèsent ${x} g ou plus, et au moins la moitié pèsent ${x} g ou moins.`,
+      faux:x=>[`Toutes les pommes pèsent ${x} g.`,`C'est comme si les 200 pommes pesaient toutes ${x} g.`,`L'écart entre la pomme la plus lourde et la plus légère est de ${x} g.`]},
+    {intro:x=>`Les 11 joueurs d'une équipe mesurent en moyenne ${F(x)} m.`,t:"moy",x:rd(R(175,192)/100,2),
+      bon:x=>`C'est comme si les 11 joueurs mesuraient tous ${F(x)} m.`,
+      faux:x=>[`Au moins un joueur mesure exactement ${F(x)} m.`,`Au moins la moitié des joueurs mesurent ${F(x)} m ou plus.`,`Le plus grand joueur mesure ${F(x)} m.`]},
+    {intro:x=>`À un contrôle, l'étendue des notes est de ${F(x)} points.`,t:"et",x:pick([8,9.5,12,13.5,16]),
+      bon:x=>`L'écart entre la meilleure note et la moins bonne note est de ${F(x)} points.`,
+      faux:x=>[`La meilleure note est ${F(x)}.`,`C'est comme si tous les élèves avaient eu ${F(x)}.`,`La moitié des élèves ont eu plus de ${F(x)}.`]},
+    {intro:x=>`Dans un village, l'âge médian des habitants est de ${x} ans.`,t:"med",x:R(28,48),
+      bon:x=>`Au moins la moitié des habitants ont ${x} ans ou plus, et au moins la moitié ont ${x} ans ou moins.`,
+      faux:x=>[`C'est comme si tous les habitants avaient ${x} ans.`,`Exactement la moitié des habitants ont plus de ${x} ans.`,`La plupart des habitants ont ${x} ans.`]},
+    {intro:x=>`Un cycliste a roulé en moyenne ${x} km par jour pendant une semaine.`,t:"moy",x:R(35,90),
+      bon:x=>`C'est comme s'il avait roulé ${x} km chaque jour de la semaine.`,
+      faux:x=>[`Il a roulé ${x} km au moins un jour.`,`Il a roulé ${x} km au total.`,`Au moins la moitié des jours, il a roulé ${x} km ou plus.`]},
+    {intro:x=>`Dans une classe, la durée médiane de sommeil est de ${x} h.`,t:"med",x:pick([7,7.5,8,8.5,9]),
+      bon:x=>`Au moins la moitié des élèves dorment ${F(x)} h ou plus, et au moins la moitié dorment ${F(x)} h ou moins.`,
+      faux:x=>[`Tous les élèves dorment ${F(x)} h.`,`C'est comme si chaque élève dormait ${F(x)} h.`,`Le plus gros dormeur dort ${F(x)} h.`]},
+  ];
+  const C=pick(ctxs);const nf=NIV<=2?2:3;
+  const opts=shuffle([[0,C.bon(C.x)]].concat(shuffle(C.faux(C.x)).slice(0,nf).map((s,i)=>[i+1,s])));
+  const nom={med:"la médiane",moy:"la moyenne",et:"l'étendue"}[C.t];
+  return {cons:"Quelle phrase interprète correctement ce résultat ?",txt:C.intro(C.x),kind:"qcm",opts,sol:0,
+    steps:[`Bonne réponse : « ${C.bon(C.x)} »`],why:{med:"Médiane : « au moins la moitié … ou plus » ET « au moins la moitié … ou moins ».",moy:"Moyenne : « C'est comme si … tous … ».",et:"Étendue : « L'écart entre la plus grande et la plus petite valeur … »."}[C.t]+` (On interprète ${nom}.)`,data:{type:"interp"}};
+}
+/* ---------- onglets ---------- */
+const TABS=[
+  {id:"donnee",t:"Donnée ou valeur ?",g:gDonnee,r:"Une <b>donnée</b> est un résultat relevé (une par individu). Une <b>valeur</b> est un résultat possible : plusieurs données peuvent avoir la même valeur. L'<b>effectif</b> d'une valeur est le nombre de données égales à cette valeur."},
+  {id:"freq",t:"Fréquence",g:gFreq,r:"<b>Fréquence</b> = effectif de la valeur ÷ effectif total. On peut l'écrire en fraction, en décimal ou en pourcentage."},
+  {id:"moy",t:"Moyenne",g:gMoy,r:"<b>Moyenne</b> = somme de toutes les données ÷ effectif total."},
+  {id:"moyp",t:"Moyenne (tableau)",g:gMoyP,r:"<b>Moyenne pondérée</b> = somme des produits « valeur × effectif » ÷ effectif total."},
+  {id:"etendue",t:"Étendue",g:gEtendue,r:"<b>Étendue</b> = plus grande valeur − plus petite valeur."},
+  {id:"medl",t:"Médiane (liste)",g:gMedListe,r:"<b>Rédaction modèle :</b> on range la série dans l'ordre croissant → Effectif total : N → N impair : on calcule (N + 1) ÷ 2 ; N pair : on calcule N ÷ 2 → « La médiane est la …<sup>e</sup> donnée de la série ordonnée » (N pair : la moyenne de la …<sup>e</sup> et de la …<sup>e</sup> donnée) → M = …"},
+  {id:"medt",t:"Médiane (tableau)",g:gMedTab,r:"<b>Avec un tableau :</b> on calcule les effectifs cumulés croissants (ECC), puis même rédaction, en ajoutant « Par lecture du tableau, la …<sup>e</sup> donnée correspond à la valeur … »."},
+  {id:"interp",t:"Interpréter",g:gInterp,r:"<b>Moyenne :</b> « C'est comme si … » · <b>Médiane :</b> « Au moins la moitié … ou plus » et « au moins la moitié … ou moins » · <b>Étendue :</b> « L'écart entre … »."},
+];
+const NQ=4;let cur=0,QS=[];
+const $=id=>document.getElementById(id);
+function buildTabs(){$("tabs").innerHTML=TABS.map((t,i)=>`<button class="tab" role="tab" aria-selected="${i===cur}" data-i="${i}">${t.t}</button>`).join("");
+  $("tabs").querySelectorAll(".tab").forEach(b=>b.onclick=()=>{cur=+b.dataset.i;try{history.replaceState(null,"","#"+TABS[cur].id);}catch(e){}buildTabs();serie();});
+  $("niveaux").innerHTML=[1,2,3,4].map(n=>`<button class="niv" aria-pressed="${n===NIV}" data-n="${n}" title="Niveau ${n}">${"★".repeat(n)}</button>`).join("");
+  $("niveaux").querySelectorAll(".niv").forEach(b=>b.onclick=()=>{NIV=+b.dataset.n;try{localStorage.setItem("stat3-niv",NIV);}catch(e){}buildTabs();serie();});}
+function serie(){
+  const T=TABS[cur];$("rappel").innerHTML=T.r;QS=[];
+  for(let i=0;i<NQ;i++){let q,tries=0;do{q=T.g();tries++;}while(tries<30&&QS.some(o=>o.txt===q.txt));QS.push(q);}
+  $("list").innerHTML=QS.map((q,i)=>render(q,i)).join("");
+  QS.forEach((q,i)=>{const el=$("q"+i);q.el=el;q.done=false;
+    if(q.kind==="qcm")el.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{el.querySelectorAll(".choice").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");});
+    el.querySelector(".chk").onclick=()=>{check(q);upd();};
+    el.querySelector(".sol").onclick=()=>{showCorr(q);};
+    el.querySelectorAll("input").forEach(inp=>inp.addEventListener("keydown",e=>{if(e.key==="Enter"){check(q);upd();}}));});
+  window.__QS=QS;upd();}
+function render(q,i){
+  const eccRow=q.eccFields?`<tr><th>ECC</th>${q.eccFields.map((x,j)=>`<td><input inputmode="decimal" class="ecc" data-j="${j}" aria-label="Effectif cumulé croissant n° ${j+1}"></td>`).join("")}</tr></table>`:null;
+  let body=`<div class="expr">${eccRow?q.txt.replace("</table>",eccRow):q.txt}</div>`;
+  if(q.kind==="qcm")body+=`<div class="choices">${q.opts.map(o=>`<button class="choice" data-k="${o[0]}">${o[1]}</button>`).join("")}</div>`;
+  else{
+    body+=`<div class="ans">${q.fields.map((f,j)=>`<label>${f[0]} : <input inputmode="decimal" class="fld" data-j="${j}"></label>`).join("")}</div>`;}
+  return `<div class="q" id="q${i}"><div class="qhead"><span class="num">${i+1}</span><span class="consigne">${q.cons}</span></div>${body}
+  <div class="qfoot"><button class="btn primary chk">Vérifier</button><button class="btn sol">Correction</button></div><div class="fb" aria-live="polite"></div><div class="corrbox"></div></div>`;}
+function showCorr(q){q.el.querySelector(".corrbox").innerHTML=`<div class="corr">${q.steps.map(s=>`<span class="line">${s}</span>`).join("")}${q.why?`<span class="why">${q.why}</span>`:""}</div>`;}
+function check(q){
+  const el=q.el;let ok=true,empty=false;
+  if(q.kind==="qcm"){const s=el.querySelector(".choice.sel");if(!s){empty=true;ok=false;}else ok=+s.dataset.k===q.sol;
+    el.querySelectorAll(".choice").forEach(b=>{if(+b.dataset.k===q.sol&&!empty)b.classList.toggle("good",true);});}
+  else{
+    const test=(inp,sol)=>{const v=lire(inp.value);if(inp.value.trim()===""){empty=true;}const g=v!==null&&Math.abs(v-sol)<1e-9;inp.classList.toggle("ok",g);inp.classList.toggle("bad",!g);if(!g)ok=false;};
+    el.querySelectorAll(".ecc").forEach(inp=>test(inp,q.eccFields[+inp.dataset.j]));
+    el.querySelectorAll(".fld").forEach(inp=>test(inp,q.fields[+inp.dataset.j][1]));}
+  el.classList.toggle("ok",ok);el.classList.toggle("bad",!ok);
+  const fb=el.querySelector(".fb");fb.className="fb "+(ok?"ok":"bad");
+  fb.textContent=ok?"Bravo, c'est juste !":(empty?"Complète toutes les réponses.":"Ce n'est pas tout à fait ça : corrige les cases en rouge ou regarde la correction.");
+  if(ok)showCorr(q);q.done=ok;}
+function upd(){const n=QS.filter(q=>q.done).length;$("score").textContent=n+" / "+QS.length;$("prog").style.width=(100*n/QS.length)+"%";}
+$("newSerie").onclick=serie;$("checkAll").onclick=()=>{QS.forEach(check);upd();};
+try{const s=+localStorage.getItem("stat3-niv");if(s>=1&&s<=4)NIV=s;}catch(e){}
+const h=location.hash.slice(1);const ti=TABS.findIndex(t=>t.id===h);if(ti>=0)cur=ti;
+const qn=new URLSearchParams(location.search).get("niveau");if(qn&&+qn>=1&&+qn<=4)NIV=+qn;
+buildTabs();serie();
+window.__setNiv=n=>{NIV=n;buildTabs();serie();};window.__setTab=i=>{cur=i;buildTabs();serie();};
+})();
+</script>
+</body>
+</html>

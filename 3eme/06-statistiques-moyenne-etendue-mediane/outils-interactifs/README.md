@@ -2,4 +2,4 @@
 
 [← Retour à la séquence](../README.md)
 
-_Bientôt disponible._
+- [Statistiques : exercices interactifs sur de petites séries (8 onglets, niveaux ★ à ★★★★, correction rédigée comme dans le cours)](statistiques-exercices.html) (Interactif)
