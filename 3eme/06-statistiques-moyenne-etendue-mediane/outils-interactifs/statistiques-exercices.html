@@ -121,6 +121,8 @@ const CTX=[ // nom (pluriel), individu, unité, caractère
 /* ---------- génération de séries ---------- */
 function serieListe(n,lo,hi,dec){const a=[];for(let i=0;i<n;i++)a.push(dec?rd(R(lo*10,hi*10)/10,1):R(lo,hi));return a;}
 function medianeInfo(sorted){const n=sorted.length;if(n%2){const p=(n+1)/2;return {n,pair:false,p,M:sorted[p-1]};}const p=n/2;return {n,pair:true,p,M:rd((sorted[p-1]+sorted[p])/2,6)};}
+// cases « position de la médiane » (rang dans la série ordonnée)
+function posF(info){return info.pair?[["La médiane est entre la donnée n°",info.p],["et la donnée n°",info.p+1]]:[["Position de la médiane (n° de la donnée)",info.p]];}
 function redacMed(sorted,info,tableau){
   const L=[];const n=info.n;
   L.push(`Effectif total : ${M("N = "+n)}.`);
@@ -200,9 +202,9 @@ function gMedListe(){
   let n;if(NIV===1)n=pick([5,7]);else if(NIV===2)n=pick([6,8]);else if(NIV===3)n=R(7,9);else n=R(8,10);
   const c=pick(CTX);const dec=NIV===4&&Math.random()<.5;
   const d=dec?serieListe(n,1,4,true):serieListe(n,c.lo,c.hi,false);const s=d.slice().sort((a,b)=>a-b);const info=medianeInfo(s);
-  return {cons:`Détermine la médiane de la série ${dec?"(sauts en hauteur, en m)":"des "+c.carP}. Suis la rédaction modèle : effectif total, position, médiane.`,
+  return {cons:`Détermine la médiane de la série ${dec?"(sauts en hauteur, en m)":"des "+c.carP}. Donne l'effectif total, la position de la médiane dans la série ordonnée, puis la médiane.`,
     txt:`<div class="serie">${d.map(F).join(" ; ")}</div>`,
-    fields:[["Effectif total N",n],[info.pair?"N ÷ 2":"(N + 1) ÷ 2",info.p],["Médiane M",info.M]],
+    fields:[["Effectif total N",n],...posF(info),["Médiane M",info.M]],
     steps:[`On range la série dans l'ordre croissant : ${M(s.map(F).join(" ; "))}`].concat(redacMed(s,info,false)),
     why:info.pair?"N pair : la médiane est entre deux données, on fait la moyenne des deux.":"N impair : la médiane est une donnée de la série ordonnée.",
     data:{type:"medl",d}};
@@ -217,7 +219,7 @@ function gMedTab(){
   return {cons:`Le tableau donne les ${c.carP} de ${N} ${c.pop}. Complète la ligne des effectifs cumulés croissants (ECC), puis détermine la médiane.`,
     txt:tableHTML([[head].concat(T.v.map(F)),["Effectif"].concat(T.e)]),
     eccFields:ecc,
-    fields:[["Effectif total N",N],[info.pair?"N ÷ 2":"(N + 1) ÷ 2",info.p],["Médiane M",info.M]],
+    fields:[["Effectif total N",N],...posF(info),["Médiane M",info.M]],
     steps:[tableHTML([[head].concat(T.v.map(F)),["Effectif"].concat(T.e),["ECC"].concat(ecc),["Rangs des données"].concat(rangs)])].concat(redacMed(s,info,true)),
     data:{type:"medt",v:T.v,e:T.e}};
 }
@@ -317,7 +319,7 @@ function gDiag(){
   const base={txt,data:{type:"diag",t,v,e}};
   if(t===0){const s=[];v.forEach((x,i)=>{for(let j=0;j<e[i];j++)s.push(x);});const info=medianeInfo(s);
     return Object.assign(base,{cons:`Le diagramme donne les ${c.carP} d'un groupe de ${c.pop}. Lis le diagramme, puis détermine la médiane.`,
-      fields:[["Effectif total N",N],[info.pair?"N ÷ 2":"(N + 1) ÷ 2",info.p],["Médiane M",info.M]],
+      fields:[["Effectif total N",N],...posF(info),["Médiane M",info.M]],
       steps:["Lecture du diagramme et effectifs cumulés croissants :",lect].concat(redacMed(s,info,true))});}
   if(t===1){const S=sum(v.map((x,i)=>x*e[i])),m=S/N,arr=!Number.isInteger(rd(m*100,6)),sol=arr?rd(m,1):rd(m,6);
     return Object.assign(base,{cons:`Le diagramme donne les ${c.carP} d'un groupe de ${c.pop}. Calcule l'effectif total, puis la moyenne${arr?" (arrondie au dixième)":""}.`,
@@ -332,8 +334,34 @@ function gDiag(){
       `Plus grande valeur : ${F(v[k-1])} ; plus petite valeur : ${F(v[0])}.   ${M(`E = ${F(v[k-1])} − ${F(v[0])} = ${F(E)}`)}`],
     why:"Attention : sur un diagramme en bâtons, on lit les valeurs sur l'axe horizontal et les effectifs sur l'axe vertical."});
 }
+/* ---------- 11. Étude complète d'une série ---------- */
+function gComplet(){
+  const c=pick(CTX);const forme=NIV<=1?"liste":NIV===2?pick(["liste","tableau"]):pick(["liste","tableau","diagramme"]);
+  let v,e,d,txt,head=c.car.charAt(0).toUpperCase()+c.car.slice(1),N;
+  if(forme==="liste"){N=R(NIV<=2?6:7,NIV<=2?8:10);for(let t=0;t<200;t++){d=serieListe(N,c.lo,c.hi,false);if(new Set(d).size<N)break;}
+    const S=[...new Set(d)].sort((a,b)=>a-b);v=S;e=S.map(x=>d.filter(y=>y===x).length);txt=`<div class="serie">${d.map(F).join(" ; ")}</div>`;}
+  else{const k=NIV<=3?4:5;N=pick([10,12,15,16,20]);let T;for(let i=0;i<200;i++){T=tabEff(k,N,R(c.lo,c.lo+3),R(1,3),c.hi);if(Math.max(...T.e)<=8)break;}v=T.v;e=T.e;
+    txt=forme==="tableau"?tableHTML([[head].concat(v.map(F)),["Effectif"].concat(e)]):svgBatons(v,e,head+(c.u?" ("+c.u.trim()+")":""));}
+  const s=[];v.forEach((x,i)=>{for(let j=0;j<e[i];j++)s.push(x);});N=s.length;
+  const i=e.indexOf(Math.max(...e)),f=e[i]/N,p=rd(100*f,4),pOk=Number.isInteger(rd(p*10,6));
+  const S=sum(s),m=S/N,arr=!Number.isInteger(rd(m*100,6)),mo=arr?rd(m,1):rd(m,6);const E=s[N-1]-s[0];const info=medianeInfo(s);
+  const fields=[["Effectif total N",N]];if(pOk)fields.push([`Fréquence de ${F(v[i])} (en %)`,p]);
+  fields.push([arr?"Moyenne (au dixième)":"Moyenne",mo],["Étendue",E],...posF(info),["Médiane M",info.M]);
+  const ecc=[];e.reduce((a,x,j)=>(ecc[j]=a+x),0);
+  const steps=[];
+  if(forme==="liste")steps.push(`<b>Série ordonnée :</b> ${M(s.map(F).join(" ; "))}`);
+  else steps.push(`<b>${forme==="diagramme"?"Lecture du diagramme":"Tableau"} et effectifs cumulés croissants :</b>`,tableHTML([[head].concat(v.map(F)),["Effectif"].concat(e),["ECC"].concat(ecc)]));
+  steps.push(`<b>Effectif total :</b> ${M(N)}`);
+  if(pOk)steps.push(`<b>Fréquence :</b> effectif de ${F(v[i])} : ${e[i]} ; ${M("f =")} ${fr(e[i],N)} ${M("= "+F(f)+" = "+F(p)+" %")}`);
+  steps.push(`<b>Moyenne :</b> ${M("x̄ =")} ${fr(forme==="liste"?s.map(F).join(" + ").length>60?F(S):d.map(F).join(" + "):v.map((x,j)=>F(x)+" × "+e[j]).join(" + "),N)} ${M("=")} ${fr(F(S),N)} ${M((arr?"≈ ":"= ")+F(mo))}`);
+  steps.push(`<b>Étendue :</b> ${M(`E = ${F(s[N-1])} − ${F(s[0])} = ${F(E)}`)}`);
+  steps.push("<b>Médiane :</b>");steps.push(...redacMed(s,info,forme!=="liste"));
+  return {cons:`Étude complète : ${forme==="liste"?"voici":"on donne"} les ${c.carP} de ${N} ${c.pop}${forme==="diagramme"?" (diagramme en bâtons)":forme==="tableau"?" (tableau d'effectifs)":""}. Calcule tous les indicateurs demandés.`,txt,fields,steps,
+    why:`${N%2?"N impair : la médiane est la donnée de rang (N + 1) ÷ 2.":"N pair : la médiane est la moyenne des données de rangs N ÷ 2 et N ÷ 2 + 1."}`,data:{type:"complet",s,pOk,arr}};
+}
 /* ---------- onglets ---------- */
 const TABS=[
+  {id:"complet",t:"Étude complète d'une série",g:gComplet,nq:2,r:"Sur une même série : <b>effectif total</b>, <b>fréquence</b>, <b>moyenne</b>, <b>étendue</b>, <b>position de la médiane</b> puis <b>médiane</b>. Pense à ranger la série (ou à calculer les effectifs cumulés croissants) avant de chercher la médiane."},
   {id:"vocab",t:"Vocabulaire : QCM et vrai/faux",g:gVocab,nq:8,r:"<b>Donnée</b> : un résultat relevé · <b>valeur</b> : un résultat possible · <b>effectif</b> : nombre de données égales à une valeur · <b>fréquence</b> = effectif ÷ effectif total · <b>moyenne</b>, <b>médiane</b>, <b>étendue</b> : voir les autres onglets."},
   {id:"donnee",t:"Donnée ou valeur ?",g:gDonnee,r:"Une <b>donnée</b> est un résultat relevé (une par individu). Une <b>valeur</b> est un résultat possible : plusieurs données peuvent avoir la même valeur. L'<b>effectif</b> d'une valeur est le nombre de données égales à cette valeur."},
   {id:"freq",t:"Fréquence",g:gFreq,r:"<b>Fréquence</b> = effectif de la valeur ÷ effectif total. On peut l'écrire en fraction, en décimal ou en pourcentage."},
