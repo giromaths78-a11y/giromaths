@@ -2,4 +2,4 @@
 
 [← Retour à la séquence](../README.md)
 
-- [Statistiques : exercices interactifs sur de petites séries (8 onglets, niveaux ★ à ★★★★, correction rédigée comme dans le cours)](statistiques-exercices.html) (Interactif)
+- [Statistiques : QCM et vrai/faux de vocabulaire + exercices sur de petites séries (9 onglets, niveaux ★ à ★★★★, correction rédigée comme dans le cours)](statistiques-exercices.html) (Interactif)

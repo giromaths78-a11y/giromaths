@@ -59,6 +59,8 @@ table.t input{width:3.6em;font:1rem Inter,sans-serif;padding:3px 4px;text-align:
 input.ok{border-color:var(--ok)!important;background:var(--oksoft)!important}
 input.bad{border-color:var(--bad)!important;background:var(--badsoft)!important}
 .choices{display:flex;flex-direction:column;gap:6px}
+.choices.vf{flex-direction:row}
+.choices.vf .choice{min-width:90px;text-align:center}
 .choice{border:1.5px solid var(--line);background:var(--bg);border-radius:8px;padding:6px 12px;cursor:pointer;font:500 .97rem Inter,sans-serif;color:var(--ink);text-align:left}
 .choice.sel{border-color:var(--acc);background:var(--soft)}
 .choice.good{border-color:var(--ok);background:var(--oksoft)}
@@ -79,7 +81,7 @@ footer{margin-top:30px;font-size:.8rem;color:var(--muted);text-align:center}
 <header class="hero">
   <div class="eyebrow">3ème · S6 · Statistiques</div>
   <h1>Statistiques : je m'entraîne</h1>
-  <p>Des petites séries (10 données au plus) qui changent à chaque fois. Choisis ton niveau de ★ à ★★★★, réponds, vérifie, puis lis la correction rédigée comme dans le cours.</p>
+  <p>Des QCM et vrai/faux de vocabulaire, et des petites séries (10 données au plus) qui changent à chaque fois. Choisis ton niveau de ★ à ★★★★, réponds, vérifie, puis lis la correction rédigée comme dans le cours.</p>
 </header>
 <nav class="tabs" role="tablist" id="tabs"></nav>
 <div class="bar">
@@ -247,8 +249,56 @@ function gInterp(){
   return {cons:"Quelle phrase interprète correctement ce résultat ?",txt:C.intro(C.x),kind:"qcm",opts,sol:0,
     steps:[`Bonne réponse : « ${C.bon(C.x)} »`],why:{med:"Médiane : « au moins la moitié … ou plus » ET « au moins la moitié … ou moins ».",moy:"Moyenne : « C'est comme si … tous … ».",et:"Étendue : « L'écart entre la plus grande et la plus petite valeur … »."}[C.t]+` (On interprète ${nom}.)`,data:{type:"interp"}};
 }
+/* ---------- 9. Vocabulaire : QCM et vrai/faux ---------- */
+const VF=[ // [affirmation, vrai?, explication]
+  ["L'effectif total est la somme de tous les effectifs.",1,"On additionne les effectifs de toutes les valeurs : on obtient le nombre total de données."],
+  ["Une série de 20 notes compte forcément 20 valeurs différentes.",0,"Elle compte 20 données, mais plusieurs données peuvent avoir la même valeur."],
+  ["Une fréquence est toujours comprise entre 0 et 1 (entre 0 % et 100 %).",1,"L'effectif d'une valeur est au plus égal à l'effectif total."],
+  ["La somme des fréquences de toutes les valeurs est égale à 1 (100 %).",1,"La somme des effectifs est l'effectif total, et effectif total ÷ effectif total = 1."],
+  ["L'étendue est la différence entre la plus grande et la plus petite valeur.",1,"C'est la définition de l'étendue."],
+  ["Le dernier effectif cumulé croissant est égal à l'effectif total.",1,"On a additionné tous les effectifs."],
+  ["Pour trouver la médiane, on peut utiliser la série sans la ranger.",0,"La médiane se cherche toujours dans la série ordonnée."],
+  ["La médiane est toujours une donnée de la série.",0,"Si l'effectif total est pair et que les deux données du milieu sont différentes, la médiane est leur moyenne, qui n'est pas une donnée."],
+  ["La moyenne est toujours une donnée de la série.",0,"Par exemple, la moyenne de 10 et 13 est 11,5, qui n'est pas une donnée."],
+  ["La moyenne est toujours comprise entre la plus petite et la plus grande valeur.",1,"C'est comme si toutes les données étaient égales à la moyenne : elle ne peut pas dépasser les extrêmes."],
+  ["Si on ajoute 1 point à toutes les notes, la moyenne augmente de 1 point.",1,"La somme augmente de N points, donc la moyenne augmente de N ÷ N = 1."],
+  ["Si on ajoute 1 point à toutes les notes, l'étendue augmente de 1 point.",0,"La plus grande et la plus petite note augmentent toutes les deux de 1 : leur différence ne change pas."],
+  ["La moyenne et la médiane d'une série sont toujours égales.",0,"Exemple : 1 ; 2 ; 9 a pour médiane 2 et pour moyenne 4."],
+  ["Une fréquence de 0,25 correspond à 25 %.",1,"0,25 = 25/100 = 25 %."],
+  ["Si l'effectif total est impair, la médiane est une donnée de la série ordonnée.",1,"Elle est la donnée de rang (N + 1) ÷ 2."],
+  ["L'effectif d'une valeur est le nombre de données égales à cette valeur.",1,"C'est la définition de l'effectif."],
+  ["Dans un tableau d'effectifs, chaque case « Effectif » contient une donnée.",0,"Elle contient un effectif : le nombre de données égales à la valeur de la colonne."],
+  ["« Au moins la moitié des élèves ont eu 12 ou plus » interprète une moyenne de 12.",0,"C'est l'interprétation d'une médiane de 12. Pour une moyenne : « C'est comme si … »."],
+];
+const QC=[ // [question, bonne réponse, [mauvaises], explication]
+  ["Dans « la note 15 apparaît 4 fois », le nombre 4 est :","l'effectif de la valeur 15",["la fréquence de la valeur 15","une donnée","une valeur"],"4 est le nombre de données égales à 15 : c'est un effectif."],
+  ["Le quotient de l'effectif d'une valeur par l'effectif total s'appelle :","la fréquence de la valeur",["la moyenne","l'effectif cumulé croissant","l'étendue"],"Fréquence = effectif de la valeur ÷ effectif total."],
+  ["On relève la pointure de 25 élèves. Le nombre 25 est :","l'effectif total",["une valeur","la médiane","une fréquence"],"Il y a une donnée par élève : 25 données, c'est l'effectif total."],
+  ["On relève la pointure de 25 élèves. La pointure 39 est :","une valeur du caractère étudié",["l'effectif total","une fréquence","un effectif"],"39 est un résultat possible : une valeur. Plusieurs élèves (données) peuvent avoir cette valeur."],
+  ["Le nombre qui partage la série ordonnée en deux séries de même effectif est :","la médiane",["la moyenne","l'étendue","la fréquence"],"C'est la définition de la médiane."],
+  ["« C'est comme si les 25 élèves avaient tous eu 11,2 » interprète :","une moyenne",["une médiane","une étendue","une fréquence"],"La moyenne s'interprète par « C'est comme si … tous … »."],
+  ["« L'écart entre la meilleure et la moins bonne note est de 9 points » interprète :","une étendue",["une moyenne","une médiane","un effectif"],"L'étendue s'interprète par « L'écart entre … »."],
+  ["L'effectif total d'une série est 30. La médiane est :","la moyenne de la 15e et de la 16e donnée de la série ordonnée",["la 15e donnée de la série ordonnée","la 16e donnée de la série ordonnée","la moyenne de la 14e et de la 15e donnée"],"30 est pair : 30 ÷ 2 = 15, la médiane est entre la 15e et la 16e donnée."],
+  ["L'effectif total d'une série est 31. La médiane est :","la 16e donnée de la série ordonnée",["la 15e donnée de la série ordonnée","la moyenne de la 15e et de la 16e donnée","la 15,5e donnée"],"31 est impair : (31 + 1) ÷ 2 = 16."],
+];
+function gVocab(){
+  const t=Math.random();
+  if(t<.4){const [a,v,w]=pick(VF);return {cons:"Vrai ou faux ?",txt:a,kind:"qcm",opts:[[1,"Vrai"],[0,"Faux"]],sol:v,steps:[`${v?"Vrai":"Faux"}. ${w}`],data:{type:"vf"}};}
+  if(t<.75){const [q,b,f,w]=pick(QC);const nf=NIV<=2?2:3;const opts=shuffle([[0,b]].concat(shuffle(f).slice(0,nf).map((x,i)=>[i+1,x])));
+    return {cons:"QCM : choisis la bonne réponse.",txt:q,kind:"qcm",opts,sol:0,steps:[`Bonne réponse : ${b}.`],why:w,data:{type:"qcmv"}};}
+  // vrai/faux généré sur une petite série
+  const n=NIV<=2?6:R(7,9);let vals=[];const k=R(3,4);while(vals.length<k){const x=R(8,18);if(!vals.includes(x))vals.push(x);}
+  let d=vals.slice();while(d.length<n)d.push(pick(vals));d=shuffle(d);const v=pick(vals),ef=d.filter(x=>x===v).length;
+  const cas=R(0,3);let aff,ok,ex;
+  if(cas===0){const m=pick([n,k]);aff=`Cette série compte ${m} données.`;ok=m===n?1:0;ex=`Il y a ${n} données (une par relevé) et ${k} valeurs différentes.`;}
+  else if(cas===1){const m=pick([n,k]);aff=`Cette série compte ${m} valeurs différentes.`;ok=m===k?1:0;ex=`Valeurs différentes : ${vals.slice().sort((a,b)=>a-b).join(" ; ")}, soit ${k} valeurs, pour ${n} données.`;}
+  else if(cas===2){const m=pick([ef,ef+1]);aff=`L'effectif de la valeur ${v} est ${m}.`;ok=m===ef?1:0;ex=`La valeur ${v} apparaît dans ${ef} donnée${ef>1?"s":""}.`;}
+  else{const s=d.slice().sort((a,b)=>a-b);const E=s[n-1]-s[0];const m=pick([E,E+1,s[n-1]]);aff=`L'étendue de cette série est ${m}.`;ok=m===E?1:0;ex=`E = ${s[n-1]} − ${s[0]} = ${E}.`;}
+  return {cons:"Vrai ou faux ? On a relevé les notes de quelques élèves :",txt:`<div class="serie">${d.join(" ; ")}</div>${aff}`,kind:"qcm",opts:[[1,"Vrai"],[0,"Faux"]],sol:ok,steps:[`${ok?"Vrai":"Faux"}. ${ex}`],data:{type:"vfg",d,v,cas}};
+}
 /* ---------- onglets ---------- */
 const TABS=[
+  {id:"vocab",t:"Vocabulaire : QCM et vrai/faux",g:gVocab,nq:8,r:"<b>Donnée</b> : un résultat relevé · <b>valeur</b> : un résultat possible · <b>effectif</b> : nombre de données égales à une valeur · <b>fréquence</b> = effectif ÷ effectif total · <b>moyenne</b>, <b>médiane</b>, <b>étendue</b> : voir les autres onglets."},
   {id:"donnee",t:"Donnée ou valeur ?",g:gDonnee,r:"Une <b>donnée</b> est un résultat relevé (une par individu). Une <b>valeur</b> est un résultat possible : plusieurs données peuvent avoir la même valeur. L'<b>effectif</b> d'une valeur est le nombre de données égales à cette valeur."},
   {id:"freq",t:"Fréquence",g:gFreq,r:"<b>Fréquence</b> = effectif de la valeur ÷ effectif total. On peut l'écrire en fraction, en décimal ou en pourcentage."},
   {id:"moy",t:"Moyenne",g:gMoy,r:"<b>Moyenne</b> = somme de toutes les données ÷ effectif total."},
@@ -266,7 +316,7 @@ function buildTabs(){$("tabs").innerHTML=TABS.map((t,i)=>`<button class="tab" ro
   $("niveaux").querySelectorAll(".niv").forEach(b=>b.onclick=()=>{NIV=+b.dataset.n;try{localStorage.setItem("stat3-niv",NIV);}catch(e){}buildTabs();serie();});}
 function serie(){
   const T=TABS[cur];$("rappel").innerHTML=T.r;QS=[];
-  for(let i=0;i<NQ;i++){let q,tries=0;do{q=T.g();tries++;}while(tries<30&&QS.some(o=>o.txt===q.txt));QS.push(q);}
+  const nq=T.nq||NQ;for(let i=0;i<nq;i++){let q,tries=0;do{q=T.g();tries++;}while(tries<30&&QS.some(o=>o.txt===q.txt));QS.push(q);}
   $("list").innerHTML=QS.map((q,i)=>render(q,i)).join("");
   QS.forEach((q,i)=>{const el=$("q"+i);q.el=el;q.done=false;
     if(q.kind==="qcm")el.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{el.querySelectorAll(".choice").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");});
@@ -277,7 +327,7 @@ function serie(){
 function render(q,i){
   const eccRow=q.eccFields?`<tr><th>ECC</th>${q.eccFields.map((x,j)=>`<td><input inputmode="decimal" class="ecc" data-j="${j}" aria-label="Effectif cumulé croissant n° ${j+1}"></td>`).join("")}</tr></table>`:null;
   let body=`<div class="expr">${eccRow?q.txt.replace("</table>",eccRow):q.txt}</div>`;
-  if(q.kind==="qcm")body+=`<div class="choices">${q.opts.map(o=>`<button class="choice" data-k="${o[0]}">${o[1]}</button>`).join("")}</div>`;
+  if(q.kind==="qcm")body+=`<div class="choices${q.opts.length===2?" vf":""}">${q.opts.map(o=>`<button class="choice" data-k="${o[0]}">${o[1]}</button>`).join("")}</div>`;
   else{
     body+=`<div class="ans">${q.fields.map((f,j)=>`<label>${f[0]} : <input inputmode="decimal" class="fld" data-j="${j}"></label>`).join("")}</div>`;}
   return `<div class="q" id="q${i}"><div class="qhead"><span class="num">${i+1}</span><span class="consigne">${q.cons}</span></div>${body}

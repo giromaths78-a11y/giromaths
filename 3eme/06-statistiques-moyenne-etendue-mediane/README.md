@@ -23,8 +23,7 @@ Page du site : [index.html](index.html)
 
 ## Fiches d'exercices
 
-- [Fiche d'exercices (difficulté ★ à ★★★) : fréquence, moyenne, étendue, médiane, classes, diagrammes](exercices/fiche-exercices-statistiques.pdf) (PDF) · [corrigé](exercices/fiche-exercices-statistiques-corrige.pdf)
-- [Fiche niveau expert (★★★★) : raisonner avec la moyenne, la médiane et l'étendue](exercices/fiche-expert-statistiques.pdf) (PDF) · [corrigé](exercices/fiche-expert-statistiques-corrige.pdf)
+- [Fiche d'exercices (21 exercices, difficulté ★ à ★★★★) : fréquence, moyenne, étendue, médiane, classes, diagrammes, niveau expert](exercices/fiche-exercices-statistiques.pdf) (PDF) · [corrigé](exercices/fiche-exercices-statistiques-corrige.pdf)
 
 ## Vidéos
 
@@ -32,6 +31,11 @@ _Bientôt disponible._
 
 ## Outils interactifs
 
-- [Statistiques : exercices interactifs sur de petites séries (8 onglets, niveaux ★ à ★★★★, correction rédigée comme dans le cours)](outils-interactifs/statistiques-exercices.html) (Interactif)
+- [Statistiques : QCM et vrai/faux de vocabulaire + exercices sur de petites séries (9 onglets, niveaux ★ à ★★★★, correction rédigée comme dans le cours)](outils-interactifs/statistiques-exercices.html) (Interactif)
+
+## Autres fichiers
+
+- [fiche-expert-statistiques-corrige.pdf](autres/fiche-expert-statistiques-corrige.pdf)
+- [fiche-expert-statistiques.pdf](autres/fiche-expert-statistiques.pdf)
 
 [← Toutes les séquences de 3ème](../README.md)
