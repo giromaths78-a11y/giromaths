@@ -404,9 +404,9 @@ function render(q,i){
     body+=`<div class="ans">${q.fields.map((f,j)=>f[0]==="__pos"?posHTML(i):`<label>${f[0]} : <input inputmode="decimal" class="fld" data-j="${j}"></label>`).join("")}</div>`;}
   return `<div class="q" id="q${i}"><div class="qhead"><span class="num">${i+1}</span><span class="consigne">${q.cons}</span></div>${body}
   <div class="qfoot"><button class="btn primary chk">Vérifier</button><button class="btn sol">Correction</button></div><div class="fb" aria-live="polite"></div><div class="corrbox"></div></div>`;}
-function posHTML(i){return `<div class="pos" role="radiogroup" aria-label="Position de la médiane"><span class="pos-t">Position de la médiane dans la série ordonnée :</span>
-  <label><input type="radio" name="pos${i}" value="1"> La médiane est la <input inputmode="numeric" class="p1 sm" aria-label="rang"><sup>e</sup> donnée</label>
-  <label><input type="radio" name="pos${i}" value="2"> La médiane est comprise entre la <input inputmode="numeric" class="p2a sm" aria-label="premier rang"><sup>e</sup> et la <input inputmode="numeric" class="p2b sm" aria-label="second rang"><sup>e</sup> donnée</label></div>`;}
+function posHTML(i){return `<div class="pos" role="radiogroup" aria-label="Position de la médiane"><span class="pos-t">Position de la médiane :</span>
+  <label><input type="radio" name="pos${i}" value="1"> La médiane est la <input inputmode="numeric" class="p1 sm" aria-label="rang"><sup>e</sup> donnée de la série ordonnée</label>
+  <label><input type="radio" name="pos${i}" value="2"> La médiane est comprise entre la <input inputmode="numeric" class="p2a sm" aria-label="premier rang"><sup>e</sup> et la <input inputmode="numeric" class="p2b sm" aria-label="second rang"><sup>e</sup> donnée de la série ordonnée</label></div>`;}
 function showCorr(q){q.el.querySelector(".corrbox").innerHTML=`<div class="corr">${q.steps.map(s=>`<span class="line">${s}</span>`).join("")}${q.why?`<span class="why">${q.why}</span>`:""}</div>`;}
 function check(q){
   const el=q.el;let ok=true,empty=false;
