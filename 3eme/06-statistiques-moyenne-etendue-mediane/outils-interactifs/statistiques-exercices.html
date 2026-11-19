@@ -87,13 +87,12 @@ footer{margin-top:30px;font-size:.8rem;color:var(--muted);text-align:center}
 <header class="hero">
   <div class="eyebrow">3ème · S6 · Statistiques</div>
   <h1>Statistiques : je m'entraîne</h1>
-  <p>Des QCM et vrai/faux de vocabulaire, des diagrammes à lire, et des petites séries (10 données au plus) qui changent à chaque fois. Choisis ton niveau de ★ à ★★★★, réponds, vérifie, puis lis la correction rédigée comme dans le cours.</p>
+  <p>Des QCM et vrai/faux de vocabulaire, des diagrammes à lire, et des petites séries (10 données au plus) qui changent à chaque fois. Réponds, vérifie, puis lis la correction rédigée comme dans le cours.</p>
 </header>
 <nav class="tabs" role="tablist" id="tabs"></nav>
 <div class="bar">
   <span class="score" id="score">0 / 0</span>
   <div class="progress"><span id="prog"></span></div>
-  <span class="niveaux" role="group" aria-label="Niveau de difficulté" id="niveaux"></span>
   <button class="btn" id="newSerie">Nouvelle série</button>
   <button class="btn primary" id="checkAll">Tout vérifier</button>
 </div>
@@ -117,7 +116,7 @@ const fr=(a,b)=>`<span class="frac m"><span>${a}</span><span>${b}</span></span>`
 const eme=n=>n===1?"1<sup>re</sup>":n+"<sup>e</sup>";
 const sum=a=>a.reduce((s,x)=>s+x,0);
 function lire(s){s=String(s).trim().replace(/[\s  %]/g,"").replace(",",".").replace("−","-");if(!/^-?\d+(\.\d+)?$/.test(s))return null;return parseFloat(s);}
-let NIV=1;
+let NIV=1,FIX=0; // FIX : difficulté imposée (tests seulement), sinon tirée au hasard pour chaque question
 const CTX=[ // nom (pluriel), individu, unité, caractère
   {pop:"élèves",ind:"élève",u:"",car:"note",carP:"notes",lo:4,hi:20,dec:false,phr:(c,x)=>`ont eu ${x} ${c}`},
   {pop:"joueurs",ind:"joueur",u:" points",car:"nombre de points",carP:"points marqués",lo:2,hi:30,dec:false,phr:(c,x)=>`ont marqué ${x} points ${c}`},
@@ -383,11 +382,10 @@ const NQ=4;let cur=0,QS=[];
 const $=id=>document.getElementById(id);
 function buildTabs(){$("tabs").innerHTML=TABS.map((t,i)=>`<button class="tab" role="tab" aria-selected="${i===cur}" data-i="${i}">${t.t}</button>`).join("");
   $("tabs").querySelectorAll(".tab").forEach(b=>b.onclick=()=>{cur=+b.dataset.i;try{history.replaceState(null,"","#"+TABS[cur].id);}catch(e){}buildTabs();serie();});
-  $("niveaux").innerHTML=[1,2,3,4].map(n=>`<button class="niv" aria-pressed="${n===NIV}" data-n="${n}" title="Niveau ${n}">${"★".repeat(n)}</button>`).join("");
-  $("niveaux").querySelectorAll(".niv").forEach(b=>b.onclick=()=>{NIV=+b.dataset.n;try{localStorage.setItem("stat3-niv",NIV);}catch(e){}buildTabs();serie();});}
+}
 function serie(){
   const T=TABS[cur];$("rappel").innerHTML=T.r;QS=[];
-  const nq=T.nq||NQ;for(let i=0;i<nq;i++){let q,tries=0;do{q=T.g();tries++;}while(tries<30&&QS.some(o=>o.txt===q.txt));QS.push(q);}
+  const nq=T.nq||NQ;for(let i=0;i<nq;i++){let q,tries=0;do{NIV=FIX||R(1,4);q=T.g();tries++;}while(tries<30&&QS.some(o=>o.txt===q.txt));QS.push(q);}
   $("list").innerHTML=QS.map((q,i)=>render(q,i)).join("");
   QS.forEach((q,i)=>{const el=$("q"+i);q.el=el;q.done=false;
     if(q.kind==="qcm")el.querySelectorAll(".choice").forEach(b=>b.onclick=()=>{el.querySelectorAll(".choice").forEach(x=>x.classList.remove("sel"));b.classList.add("sel");});
@@ -429,11 +427,9 @@ function check(q){
   if(ok)showCorr(q);q.done=ok;}
 function upd(){const n=QS.filter(q=>q.done).length;$("score").textContent=n+" / "+QS.length;$("prog").style.width=(100*n/QS.length)+"%";}
 $("newSerie").onclick=serie;$("checkAll").onclick=()=>{QS.forEach(check);upd();};
-try{const s=+localStorage.getItem("stat3-niv");if(s>=1&&s<=4)NIV=s;}catch(e){}
 const h=location.hash.slice(1);const ti=TABS.findIndex(t=>t.id===h);if(ti>=0)cur=ti;
-const qn=new URLSearchParams(location.search).get("niveau");if(qn&&+qn>=1&&+qn<=4)NIV=+qn;
 buildTabs();serie();
-window.__setNiv=n=>{NIV=n;buildTabs();serie();};window.__setTab=i=>{cur=i;buildTabs();serie();};
+window.__setNiv=n=>{FIX=n;buildTabs();serie();};window.__setTab=i=>{cur=i;buildTabs();serie();};
 })();
 </script>
 </body>

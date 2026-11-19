@@ -31,6 +31,6 @@ _Bientôt disponible._
 
 ## Outils interactifs
 
-- [Statistiques : QCM et vrai/faux de vocabulaire + exercices sur de petites séries (11 onglets dont étude complète d’une série et diagrammes en bâtons, niveaux ★ à ★★★★, correction rédigée comme dans le cours)](outils-interactifs/statistiques-exercices.html) (Interactif)
+- [Statistiques : QCM et vrai/faux de vocabulaire + exercices sur de petites séries (11 onglets dont étude complète d’une série et diagrammes en bâtons, correction rédigée comme dans le cours)](outils-interactifs/statistiques-exercices.html) (Interactif)
 
 [← Toutes les séquences de 3ème](../README.md)
