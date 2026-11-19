@@ -15,11 +15,11 @@ Page du site : [index.html](index.html)
 
 ## Cours professeur
 
-_Bientôt disponible._
+- [Cours complet – Statistiques : effectifs, fréquences, moyenne, étendue, médiane, interpréter](cours-prof/cours-statistiques-prof.pdf) (PDF)
 
 ## Cours élève
 
-_Bientôt disponible._
+- [Cours élève à compléter – Statistiques](cours-eleve/cours-statistiques-eleve.pdf) (PDF)
 
 ## Fiches d'exercices
 

@@ -2,4 +2,4 @@
 
 [← Retour à la séquence](../README.md)
 
-_Bientôt disponible._
+- [Cours élève à compléter – Statistiques](cours-statistiques-eleve.pdf) (PDF)

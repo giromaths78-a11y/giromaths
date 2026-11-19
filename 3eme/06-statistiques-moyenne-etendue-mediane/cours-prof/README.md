@@ -2,4 +2,4 @@
 
 [← Retour à la séquence](../README.md)
 
-_Bientôt disponible._
+- [Cours complet – Statistiques : effectifs, fréquences, moyenne, étendue, médiane, interpréter](cours-statistiques-prof.pdf) (PDF)
