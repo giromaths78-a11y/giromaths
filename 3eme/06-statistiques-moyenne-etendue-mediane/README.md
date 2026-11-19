@@ -33,9 +33,4 @@ _Bientôt disponible._
 
 - [Statistiques : QCM et vrai/faux de vocabulaire + exercices sur de petites séries (9 onglets, niveaux ★ à ★★★★, correction rédigée comme dans le cours)](outils-interactifs/statistiques-exercices.html) (Interactif)
 
-## Autres fichiers
-
-- [fiche-expert-statistiques-corrige.pdf](autres/fiche-expert-statistiques-corrige.pdf)
-- [fiche-expert-statistiques.pdf](autres/fiche-expert-statistiques.pdf)
-
 [← Toutes les séquences de 3ème](../README.md)
