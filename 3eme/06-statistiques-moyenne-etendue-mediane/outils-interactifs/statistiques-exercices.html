@@ -81,7 +81,7 @@ footer{margin-top:30px;font-size:.8rem;color:var(--muted);text-align:center}
 <header class="hero">
   <div class="eyebrow">3ème · S6 · Statistiques</div>
   <h1>Statistiques : je m'entraîne</h1>
-  <p>Des QCM et vrai/faux de vocabulaire, et des petites séries (10 données au plus) qui changent à chaque fois. Choisis ton niveau de ★ à ★★★★, réponds, vérifie, puis lis la correction rédigée comme dans le cours.</p>
+  <p>Des QCM et vrai/faux de vocabulaire, des diagrammes à lire, et des petites séries (10 données au plus) qui changent à chaque fois. Choisis ton niveau de ★ à ★★★★, réponds, vérifie, puis lis la correction rédigée comme dans le cours.</p>
 </header>
 <nav class="tabs" role="tablist" id="tabs"></nav>
 <div class="bar">
@@ -296,6 +296,42 @@ function gVocab(){
   else{const s=d.slice().sort((a,b)=>a-b);const E=s[n-1]-s[0];const m=pick([E,E+1,s[n-1]]);aff=`L'étendue de cette série est ${m}.`;ok=m===E?1:0;ex=`E = ${s[n-1]} − ${s[0]} = ${E}.`;}
   return {cons:"Vrai ou faux ? On a relevé les notes de quelques élèves :",txt:`<div class="serie">${d.join(" ; ")}</div>${aff}`,kind:"qcm",opts:[[1,"Vrai"],[0,"Faux"]],sol:ok,steps:[`${ok?"Vrai":"Faux"}. ${ex}`],data:{type:"vfg",d,v,cas}};
 }
+/* ---------- 10. Diagrammes en bâtons ---------- */
+function svgBatons(v,e,xl){
+  const W=380,H=230,L=44,B=46,T=14,Rr=14,ym=Math.max(...e)+1,k=v.length;
+  const X=i=>L+(i+0.75)*(W-L-Rr)/(k+0.5),Y=y=>H-B-(H-B-T)*y/ym;
+  let g=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="max-width:${W}px;display:block" role="img" aria-label="Diagramme en bâtons">`;
+  for(let y=0;y<=ym;y++)g+=`<line x1="${L}" x2="${W-Rr}" y1="${Y(y)}" y2="${Y(y)}" stroke="var(--line)"/><text x="${L-8}" y="${Y(y)+4}" text-anchor="end" font-size="12" fill="var(--muted)">${y}</text>`;
+  g+=`<line x1="${L}" x2="${L}" y1="${T-4}" y2="${H-B}" stroke="var(--ink)"/><line x1="${L}" x2="${W-Rr}" y1="${H-B}" y2="${H-B}" stroke="var(--ink)"/>`;
+  v.forEach((x,i)=>{g+=`<line x1="${X(i)}" x2="${X(i)}" y1="${Y(0)}" y2="${Y(e[i])}" stroke="var(--acc)" stroke-width="9"/><text x="${X(i)}" y="${H-B+17}" text-anchor="middle" font-size="13" fill="var(--ink)">${F(x)}</text>`;});
+  g+=`<text x="${(L+W)/2}" y="${H-8}" text-anchor="middle" font-size="12" fill="var(--muted)">${xl}</text><text x="12" y="${(T+H-B)/2}" text-anchor="middle" font-size="12" fill="var(--muted)" transform="rotate(-90 12 ${(T+H-B)/2})">Effectif</text></svg>`;
+  return g;}
+function gDiag(){
+  const c=pick(CTX);const k=[4,5,5,6][NIV-1];const t=R(0,2);
+  let N=t===2?pick(NIV<=2?[10,20]:[20,25]):(NIV===1?R(9,13):R(12,22));let T;
+  for(let i=0;i<200;i++){T=tabEff(k,N,R(c.lo,c.lo+3),R(1,3),c.hi);if(Math.max(...T.e)<=8)break;}
+  const {v,e}=T;const head=c.car.charAt(0).toUpperCase()+c.car.slice(1);
+  const ecc=[];e.reduce((s,x,i)=>(ecc[i]=s+x),0);
+  const lect=tableHTML([[head].concat(v.map(F)),["Effectif"].concat(e),["ECC"].concat(ecc)]);
+  const txt=svgBatons(v,e,head+(c.u?" ("+c.u.trim()+")":""));
+  const base={txt,data:{type:"diag",t,v,e}};
+  if(t===0){const s=[];v.forEach((x,i)=>{for(let j=0;j<e[i];j++)s.push(x);});const info=medianeInfo(s);
+    return Object.assign(base,{cons:`Le diagramme donne les ${c.carP} d'un groupe de ${c.pop}. Lis le diagramme, puis détermine la médiane.`,
+      fields:[["Effectif total N",N],[info.pair?"N ÷ 2":"(N + 1) ÷ 2",info.p],["Médiane M",info.M]],
+      steps:["Lecture du diagramme et effectifs cumulés croissants :",lect].concat(redacMed(s,info,true))});}
+  if(t===1){const S=sum(v.map((x,i)=>x*e[i])),m=S/N,arr=!Number.isInteger(rd(m*100,6)),sol=arr?rd(m,1):rd(m,6);
+    return Object.assign(base,{cons:`Le diagramme donne les ${c.carP} d'un groupe de ${c.pop}. Calcule l'effectif total, puis la moyenne${arr?" (arrondie au dixième)":""}.`,
+      fields:[["Effectif total",N],["Moyenne",sol]],
+      steps:["Lecture du diagramme :",tableHTML([[head].concat(v.map(F)),["Effectif"].concat(e)]),`Effectif total : ${M(e.join(" + ")+" = "+N)}`,
+        `${M("x̄ =")} ${fr(v.map((x,i)=>F(x)+" × "+e[i]).join(" + "),N)} ${M("=")} ${fr(F(S),N)} ${M((arr?"≈ ":"= ")+F(sol))}`,`La moyenne est ${arr?"d'environ ":"de "}${F(sol)}${c.u}.`]});}
+  const i=R(0,k-1),p=rd(100*e[i]/N,4),E=v[k-1]-v[0];
+  return Object.assign(base,{cons:`Le diagramme donne les ${c.carP} de ${N} ${c.pop}. Lis l'effectif de la valeur ${F(v[i])}, calcule sa fréquence en pourcentage, puis l'étendue de la série.`,
+    fields:[[`Effectif de ${F(v[i])}`,e[i]],[`Fréquence de ${F(v[i])} (en %)`,p],["Étendue",E]],
+    steps:[`Par lecture du diagramme, le bâton de la valeur ${F(v[i])} monte à ${e[i]} : l'effectif de la valeur ${F(v[i])} est ${e[i]}.`,
+      `Effectif total : ${N}   ${M("f =")} ${fr(e[i],N)} ${M("= "+F(e[i]/N)+" = "+F(p)+" %")}`,
+      `Plus grande valeur : ${F(v[k-1])} ; plus petite valeur : ${F(v[0])}.   ${M(`E = ${F(v[k-1])} − ${F(v[0])} = ${F(E)}`)}`],
+    why:"Attention : sur un diagramme en bâtons, on lit les valeurs sur l'axe horizontal et les effectifs sur l'axe vertical."});
+}
 /* ---------- onglets ---------- */
 const TABS=[
   {id:"vocab",t:"Vocabulaire : QCM et vrai/faux",g:gVocab,nq:8,r:"<b>Donnée</b> : un résultat relevé · <b>valeur</b> : un résultat possible · <b>effectif</b> : nombre de données égales à une valeur · <b>fréquence</b> = effectif ÷ effectif total · <b>moyenne</b>, <b>médiane</b>, <b>étendue</b> : voir les autres onglets."},
@@ -306,6 +342,7 @@ const TABS=[
   {id:"etendue",t:"Étendue",g:gEtendue,r:"<b>Étendue</b> = plus grande valeur − plus petite valeur."},
   {id:"medl",t:"Médiane (liste)",g:gMedListe,r:"<b>Rédaction modèle :</b> on range la série dans l'ordre croissant → Effectif total : N → N impair : on calcule (N + 1) ÷ 2 ; N pair : on calcule N ÷ 2 → « La médiane est la …<sup>e</sup> donnée de la série ordonnée » (N pair : la moyenne de la …<sup>e</sup> et de la …<sup>e</sup> donnée) → M = …"},
   {id:"medt",t:"Médiane (tableau)",g:gMedTab,r:"<b>Avec un tableau :</b> on calcule les effectifs cumulés croissants (ECC), puis même rédaction, en ajoutant « Par lecture du tableau, la …<sup>e</sup> donnée correspond à la valeur … »."},
+  {id:"diag",t:"Diagrammes",g:gDiag,r:"<b>Diagramme en bâtons :</b> les <b>valeurs</b> se lisent sur l'axe horizontal, les <b>effectifs</b> sur l'axe vertical (hauteur des bâtons). On commence par recopier le tableau des effectifs, puis on calcule comme d'habitude (« Par lecture du diagramme… »)."},
   {id:"interp",t:"Interpréter",g:gInterp,r:"<b>Moyenne :</b> « C'est comme si … » · <b>Médiane :</b> « Au moins la moitié … ou plus » et « au moins la moitié … ou moins » · <b>Étendue :</b> « L'écart entre … »."},
 ];
 const NQ=4;let cur=0,QS=[];
