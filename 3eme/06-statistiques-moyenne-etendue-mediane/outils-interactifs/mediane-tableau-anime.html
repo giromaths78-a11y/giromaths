@@ -235,14 +235,11 @@ function buildStepsListe(){
   const base={moved:0,hiV:null,ordRow:false,ranks:false,pick:[],sep:false,dec:false,nL:0};
   const push=o=>st.push(Object.assign({},st.length?st[st.length-1]:base,{hiV:null},o,{nL:L.length}));
   push({msg:`Voici les <b>${N} données</b> relevées. Elles ne sont <b>pas rangées</b> : on ne peut pas encore trouver la médiane.`});
-  push({ordRow:true,msg:`<b>Première étape obligatoire</b> : on range les données dans l'<b>ordre croissant</b>, de la plus petite à la plus grande. On les barre au fur et à mesure dans la série de départ.`});
-  s.vals.forEach((v,i)=>push({moved:i+1,hiV:v,msg:i===0
-    ?`La plus petite donnée est <b>${v}</b>${s.eff[i]>1?` (elle apparaît ${s.eff[i]} fois)`:""} : on l'écrit en premier.`
-    :`Parmi les données restantes, la plus petite est <b>${v}</b>${s.eff[i]>1?` (${s.eff[i]} fois)`:""} : on l'écrit à la suite.`}));
+  L.push(`Effectif total : <span class="rep">N = ${N}</span> (on compte les données).`);
+  push({msg:`<b>Étape 1 : l'effectif total.</b> On compte les données : il y en a <b>${N}</b>, donc N = ${N}.`});
   const so=s.vals.flatMap((v,i)=>Array(s.eff[i]).fill(v));
   L.push(`Série ordonnée (ordre croissant) : ${so.join(" ; ")}.`);
-  L.push(`On compte les données : <span class="rep">N = ${N}</span>.`);
-  push({ranks:true,msg:`La série est rangée. On numérote les données : il y en a <b>${N}</b>, c'est l'<b>effectif total</b> N = ${N}.`});
+  push({ordRow:true,moved:n,ranks:true,msg:`<b>Étape 2 : on range les données</b> dans l'<b>ordre croissant</b>, de la plus petite à la plus grande (on peut les barrer au fur et à mesure dans la série de départ). On numérote leurs rangs.`});
   L.push(k.pair?`${N} est pair : ${N} ÷ 2 = ${k.p}, la médiane est comprise entre la <span class="rep">${eme(k.p)} et la ${eme(k.p+1)} donnée</span> de la série ordonnée.`
               :`${N} est impair : (${N} + 1) ÷ 2 = ${k.p}, la médiane est la <span class="rep">${eme(k.p)} donnée</span> de la série ordonnée.`);
   push({msg:k.pair?`<b>Position de la médiane</b> : ${N} est pair, on calcule ${N} ÷ 2 = ${k.p}. La médiane est comprise entre la ${eme(k.p)} et la ${eme(k.p+1)} donnée de la série ordonnée.`
