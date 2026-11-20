@@ -2,4 +2,5 @@
 
 [← Retour à la séquence](../README.md)
 
-_Bientôt disponible._
+- [Cours complet – Trigonométrie (1/2) : vocabulaire, cosinus, sinus, tangente, calculatrice, calculer une longueur](cours-trigonometrie-prof.pdf) (PDF)
+- [Fiche à coller, version complétée](fiche-a-coller-trigonometrie-prof.pdf) (PDF)

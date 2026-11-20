@@ -2,4 +2,4 @@
 
 [← Retour à la séquence](../README.md)
 
-_Bientôt disponible._
+- [Activité découverte n°1 (vidéo du cours)](https://www.youtube.com/watch?v=3MF9e4-GnSY) (Activité)

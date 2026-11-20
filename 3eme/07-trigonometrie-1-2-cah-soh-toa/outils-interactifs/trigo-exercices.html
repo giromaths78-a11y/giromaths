@@ -75,6 +75,10 @@ svg.fig .objet{fill:var(--muted);opacity:.5}
 .legende{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:center;font-size:.85rem;color:var(--muted)}
 .etapeq{font:700 .8rem "Space Grotesk",sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--acc);margin-top:10px}
 .hide{display:none!important}
+table.tp{display:inline-table;border-collapse:collapse;vertical-align:middle;margin:4px 8px;font-variant-numeric:tabular-nums}
+table.tp td{border:1.5px solid var(--acc);padding:2px 10px;text-align:center;font-weight:600}
+table.tp td.dg{background:#dbeafe;color:#1d4ed8}
+table.tp td.inc{background:#fee2e2;color:#b91c1c}
 .rappel{font-size:.9rem;background:var(--soft);border-radius:10px;padding:8px 12px;margin-top:10px}
 </style>
 </head>
@@ -173,8 +177,12 @@ function redaction(t,f,inc,v,u,dec,prec,nomCherche){
   L.push(`Pour l'angle ${ang(t.angNom)} : je connais ${NOMC[conn]} ${c[conn]} et je cherche ${NOMC[cher]} ${c[cher]} → <b>${MOT[f]}</b>.`);
   L.push(`Donc : ${f} ${ang(t.angNom)} = ${fr(c[nu],c[de])}`);
   L.push(`On remplace : ${f}(${t.a}°) = ${inc==="num"?fr(c[nu],vC):fr(vC,c[de])}`);
-  L.push(inc==="num"?`${c[cher]} = ${vC} × ${f}(${t.a}°) <span class="note">(valeur exacte)</span>`:`${c[cher]} = ${fr(vC,f+"("+t.a+"°)")} <span class="note">(valeur exacte, produit en croix)</span>`);
-  L.push(`À la calculatrice : ${c[cher]} ≈ ${nf(val,dec)} ${u} <span class="note">(arrondi ${prec})</span>`);
+  const fa=`${f}(${t.a}°)`,X=c[cher];
+  const tab=inc==="num"?`<table class="tp"><tr><td class="dg">${fa}</td><td class="inc">${X}</td></tr><tr><td>1</td><td class="dg">${vC}</td></tr></table>`
+                       :`<table class="tp"><tr><td>${fa}</td><td class="dg">${vC}</td></tr><tr><td class="dg">1</td><td class="inc">${X}</td></tr></table>`;
+  L.push(`<span class="note">Au brouillon : dénominateur 1 et tableau de proportionnalité (4<sup>e</sup> proportionnelle : produit des nombres en diagonale, divisé par le troisième).</span><br>${fr(fa,"1")} = ${inc==="num"?fr(X,vC):fr(vC,X)} ${tab} ${X} = ${inc==="num"?fr(vC+" × "+fa,"1"):fr(vC+" × 1",fa)}`);
+  L.push(inc==="num"?`Donc ${X} = ${vC} × ${fa} <span class="note">(valeur exacte)</span>`:`Donc ${X} = ${fr(vC,fa)} <span class="note">(valeur exacte)</span>`);
+  L.push(`Donc ${c[cher]} ≈ ${nf(val,dec)} ${u} <span class="note">(arrondi ${prec}, à la calculatrice en degrés)</span>`);
   return {L,val};
 }
 function verifie(txt,val,dec){

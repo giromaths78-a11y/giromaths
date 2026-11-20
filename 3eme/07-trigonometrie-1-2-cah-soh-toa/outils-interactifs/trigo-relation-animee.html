@@ -98,6 +98,23 @@ svg .new{transform-box:fill-box;transform-origin:center}
 .touche{background:#374151;color:#fff;border-radius:6px;padding:4px 9px;font:600 .9rem Inter,sans-serif;opacity:.55}
 .touche.on{background:#f59e0b;color:#1f2937;opacity:1;animation:pop .45s ease}
 .hide{display:none!important}
+.etapes li.copie{background:var(--card);border:2px solid var(--ok);padding:12px 16px;font-size:1.08rem;
+  background-image:repeating-linear-gradient(transparent 0 2.35em,var(--line) 2.35em calc(2.35em + 1px));}
+.etapes li.copie p{margin:0;min-height:2.35em;display:flex;align-items:center;flex-wrap:wrap;gap:0 4px}
+.etapes .opt{color:var(--muted);font-style:italic;font-size:.9em}
+.tpw{margin:6px 0}
+table.tp{border-collapse:collapse;font-variant-numeric:tabular-nums}
+table.tp td{border:1.5px solid var(--acc);padding:4px 12px;text-align:center;min-width:64px;font-weight:600;background:var(--card);color:var(--ink)}
+table.tp td.dg{background:var(--connusoft);color:var(--connu)}
+table.tp td.inc{background:var(--cherchesoft);color:var(--cherche)}
+details.perso{margin:16px 0 4px}
+details.perso summary{cursor:pointer;font:700 1rem "Space Grotesk",sans-serif;color:var(--acc2)}
+.form{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-top:10px}
+.form label{display:flex;gap:6px;align-items:center;font-weight:600;font-size:.92rem}
+.form input{font:600 1rem Inter,sans-serif;border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;background:var(--card);color:var(--ink);width:4.6em;text-transform:uppercase}
+.form input.l1{width:2.4em;text-align:center}
+.form input.n{width:4.2em;text-transform:none}
+.err{color:var(--cherche);font-weight:600}
 .k{color:var(--connu);font-weight:700}.q{color:var(--cherche);font-weight:700}
 @media (prefers-reduced-motion:reduce){.new,.touche.on{animation:none}svg.fig .dessin{animation:none;stroke-dashoffset:0}.progress span,.mot{transition:none}}
 </style>
@@ -107,13 +124,25 @@ svg .new{transform-box:fill-box;transform-origin:center}
 <header class="hero">
   <div class="eyebrow">3<sup>e</sup> · Trigonométrie · outil animé</div>
   <h1>Écrire la bonne relation trigonométrique</h1>
-  <p>Figure à main levée codée, ce que l'on connaît et ce que l'on cherche, CAH SOH TOA, puis la rédaction ligne par ligne jusqu'au résultat (exact ou arrondi).</p>
+  <p>Calculer une longueur : figure à main levée codée, ce que l'on connaît et ce que l'on cherche, CAH SOH TOA, puis la rédaction ligne par ligne jusqu'au résultat (exact ou arrondi). Exemple au hasard, ou votre propre exemple.</p>
 </header>
 
-<div class="tabs" role="tablist">
-  <button class="tab" role="tab" data-m="L" aria-selected="true">Calculer une longueur</button>
-  <button class="tab" role="tab" data-m="A" aria-selected="false">Calculer un angle <small>(Trigonométrie 2/2)</small></button>
-</div>
+<details class="card perso" id="perso">
+  <summary>✏️ Mon exemple : je choisis les lettres, la mesure connue et le côté à calculer</summary>
+  <div class="form">
+    <label>Nom du triangle <input id="pNom" maxlength="3" value="RTL" autocomplete="off"></label>
+    <label>rectangle en <input id="pD" class="l1" maxlength="1" value="R" autocomplete="off"></label>
+    <label>Angle connu : sommet <input id="pS" class="l1" maxlength="1" value="L" autocomplete="off"></label>
+    <label>mesure <input id="pA" class="n" value="43" inputmode="decimal" autocomplete="off"> °</label>
+    <label>Côté connu <select id="pConnu"></select></label>
+    <label>longueur <input id="pV" class="n" value="6" inputmode="decimal" autocomplete="off">
+      <select id="pU"><option>cm</option><option>m</option><option>mm</option><option>km</option></select></label>
+    <label>Côté à calculer <select id="pCherche"></select></label>
+    <label>Arrondir <select id="pDec"><option value="0">à l'unité</option><option value="1" selected>au dixième</option><option value="2">au centième</option></select></label>
+    <button class="btn primary" id="pGo">Lancer mon exemple</button>
+    <span class="err" id="pErr" role="alert"></span>
+  </div>
+</details>
 
 <div class="bar">
   <button class="btn" id="nouv">Nouvel exemple</button>
@@ -138,7 +167,7 @@ svg .new{transform-box:fill-box;transform-origin:center}
   <div class="bulle" id="bulle" aria-live="polite"></div>
 </section>
 </div>
-<section class="card panneau"><h2>Je rédige</h2><ol class="etapes" id="etapes"></ol></section>
+<section class="card panneau"><h2 id="titreRed">Je rédige</h2><ol class="etapes" id="etapes"></ol></section>
 </div>
 </div>
 
@@ -159,31 +188,36 @@ const LETTRES="ABCDEFGHIJKLMNPRSTUVWXYZ".split("");
 let mode="L",ex=null,k=0,timer=null;
 
 // ---------- génération d'un exemple ----------
-function genere(){
-  const f=document.getElementById("formule").value==="h"?pick(["cos","sin","tan"]):document.getElementById("formule").value;
+const PAIRE={cos:["adj","hyp"],sin:["opp","hyp"],tan:["opp","adj"]};
+function formuleDe(a,b){const k=[a,b].sort().join();return k==="adj,hyp"?"cos":k==="hyp,opp"?"sin":"tan";}
+function precTxt(u,dec){const t={cm:["au cm","au mm","au centième de cm"],m:["au mètre","au dm","au cm"],mm:["au mm","au dixième de mm","au centième de mm"],km:["au km","à l'hectomètre","au décamètre"]};return t[u][dec]+" près";}
+function genere(perso){
+  let f=document.getElementById("formule").value==="h"?pick(["cos","sin","tan"]):document.getElementById("formule").value;
   // lettres : D = sommet de l'angle droit, S = sommet de l'angle aigu étudié, T = 3e sommet
   let L=[...LETTRES].sort(()=>Math.random()-.5).slice(0,3);
-  const [S,D,T]=L;
-  const ordre=pick([[S,D,T],[D,S,T],[T,S,D],[S,T,D],[D,T,S],[T,D,S]]);
+  let [S,D,T]=L;
+  let ordre=pick([[S,D,T],[D,S,T],[T,S,D],[S,T,D],[D,T,S],[T,D,S]]);
+  if(perso){S=perso.S;D=perso.D;T=perso.T;ordre=perso.nom.split("");f=formuleDe(perso.connu,perso.cherche);}
   const nomTri=ordre.join("");
   const seg=(x,y)=>{const i=ordre.indexOf(x),j=ordre.indexOf(y);return i<j?x+y:y+x;};
   const cotes={hyp:seg(S,T),adj:seg(S,D),opp:seg(D,T)};
-  const nomAng=pick([D+S+T,T+S+D]);
-  const unite=pick(["cm","cm","cm","m"]);
+  const nomAng=perso?D+S+T:pick([D+S+T,T+S+D]);
+  const unite=perso?perso.u:pick(["cm","cm","cm","m"]);
   let e={f,S,D,T,nomTri,cotes,nomAng,unite};
   // côtés concernés par la formule
   const paire={cos:["adj","hyp"],sin:["opp","hyp"],tan:["opp","adj"]}[f];
   e.num=paire[0];e.den=paire[1];
   if(mode==="L"){
-    const a=R(22,68);e.a=a;
-    e.inconnue=pick(["num","den"]);
+    const a=perso?perso.a:R(22,68);e.a=a;
+    e.inconnue=perso?(perso.cherche===e.num?"num":"den"):pick(["num","den"]);
     const conn=e.inconnue==="num"?e.den:e.num, inc=e.inconnue==="num"?e.num:e.den;
     let v=unite==="cm"?R(25,120)/10:R(15,90)/10; if(Math.random()<.4)v=Math.round(v);
+    if(perso)v=perso.v;
     e.connu=conn;e.cherche=inc;e.vConnu=v;
     const t=Math.cos(a*DEG),s=Math.sin(a*DEG),tg=Math.tan(a*DEG);
     const rap={cos:t,sin:s,tan:tg}[f];
     e.vCherche=e.inconnue==="num"?v*rap:v/rap;
-    e.dec=unite==="cm"?1:2; e.prec=unite==="cm"?"au mm près":"au cm près";
+    e.dec=perso?perso.dec:(unite==="cm"?1:2); e.prec=precTxt(unite,e.dec);
     // longueurs pour la figure
     const L0={}; L0[conn]=v;
     if(conn==="hyp"){L0.hyp=v}else if(conn==="adj"){L0.hyp=v/t}else{L0.hyp=v/s}
@@ -202,17 +236,15 @@ function genere(){
   // figure : A (angle aigu) en (0,0), D en (adj,0), T en (adj,opp), puis rotation / symétrie aléatoires
   const ar=(mode==="L"?e.a:e.a)*DEG;
   const pts={}; pts[S]=[0,0]; pts[D]=[Math.cos(ar),0]; pts[T]=[Math.cos(ar),Math.sin(ar)];
-  const rot=R(0,359)*DEG, sym=Math.random()<.5?-1:1;
+  const rot=(perso?R(0,7)*45:R(0,359))*DEG, sym=Math.random()<.5?-1:1;
   for(const p in pts){let [x,y]=pts[p];y*=sym;pts[p]=[x*Math.cos(rot)-y*Math.sin(rot),x*Math.sin(rot)+y*Math.cos(rot)];}
   // mise à l'échelle dans la zone 520x330
   const xs=Object.values(pts).map(p=>p[0]),ys=Object.values(pts).map(p=>p[1]);
   const mx=Math.min(...xs),Mx=Math.max(...xs),my=Math.min(...ys),My=Math.max(...ys);
-  const sc=Math.min(360/(Mx-mx||1),200/(My-my||1));
+  const sc=Math.min(330/(Mx-mx||1),180/(My-my||1));
   const ox=260-(mx+Mx)/2*sc, oy=165+(my+My)/2*sc;
   for(const p in pts){pts[p]=[ox+pts[p][0]*sc,oy-pts[p][1]*sc];}
   e.pts=pts;
-  // petites irrégularités « à main levée »
-  e.jit={};for(const c of ["hyp","adj","opp"])e.jit[c]=[R(-7,7),R(-7,7)];
   return e;
 }
 
@@ -223,12 +255,12 @@ function vAng(e){return e.a+"°";}
 function texteEnonce(e){
   const u=e.unite;
   if(mode==="L"){
-    const donnees=[`${ang(e.nomAng)} = ${e.a}°`,`${e.cotes[e.connu]} = ${nf(e.vConnu,e.vConnu%1?1:0)} ${u}`];
+    const donnees=[`${ang(e.nomAng)} = ${valTxt(e.a)}°`,`${e.cotes[e.connu]} = ${valTxt(e.vConnu)} ${u}`];
     return `Le triangle ${e.nomTri} est rectangle en ${e.D}. On sait que ${donnees[0]} et ${donnees[1]}.<br>Calculer la longueur ${e.cotes[e.cherche]}, arrondie ${e.prec}.`;
   }
   return `Le triangle ${e.nomTri} est rectangle en ${e.D}. On sait que ${e.cotes[e.num]} = ${nf(e.vNum,e.vNum%1?1:0)} ${u} et ${e.cotes[e.den]} = ${nf(e.vDen,e.vDen%1?1:0)} ${u}.<br>Calculer la mesure de l'angle ${ang(e.nomAng)}, arrondie ${e.prec}.`;
 }
-function valTxt(v){return nf(v,v%1?1:0);}
+function valTxt(v){return String(+(+v).toFixed(3)).replace(".",",");}
 
 function etapes(e){
   const E=[];const u=e.unite;
@@ -241,7 +273,8 @@ function etapes(e){
   E.push({t:"Connu / cherché",b: mode==="L"
       ?`Je mets en évidence <b class="k">en bleu ce que je connais</b> (l'angle ${ang(e.nomAng)} et ${c[e.connu]}) et <b class="q">en rouge ce que je cherche</b> (${c[e.cherche]}).`
       :`Je mets en évidence <b class="k">en bleu ce que je connais</b> (${c[e.num]} et ${c[e.den]}) et <b class="q">en rouge ce que je cherche</b> (l'angle ${ang(e.nomAng)}).`,fig:3});
-  E.push({t:"Nommer les côtés",b:`Par rapport à l'angle ${ang(e.nomAng)} : <b>${c.hyp}</b> est l'hypoténuse (en face de l'angle droit), <b>${c.opp}</b> est le côté opposé (en face de l'angle), <b>${c.adj}</b> est le côté adjacent (il touche l'angle et n'est pas l'hypoténuse).`,fig:4});
+  const role={hyp:"l'hypoténuse (en face de l'angle droit)",opp:"le côté opposé à l'angle (en face de l'angle)",adj:"le côté adjacent à l'angle (il touche l'angle et n'est pas l'hypoténuse)"};
+  E.push({t:"Nommer les côtés",b:`Par rapport à l'angle ${ang(e.nomAng)}, je nomme seulement les deux côtés utiles : <b class="k">${c[e.connu]}</b> (connu) est ${role[e.connu]} → <b class="k">${ab[e.connu]}</b> ; <b class="q">${c[e.cherche]}</b> (cherché) est ${role[e.cherche]} → <b class="q">${ab[e.cherche]} ?</b>`,fig:4});
   const utiles=mode==="L"?[e.connu,e.cherche]:[e.num,e.den];
   E.push({t:"CAH SOH TOA",b:`J'utilise <b>${utiles.map(x=>nomCote[x]+" ("+ab[x]+")").join(" et ")}</b> : la seule formule qui contient ${ab[utiles[0]]} et ${ab[utiles[1]]} est <b>${MOT[e.f]}</b>, donc <b>${{cos:"cosinus = adjacent ÷ hypoténuse",sin:"sinus = opposé ÷ hypoténuse",tan:"tangente = opposé ÷ adjacent"}[e.f]}</b>.`,fig:4,cst:1});
   // rédaction
@@ -251,14 +284,15 @@ function etapes(e){
   if(mode==="L"){
     const vC=valTxt(e.vConnu);
     const n=e.inconnue==="num"?c[e.num]:vC, d=e.inconnue==="num"?vC:c[e.den];
-    remp=`On remplace : ${f}(${e.a}°) = ${fr(n,d)}`;
-    if(e.inconnue==="num"){exact=`${c[e.cherche]} = ${vC} × ${f}(${e.a}°)`;noteEx="(valeur exacte)";calcIn=`${vC}×${f}(${e.a})`;}
-    else{exact=`${c[e.cherche]} = ${fr(vC,f+"("+e.a+"°)")}`;noteEx="(valeur exacte ; l'inconnue était au dénominateur : produit en croix)";calcIn=`${vC}÷${f}(${e.a})`;}
+    remp=`On remplace : ${f}(${valTxt(e.a)}°) = ${fr(n,d)}`;
+    if(e.inconnue==="num"){exact=`${c[e.cherche]} = ${vC} × ${f}(${valTxt(e.a)}°)`;noteEx="(valeur exacte ; diviser par 1 ne change rien)";calcIn=`${vC}×${f}(${valTxt(e.a)})`;}
+    else{exact=`${c[e.cherche]} = ${fr(vC,f+"("+valTxt(e.a)+"°)")}`;noteEx="(valeur exacte)";calcIn=`${vC}÷${f}(${valTxt(e.a)})`;}
     calcOut=e.vCherche;
     const arr=Math.abs(e.vCherche-Math.round(e.vCherche*10**e.dec)/10**e.dec)<1e-9;
-    res=`${c[e.cherche]} ${arr?"=":"≈"} ${nf(e.vCherche,e.dec)} ${u}`;
+    const vr=arr?valTxt(Math.round(e.vCherche*1e6)/1e6):nf(e.vCherche,e.dec);
+    res=`${c[e.cherche]} ${arr?"=":"≈"} ${vr} ${u}`;
     e.noteRes=arr?"(valeur exacte)":`(arrondi ${e.prec.replace(" près","")})`;
-    phrase=`La longueur ${c[e.cherche]} mesure ${arr?"":"environ "}${nf(e.vCherche,e.dec)} ${u}.`;
+    phrase=`La longueur ${c[e.cherche]} mesure ${arr?"":"environ "}${vr} ${u}.`;
   }else{
     remp=`On remplace : ${f} ${ang(e.nomAng)} = ${fr(valTxt(e.vNum),valTxt(e.vDen))}`;
     const af={cos:"arccos",sin:"arcsin",tan:"arctan"}[e.f];
@@ -272,16 +306,41 @@ function etapes(e){
     phrase=`L'angle ${ang(e.nomAng)} mesure environ ${nf(e.a,e.dec)}°.`;
   }
   E.push({t:"On remplace",b:`Je <b>remplace</b> par les valeurs de l'énoncé (je garde la lettre de ce que je cherche).`,fig:4,red:remp});
+  if(mode==="L"){
+    const vC=valTxt(e.vConnu),fa=`${f}(${valTxt(e.a)}°)`,X=c[e.cherche];
+    const n=e.inconnue==="num"?X:vC, d=e.inconnue==="num"?vC:X;
+    // tableau : [fa | n] / [1 | d] ; l'inconnue est n (en haut) ou d (en bas)
+    const cell=(t,cl)=>`<td class="${cl}">${t}</td>`;
+    const tab=e.inconnue==="num"
+      ?`<table class="tp"><tr>${cell(fa,"dg")}${cell(X,"inc")}</tr><tr>${cell("1","")}${cell(vC,"dg")}</tr></table>`
+      :`<table class="tp"><tr>${cell(fa,"")}${cell(vC,"dg")}</tr><tr>${cell("1","dg")}${cell(X,"inc")}</tr></table>`;
+    const calc4=e.inconnue==="num"?`${X} = ${fr(vC+" × "+fa,"1")}`:`${X} = ${fr(vC+" × 1",fa)}`;
+    e.tab4=tab;
+    E.push({t:"Dénominateur 1",b:`J'écris ${fa} comme une fraction de <b>dénominateur 1</b> : l'égalité des deux fractions donne un <b>tableau de proportionnalité</b>.`,fig:4,
+      red:`${fr(fa,"1")} = ${fr(n,d)}<div class="tpw">${tab}</div>`});
+    E.push({t:"Quatrième proportionnelle",b:`Pour trouver la <b>quatrième proportionnelle</b>, je multiplie les deux nombres <b>en diagonale</b> (surlignés en bleu) et je divise par le <b>troisième</b> nombre.`,fig:4,
+      red:`<div class="tpw">${tab}</div>${calc4}`});
+  }
   E.push({t:"Valeur exacte",b: mode==="L"
-      ? (e.inconnue==="num"?`J'isole ${c[e.cherche]} : je multiplie par ${valTxt(e.vConnu)}. Cette écriture est la <b>valeur exacte</b>.`
-         :`${c[e.cherche]} est au dénominateur : avec le <b>produit en croix</b>, ${c[e.cherche]} = ${valTxt(e.vConnu)} ÷ ${f}(${e.a}°). C'est la <b>valeur exacte</b>.`)
+      ? `Je simplifie l'écriture : c'est la <b>valeur exacte</b> de ${c[e.cherche]}.`
       : `Pour retrouver l'angle à partir de son ${ {cos:"cosinus",sin:"sinus",tan:"tangente"}[e.f]}, on utilise la fonction réciproque : <b>${ {cos:"arccos",sin:"arcsin",tan:"arctan"}[e.f]}</b> (ou <b>${f}<sup>-1</sup></b>). C'est la valeur exacte ; cette écriture n'est <b>pas exigible en 3<sup>e</sup></b>.`,
     fig:4,red:exact,note:noteEx});
-  E.push({t:"Calculatrice",b:`J'utilise la calculatrice <b>réglée en degrés</b> (D ou DEG à l'écran) : ${mode==="L"?"":"touche <b>"+f+"<sup>-1</sup></b> (souvent : 2nde ou SECONDE puis "+f+"), "}je tape ${calcIn} et je lis le résultat.`,fig:4,calc:{in:calcIn,out:calcOut},red:`À la calculatrice : ${calcIn.replace(/\(([\d,]+)\)$/,"($1°)")} = ${nfc(calcOut)}…`});
+  E.push({t:"Calculatrice",b:`J'utilise la calculatrice <b>réglée en degrés</b> (D ou DEG à l'écran) : ${mode==="L"?"":"touche <b>"+f+"<sup>-1</sup></b> (souvent : 2nde ou SECONDE puis "+f+"), "}je tape ${calcIn} et je lis le résultat.`,fig:4,calc:{in:calcIn,out:calcOut},red:`À la calculatrice : ${calcIn.replace(/\(([\d,]+)\)$/,"($1°)")} = ${nfc(calcOut)}${Math.abs(calcOut*1e6-Math.round(calcOut*1e6))<1e-6?"":"…"}`});
   E.push({t:"Résultat",b: mode==="L"
-      ?`Le résultat n'est pas un nombre « rond » : j'écris <b>≈</b> et je précise que c'est un <b>arrondi</b>, avec la précision demandée (${e.prec} : ${e.dec} chiffre${e.dec>1?"s":""} après la virgule en ${u}).`
+      ?(e.noteRes==="(valeur exacte)"?`La calculatrice donne un nombre décimal exact : j'écris <b>=</b> et je précise que c'est la <b>valeur exacte</b>.`
+        :`Le résultat n'est pas un nombre « rond » : j'écris <b>≈</b> et je précise que c'est un <b>arrondi</b>, avec la précision demandée (${e.prec}${e.dec?" : "+e.dec+" chiffre"+(e.dec>1?"s":"")+" après la virgule en "+u:""}).`)
       :`J'écris <b>≈</b> car c'est un <b>arrondi</b>, avec la précision demandée (${e.prec}).`,fig:5,red:res,note:e.noteRes});
-  E.push({t:"Phrase réponse",b:`Je termine par une <b>phrase réponse</b>.`,fig:5,red:phrase,fin:1});
+  E.push({t:"Phrase réponse",b:`Je termine par une <b>phrase réponse</b>.`,fig:5,red:phrase});
+  if(mode==="L"){
+    const vC=valTxt(e.vConnu),n=e.inconnue==="num"?c[e.num]:vC,d=e.inconnue==="num"?vC:c[e.den];
+    e.copie=[`On sait que le triangle ${e.nomTri} est rectangle en ${e.D}.`,
+      `Donc : ${f} ${ang(e.nomAng)} = ${fr(c[e.num],c[e.den])}`,
+      `${f}(${valTxt(e.a)}°) = ${fr(n,d)} <span class="opt">(on remplace)</span>`,
+      `Donc ${exact.replace(/^/,"")} <span class="opt">(valeur exacte)</span>`,
+      `Donc ${res} <span class="opt">${e.noteRes}</span>`,
+      phrase];
+    E.push({t:"Sur ma copie",b:`Voici <b>tout ce que j'écris sur ma copie</b>. Le tableau de proportionnalité et la calculatrice restent au brouillon.`,fig:5,copie:1});
+  }
   return E;
 }
 
@@ -289,8 +348,7 @@ function etapes(e){
 const svg=document.getElementById("fig");
 function segPath(e,c,cl,extra=""){
   const [x1,y1]=e.pts[c==="hyp"?e.S:c==="adj"?e.S:e.D], [x2,y2]=e.pts[c==="hyp"?e.T:c==="adj"?e.D:e.T];
-  const [jx,jy]=e.jit[c], mx=(x1+x2)/2+jx, my=(y1+y2)/2+jy;
-  return `<path class="${cl}" d="M${x1},${y1} Q${mx},${my} ${x2},${y2}" ${extra}/>`;
+  return `<path class="${cl}" d="M${x1},${y1} L${x2},${y2}" ${extra}/>`;
 }
 function milieu(e,c){const a=e.pts[c==="opp"?e.D:e.S],b=e.pts[c==="adj"?e.D:e.T];return [(a[0]+b[0])/2,(a[1]+b[1])/2];}
 function centre(e){const p=Object.values(e.pts);return [(p[0][0]+p[1][0]+p[2][0])/3,(p[0][1]+p[1][1]+p[2][1])/3];}
@@ -317,7 +375,7 @@ function dessine(e,niv,anim){
     const cl=niv>=3?(mode==="L"?"arc connu":"arc cherche"):"arc";
     h+=`<path class="${cl}${(niv===2||niv===3)&&anim?" new":""}" d="M${p1[0]},${p1[1]} A${r},${r} 0 0 ${d>0?1:0} ${p2[0]},${p2[1]}"/>`;
     const am=a1+d/2,lt=[sx+(r+24)*Math.cos(am),sy+(r+24)*Math.sin(am)];
-    const tAng=mode==="L"?e.a+"°":(niv>=3?"?":"");
+    const tAng=mode==="L"?valTxt(e.a)+"°":(niv>=3?"?":"");
     if(tAng)h+=`<text class="cote ${niv>=3?(mode==="L"?"tc":"th"):""}${niv===2&&anim?" new":""}" x="${lt[0]}" y="${lt[1]+5}" text-anchor="middle">${tAng}</text>`;
     // longueurs
     const vals={};
@@ -328,17 +386,17 @@ function dessine(e,niv,anim){
   }
   // étiquettes H / O / A
   if(niv>=4){
-    for(const c of ["hyp","opp","adj"]){
-      const m=horsTri(e,milieu(e,c),(c===(mode==="L"?e.connu:e.num)||c===(mode==="L"?e.cherche:e.den))?62:30);const col=c==="hyp"?"#7c3aed":c==="opp"?"#0f766e":"#b45309";
-      const txt={hyp:"H",opp:"O",adj:"A"}[c];
-      h+=`<g class="tag${niv===4&&anim?" new":""}"><rect x="${m[0]-11}" y="${m[1]-11}" width="22" height="22" fill="${col}"/><text x="${m[0]}" y="${m[1]+5}" text-anchor="middle">${txt}</text></g>`;
+    for(const c of [e.connu,e.cherche]){
+      const m0=horsTri(e,milieu(e,c),28),q1=e.pts[c==="opp"?e.D:e.S],q2=e.pts[c==="adj"?e.D:e.T],ln=Math.hypot(q2[0]-q1[0],q2[1]-q1[1])||1,m=[m0[0]+(q2[0]-q1[0])/ln*44,m0[1]+(q2[1]-q1[1])/ln*44];const col=c===e.cherche?"var(--cherche)":"var(--connu)";
+      const txt={hyp:"H",opp:"O",adj:"A"}[c]+(c===e.cherche?" ?":"");const w=c===e.cherche?36:22;
+      h+=`<g class="tag${niv===4&&anim?" new":""}"><rect x="${m[0]-w/2}" y="${m[1]-11}" width="${w}" height="22" style="fill:${col}"/><text x="${m[0]}" y="${m[1]+5}" text-anchor="middle">${txt}</text></g>`;
     }
   }
   // lettres
   if(niv>=1){for(const p of [e.S,e.D,e.T]){const q=horsTri(e,P[p],20);h+=`<text x="${q[0]}" y="${q[1]+6}" text-anchor="middle">${p}</text>`;}}
   svg.innerHTML=h;
   const lg=document.getElementById("leg");
-  lg.innerHTML=niv>=3?`<span><b class="c">■ connu</b></span><span><b class="h">■ cherché</b></span>`+(niv>=4?`<span><b style="color:#7c3aed">H</b> hypoténuse</span><span><b style="color:#0f766e">O</b> opposé</span><span><b style="color:#b45309">A</b> adjacent</span>`:""):"";
+  lg.innerHTML=niv>=3?`<span><b class="c">■ connu</b></span><span><b class="h">■ cherché</b></span>`+(niv>=4?`<span>H : hypoténuse · O : opposé · A : adjacent</span>`:""):"";
 }
 
 function cst(e,show,anim){
@@ -371,9 +429,13 @@ function rendu(anim=true){
   calcul(s.calc,anim);
   btn("bulle").innerHTML=`<span class="lab">${s.t}</span>${s.b}`;
   // rédaction
+  btn("titreRed").textContent=s.copie?"Sur ma copie":"Je rédige";
+  if(s.copie){btn("etapes").innerHTML=`<li class="copie${anim?" new":""}">${ex.copie.map(x=>`<p>${x}</p>`).join("")}</li>`;}
+  else{
   const lignes=E.filter(x=>x.red), vues=E.slice(0,k+1).filter(x=>x.red);
   btn("etapes").innerHTML=vues.length?vues.map((x,i)=>`<li class="${i===vues.length-1?"der":""}${x.fin?" fin":""}${i===vues.length-1&&anim?" new":""}"><span class="n">${x.t}</span>${x.red}${x.note?`<span class="note">${x.note}</span>`:""}</li>`).join("")
      :`<li class="vide">La rédaction apparaît ici à partir de l'étape ${E.findIndex(x=>x.red)+1}.</li>`;
+  }
   btn("etape").textContent=`Étape ${k+1} / ${E.length}`;
   btn("prog").style.width=(100*(k+1)/E.length)+"%";
   btn("prec").disabled=k===0; btn("suiv").disabled=k===E.length-1;
@@ -387,9 +449,33 @@ btn("nouv").onclick=nouveau;
 btn("formule").onchange=nouveau;
 btn("auto").onclick=()=>{if(timer){stop();return;}btn("auto").textContent="⏸ Pause";if(k===ex.E.length-1)k=-1;
   const go=()=>{if(k<ex.E.length-1){k++;rendu();}else stop();};go();timer=setInterval(go,4200);};
-document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(u=>u.setAttribute("aria-selected",u===t));mode=t.dataset.m;history.replaceState(null,"","#"+(mode==="A"?"angle":"longueur"));nouveau();});
+// ---------- mon exemple ----------
+const lettre=id=>btn(id).value.trim().toUpperCase();
+function persoSommets(){const nom=lettre("pNom"),D=lettre("pD"),S=lettre("pS");const T=[...nom].find(x=>x!==D&&x!==S)||"?";return {nom,D,S,T};}
+function persoSelects(){
+  const {D,S,T}=persoSommets(),cc={hyp:S+T,adj:S+D,opp:D+T},nom={hyp:"hypoténuse",adj:"côté adjacent à l'angle",opp:"côté opposé à l'angle"};
+  for(const id of ["pConnu","pCherche"]){const sel=btn(id),old=sel.value;
+    sel.innerHTML=["hyp","adj","opp"].map(k=>`<option value="${k}">[${cc[k]}] ${nom[k]}</option>`).join("");if(old)sel.value=old;}
+  if(!btn("pConnu").value)btn("pConnu").value="adj";
+  if(!btn("pCherche").value||btn("pCherche").value===btn("pConnu").value)btn("pCherche").value=btn("pConnu").value==="opp"?"adj":"opp";
+}
+["pNom","pD","pS"].forEach(id=>btn(id).addEventListener("input",persoSelects));
+btn("pConnu").value="adj";
+btn("pGo").onclick=()=>{
+  const {nom,D,S,T}=persoSommets(),err=m=>{btn("pErr").textContent=m;};
+  const num=id=>parseFloat(btn(id).value.replace(",","."));
+  const a=num("pA"),v=num("pV");
+  if(!/^[A-Z]{3}$/.test(nom)||new Set(nom).size!==3)return err("Le nom du triangle doit avoir 3 lettres différentes.");
+  if(!nom.includes(D)||!nom.includes(S)||D===S)return err("L'angle droit et l'angle connu doivent être deux sommets différents du triangle.");
+  if(!(a>0&&a<90))return err("L'angle connu doit mesurer entre 0° et 90°.");
+  if(!(v>0))return err("La longueur connue doit être un nombre positif.");
+  if(btn("pConnu").value===btn("pCherche").value)return err("Le côté à calculer doit être différent du côté connu.");
+  err("");stop();
+  ex=genere({nom,D,S,T,a,v,u:btn("pU").value,dec:+btn("pDec").value,connu:btn("pConnu").value,cherche:btn("pCherche").value});
+  ex.E=etapes(ex);k=0;rendu();
+};
+persoSelects();
 document.addEventListener("keydown",ev=>{if(ev.target.tagName==="SELECT")return;if(ev.key==="ArrowRight")btn("suiv").click();if(ev.key==="ArrowLeft")btn("prec").click();});
-if(location.hash==="#angle"||/angle/.test(location.search)){mode="A";document.querySelectorAll(".tab").forEach(u=>u.setAttribute("aria-selected",u.dataset.m==="A"));}
 nouveau();
 </script>
 </body>

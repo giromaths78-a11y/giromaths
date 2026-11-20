@@ -28,6 +28,10 @@ _Bientôt disponible._
 
 ## Outils interactifs
 
-- [Animation pas à pas : calculer un angle (CAH SOH TOA, arccos ou cos⁻¹, calculatrice, arrondi)](outils-interactifs/trigo-relation-animee.html?angle) (Interactif)
+_Bientôt disponible._
+
+## Autres fichiers
+
+- [trigo-relation-animee.html](autres/trigo-relation-animee.html)
 
 [← Toutes les séquences de 3ème](../README.md)
