@@ -167,19 +167,35 @@ function build(){
   if(vals.some(v=>!(v>0))){message='Entre des nombres positifs.';render();return}
   if(cur==='a'){const [c,b,a]=vals;// AB=c, AC=b, BC=a
     const A=[0,0],B=[c,0];const x=(c*c+b*b-a*a)/(2*c),y2=b*b-x*x;
-    const ok=y2>1e-9;const C=ok?[x,Math.sqrt(y2)]:null;
+    const so=[a,b,c].sort((p,q)=>p-q);const eg=Math.abs(so[0]+so[1]-so[2])<1e-9;  // cas d'égalité : triangle aplati
+    const ok=!eg&&y2>1e-9;const C=ok?[x,Math.sqrt(y2)]:eg?[x,0]:null;
     const tA=ok?Math.atan2(C[1],C[0])*180/Math.PI:60, tB=ok?Math.atan2(C[1],C[0]-c)*180/Math.PI:120;
-    view=makeView([A,B,[0,b],[c,a],[-b*.3,0],[c+a*.3,0],ok?C:[c/2,0]].concat(ok?[]:[[c/2,Math.max(a,b)]]));
+    if(eg){const e=Math.max(a,b)*0.5+0.8;view=makeView([A,B,C,[Math.min(0,x)-1,e],[Math.max(c,x)+1,-e]]);}
+    else view=makeView([A,B,[0,b],[c,a],[-b*.3,0],[c+a*.3,0],ok?C:[c/2,0]].concat(ok?[]:[[c/2,Math.max(a,b)]]));
     steps.push({cap:'On fait d\'abord une figure à main levée codée, puis on vérifie : '+(ok?`${fr(Math.min(a,b))} + ${fr(Math.max(a,b))}`:'')+'…',dur:1.5,draw:()=>''});
-    const s=[a,b,c].sort((p,q)=>p-q);steps[0].cap=`Vérification : le plus grand côté mesure ${fr(s[2])} cm et ${fr(s[0])} + ${fr(s[1])} = ${fr(s[0]+s[1])}`+(s[0]+s[1]>s[2]?` > ${fr(s[2])}. On peut construire le triangle.`:s[0]+s[1]===s[2]?` = ${fr(s[2])}. Les points seront alignés.`:` < ${fr(s[2])}. Regardons ce qui se passe…`);
+    const s=[a,b,c].sort((p,q)=>p-q);steps[0].cap=`Vérification : le plus grand côté mesure ${fr(s[2])} cm et ${fr(s[0])} + ${fr(s[1])} = ${fr(s[0]+s[1])}`+(eg?` : la somme est égale au plus grand côté. Les points seront alignés.`:s[0]+s[1]>s[2]?` > ${fr(s[2])}. On peut construire le triangle.`:false?` = ${fr(s[2])}. Les points seront alignés.`:` < ${fr(s[2])}. Regardons ce qui se passe…`);
     steps.push(segStep(`Tracer le segment [${N0}${N1}] de longueur ${fr(c)} cm.`,A,B,fr(c)+' cm',N0,N1));
     if(ok){steps.push(arcStep(`Tracer un arc de cercle de centre ${N0} et de rayon ${fr(b)} cm.`,A,b,tA-14,tA+14));
       steps.push(arcStep(`Tracer un arc de cercle de centre ${N1} et de rayon ${fr(a)} cm.`,B,a,tB-14,tB+14));
       steps.push(pointStep(`Les deux arcs se coupent : on nomme ${N2} ce point.`,C,N2,-6,-14));
       steps.push(finStep(`Tracer [${N0}${N2}] et [${N1}${N2}] : le triangle ${N0+N1+N2} est construit.`,[[A,C,fr(b)+' cm',1],[B,C,fr(a)+' cm',-1]]));}
+    else if(eg){// le point d'intersection est sur la droite (AB)
+      const dA=x>0?0:180,dB=x>c?0:180;
+      steps.push(arcStep(`Tracer un arc de cercle de centre ${N0} et de rayon ${fr(b)} cm.`,A,b,dA-28,dA+28));
+      steps.push(arcStep(`Tracer un arc de cercle de centre ${N1} et de rayon ${fr(a)} cm.`,B,a,dB-28,dB+28));
+      steps.push(pointStep(`Les deux arcs se touchent en un seul point, situé sur la droite (${N0}${N1}) : on nomme ${N2} ce point.`,C,N2,-6,-14));
+      // quel point est entre les deux autres ? (celui qui n'est pas une extrémité du plus grand côté)
+      const P={[N0]:A,[N1]:B,[N2]:C};let X,Y,Z;
+      if(so[2]===c){X=N2;Y=N0;Z=N1}else if(so[2]===b){X=N1;Y=N0;Z=N2}else{X=N0;Y=N1;Z=N2}
+      steps.push({cap:`Conclusion : le point ${X} appartient au segment [${Y}${Z}]. Les points ${N0}, ${N1} et ${N2} sont alignés : on obtient un « triangle aplati ».`,dur:2.4,draw:u=>{
+        const k=ease(clamp(u,.1,.6));let g='';if(k>0)g+=line(P[Y],lerp(P[Y],P[Z],k),'fin');
+        if(u>.6){const [px,py]=view.P(P[X]);const op=Math.min(1,(u-.6)/.2);
+          g+=`<g opacity="${op}"><circle cx="${px}" cy="${py}" r="11" fill="none" stroke="var(--red)" stroke-width="3"/>`+
+             `<text x="${px}" y="${py+80}" text-anchor="middle" font-size="24" font-weight="700" style="fill:var(--red);paint-order:stroke;stroke:var(--paper,#fff);stroke-width:5px">${X} ∈ [${Y}${Z}]</text></g>`;}
+        return g}});}
     else{steps.push(arcStep(`Tracer un arc de cercle de centre ${N0} et de rayon ${fr(b)} cm.`,A,b,0,120));
       steps.push(arcStep(`Tracer un arc de cercle de centre ${N1} et de rayon ${fr(a)} cm.`,B,a,60,180));
-      steps.push({cap:`Les deux arcs ne se coupent pas en dehors de (${N0}${N1}) : on ne peut pas placer ${N2}. Ce triangle n'existe pas.`,dur:1.5,draw:()=>''});}
+      steps.push({cap:`Les deux arcs ne se coupent pas : on ne peut pas placer ${N2}. Ce triangle n'existe pas.`,dur:1.5,draw:()=>''});}
   }
   if(cur==='b'){const [st,sr,ang]=vals;if(ang>=180){message='L\'angle doit être inférieur à 180°.';render();return}
     const S=[0,0],T=[st,0],R=pol(S,sr,ang);const rl=Math.max(sr+1,3.2);
@@ -245,9 +261,10 @@ $('#reset').onclick=()=>{playing=false;idx=0;t=0;setPlay();render()};
 function setCase(c){cur=c;playing=false;document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.c===c));
   const f=$('#params');const n=noms[c];
   f.innerHTML=`<div class="noms"><label for="n0">Noms des points<span style="display:flex;gap:6px">${n.map((x,i)=>`<input class="nm" id="n${i}" maxlength="1" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${x}" aria-label="Nom du point ${i+1}">`).join('')}</span></label></div>`+
-    presets[c].fields.map(([l,v],i)=>`<label for="f${i}"><span class="lb" data-i="${i}"></span><input class="v" id="f${i}" inputmode="decimal" value="${v}"></label>`).join('')+`<button class="btn" type="submit">Appliquer</button><button class="btn" type="button" id="def">Exemple du cours</button>`;
+    presets[c].fields.map(([l,v],i)=>`<label for="f${i}"><span class="lb" data-i="${i}"></span><input class="v" id="f${i}" inputmode="decimal" value="${v}"></label>`).join('')+`<button class="btn" type="submit">Appliquer</button><button class="btn" type="button" id="def">Exemple du cours</button>`+(c==='a'?`<button class="btn" type="button" id="plat">Exemple : triangle aplati</button>`:'');
   libelles();f.querySelectorAll('input.nm').forEach(i=>i.addEventListener('input',()=>{i.value=i.value.toUpperCase();libelles()}));
-  $('#def').onclick=()=>{noms[c]=presets[c].names.slice();setCase(c)};build();setPlay()}
+  $('#def').onclick=()=>{noms[c]=presets[c].names.slice();setCase(c)};
+  if(c==='a')$('#plat').onclick=()=>{const v=['7','3','4'];document.querySelectorAll('#params input.v').forEach((i,k)=>i.value=v[k]);playing=false;build();setPlay()};build();setPlay()}
 function libelles(){const n=[...document.querySelectorAll('#params input.nm')].map(i=>i.value.trim().toUpperCase()||'?');
   document.querySelectorAll('#params .lb').forEach(sp=>{const l=presets[cur].fields[+sp.dataset.i][0](n);sp.textContent=l+(l.includes('°')?'':' (cm)')})}
 $('#params').addEventListener('submit',e=>{e.preventDefault();playing=false;build();setPlay()});
