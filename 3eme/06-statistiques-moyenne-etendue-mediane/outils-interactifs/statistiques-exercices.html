@@ -132,12 +132,14 @@ function redacMed(sorted,info,tableau){
   const L=[];const n=info.n;
   L.push(`Effectif total : ${M("N = "+n)}.`);
   if(info.pair){L.push(`${n} est pair, donc on calcule ${fr(n,2)} ${M("= "+info.p)}.`);
-    L.push(`La médiane est la moyenne de la ${eme(info.p)} et de la ${eme(info.p+1)} donnée de la série ordonnée.`);
+    L.push(`La médiane est comprise entre la ${eme(info.p)} et la ${eme(info.p+1)} donnée de la série ordonnée.`);
     const a=sorted[info.p-1],b=sorted[info.p];
-    L.push((tableau?`Par lecture du tableau, la ${eme(info.p)} donnée correspond à la valeur ${F(a)} et la ${eme(info.p+1)} donnée à la valeur ${F(b)}, donc `:"Donc ")+M(`M = (${F(a)} + ${F(b)}) ÷ 2 = ${F(info.M)}`)+".");}
+    L.push(tableau?`Par lecture du tableau, la ${eme(info.p)} donnée correspond à la valeur ${F(a)} et la ${eme(info.p+1)} donnée à la valeur ${F(b)}.`:`Dans la série ordonnée, la ${eme(info.p)} donnée est ${F(a)} et la ${eme(info.p+1)} donnée est ${F(b)}.`);
+    L.push("Donc "+M(`M = (${F(a)} + ${F(b)}) ÷ 2 = ${F(info.M)}`)+".");}
   else{L.push(`${n} est impair, donc on calcule ${fr(n+" + 1",2)} ${M("= "+info.p)}.`);
     L.push(`La médiane est la ${eme(info.p)} donnée de la série ordonnée.`);
-    L.push((tableau?`Par lecture du tableau, la ${eme(info.p)} donnée correspond à la valeur ${F(info.M)}, donc `:"Donc ")+M(`M = ${F(info.M)}`)+".");}
+    L.push(tableau?`Par lecture du tableau, la ${eme(info.p)} donnée correspond à la valeur ${F(info.M)}.`:`Dans la série ordonnée, la ${eme(info.p)} donnée est ${F(info.M)}.`);
+    L.push("Donc "+M(`M = ${F(info.M)}`)+".");}
   return L;}
 function tableHTML(rows){return '<div class="tw"><table class="t">'+rows.map(r=>'<tr><th>'+r[0]+'</th>'+r.slice(1).map(c=>'<td>'+c+'</td>').join("")+'</tr>').join("")+'</table></div>';}
 // tableau d'effectifs : k valeurs croissantes, effectifs ≥1, total N
@@ -211,7 +213,7 @@ function gMedListe(){
     txt:`<div class="serie">${d.map(F).join(" ; ")}</div>`,
     fields:[["Effectif total N",n],...posF(info),["Médiane M",info.M]],
     steps:[`On range la série dans l'ordre croissant : ${M(s.map(F).join(" ; "))}`].concat(redacMed(s,info,false)),
-    why:info.pair?"N pair : la médiane est entre deux données, on fait la moyenne des deux.":"N impair : la médiane est une donnée de la série ordonnée.",
+    why:info.pair?"N pair : la médiane est comprise entre deux données de la série ordonnée ; on calcule ensuite la demi-somme de ces deux données.":"N impair : la médiane est une donnée de la série ordonnée.",
     data:{type:"medl",d}};
 }
 /* ---------- 7. Médiane d'un tableau ---------- */
@@ -267,7 +269,7 @@ const VF=[ // [affirmation, vrai?, explication]
   ["Pour trouver la médiane, on peut utiliser la série sans la ranger.",0,"La médiane se cherche toujours dans la série ordonnée."],
   ["La médiane est toujours une donnée de la série.",0,"Si l'effectif total est pair et que les deux données du milieu sont différentes, la médiane est leur moyenne, qui n'est pas une donnée."],
   ["La moyenne est toujours une donnée de la série.",0,"Par exemple, la moyenne de 10 et 13 est 11,5, qui n'est pas une donnée."],
-  ["La médiane est toujours comprise entre la plus petite et la plus grande valeur de la série.",1,"La médiane est une donnée de la série ordonnée (ou la demi-somme de deux données) : elle ne peut pas dépasser les extrêmes."],
+  ["La moyenne est toujours comprise entre la plus petite et la plus grande valeur.",1,"C'est comme si toutes les données étaient égales à la moyenne : elle ne peut pas dépasser les extrêmes."],
   ["Si on ajoute 1 point à toutes les notes, la moyenne augmente de 1 point.",1,"La somme augmente de N points, donc la moyenne augmente de N ÷ N = 1."],
   ["Si on ajoute 1 point à toutes les notes, l'étendue augmente de 1 point.",0,"La plus grande et la plus petite note augmentent toutes les deux de 1 : leur différence ne change pas."],
   ["La moyenne et la médiane d'une série sont toujours égales.",0,"Exemple : 1 ; 2 ; 9 a pour médiane 2 et pour moyenne 4."],
@@ -285,8 +287,8 @@ const QC=[ // [question, bonne réponse, [mauvaises], explication]
   ["Le nombre qui partage la série ordonnée en deux séries de même effectif est :","la médiane",["la moyenne","l'étendue","la fréquence"],"C'est la définition de la médiane."],
   ["« C'est comme si les 25 élèves avaient tous eu 11,2 » interprète :","une moyenne",["une médiane","une étendue","une fréquence"],"La moyenne s'interprète par « C'est comme si … tous … »."],
   ["« L'écart entre la meilleure et la moins bonne note est de 9 points » interprète :","une étendue",["une moyenne","une médiane","un effectif"],"L'étendue s'interprète par « L'écart entre … »."],
-  ["L'effectif total d'une série est 30. La médiane est :","la moyenne de la 15e et de la 16e donnée de la série ordonnée",["la 15e donnée de la série ordonnée","la 16e donnée de la série ordonnée","la moyenne de la 14e et de la 15e donnée"],"30 est pair : 30 ÷ 2 = 15, la médiane est entre la 15e et la 16e donnée."],
-  ["L'effectif total d'une série est 31. La médiane est :","la 16e donnée de la série ordonnée",["la 15e donnée de la série ordonnée","la moyenne de la 15e et de la 16e donnée","la 15,5e donnée"],"31 est impair : (31 + 1) ÷ 2 = 16."],
+  ["L'effectif total d'une série est 30. La médiane est :","comprise entre la 15e et la 16e donnée de la série ordonnée",["la 15e donnée de la série ordonnée","la 16e donnée de la série ordonnée","comprise entre la 14e et la 15e donnée de la série ordonnée"],"30 est pair : 30 ÷ 2 = 15, la médiane est comprise entre la 15e et la 16e donnée de la série ordonnée."],
+  ["L'effectif total d'une série est 31. La médiane est :","la 16e donnée de la série ordonnée",["la 15e donnée de la série ordonnée","comprise entre la 15e et la 16e donnée de la série ordonnée","la 15,5e donnée"],"31 est impair : (31 + 1) ÷ 2 = 16."],
 ];
 function gVocab(){
   const t=Math.random();
@@ -373,7 +375,7 @@ const TABS=[
   {id:"moy",t:"Moyenne",g:gMoy,r:"<b>Moyenne</b> = somme de toutes les données ÷ effectif total."},
   {id:"moyp",t:"Moyenne (tableau)",g:gMoyP,r:"<b>Moyenne pondérée</b> = somme des produits « valeur × effectif » ÷ effectif total."},
   {id:"etendue",t:"Étendue",g:gEtendue,r:"<b>Étendue</b> = plus grande valeur − plus petite valeur."},
-  {id:"medl",t:"Médiane (liste)",g:gMedListe,r:"<b>Rédaction modèle :</b> on range la série dans l'ordre croissant → Effectif total : N → N impair : on calcule (N + 1) ÷ 2 ; N pair : on calcule N ÷ 2 → « La médiane est la …<sup>e</sup> donnée de la série ordonnée » (N pair : la moyenne de la …<sup>e</sup> et de la …<sup>e</sup> donnée) → M = …"},
+  {id:"medl",t:"Médiane (liste)",g:gMedListe,r:"<b>Rédaction modèle :</b> on range la série dans l'ordre croissant → Effectif total : N → N impair : on calcule (N + 1) ÷ 2 ; N pair : on calcule N ÷ 2 → « La médiane est la …<sup>e</sup> donnée de la série ordonnée » ou « La médiane est comprise entre la …<sup>e</sup> et la …<sup>e</sup> donnée de la série ordonnée » → « Dans la série ordonnée, la …<sup>e</sup> donnée est … » → M = … (N pair : demi-somme des deux données) → phrase réponse."},
   {id:"medt",t:"Médiane (tableau)",g:gMedTab,r:"<b>Avec un tableau :</b> on calcule les effectifs cumulés croissants (ECC), puis même rédaction, en ajoutant « Par lecture du tableau, la …<sup>e</sup> donnée correspond à la valeur … »."},
   {id:"diag",t:"Diagrammes",g:gDiag,r:"<b>Diagramme en bâtons :</b> les <b>valeurs</b> se lisent sur l'axe horizontal, les <b>effectifs</b> sur l'axe vertical (hauteur des bâtons). On commence par recopier le tableau des effectifs, puis on calcule comme d'habitude (« Par lecture du diagramme… »)."},
   {id:"interp",t:"Interpréter",g:gInterp,r:"<b>Moyenne :</b> « C'est comme si … » · <b>Médiane :</b> « Au moins la moitié … ou plus » et « au moins la moitié … ou moins » · <b>Étendue :</b> « L'écart entre … »."},
