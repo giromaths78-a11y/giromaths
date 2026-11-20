@@ -18,7 +18,7 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
 .wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
 header.hero{background:linear-gradient(135deg,#c026d3,#701a75);color:#fff;border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
-header.hero::after{content:"ECC : 2 + 5 = 7";position:absolute;right:14px;bottom:-12px;font:700 50px/1 "Space Grotesk",sans-serif;opacity:.15;white-space:nowrap}
+header.hero::after{content:"3 + 7 = 10";position:absolute;right:14px;bottom:-12px;font:700 50px/1 "Space Grotesk",sans-serif;opacity:.15;white-space:nowrap}
 .eyebrow{font:600 .8rem "Space Grotesk",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
 h1{font:700 clamp(1.6rem,4.5vw,2.3rem)/1.1 "Space Grotesk",sans-serif;margin:4px 0 6px}
 header.hero p{margin:0;max-width:62ch;opacity:.95;position:relative;z-index:1}
@@ -75,19 +75,25 @@ table.t td.cible{background:var(--hi);color:var(--hiink);font-weight:700;box-sha
 .fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 3px}
 .vide{color:var(--muted);font-style:italic}
 @media (prefers-reduced-motion:reduce){.new{animation:none}.chip,.progress span{transition:none}}
+table.t td.src{background:var(--soft);box-shadow:inset 0 0 0 2px var(--acc)}
+table.t td.non{opacity:.45}
+table.t tr.ajout th{box-shadow:inset 4px 0 0 var(--acc)}
+.etapes{margin:0;padding-left:1.4em}
+.etapes li{padding:3px 0}
+.etapes .rep{font-weight:700;color:var(--acc2)}
 </style>
-</head>
+
 <body>
 <div class="wrap">
 <header class="hero">
   <div class="eyebrow">3<sup>e</sup> · S6 Statistiques · outil animé</div>
-  <h1>De la série à la médiane, pas à pas</h1>
-  <p>On remplit le tableau des effectifs (à partir d'une liste de données ou d'un diagramme en bâtons), puis les effectifs cumulés croissants et les rangs, et on trouve la médiane avec la rédaction du cours.</p>
+  <h1>Trouver la médiane dans un tableau</h1>
+  <p>On part du tableau des effectifs, on ajoute la ligne des effectifs cumulés croissants (ECC), puis on s'en sert pour retrouver la valeur de la médiane, étape par étape.</p>
 </header>
 
 <div class="tabs" role="tablist">
-  <button class="tab" role="tab" data-m="liste" aria-selected="true">À partir d'une liste de données</button>
-  <button class="tab" role="tab" data-m="diag" aria-selected="false">À partir d'un diagramme en bâtons</button>
+  <button class="tab" role="tab" data-m="tab" aria-selected="true">Tableau des effectifs</button>
+  <button class="tab" role="tab" data-m="diag" aria-selected="false">Diagramme en bâtons → tableau</button>
 </div>
 
 <div class="bar">
@@ -103,9 +109,9 @@ table.t td.cible{background:var(--hi);color:var(--hiink);font-weight:700;box-sha
 </div>
 
 <div class="bulle" id="bulle" aria-live="polite"></div>
-<section class="card"><h2 id="srcT"></h2><div class="enonce" id="enonce"></div><div id="src"></div></section>
-<section class="card"><h2>Tableau des effectifs</h2><div class="tw" id="tab"></div><div class="somme" id="somme"></div></section>
-<section class="card"><h2>Rédaction (modèle du cours)</h2><ul class="redac" id="redac"></ul></section>
+<section class="card" id="srcCard"><h2>Diagramme en bâtons</h2><div class="enonce" id="enonceD"></div><div id="src"></div></section>
+<section class="card"><h2>Tableau des effectifs</h2><div class="enonce" id="enonce"></div><div class="tw" id="tab"></div></section>
+<section class="card"><h2>Étapes du raisonnement</h2><ol class="etapes" id="etapes"></ol></section>
 </div>
 
 <script>
@@ -113,113 +119,77 @@ table.t td.cible{background:var(--hi);color:var(--hiink);font-weight:700;box-sha
 const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 const F=x=>String(Math.round(x*100)/100).replace(".",",");
 const eme=n=>n+"<sup>e</sup>";
-const frac=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
-const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=R(0,i);[a[i],a[j]]=[a[j],a[i]];}return a;};
 
-// contextes : vals = valeurs possibles (dans l'ordre croissant)
 const CTX=[
- {enonce:"Notes (sur 20) obtenues par les élèves d'une classe à un contrôle.",lab:"Note",mot:"notes",ind:"élèves",
-  vals:()=>{const a=R(6,12),s=R(1,2);return [0,1,2,3,4,5].map(k=>a+k*s).filter(v=>v<=20);},
-  phrase:m=>`La note médiane est de ${m} sur 20.`,
-  interp:m=>[`« Au moins la moitié des élèves ont eu ${m} ou plus. »`,`« Au moins la moitié des élèves ont eu ${m} ou moins. »`]},
- {enonce:"Pointures des élèves d'une classe.",lab:"Pointure",mot:"pointures",ind:"élèves",
-  vals:()=>{const a=R(35,37);return [0,1,2,3,4,5].map(k=>a+k);},
-  phrase:m=>`La pointure médiane est ${m}.`,
-  interp:m=>[`« Au moins la moitié des élèves chaussent du ${m} ou plus. »`,`« Au moins la moitié des élèves chaussent du ${m} ou moins. »`]},
- {enonce:"Nombre de frères et sœurs des élèves d'une classe.",lab:"Nombre de frères et sœurs",mot:"données",ind:"élèves",
-  vals:()=>[0,1,2,3,4,5].slice(0,R(5,6)),
-  phrase:m=>`Le nombre médian de frères et sœurs est ${m}.`,
-  interp:m=>[`« Au moins la moitié des élèves ont ${m} frères et sœurs ou plus. »`,`« Au moins la moitié des élèves ont ${m} frères et sœurs ou moins. »`]},
- {enonce:"Nombre de buts marqués à chaque match par une équipe de football pendant la saison.",lab:"Nombre de buts",mot:"données",ind:"matchs",
-  vals:()=>[0,1,2,3,4,5].slice(0,R(5,6)),
-  phrase:m=>`Le nombre médian de buts marqués par match est ${m}.`,
-  interp:m=>[`« Lors d'au moins la moitié des matchs, l'équipe a marqué ${m} buts ou plus. »`,`« Lors d'au moins la moitié des matchs, l'équipe a marqué ${m} buts ou moins. »`]},
- {enonce:"Temps de trajet (en minutes) entre le domicile et le collège des élèves d'une classe.",lab:"Temps (en min)",mot:"durées",ind:"élèves",
-  vals:()=>[5,10,15,20,25,30].slice(0,R(5,6)),
-  phrase:m=>`Le temps de trajet médian est de ${m} minutes.`,
-  interp:m=>[`« Au moins la moitié des élèves mettent ${m} minutes ou plus. »`,`« Au moins la moitié des élèves mettent ${m} minutes ou moins. »`]},
+ {enonce:"Notes (sur 20) obtenues par les élèves d'une classe à un contrôle.",lab:"Note",
+  vals:()=>{const a=R(6,12),s=R(1,2);return [0,1,2,3,4,5].map(k=>a+k*s).filter(v=>v<=20);}},
+ {enonce:"Pointures des élèves d'une classe.",lab:"Pointure",vals:()=>{const a=R(35,37);return [0,1,2,3,4,5].map(k=>a+k);}},
+ {enonce:"Nombre de frères et sœurs des élèves d'une classe.",lab:"Nombre de frères et sœurs",vals:()=>[0,1,2,3,4,5].slice(0,R(5,6))},
+ {enonce:"Nombre de buts marqués à chaque match par une équipe de football pendant la saison.",lab:"Nombre de buts",vals:()=>[0,1,2,3,4,5].slice(0,R(5,6))},
+ {enonce:"Temps de trajet (en minutes) entre le domicile et le collège des élèves d'une classe.",lab:"Temps (en min)",vals:()=>[5,10,15,20,25,30].slice(0,R(5,6))},
 ];
 
-let MODE="liste",S=null,STEPS=[],cur=0,timer=null,lastCtx=-1;
+let MODE="tab",S=null,STEPS=[],cur=0,timer=null,lastCtx=-1;
 
 function genSerie(){
   const par=document.getElementById("parite").value;
-  const [nmin,nmax,emax]=MODE==="liste"?[11,20,4]:[15,30,7];
-  let ci;do{ci=R(0,CTX.length-1);}while(ci===lastCtx);lastCtx=ci;
-  const c=CTX[ci];
-  for(;;){
-    const vals=c.vals();const eff=vals.map(()=>R(1,emax));
-    const N=eff.reduce((a,b)=>a+b,0);
-    if(N<nmin||N>nmax)continue;
-    if(par==="i"&&N%2===0||par==="p"&&N%2===1)continue;
-    const raw=shuffle(vals.flatMap((v,i)=>Array(eff[i]).fill(v)));
-    return {c,vals,eff,N,raw};
-  }
+  let ci;do{ci=R(0,CTX.length-1);}while(ci===lastCtx);lastCtx=ci;const c=CTX[ci];
+  for(;;){const vals=c.vals(),eff=vals.map(()=>R(1,8)),N=eff.reduce((a,b)=>a+b,0);
+    if(N<15||N>35)continue;if(par==="i"&&N%2===0||par==="p"&&N%2===1)continue;return {c,vals,eff,N};}
 }
-
-// calculs (indépendants de l'affichage)
 function calc(s){
   const ecc=[];s.eff.reduce((a,e,i)=>(ecc[i]=a+e),0);
-  const deb=s.eff.map((e,i)=>ecc[i]-e+1);
-  const N=s.N,pair=N%2===0,p=pair?N/2:(N+1)/2;
-  const colDe=r=>ecc.findIndex(x=>x>=r);
-  const i1=colDe(p),i2=pair?colDe(p+1):i1;
-  const a=s.vals[i1],b=s.vals[i2];
-  const M=pair?(a+b)/2:a;
-  return {ecc,deb,pair,p,i1,i2,a,b,M};
+  const N=s.N,pair=N%2===0,p=pair?N/2:(N+1)/2,colDe=r=>ecc.findIndex(x=>x>=r);
+  const i1=colDe(p),i2=pair?colDe(p+1):i1,a=s.vals[i1],b=s.vals[i2];
+  return {ecc,pair,p,i1,i2,a,b,M:pair?(a+b)/2:a};
 }
 
 function buildSteps(){
-  const s=S,k=calc(s),n=s.vals.length,st=[];
-  const base={head:false,eff:0,ecc:0,rk:0,hi:-1,done:0,somme:false,red:0,cible:[],col:[],calc:-1,pin:false};
-  const push=(o)=>st.push(Object.assign({},st.length?st[st.length-1]:base,{hi:-1,calc:-1},o));
-  if(MODE==="liste"){
-    push({msg:`Voici les <b>${s.N} données</b> relevées, dans le désordre. Pour les ranger, on construit le <b>tableau des effectifs</b>.`});
-    push({head:true,msg:`On repère les <b>valeurs</b> différentes prises par les données et on les écrit <b>dans l'ordre croissant</b> sur la première ligne du tableau.`});
-    s.vals.forEach((v,i)=>push({hi:i,eff:i+1,done:i,msg:`Valeur <b>${v}</b> : on compte les données égales à ${v} (en les barrant au fur et à mesure). Il y en a <b>${s.eff[i]}</b>, donc l'<b>effectif</b> de la valeur ${v} est ${s.eff[i]}.`}));
-    push({done:n,somme:true,msg:`Vérification : la somme des effectifs est égale au nombre de données. On retrouve bien les <b>${s.N} données</b> : c'est l'<b>effectif total</b>.`});
+  const s=S,k=calc(s),n=s.vals.length,st=[],L=[];
+  const base={eff:MODE==="tab"?n:0,eccRow:false,ecc:0,hi:-1,done:0,src:[],calc:-1,scan:[],non:[],cible:[],col:[],nL:0};
+  const push=o=>st.push(Object.assign({},st.length?st[st.length-1]:base,{hi:-1,src:[],calc:-1,scan:[]},o,{nL:L.length}));
+  if(MODE==="tab"){
+    push({msg:`Voici le <b>tableau des effectifs</b> de la série. On cherche la <b>médiane</b>.`});
   }else{
-    push({msg:`Sur un diagramme en bâtons, les <b>valeurs</b> se lisent sur l'<b>axe horizontal</b> et les <b>effectifs</b> sur l'<b>axe vertical</b> (hauteur des bâtons).`});
-    push({head:true,msg:`On recopie les <b>valeurs</b> de l'axe horizontal, dans l'ordre croissant, sur la première ligne du tableau.`});
-    s.vals.forEach((v,i)=>push({hi:i,eff:i+1,done:i,msg:`Bâton de la valeur <b>${v}</b> : on lit sa hauteur sur l'axe vertical. L'<b>effectif</b> de la valeur ${v} est <b>${s.eff[i]}</b>.`}));
-    push({done:n,somme:true,msg:`On calcule l'<b>effectif total</b> : c'est la somme des effectifs, ici <b>${s.N}</b>. Le diagramme est maintenant transformé en tableau : on continue comme avec un tableau.`});
+    push({msg:`Sur le diagramme en bâtons, les <b>valeurs</b> se lisent sur l'axe horizontal et les <b>effectifs</b> sur l'axe vertical (hauteur des bâtons). On commence par remplir le tableau des effectifs.`});
+    s.vals.forEach((v,i)=>push({hi:i,eff:i+1,done:i,src:[[1,i]],msg:`Bâton de la valeur <b>${v}</b> : sa hauteur est <b>${s.eff[i]}</b>, donc l'effectif de la valeur ${v} est ${s.eff[i]}.`}));
+    push({done:n,msg:`Le tableau des effectifs est rempli : on continue comme avec un tableau.`});
   }
-  s.vals.forEach((v,i)=>push({ecc:i+1,calc:i,msg:i===0
-    ?`<b>Effectifs cumulés croissants (ECC)</b> : on additionne les effectifs de gauche à droite. Le premier ECC est égal au premier effectif : <b>${k.ecc[0]}</b>.`
-    :`ECC de la valeur ${v} : ECC précédent + effectif = ${k.ecc[i-1]} + ${s.eff[i]} = <b>${k.ecc[i]}</b>.`+(i===n-1?` Le dernier ECC est égal à l'effectif total ${s.N} : c'est une vérification.`:"")}));
-  s.vals.forEach((v,i)=>push({rk:i+1,msg:i===0
-    ?`<b>Rangs des données</b> dans la série ordonnée : les ${s.eff[0]} données de valeur ${v} occupent ${s.eff[0]>1?`les rangs 1 à ${k.ecc[0]}`:"le rang 1"}.`
-    :`Les ${s.eff[i]} donnée${s.eff[i]>1?"s":""} de valeur ${v} occupe${s.eff[i]>1?"nt les rangs "+k.deb[i]+" à "+k.ecc[i]:"le rang "+k.ecc[i]} (juste après le rang ${k.ecc[i-1]}).`}));
-  push({red:1,msg:`On rédige. <b>Effectif total</b> : on l'a déjà, c'est le dernier ECC.`});
-  push({red:2,msg:k.pair?`${s.N} est <b>pair</b> : on calcule ${s.N} ÷ 2 = ${k.p}. La « ligne de partage » tombe entre deux données.`:`${s.N} est <b>impair</b> : on calcule (${s.N} + 1) ÷ 2 = ${k.p}. La « ligne de partage » tombe sur une donnée.`});
-  push({red:3,pin:true,cible:k.pair?[[3,k.i1],[3,k.i2]]:[[3,k.i1]],msg:k.pair
-    ?`<b>Position</b> : la médiane est comprise entre la ${eme(k.p)} et la ${eme(k.p+1)} donnée de la série ordonnée. On cherche ces rangs dans la ligne « Rangs des données ».`
-    :`<b>Position</b> : la médiane est la ${eme(k.p)} donnée de la série ordonnée. On cherche ce rang dans la ligne « Rangs des données ».`});
-  push({red:4,col:[...new Set([k.i1,k.i2])],cible:[...new Set([k.i1,k.i2])].map(i=>[0,i]),msg:k.i1===k.i2
-    ?`<b>Lecture du tableau</b> : ${k.pair?`les rangs ${k.p} et ${k.p+1} sont`:`le rang ${k.p} est`} dans la colonne de la valeur <b>${F(k.a)}</b>.`
-    :`<b>Lecture du tableau</b> : le rang ${k.p} est dans la colonne de la valeur <b>${F(k.a)}</b> et le rang ${k.p+1} dans celle de la valeur <b>${F(k.b)}</b>.`});
-  push({red:5,msg:k.pair?(k.a===k.b?`Les deux données ont la même valeur ${F(k.a)} : la demi-somme vaut ${F(k.M)}.`:`On calcule la <b>demi-somme</b> des deux données : (${F(k.a)} + ${F(k.b)}) ÷ 2 = ${F(k.M)}.`):`La médiane est cette donnée : M = ${F(k.M)}.`});
-  push({red:6,msg:`On termine par une <b>phrase réponse</b> avec les mots de l'énoncé.`});
-  push({red:7,msg:`<b>Interprétation</b> : seulement si l'énoncé la demande. Il faut les deux phrases (« ou plus » et « ou moins »).`});
-  return st;
+  push({eccRow:true,msg:`On ajoute une ligne au tableau : les <b>effectifs cumulés croissants (ECC)</b>. L'ECC d'une valeur est le <b>nombre de données inférieures ou égales</b> à cette valeur. On l'obtient en <b>ajoutant les effectifs de gauche à droite</b>.`});
+  s.vals.forEach((v,i)=>{
+    if(i===0)push({ecc:1,src:[[1,0]],msg:`Première case : aucune valeur avant ${v}, donc l'ECC est égal à l'effectif : <b>${k.ecc[0]}</b>. Il y a ${k.ecc[0]} donnée${k.ecc[0]>1?"s":""} inférieure${k.ecc[0]>1?"s":""} ou égale${k.ecc[0]>1?"s":""} à ${v}.`});
+    else push({ecc:i+1,calc:i,src:[[2,i-1],[1,i]],msg:`ECC de ${v} = ECC précédent + effectif de ${v} = ${k.ecc[i-1]} + ${s.eff[i]} = <b>${k.ecc[i]}</b>. Il y a ${k.ecc[i]} données inférieures ou égales à ${v}.`});
+  });
+  L.push(`Effectifs cumulés croissants : ${k.ecc.join(" ; ")}.`);
+  L.push(`Le dernier ECC est l'effectif total : <span class="rep">N = ${s.N}</span>.`);
+  push({src:[[2,n-1]],msg:`Le <b>dernier ECC</b> est égal au nombre total de données : c'est l'<b>effectif total</b>, N = ${s.N}.`});
+  L.push(k.pair?`${s.N} est pair : ${s.N} ÷ 2 = ${k.p}, la médiane est comprise entre la <span class="rep">${eme(k.p)} et la ${eme(k.p+1)} donnée</span> de la série ordonnée.`
+              :`${s.N} est impair : (${s.N} + 1) ÷ 2 = ${k.p}, la médiane est la <span class="rep">${eme(k.p)} donnée</span> de la série ordonnée.`);
+  push({msg:k.pair?`<b>Position de la médiane</b> : ${s.N} est pair, on calcule ${s.N} ÷ 2 = ${k.p}. La médiane est comprise entre la ${eme(k.p)} et la ${eme(k.p+1)} donnée de la série ordonnée.`
+                  :`<b>Position de la médiane</b> : ${s.N} est impair, on calcule (${s.N} + 1) ÷ 2 = ${k.p}. La médiane est la ${eme(k.p)} donnée de la série ordonnée.`});
+  // parcours de la ligne des ECC
+  const non=[];
+  for(let i=0;i<=k.i1;i++){
+    if(i<k.i1){push({scan:[[2,i]],non:non.slice(),msg:`On parcourt la ligne des ECC : ${k.ecc[i]} &lt; ${k.p}. Il n'y a que ${k.ecc[i]} donnée${k.ecc[i]>1?"s":""} inférieure${k.ecc[i]>1?"s":""} ou égale${k.ecc[i]>1?"s":""} à ${s.vals[i]} : la ${eme(k.p)} donnée n'est pas encore atteinte.`});non.push(i);}
+    else{const prev=i?k.ecc[i-1]:0;
+      L.push(`La ${eme(k.p)} donnée a pour valeur <span class="rep">${F(k.a)}</span>.`);
+      push({scan:[[2,i]],non:non.slice(),col:[i],cible:[[0,i]],msg:`${k.ecc[i]} ≥ ${k.p} : c'est le <b>premier ECC qui atteint ${k.p}</b>. Les données de rang ${prev+1} à ${k.ecc[i]} ont toutes la valeur ${s.vals[i]}, donc la ${eme(k.p)} donnée vaut <b>${F(k.a)}</b>.`});}
+  }
+  if(k.pair){
+    L.push(`La ${eme(k.p+1)} donnée a pour valeur <span class="rep">${F(k.b)}</span>.`);
+    if(k.i2===k.i1){push({msg:`${k.p+1} ≤ ${k.ecc[k.i1]} : la ${eme(k.p+1)} donnée est dans la même colonne, elle vaut aussi <b>${F(k.b)}</b>.`});}
+    else{push({scan:[[2,k.i2]],col:[k.i1,k.i2],cible:[[0,k.i1],[0,k.i2]],msg:`Mais ${k.ecc[k.i1]} = ${k.p} : la ${eme(k.p)} donnée est la <b>dernière</b> de sa colonne. La ${eme(k.p+1)} donnée est donc dans la colonne suivante : elle vaut <b>${F(k.b)}</b>.`});}
+  }
+  L.push(k.pair?(k.a===k.b?`Les deux données valent ${F(k.a)}, donc <span class="rep">M = ${F(k.M)}</span>.`:`M = (${F(k.a)} + ${F(k.b)}) ÷ 2, donc <span class="rep">M = ${F(k.M)}</span>.`):`Donc <span class="rep">M = ${F(k.M)}</span>.`);
+  push({msg:k.pair?(k.a===k.b?`Les deux données du milieu ont la même valeur : la médiane est <b>M = ${F(k.M)}</b>.`:`La médiane est la demi-somme de ces deux données : (${F(k.a)} + ${F(k.b)}) ÷ 2 = <b>${F(k.M)}</b>.`):`La médiane est cette donnée : <b>M = ${F(k.M)}</b>.`});
+  return {st,L};
 }
 
-function redacLines(){
-  const s=S,k=calc(s),N=s.N,L=[];
-  L.push(`Effectif total : N = ${N} (${N} ${s.c.mot} car ${N} ${s.c.ind}).`);
-  L.push(k.pair?`${N} est pair, donc on calcule ${frac(N,2)} = ${k.p}.`:`${N} est impair, donc on calcule ${frac(N+" + 1",2)} = ${k.p}.`);
-  L.push(k.pair?`La médiane est comprise entre la ${eme(k.p)} et la ${eme(k.p+1)} donnée de la série ordonnée.`:`La médiane est la ${eme(k.p)} donnée de la série ordonnée.`);
-  L.push(k.pair?`Par lecture du tableau, la ${eme(k.p)} donnée correspond à la valeur ${F(k.a)} et la ${eme(k.p+1)} donnée à la valeur ${F(k.b)}.`:`Par lecture du tableau, la ${eme(k.p)} donnée correspond à la valeur ${F(k.a)}.`);
-  L.push(k.pair?`Donc M = ${frac(F(k.a)+" + "+F(k.b),2)} &nbsp;<span class="rep">M = ${F(k.M)}</span>`:`Donc <span class="rep">M = ${F(k.M)}</span>`);
-  L.push(s.c.phrase(F(k.M)));
-  const it=s.c.interp(F(k.M));
-  L.push(`<span class="opt">Interprétation (si l'énoncé la demande) :</span><br>${it[0]}<br>et ${it[1]}`);
-  return L;
-}
+let LINES=[];
 
 function svgDiag(st){
   const s=S,n=s.vals.length,ym=Math.max(...s.eff)+1;
-  const W=520,H=260,l=46,b=46,t=12,r=12,pw=W-l-r,ph=H-b-t,dx=pw/(n+1);
+  const W=520,H=250,l=46,b=46,t=12,r=12,pw=W-l-r,ph=H-b-t,dx=pw/(n+1);
   const Y=v=>t+ph-v*ph/ym;let g="";
   for(let y=0;y<=ym;y++)g+=`<line class="grid" x1="${l}" x2="${W-r}" y1="${Y(y)}" y2="${Y(y)}"/><text x="${l-8}" y="${Y(y)+4}" text-anchor="end">${y}</text>`;
   s.vals.forEach((v,i)=>{const x=l+dx*(i+1),cl=i===st.hi?"hi":(i<st.done?"done":"");
@@ -231,48 +201,42 @@ function svgDiag(st){
 }
 
 function render(dir){
-  const st=STEPS[cur],prev=dir>0&&cur>0?STEPS[cur-1]:st,s=S,k=calc(s),n=s.vals.length;
-  document.getElementById("bulle").innerHTML=st.msg;
-  document.getElementById("enonce").textContent=s.c.enonce;
-  document.getElementById("srcT").textContent=MODE==="liste"?"Liste des données":"Diagramme en bâtons";
-  if(MODE==="liste"){
-    let done=new Set(s.vals.slice(0,st.done));
-    document.getElementById("src").innerHTML=`<div class="chips">${s.raw.map(v=>{const i=s.vals.indexOf(v);return `<span class="chip ${i===st.hi?"hi":done.has(v)?"done":""}">${v}</span>`;}).join("")}</div>`;
-  }else document.getElementById("src").innerHTML=svgDiag(st);
-  const cls=(row,i)=>{const c=[];if(st.cible.some(([r,j])=>r===row&&j===i))c.push("cible");else if(st.col.includes(i))c.push("col");return c;};
-  const cell=(row,i,show,txt,was)=>{const c=cls(row,i);if(show&&!was&&dir>0)c.push("new");return `<td class="${row===0?"val ":""}${c.join(" ")}">${show?txt:""}</td>`;};
-  const rang=i=>{let t=k.deb[i]===k.ecc[i]?`${k.ecc[i]}`:`${k.deb[i]} → ${k.ecc[i]}`;
-    if(st.pin){const ps=[k.p].concat(k.pair?[k.p+1]:[]).filter(r=>r>=k.deb[i]&&r<=k.ecc[i]);ps.forEach(r=>t+=`<span class="pin">${r}<sup>e</sup></span>`);}return t;};
-  const row=(lab,ri,fn)=>`<tr><th>${lab}</th>${s.vals.map((v,i)=>fn(i)).join("")}</tr>`;
-  document.getElementById("tab").innerHTML=`<table class="t">`
-    +row(s.c.lab,0,i=>cell(0,i,st.head,s.vals[i],prev.head))
-    +row("Effectif",1,i=>cell(1,i,i<st.eff,s.eff[i],i<prev.eff))
-    +row("Effectif cumulé croissant",2,i=>cell(2,i,i<st.ecc,k.ecc[i]+(i===st.calc&&i>0?`<span class="calc">${k.ecc[i-1]} + ${s.eff[i]}</span>`:""),i<prev.ecc))
-    +row("Rangs des données",3,i=>cell(3,i,i<st.rk,rang(i),i<prev.rk))+`</table>`;
-  document.getElementById("somme").innerHTML=st.somme?`${s.eff.join(" + ")} = ${s.N} : effectif total N = ${s.N}.`:"";
-  const L=redacLines();
-  document.getElementById("redac").innerHTML=st.red?L.slice(0,st.red).map((x,i)=>`<li${i===st.red-1&&dir>0?' class="new"':""}>${x}</li>`).join(""):`<li class="vide">La rédaction apparaîtra une fois le tableau rempli.</li>`;
-  document.getElementById("etape").textContent=`Étape ${cur+1} / ${STEPS.length}`;
-  document.getElementById("prog").style.width=(100*(cur+1)/STEPS.length)+"%";
-  document.getElementById("prec").disabled=cur===0;document.getElementById("suiv").disabled=cur===STEPS.length-1;
+  const st=STEPS[cur],prev=dir>0&&cur>0?STEPS[cur-1]:st,s=S,k=calc(s);
+  const $=id=>document.getElementById(id);
+  $("bulle").innerHTML=st.msg;
+  $("srcCard").hidden=MODE!=="diag";$("enonceD").textContent=s.c.enonce;
+  $("enonce").textContent=MODE==="tab"?s.c.enonce:"";
+  if(MODE==="diag")$("src").innerHTML=svgDiag(st);
+  const has=(arr,r,i)=>arr.some(([a,b])=>a===r&&b===i);
+  const cell=(r,i,show,txt,was)=>{const c=[];
+    if(has(st.cible,r,i)||has(st.scan,r,i))c.push("cible");else if(has(st.src,r,i))c.push("src");else if(st.col.includes(i))c.push("col");
+    if(r===2&&st.non.includes(i))c.push("non");if(r===0)c.push("val");if(show&&!was&&dir>0)c.push("new");
+    return `<td class="${c.join(" ")}">${show?txt:""}</td>`;};
+  const row=(lab,fn,cls)=>`<tr${cls?` class="${cls}"`:""}><th>${lab}</th>${s.vals.map((v,i)=>fn(i)).join("")}</tr>`;
+  let h=`<table class="t">`+row(s.c.lab,i=>cell(0,i,true,s.vals[i],true))+row("Effectif",i=>cell(1,i,i<st.eff,s.eff[i],i<prev.eff));
+  if(st.eccRow)h+=row("Effectif cumulé croissant",i=>cell(2,i,i<st.ecc,k.ecc[i]+(i===st.calc?`<span class="calc">${k.ecc[i-1]} + ${s.eff[i]}</span>`:""),i<prev.ecc),!prev.eccRow||cur===0?"ajout":"");
+  $("tab").innerHTML=h+`</table>`;
+  const nl=st.nL;
+  $("etapes").innerHTML=nl?LINES.slice(0,nl).map((x,i)=>`<li${i>=prev.nL&&dir>0?' class="new"':""}>${x}</li>`).join(""):`<li class="vide" style="list-style:none;margin-left:-1.4em">Les étapes apparaîtront au fur et à mesure.</li>`;
+  $("etape").textContent=`Étape ${cur+1} / ${STEPS.length}`;
+  $("prog").style.width=(100*(cur+1)/STEPS.length)+"%";
+  $("prec").disabled=cur===0;$("suiv").disabled=cur===STEPS.length-1;
 }
 function stopAuto(){if(timer){clearInterval(timer);timer=null;}document.getElementById("auto").textContent="▶▶ Lecture auto";}
 function go(d){if(cur+d<0||cur+d>=STEPS.length)return;cur+=d;render(d);if(cur===STEPS.length-1)stopAuto();}
-function nouvelle(){stopAuto();S=genSerie();STEPS=buildSteps();cur=0;render(0);}
+function nouvelle(){stopAuto();S=genSerie();const b=buildSteps();STEPS=b.st;LINES=b.L;cur=0;render(0);}
 document.getElementById("suiv").onclick=()=>{stopAuto();go(1);};
 document.getElementById("prec").onclick=()=>{stopAuto();go(-1);};
 document.getElementById("debut").onclick=()=>{stopAuto();cur=0;render(0);};
 document.getElementById("nouv").onclick=nouvelle;
 document.getElementById("parite").onchange=nouvelle;
 document.getElementById("auto").onclick=()=>{if(timer){stopAuto();return;}if(cur===STEPS.length-1){cur=0;render(0);}
-  document.getElementById("auto").textContent="❚❚ Pause";timer=setInterval(()=>go(1),2600);};
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{MODE=b.dataset.m;document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===b));
-  try{history.replaceState(null,"","#"+MODE);}catch(e){}nouvelle();});
+  document.getElementById("auto").textContent="❚❚ Pause";timer=setInterval(()=>go(1),3000);};
+function setMode(m){MODE=m;document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x.dataset.m===m));try{history.replaceState(null,"","#"+m);}catch(e){}nouvelle();}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 document.addEventListener("keydown",e=>{if(e.target.tagName==="SELECT")return;if(e.key==="ArrowRight"){stopAuto();go(1);}if(e.key==="ArrowLeft"){stopAuto();go(-1);}});
-if(location.hash==="#diag"){MODE="diag";document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x.dataset.m==="diag"));}
-// pour les tests
-window.__t={get S(){return S},get n(){return STEPS.length},calc,goEnd(){cur=STEPS.length-1;render(0);},nouvelle,setMode(m){MODE=m;nouvelle();}};
-nouvelle();
+window.__t={get S(){return S},calc,goEnd(){cur=STEPS.length-1;render(0);},setMode};
+setMode(location.hash==="#diag"?"diag":"tab");
 </script>
 </body>
 </html>

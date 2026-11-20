@@ -31,7 +31,7 @@ _Bientôt disponible._
 
 ## Outils interactifs
 
-- [Animation pas à pas : remplir le tableau des effectifs (à partir d'une liste ou d'un diagramme en bâtons), les effectifs cumulés croissants et les rangs, puis trouver la médiane avec la rédaction du cours](outils-interactifs/mediane-tableau-anime.html) (Interactif)
+- [Animation pas à pas : à partir d'un tableau des effectifs (ou d'un diagramme en bâtons), ajouter la ligne des effectifs cumulés croissants et retrouver la médiane](outils-interactifs/mediane-tableau-anime.html) (Interactif)
 - [Statistiques : QCM et vrai/faux de vocabulaire + exercices sur de petites séries (11 onglets dont étude complète d’une série et diagrammes en bâtons, correction rédigée comme dans le cours)](outils-interactifs/statistiques-exercices.html) (Interactif)
 
 [← Toutes les séquences de 3ème](../README.md)
