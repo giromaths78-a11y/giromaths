@@ -16,7 +16,7 @@
   --hi:#854d0e;--hiink:#fef3c7;--ok:#4ade80;--oksoft:#0f2e1b;--bar:#c026d3;--grid:#43294a;color-scheme:dark}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
-.wrap{max-width:900px;margin:0 auto;padding:20px 16px 60px}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
 header.hero{background:linear-gradient(135deg,#c026d3,#701a75);color:#fff;border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
 header.hero::after{content:"3 + 7 = 10";position:absolute;right:14px;bottom:-12px;font:700 50px/1 "Space Grotesk",sans-serif;opacity:.15;white-space:nowrap}
 .eyebrow{font:600 .8rem "Space Grotesk",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
@@ -64,7 +64,9 @@ table.t td.cible{background:var(--hi);color:var(--hiink);font-weight:700;box-sha
 .new{animation:pop .55s ease}
 @keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.18);opacity:1}100%{transform:scale(1)}}
 .somme{margin:6px 0 0;font-weight:600;color:var(--ok)}
-.bulle{background:var(--soft);border-left:5px solid var(--acc);border-radius:10px;padding:10px 14px;margin-bottom:12px;min-height:3.2em}
+.bulle{position:relative;background:var(--soft);border:2px solid var(--acc);border-radius:12px;padding:12px 16px;margin:16px 0 2px;min-height:3.4em;font-size:1.08rem;line-height:1.5}
+.bulle::before{content:"";position:absolute;top:-11px;left:40px;border:10px solid transparent;border-top:0;border-bottom-color:var(--acc)}
+.bulle .lab{display:block;font:700 .78rem "Space Grotesk",sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--acc);margin-bottom:2px}
 .bulle b{color:var(--acc2)}
 .redac{list-style:none;margin:0;padding:0}
 .redac li{padding:3px 0;border-bottom:1px dashed var(--line)}
@@ -78,9 +80,20 @@ table.t td.cible{background:var(--hi);color:var(--hiink);font-weight:700;box-sha
 table.t td.src{background:var(--soft);box-shadow:inset 0 0 0 2px var(--acc)}
 table.t td.non{opacity:.45}
 table.t tr.ajout th{box-shadow:inset 4px 0 0 var(--acc)}
-.etapes{margin:0;padding-left:1.4em}
-.etapes li{padding:3px 0}
+.scene{display:grid;gap:12px;align-items:start;grid-template-columns:minmax(0,1fr)}
+.scene>*{min-width:0}
+@media (min-width:860px){.scene{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr)}.panneau{position:sticky;top:96px}}
+.panneau{border:2px solid var(--acc);box-shadow:0 6px 20px rgba(192,38,211,.12)}
+.panneau h2{font-size:1.1rem}
+.etapes{margin:0;padding:0;list-style:none;counter-reset:e}
+.etapes li{counter-increment:e;position:relative;padding:8px 10px 8px 40px;margin:6px 0;border-radius:10px;background:var(--bg);border:1px solid var(--line);font-size:1rem}
+.etapes li::before{content:counter(e);position:absolute;left:9px;top:8px;width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font:700 .8rem/22px "Space Grotesk",sans-serif;text-align:center}
+.etapes li.der{background:var(--hi);color:var(--hiink);border:2px solid #f59e0b;font-size:1.08rem;font-weight:600}
+.etapes li.der .rep{color:inherit}
+.etapes li.vide{padding-left:10px;background:none;border:0}
+.etapes li.vide::before{display:none}
 .etapes .rep{font-weight:700;color:var(--acc2)}
+@media (max-width:600px){table.t th{white-space:normal;max-width:96px;font-size:.82rem;line-height:1.2;padding:4px 6px}table.t td{min-width:34px;padding:5px 4px}}
 </style>
 
 <body>
@@ -108,10 +121,14 @@ table.t tr.ajout th{box-shadow:inset 4px 0 0 var(--acc)}
   <div class="progress"><span id="prog"></span></div>
 </div>
 
-<div class="bulle" id="bulle" aria-live="polite"></div>
+<div class="scene">
+<div>
 <section class="card" id="srcCard"><h2>Diagramme en bâtons</h2><div class="enonce" id="enonceD"></div><div id="src"></div></section>
-<section class="card"><h2>Tableau des effectifs</h2><div class="enonce" id="enonce"></div><div class="tw" id="tab"></div></section>
-<section class="card"><h2>Étapes du raisonnement</h2><ol class="etapes" id="etapes"></ol></section>
+<section class="card"><h2>Tableau des effectifs</h2><div class="enonce" id="enonce"></div><div class="tw" id="tab"></div>
+<div class="bulle" id="bulle" aria-live="polite"></div></section>
+</div>
+<section class="card panneau"><h2>Étapes du raisonnement</h2><ol class="etapes" id="etapes"></ol></section>
+</div>
 </div>
 
 <script>
@@ -203,7 +220,7 @@ function svgDiag(st){
 function render(dir){
   const st=STEPS[cur],prev=dir>0&&cur>0?STEPS[cur-1]:st,s=S,k=calc(s);
   const $=id=>document.getElementById(id);
-  $("bulle").innerHTML=st.msg;
+  $("bulle").innerHTML=`<span class="lab">Étape ${cur+1}</span>`+st.msg;if(dir>0){$("bulle").classList.remove("new");void $("bulle").offsetWidth;$("bulle").classList.add("new");}
   $("srcCard").hidden=MODE!=="diag";$("enonceD").textContent=s.c.enonce;
   $("enonce").textContent=MODE==="tab"?s.c.enonce:"";
   if(MODE==="diag")$("src").innerHTML=svgDiag(st);
@@ -216,8 +233,9 @@ function render(dir){
   let h=`<table class="t">`+row(s.c.lab,i=>cell(0,i,true,s.vals[i],true))+row("Effectif",i=>cell(1,i,i<st.eff,s.eff[i],i<prev.eff));
   if(st.eccRow)h+=row("Effectif cumulé croissant",i=>cell(2,i,i<st.ecc,k.ecc[i]+(i===st.calc?`<span class="calc">${k.ecc[i-1]} + ${s.eff[i]}</span>`:""),i<prev.ecc),!prev.eccRow||cur===0?"ajout":"");
   $("tab").innerHTML=h+`</table>`;
+  const foc=$("tab").querySelector("td.cible,td.src,td.new");if(foc){const w=$("tab"),x=foc.offsetLeft-w.clientWidth/2+foc.offsetWidth/2;w.scrollLeft=Math.max(0,x);}
   const nl=st.nL;
-  $("etapes").innerHTML=nl?LINES.slice(0,nl).map((x,i)=>`<li${i>=prev.nL&&dir>0?' class="new"':""}>${x}</li>`).join(""):`<li class="vide" style="list-style:none;margin-left:-1.4em">Les étapes apparaîtront au fur et à mesure.</li>`;
+  $("etapes").innerHTML=nl?LINES.slice(0,nl).map((x,i)=>{const c=[];if(i===nl-1)c.push("der");if(i>=prev.nL&&dir>0)c.push("new");return `<li class="${c.join(" ")}">${x}</li>`;}).join(""):`<li class="vide">Les étapes apparaîtront ici au fur et à mesure.</li>`;
   $("etape").textContent=`Étape ${cur+1} / ${STEPS.length}`;
   $("prog").style.width=(100*(cur+1)/STEPS.length)+"%";
   $("prec").disabled=cur===0;$("suiv").disabled=cur===STEPS.length-1;
