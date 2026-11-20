@@ -31,6 +31,8 @@ nav button[aria-selected="true"]{background:var(--blue);border-color:var(--blue)
 button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
 .params{display:flex;flex-wrap:wrap;gap:12px;align-items:flex-end;background:var(--paper);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px}
 .params label{display:flex;flex-direction:column;font-weight:700;font-size:.9rem;gap:2px}
+.params .noms{display:flex;gap:6px;align-items:flex-end;padding-right:12px;border-right:1.5px solid var(--line)}
+.params .noms input{width:2.6em;text-align:center;font-style:italic;font-family:inherit;font-size:1.1rem}
 .params input{font:inherit;font-family:var(--f-mono);width:7.5em;padding:5px 8px;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink)}
 .btn{font-weight:700;border:2px solid var(--blue);background:var(--paper);color:var(--blue);padding:8px 14px;border-radius:8px;cursor:pointer}
 .btn.primary{background:var(--blue);color:var(--paper)}
@@ -67,6 +69,7 @@ input[type=range]{accent-color:var(--blue)}
     <button class="btn primary" id="play">▶ Lecture</button>
     <button class="btn" id="next">Étape suivante ▶</button>
     <button class="btn" id="reset">↺ Recommencer</button>
+    <label for="boucle"><input type="checkbox" id="boucle"> Lecture en boucle</label>
     <label for="speed">Vitesse <input type="range" id="speed" min="0.5" max="2" step="0.25" value="1"></label>
     <div class="dots" id="dots"></div>
   </div>
@@ -82,11 +85,11 @@ const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
 const clamp=(t,a,b)=>Math.max(0,Math.min(1,(t-a)/(b-a)));
 
 const presets={
- a:{fields:[['AB','6'],['AC','4'],['BC','5']],names:['A','B','C']},
- b:{fields:[['ST','4'],['SR','3'],['angle RST (°)','42']],names:['S','T','R']},
- c:{fields:[['AB','5'],['angle BAC (°)','40'],['angle ABC (°)','50']],names:['A','B','C']},
+ a:{fields:[[n=>n[0]+n[1],'6'],[n=>n[0]+n[2],'4'],[n=>n[1]+n[2],'5']],names:['A','B','C']},
+ b:{fields:[[n=>n[0]+n[1],'4'],[n=>n[0]+n[2],'3'],[n=>`angle ${n[2]+n[0]+n[1]} (°)`,'42']],names:['S','T','R']},
+ c:{fields:[[n=>n[0]+n[1],'5'],[n=>`angle ${n[1]+n[0]+n[2]} (°)`,'40'],[n=>`angle ${n[0]+n[1]+n[2]} (°)`,'50']],names:['A','B','C']},
 };
-let cur='a',steps=[],idx=0,t=0,playing=false,last=0,view=null,message='';
+let fin=0,cur='a',noms={a:['A','B','C'],b:['S','T','R'],c:['A','B','C']},steps=[],idx=0,t=0,playing=false,last=0,view=null,message='';
 
 /* ---------- vue : cm -> px ---------- */
 function makeView(pts){let xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
@@ -155,8 +158,12 @@ function pointStep(cap,p,n,dx,dy){return {cap,dur:1.2,draw:u=>{let s='';if(u>.2)
 function finStep(cap,segs){return {cap,dur:2,draw:u=>{let s='';segs.forEach((g,i)=>{const k=ease(clamp(u,i/segs.length,(i+1)/segs.length));if(k>0)s+=line(g[0],lerp(g[0],g[1],k),'fin');if(k>=1&&g[2])s+=len(g[0],g[1],g[2],g[3]||1)});return s}}}
 
 function build(){
-  const vals=[...document.querySelectorAll('#params input')].map(i=>parseFloat(i.value.replace(',','.')));
+  const vals=[...document.querySelectorAll('#params input.v')].map(i=>parseFloat(i.value.replace(',','.')));
   message='';steps=[];idx=0;t=0;
+  const lus=[...document.querySelectorAll('#params input.nm')].map(i=>i.value.trim().toUpperCase());
+  if(lus.some(x=>!/^[A-Z]$/.test(x))){message='Chaque point se nomme avec une lettre majuscule.';render();return}
+  if(new Set(lus).size<3){message='Les trois points doivent avoir des noms différents.';render();return}
+  noms[cur]=lus;const [N0,N1,N2]=lus;
   if(vals.some(v=>!(v>0))){message='Entre des nombres positifs.';render();return}
   if(cur==='a'){const [c,b,a]=vals;// AB=c, AC=b, BC=a
     const A=[0,0],B=[c,0];const x=(c*c+b*b-a*a)/(2*c),y2=b*b-x*x;
@@ -165,37 +172,37 @@ function build(){
     view=makeView([A,B,[0,b],[c,a],[-b*.3,0],[c+a*.3,0],ok?C:[c/2,0]].concat(ok?[]:[[c/2,Math.max(a,b)]]));
     steps.push({cap:'On fait d\'abord une figure à main levée codée, puis on vérifie : '+(ok?`${fr(Math.min(a,b))} + ${fr(Math.max(a,b))}`:'')+'…',dur:1.5,draw:()=>''});
     const s=[a,b,c].sort((p,q)=>p-q);steps[0].cap=`Vérification : le plus grand côté mesure ${fr(s[2])} cm et ${fr(s[0])} + ${fr(s[1])} = ${fr(s[0]+s[1])}`+(s[0]+s[1]>s[2]?` > ${fr(s[2])}. On peut construire le triangle.`:s[0]+s[1]===s[2]?` = ${fr(s[2])}. Les points seront alignés.`:` < ${fr(s[2])}. Regardons ce qui se passe…`);
-    steps.push(segStep(`Tracer le segment [AB] de longueur ${fr(c)} cm.`,A,B,fr(c)+' cm','A','B'));
-    if(ok){steps.push(arcStep(`Tracer un arc de cercle de centre A et de rayon ${fr(b)} cm.`,A,b,tA-14,tA+14));
-      steps.push(arcStep(`Tracer un arc de cercle de centre B et de rayon ${fr(a)} cm.`,B,a,tB-14,tB+14));
-      steps.push(pointStep('Les deux arcs se coupent : on nomme C ce point.',C,'C',-6,-14));
-      steps.push(finStep('Tracer [AC] et [BC] : le triangle ABC est construit.',[[A,C,fr(b)+' cm',1],[B,C,fr(a)+' cm',-1]]));}
-    else{steps.push(arcStep(`Tracer un arc de cercle de centre A et de rayon ${fr(b)} cm.`,A,b,0,120));
-      steps.push(arcStep(`Tracer un arc de cercle de centre B et de rayon ${fr(a)} cm.`,B,a,60,180));
-      steps.push({cap:'Les deux arcs ne se coupent pas en dehors de (AB) : on ne peut pas placer C. Ce triangle n\'existe pas.',dur:1.5,draw:()=>''});}
+    steps.push(segStep(`Tracer le segment [${N0}${N1}] de longueur ${fr(c)} cm.`,A,B,fr(c)+' cm',N0,N1));
+    if(ok){steps.push(arcStep(`Tracer un arc de cercle de centre ${N0} et de rayon ${fr(b)} cm.`,A,b,tA-14,tA+14));
+      steps.push(arcStep(`Tracer un arc de cercle de centre ${N1} et de rayon ${fr(a)} cm.`,B,a,tB-14,tB+14));
+      steps.push(pointStep(`Les deux arcs se coupent : on nomme ${N2} ce point.`,C,N2,-6,-14));
+      steps.push(finStep(`Tracer [${N0}${N2}] et [${N1}${N2}] : le triangle ${N0+N1+N2} est construit.`,[[A,C,fr(b)+' cm',1],[B,C,fr(a)+' cm',-1]]));}
+    else{steps.push(arcStep(`Tracer un arc de cercle de centre ${N0} et de rayon ${fr(b)} cm.`,A,b,0,120));
+      steps.push(arcStep(`Tracer un arc de cercle de centre ${N1} et de rayon ${fr(a)} cm.`,B,a,60,180));
+      steps.push({cap:`Les deux arcs ne se coupent pas en dehors de (${N0}${N1}) : on ne peut pas placer ${N2}. Ce triangle n'existe pas.`,dur:1.5,draw:()=>''});}
   }
   if(cur==='b'){const [st,sr,ang]=vals;if(ang>=180){message='L\'angle doit être inférieur à 180°.';render();return}
     const S=[0,0],T=[st,0],R=pol(S,sr,ang);const rl=Math.max(sr+1,3.2);
     view=makeView([S,T,R,pol(S,rl,ang),[-2.7,0],[2.7,0],[0,2.7],[st+.6,0]]);
-    steps.push(segStep(`Tracer le segment [ST] de longueur ${fr(st)} cm.`,S,T,fr(st)+' cm','S','T'));
-    steps.push(protStep(`Placer le centre du rapporteur en S, le zéro sur [ST], et marquer ${fr(ang)}°.`,S,0,1,ang,'var(--red)'));
-    steps.push(rayStep('Tracer la demi-droite d\'origine S qui passe par le repère.',S,ang,rl));
-    steps.push({cap:`Sur cette demi-droite, placer R à ${fr(sr)} cm de S.`,dur:2.2,draw:u=>{let s=angMark(S,0,ang,fr(ang)+'°','var(--red)');const op=u<.15?u/.15:u>.85?(1-u)/.15:1;
-      if(u<1)s+=ruler(S,pol(S,rl,ang),u>.5?R:null,op);if(u>.5)s+=cross(R)+label(R,'R',-24,-6);return s}});
-    steps.push(finStep('Tracer le segment [RT] : le triangle RST est construit.',[[S,R,fr(sr)+' cm',1],[R,T,'',1]]));
+    steps.push(segStep(`Tracer le segment [${N0}${N1}] de longueur ${fr(st)} cm.`,S,T,fr(st)+' cm',N0,N1));
+    steps.push(protStep(`Placer le centre du rapporteur en ${N0}, le zéro sur [${N0}${N1}], et marquer ${fr(ang)}°.`,S,0,1,ang,'var(--red)'));
+    steps.push(rayStep(`Tracer la demi-droite d'origine ${N0} qui passe par le repère.`,S,ang,rl));
+    steps.push({cap:`Sur cette demi-droite, placer ${N2} à ${fr(sr)} cm de ${N0}.`,dur:2.2,draw:u=>{let s=angMark(S,0,ang,fr(ang)+'°','var(--red)');const op=u<.15?u/.15:u>.85?(1-u)/.15:1;
+      if(u<1)s+=ruler(S,pol(S,rl,ang),u>.5?R:null,op);if(u>.5)s+=cross(R)+label(R,N2,-24,-6);return s}});
+    steps.push(finStep(`Tracer le segment [${N2}${N1}] : le triangle ${N2+N0+N1} est construit.`,[[S,R,fr(sr)+' cm',1],[R,T,'',1]]));
   }
   if(cur==='c'){const [ab,a1,a2]=vals;const A=[0,0],B=[ab,0];
     const ok=a1+a2<180;let C=null;
     if(ok){const ta=Math.tan(rad(a1)),tb=Math.tan(rad(a2));const x=ab*tb/(ta+tb);C=[x,x*ta];}
     const rl=ok?Math.hypot(C[0],C[1])+1.2:4;const rl2=ok?Math.hypot(C[0]-ab,C[1])+1.2:4;
     view=makeView([A,B,[-2.7,0],[ab+2.7,0],[0,2.7],[ab,2.7],ok?pol(A,rl,a1):pol(A,4,a1),ok?pol(B,rl2,180-a2):pol(B,4,180-a2)]);
-    steps.push(segStep(`Tracer le segment [AB] de longueur ${fr(ab)} cm.`,A,B,fr(ab)+' cm','A','B'));
-    steps.push(protStep(`Rapporteur centré en A, zéro sur [AB] : marquer ${fr(a1)}°.`,A,0,1,a1,'var(--blue)'));
-    steps.push(rayStep('Tracer la demi-droite d\'origine A qui passe par le repère.',A,a1,rl));
-    steps.push(protStep(`Rapporteur centré en B, zéro sur [BA] : marquer ${fr(a2)}°.`,B,180,-1,a2,'var(--red)'));
-    steps.push(rayStep('Tracer la demi-droite d\'origine B qui passe par le repère.',B,180-a2,rl2));
-    if(ok){steps.push(pointStep('Les deux demi-droites se coupent : on nomme C ce point.',C,'C',-6,-14));
-      steps.push(finStep('Repasser [AC] et [BC] : le triangle ABC est construit.',[[A,C,'',1],[B,C,'',1]]));}
+    steps.push(segStep(`Tracer le segment [${N0}${N1}] de longueur ${fr(ab)} cm.`,A,B,fr(ab)+' cm',N0,N1));
+    steps.push(protStep(`Rapporteur centré en ${N0}, zéro sur [${N0}${N1}] : marquer ${fr(a1)}°.`,A,0,1,a1,'var(--blue)'));
+    steps.push(rayStep(`Tracer la demi-droite d'origine ${N0} qui passe par le repère.`,A,a1,rl));
+    steps.push(protStep(`Rapporteur centré en ${N1}, zéro sur [${N1}${N0}] : marquer ${fr(a2)}°.`,B,180,-1,a2,'var(--red)'));
+    steps.push(rayStep(`Tracer la demi-droite d'origine ${N1} qui passe par le repère.`,B,180-a2,rl2));
+    if(ok){steps.push(pointStep(`Les deux demi-droites se coupent : on nomme ${N2} ce point.`,C,N2,-6,-14));
+      steps.push(finStep(`Repasser [${N0}${N2}] et [${N1}${N2}] : le triangle ${N0+N1+N2} est construit.`,[[A,C,'',1],[B,C,'',1]]));}
     else steps.push({cap:`${fr(a1)}° + ${fr(a2)}° ≥ 180° : les demi-droites ne se coupent pas, le triangle n'existe pas.`,dur:1.5,draw:()=>''});
   }
   // marques d'angle persistantes après les rayons
@@ -207,7 +214,7 @@ function persistent(i){// éléments ajoutés une fois l'étape i terminée
   if(cur==='b'&&i>=2){const v=vals();return angMark([0,0],0,v[2],fr(v[2])+'°','var(--red)')}
   if(cur==='c'){const v=vals();let s='';if(i>=2)s+=angMark([0,0],0,v[1],fr(v[1])+'°','var(--blue)');if(i>=4)s+=angMark([v[0],0],180-v[2],180,fr(v[2])+'°','var(--red)');return s}
   return ''}
-function vals(){return [...document.querySelectorAll('#params input')].map(i=>parseFloat(i.value.replace(',','.')))}
+function vals(){return [...document.querySelectorAll('#params input.v')].map(i=>parseFloat(i.value.replace(',','.')))}
 function grid(){if(!view)return '';let g='';const K=view.K;const [ox,oy]=view.P([0,0]);
   for(let x=ox%K;x<W;x+=K)g+=`<line x1="${x}" y1="0" x2="${x}" y2="${H}" stroke="var(--grid)" stroke-width="1"/>`;
   for(let y=oy%K;y<H;y+=K)g+=`<line x1="0" y1="${y}" x2="${W}" y2="${y}" stroke="var(--grid)" stroke-width="1"/>`;return g}
@@ -225,7 +232,9 @@ function render(){
   $('#prev').disabled=idx===0&&t===0;$('#next').disabled=idx>=steps.length;
 }
 function frame(ts){if(!playing)return;const dt=(ts-last)/1000;last=ts;const sp=+$('#speed').value;
-  if(idx<steps.length){t+=dt*sp/steps[idx].dur;if(t>=1){t=0;idx++;if(idx>=steps.length){playing=false;setPlay()}else{/* petite pause entre étapes */}}}
+  if(idx<steps.length){t+=dt*sp/steps[idx].dur;if(t>=1){t=0;idx++;if(idx>=steps.length){if($('#boucle').checked&&!message){fin=0}else{playing=false;setPlay()}}}}
+  else if($('#boucle').checked&&steps.length){fin+=dt*sp;if(fin>=2.5){idx=0;t=0}}  /* boucle : la figure finie reste 2,5 s, puis on recommence */
+  else{playing=false;setPlay()}
   render();if(playing)requestAnimationFrame(frame)}
 function setPlay(){$('#play').textContent=playing?'❚❚ Pause':(idx>=steps.length?'↺ Rejouer':'▶ Lecture')}
 $('#play').onclick=()=>{if(idx>=steps.length){idx=0;t=0}playing=!playing;setPlay();if(playing){last=performance.now();requestAnimationFrame(frame)}};
@@ -234,8 +243,13 @@ $('#prev').onclick=()=>{playing=false;if(t>0)t=0;else if(idx>0)idx--;setPlay();r
 $('#reset').onclick=()=>{playing=false;idx=0;t=0;setPlay();render()};
 
 function setCase(c){cur=c;playing=false;document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.c===c));
-  const f=$('#params');f.innerHTML=presets[c].fields.map(([l,v],i)=>`<label for="f${i}">${l}${l.includes('°')?'':' (cm)'}<input id="f${i}" inputmode="decimal" value="${v}"></label>`).join('')+`<button class="btn" type="submit">Appliquer</button><button class="btn" type="button" id="def">Exemple du cours</button>`;
-  $('#def').onclick=()=>setCase(c);build();setPlay()}
+  const f=$('#params');const n=noms[c];
+  f.innerHTML=`<div class="noms"><label for="n0">Noms des points<span style="display:flex;gap:6px">${n.map((x,i)=>`<input class="nm" id="n${i}" maxlength="1" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${x}" aria-label="Nom du point ${i+1}">`).join('')}</span></label></div>`+
+    presets[c].fields.map(([l,v],i)=>`<label for="f${i}"><span class="lb" data-i="${i}"></span><input class="v" id="f${i}" inputmode="decimal" value="${v}"></label>`).join('')+`<button class="btn" type="submit">Appliquer</button><button class="btn" type="button" id="def">Exemple du cours</button>`;
+  libelles();f.querySelectorAll('input.nm').forEach(i=>i.addEventListener('input',()=>{i.value=i.value.toUpperCase();libelles()}));
+  $('#def').onclick=()=>{noms[c]=presets[c].names.slice();setCase(c)};build();setPlay()}
+function libelles(){const n=[...document.querySelectorAll('#params input.nm')].map(i=>i.value.trim().toUpperCase()||'?');
+  document.querySelectorAll('#params .lb').forEach(sp=>{const l=presets[cur].fields[+sp.dataset.i][0](n);sp.textContent=l+(l.includes('°')?'':' (cm)')})}
 $('#params').addEventListener('submit',e=>{e.preventDefault();playing=false;build();setPlay()});
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{location.hash=b.dataset.c;setCase(b.dataset.c)});
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(presets[h]&&h!==cur)setCase(h)});
