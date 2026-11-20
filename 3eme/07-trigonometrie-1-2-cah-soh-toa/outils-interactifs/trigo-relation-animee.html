@@ -42,9 +42,9 @@ select{font:600 .9rem Inter,sans-serif;border:1.5px solid var(--line);border-rad
 .enonce{font-weight:600;font-size:1.05rem}
 .scene{display:grid;gap:12px;align-items:start;grid-template-columns:minmax(0,1fr)}
 .scene>*{min-width:0}
-@media (min-width:860px){.scene{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)}.panneau{position:sticky;top:96px}}
+@media (min-width:860px){.scene{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}.panneau{position:sticky;top:96px}}
 .panneau{border:2px solid var(--acc);box-shadow:0 6px 20px rgba(192,38,211,.12)}
-svg.fig{width:100%;max-width:520px;height:auto;display:block;margin:0 auto}
+svg.fig{width:100%;max-width:680px;height:auto;display:block;margin:0 auto}
 svg.fig text{font:600 17px Inter,sans-serif;fill:var(--ink)}
 svg.fig .cote{font-size:15px}
 svg.fig .tri{fill:none;stroke:var(--trait);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
@@ -99,8 +99,8 @@ svg .new{transform-box:fill-box;transform-origin:center}
 .touche.on{background:#f59e0b;color:#1f2937;opacity:1;animation:pop .45s ease}
 .hide{display:none!important}
 .etapes li.copie{background:var(--card);border:2px solid var(--ok);padding:12px 16px;font-size:1.08rem}
-.etapes li.copie p{margin:0;min-height:2.35em;display:flex;align-items:center;flex-wrap:wrap;gap:0 4px}
-.etapes li.copie p:has(.tpw){min-height:0;margin:4px 0}.etapes li.copie .tpw{margin:2px 0}
+.etapes li.copie .cl{margin:0;min-height:2.35em;display:flex;align-items:center;flex-wrap:wrap;gap:0 4px}
+.etapes li.copie .tpw{margin:2px 0}
 .etapes .opt{color:var(--muted);font-style:italic;font-size:.9em}
 .tpw{margin:6px 0}
 table.tp{border-collapse:collapse;font-variant-numeric:tabular-nums}
@@ -156,6 +156,9 @@ table.tp td.tr{background:#ffedd5;color:#c2410c}
 .bulle-anim .ph2{animation:phIn .5s 4.4s both}
 @keyframes phIn{from{opacity:.25}}
 mark.final{background:#fde047;color:#111;padding:2px 8px;border-radius:5px;font-weight:700;box-decoration-break:clone}
+.tpmini{margin-left:auto;display:inline-flex;flex-direction:column;align-items:center;gap:2px;font-size:.78rem}
+.tpmini table.tp td{width:auto;min-width:44px;padding:2px 8px}
+.tpmini .opt{font-size:.75rem}
 </style>
 </head>
 <body>
@@ -281,7 +284,7 @@ function genere(perso){
   // mise à l'échelle dans la zone 520x330
   const xs=Object.values(pts).map(p=>p[0]),ys=Object.values(pts).map(p=>p[1]);
   const mx=Math.min(...xs),Mx=Math.max(...xs),my=Math.min(...ys),My=Math.max(...ys);
-  const sc=Math.min(330/(Mx-mx||1),180/(My-my||1));
+  const sc=Math.min(370/(Mx-mx||1),205/(My-my||1));
   const ox=260-(mx+Mx)/2*sc, oy=165+(my+My)/2*sc;
   for(const p in pts){pts[p]=[ox+pts[p][0]*sc,oy-pts[p][1]*sc];}
   e.pts=pts;
@@ -382,8 +385,7 @@ function etapes(e){
     e.copie=[`On sait que le triangle ${e.nomTri} est rectangle en ${e.D}.`,
       `Donc : ${f} ${ang(e.nomAng)} = ${fr(c[e.num],c[e.den])}`,
       `${f}(${valTxt(e.a)}°) = ${fr(n,d)} <span class="opt">(on remplace)</span>`,
-      `${fr(f+"("+valTxt(e.a)+"°)","1")} = ${fr(n,d)} <span class="opt">(facultatif : dénominateur 1)</span>`,
-      `<span class="tpw">${e.tab4}</span> <span class="opt">(facultatif : tableau de proportionnalité)</span>`,
+      `${fr(f+"("+valTxt(e.a)+"°)","1")} = ${fr(n,d)} <span class="opt">(facultatif)</span><span class="tpmini">${e.tab4}<span class="opt">tableau (facultatif)</span></span>`,
       `Donc ${exact}${arrL?"":' <span class="opt">(valeur exacte)</span>'}`,
       `<mark class="final">Donc ${res}</mark> <span class="opt">${e.noteRes}</span>`];
     E.push({t:"Sur ma copie",b:`Voici <b>tout ce que j'écris sur ma copie</b>. La ligne avec le dénominateur 1 et le tableau de proportionnalité sont <b>facultatifs</b> : ils aident à faire le bon calcul. La calculatrice, elle, reste au brouillon.`,fig:5,copie:1});
@@ -488,7 +490,7 @@ function rendu(anim=true){
   btn("titreRed").textContent=s.copie?"Sur ma copie":"Je rédige";
   btn("etapes").classList.toggle("anim4",!!(s.hl&&anim));
   btn("bulle").classList.toggle("bulle-anim",!!(s.hl&&anim));
-  if(s.copie){btn("etapes").innerHTML=`<li class="copie${anim?" new":""}">${ex.copie.map(x=>`<p>${x}</p>`).join("")}</li>`;}
+  if(s.copie){btn("etapes").innerHTML=`<li class="copie${anim?" new":""}">${ex.copie.map(x=>`<div class="cl">${x}</div>`).join("")}</li>`;}
   else{
   const vues=E.slice(0,k+1).filter(x=>x.red), hl=vues.some(x=>x.hl);
   btn("etapes").innerHTML=vues.length?vues.map((x,i)=>`<li class="${i===vues.length-1?"der":""}${x.fin?" fin":""}${i===vues.length-1&&anim?" new":""}"><span class="n">${x.t}</span>${hl&&x.redHL?x.redHL:x.red}${x.note?`<span class="note">${x.note}</span>`:""}</li>`).join("")
