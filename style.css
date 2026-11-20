@@ -738,3 +738,14 @@ body.at-ouvert{overflow:hidden}
 .at-mission .sc-but{margin:0 0 6px;font-size:.95rem}
 .at-mission .sc-tests{font-size:.85rem}.at-mission .sc-tests th{background:var(--at)}
 @media (max-width:820px){.at-main{flex-direction:column}.at-side{flex:0 0 auto;order:-1;border-left:none;border-bottom:2px solid var(--line);max-height:46vh}.at-stage{max-width:340px;align-self:center}.at-mission,.at-aide{display:none}.at-num{display:none}}
+/* === Évaluations (prof seulement, evaluations.py) === */
+.res-evaluations,.toc .toc-evaluations{display:none}
+.vis-admin .res-evaluations{display:block;grid-column:1/-1;border:2px dashed #b91c1c}
+.vis-admin .toc .toc-evaluations{display:inline-block;border-style:dashed}
+.res-evaluations .res-list li.eval-detail{font-size:.85rem;color:var(--muted,#666);padding:2px 4px 8px;border:0}
+.eval-mdp{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px;padding:12px;border-radius:12px;background:var(--accent-light)}
+.eval-mdp[hidden]{display:none}
+.eval-mdp input[type=password]{margin-left:6px;padding:6px 10px;border:1px solid var(--line);border-radius:8px;font:inherit}
+.eval-mdp button{padding:7px 16px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
+.eval-msg{flex-basis:100%;margin:0;font-weight:600;color:#b91c1c}
+.eval-msg:empty{display:none}

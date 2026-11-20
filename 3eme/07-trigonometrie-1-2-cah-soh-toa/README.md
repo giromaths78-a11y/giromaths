@@ -6,7 +6,6 @@ Thème : Espace et géométrie
 
 - Connaître les formules (CAH SOH TOA)
 - Calculer une longueur
-- Calculer un angle
 
 Page du site : [index.html](index.html)
 
@@ -29,5 +28,9 @@ _Bientôt disponible._
 ## Outils interactifs
 
 _Bientôt disponible._
+
+## Autres fichiers
+
+- [trigo-relation-animee.html](autres/trigo-relation-animee.html)
 
 [← Toutes les séquences de 3ème](../README.md)
