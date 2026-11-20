@@ -124,7 +124,13 @@ svg.acco path{fill:none;stroke:var(--acc);stroke-width:2}
 .copieS{margin-top:4px;line-height:1.3;flex-wrap:nowrap;gap:3px;overflow-x:auto;padding-bottom:2px}
 .copieS .grpc{gap:3px;flex-wrap:nowrap}
 .copieS .chip{min-width:1.7em;padding:1px 3px;font-size:.88rem;border-radius:6px}
-.copieS .fl{font-size:.7rem}
+.copieS .fl{font-size:.7rem;line-height:1;height:auto}
+.copieS{min-height:0;padding:2px 0 0;margin-top:2px}
+.copieS .grp,.copieS .mil{padding-top:15px}
+.copieS .mil.zero{padding:0;margin:0}
+.copieS svg.acco{height:9px;margin-top:1px}
+.copieS .acc{font-size:.78rem;line-height:1.1}
+.etapes li.copie .cl.serie{line-height:1.3}
 .etapes .opt{color:var(--muted);font-style:italic;font-size:.9em}
 mark.final{background:#fde047;color:#111;padding:2px 8px;border-radius:5px;font-weight:700}
 .fsbtn{position:absolute;top:14px;right:14px;z-index:2;background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.6);border-radius:10px;padding:6px 12px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
@@ -211,7 +217,7 @@ function serieCopie(){
   const brace=`<svg class="acco" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path d="M1,1 Q1,6 8,6 L44,6 Q50,6 50,11 Q50,6 56,6 L92,6 Q99,6 99,1" vector-effect="non-scaling-stroke"/></svg>`;
   const ch=v=>`<span class="d"><span class="chip ok">${v}</span></span>`;
   const grp=(x,y)=>`<span class="grp"><span class="grpc">${so.slice(x,y).map(ch).join("")}</span>${brace}<span class="acc">${nb} donnée${nb>1?"s":""}</span></span>`;
-  const fl=`<span class="fl">médiane<br>▼</span>`;
+  const fl=`<span class="fl">médiane ▼</span>`;
   return `<div class="rangee copieS">${grp(0,nb)}${k.pair?`<span class="mil zero">${fl}</span>`:`<span class="mil">${fl}<span class="d"><span class="chip cib">${so[nb]}</span></span></span>`}${grp(N-nb,N)}</div>`;}
 function copieLignes(liste){
   const s=S,k=calc(s),N=s.N,it=s.c.interp(F(k.M)),fr=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`,C=[];
@@ -219,7 +225,7 @@ function copieLignes(liste){
   const mm=k.pair?`M = ${fr(F(k.a)+" + "+F(k.b),2)} &nbsp;<mark class="final">M = ${F(k.M)}</mark>`:`<mark class="final">M = ${F(k.M)}</mark>`;
   C.push(`Effectif total : N = ${N} (${N} ${s.c.mot} car ${N} ${s.c.ind}).`);
   if(liste){
-    C.push(`Série ordonnée :`+serieCopie());
+    C.push({serie:`Série ordonnée :`+serieCopie()});
     C.push(pos);
   }else{
     C.push(k.pair?`${N} est pair, donc on calcule ${fr(N,2)} = ${k.p}.`:`${N} est impair, donc on calcule ${fr(N+" + 1",2)} = ${k.p}.`);
@@ -367,7 +373,7 @@ function render(dir){
   }
   const nl=st.nL;
   $("titreRed").textContent=st.copie?"Sur ma copie":"Étapes du raisonnement";
-  if(st.copie)$("etapes").innerHTML=`<li class="copie${dir>0?" new":""}">${st.copie.map(x=>`<div class="cl">${x}</div>`).join("")}</li>`;else
+  if(st.copie)$("etapes").innerHTML=`<li class="copie${dir>0?" new":""}">${st.copie.map(x=>typeof x==="object"?`<div class="cl serie">${x.serie}</div>`:`<div class="cl">${x}</div>`).join("")}</li>`;else
   $("etapes").innerHTML=nl?LINES.slice(0,nl).map((x,i)=>{const c=[],r=x.startsWith("REM:");if(r)c.push("rem");else if(i===nl-1)c.push("der");if(i>=prev.nL&&dir>0)c.push("new");return `<li class="${c.join(" ")}">${r?"<b>Remarque :</b> "+x.slice(4):x}</li>`;}).join(""):`<li class="vide">Les étapes apparaîtront ici au fur et à mesure.</li>`;
   $("etape").textContent=`Étape ${cur+1} / ${STEPS.length}`;
   $("prog").style.width=(100*(cur+1)/STEPS.length)+"%";
