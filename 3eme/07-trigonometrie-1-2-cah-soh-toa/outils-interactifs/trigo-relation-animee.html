@@ -128,7 +128,7 @@ details.perso summary{cursor:pointer;font:700 1rem "Space Grotesk",sans-serif;co
   <p>Calculer une longueur : figure à main levée codée, ce que l'on connaît et ce que l'on cherche, CAH SOH TOA, puis la rédaction ligne par ligne jusqu'au résultat (exact ou arrondi). Exemple au hasard, ou votre propre exemple.</p>
 </header>
 
-<details class="card perso" id="perso">
+<details class="card perso" id="perso" open>
   <summary>✏️ Mon exemple : je choisis les lettres, la mesure connue et le côté à calculer</summary>
   <div class="form">
     <label>Nom du triangle <input id="pNom" maxlength="3" value="RTL" autocomplete="off"></label>
@@ -337,10 +337,12 @@ function etapes(e){
     e.copie=[`On sait que le triangle ${e.nomTri} est rectangle en ${e.D}.`,
       `Donc : ${f} ${ang(e.nomAng)} = ${fr(c[e.num],c[e.den])}`,
       `${f}(${valTxt(e.a)}°) = ${fr(n,d)} <span class="opt">(on remplace)</span>`,
+      `${fr(f+"("+valTxt(e.a)+"°)","1")} = ${fr(n,d)} <span class="opt">(facultatif : dénominateur 1)</span>`,
+      `<span class="tpw">${e.tab4}</span> <span class="opt">(facultatif : tableau de proportionnalité)</span>`,
       `Donc ${exact.replace(/^/,"")} <span class="opt">(valeur exacte)</span>`,
       `Donc ${res} <span class="opt">${e.noteRes}</span>`,
       phrase];
-    E.push({t:"Sur ma copie",b:`Voici <b>tout ce que j'écris sur ma copie</b>. Le tableau de proportionnalité et la calculatrice restent au brouillon.`,fig:5,copie:1});
+    E.push({t:"Sur ma copie",b:`Voici <b>tout ce que j'écris sur ma copie</b>. La ligne avec le dénominateur 1 et le tableau de proportionnalité sont <b>facultatifs</b> : ils aident à faire le bon calcul. La calculatrice, elle, reste au brouillon.`,fig:5,copie:1});
   }
   return E;
 }
@@ -387,10 +389,19 @@ function dessine(e,niv,anim){
   }
   // étiquettes H / O / A
   if(niv>=4){
+    const [gx,gy]=centre(e);
+    h+=`<defs><marker id="flC" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--connu)"/></marker><marker id="flQ" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0L10,5L0,10z" style="fill:var(--cherche)"/></marker></defs>`;
     for(const c of [e.connu,e.cherche]){
-      const m0=horsTri(e,milieu(e,c),28),q1=e.pts[c==="opp"?e.D:e.S],q2=e.pts[c==="adj"?e.D:e.T],ln=Math.hypot(q2[0]-q1[0],q2[1]-q1[1])||1,m=[m0[0]+(q2[0]-q1[0])/ln*44,m0[1]+(q2[1]-q1[1])/ln*44];const col=c===e.cherche?"var(--cherche)":"var(--connu)";
-      const txt={hyp:"H",opp:"O",adj:"A"}[c]+(c===e.cherche?" ?":"");const w=c===e.cherche?36:22;
-      h+=`<g class="tag${niv===4&&anim?" new":""}"><rect x="${m[0]-w/2}" y="${m[1]-11}" width="${w}" height="22" style="fill:${col}"/><text x="${m[0]}" y="${m[1]+5}" text-anchor="middle">${txt}</text></g>`;
+      // point visé sur le côté : aux 3/4 du côté (loin du sommet de l'angle, de la mesure et de la longueur écrite au milieu)
+      const q1=e.pts[c==="opp"?e.D:e.S],q2=e.pts[c==="adj"?e.D:e.T];
+      const t=.8,cx=q1[0]+(q2[0]-q1[0])*t,cy=q1[1]+(q2[1]-q1[1])*t;
+      let nx=-(q2[1]-q1[1]),ny=q2[0]-q1[0];const ln=Math.hypot(nx,ny)||1;nx/=ln;ny/=ln;
+      if((cx-gx)*nx+(cy-gy)*ny<0){nx=-nx;ny=-ny;}
+      const D0=66,m=[cx+nx*D0,cy+ny*D0];
+      const cherche=c===e.cherche,col=cherche?"var(--cherche)":"var(--connu)";
+      const txt={hyp:"H",opp:"O",adj:"A"}[c]+(cherche?" ?":"");const w=cherche?36:22;
+      m[0]=Math.min(Math.max(m[0],w/2+3),517-w/2);m[1]=Math.min(Math.max(m[1],14),316);
+      h+=`<g class="tag${niv===4&&anim?" new":""}"><line x1="${m[0]-nx*14}" y1="${m[1]-ny*14}" x2="${cx+nx*5}" y2="${cy+ny*5}" style="stroke:${col};stroke-width:2.2" marker-end="url(#${cherche?"flQ":"flC"})"/><rect x="${m[0]-w/2}" y="${m[1]-11}" width="${w}" height="22" style="fill:${col}"/><text x="${m[0]}" y="${m[1]+5}" text-anchor="middle">${txt}</text></g>`;
     }
   }
   // lettres
