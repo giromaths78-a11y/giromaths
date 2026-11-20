@@ -8,17 +8,17 @@
 :root{
   --bg:#f6f8fb; --paper:#ffffff; --grid:#e3eaf3; --ink:#1b2433; --muted:#5b6676;
   --blue:#1f56a8; --blue-soft:#e3ecf9; --red:#c0362c; --green:#1d7a46; --pencil:#8a94a6;
-  --tool:#c9d6ea; --tool-edge:#5d7395; --line:#c9d3e0;
+  --tool:#c9d6ea; --tool-edge:#5d7395; --line:#c9d3e0; --violet:#7a3fb0; --amber:#b26a00;
   --f-display:"Bitter",Georgia,serif; --f-body:"Atkinson Hyperlegible",system-ui,sans-serif; --f-mono:"JetBrains Mono",ui-monospace,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#121821; --paper:#1a2230; --grid:#243042; --ink:#e7edf5; --muted:#9aa6b8;
   --blue:#7fb0ff; --blue-soft:#1f2f4a; --red:#ff7f73; --green:#6fd39a; --pencil:#7c889c;
-  --tool:#2d3c55; --tool-edge:#8fa6c9; --line:#33415a; color-scheme:dark}}
+  --tool:#2d3c55; --tool-edge:#8fa6c9; --line:#33415a; --violet:#c39bff; --amber:#ffc15e; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121821; --paper:#1a2230; --grid:#243042; --ink:#e7edf5; --muted:#9aa6b8;
   --blue:#7fb0ff; --blue-soft:#1f2f4a; --red:#ff7f73; --green:#6fd39a; --pencil:#7c889c;
-  --tool:#2d3c55; --tool-edge:#8fa6c9; --line:#33415a; color-scheme:dark}
+  --tool:#2d3c55; --tool-edge:#8fa6c9; --line:#33415a; --violet:#c39bff; --amber:#ffc15e; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.5}
 .wrap{max-width:1000px;margin:0 auto;padding-block:22px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:14px}
@@ -107,7 +107,7 @@ const presets={
  b:{fields:[[n=>n[0]+n[1],'4'],[n=>n[0]+n[2],'3'],[n=>`angle ${n[2]+n[0]+n[1]} (°)`,'42']],names:['S','T','R']},
  c:{fields:[[n=>n[0]+n[1],'5'],[n=>`angle ${n[1]+n[0]+n[2]} (°)`,'40'],[n=>`angle ${n[0]+n[1]+n[2]} (°)`,'50']],names:['A','B','C']},
 };
-let fin=0,cur='a',noms={a:['A','B','C'],b:['S','T','R'],c:['A','B','C']},steps=[],idx=0,t=0,playing=false,last=0,view=null,message='';
+let fin=0,cur='a',noms={a:['A','B','C'],b:['S','T','R'],c:['A','B','C']},steps=[],idx=0,t=0,playing=false,last=0,view=null,message='',attente=false,uneEtape=false;
 
 /* ---------- vue : cm -> px ---------- */
 function makeView(pts){let xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
@@ -175,9 +175,34 @@ function rayStep(cap,v,dir,len){return {cap,dur:1.8,draw:u=>{const k=ease(clamp(
 function pointStep(cap,p,n,dx,dy){return {cap,dur:1.2,draw:u=>{let s='';if(u>.2){const [x,y]=P(p);const r=u<.6?20*(1-(u-.2)/.4)+6:0;if(r)s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="var(--red)" stroke-width="2"/>`;s+=cross(p)+label(p,n,dx,dy)}return s}}}
 function finStep(cap,segs){return {cap,dur:2,draw:u=>{let s='';segs.forEach((g,i)=>{const k=ease(clamp(u,i/segs.length,(i+1)/segs.length));if(k>0)s+=line(g[0],lerp(g[0],g[1],k),'fin');if(k>=1&&g[2])s+=len(g[0],g[1],g[2],g[3]||1)});return s}}}
 
+/* vérification « ligne droite / détour » : le plus grand côté est la ligne droite, les deux autres le détour */
+function verifStep(cap,so,verdict){const [p,q,r]=so;const L=r[0],D=p[0]+q[0];const k=Math.min(48,480/Math.max(L,D));const x0=200;
+  const col={ok:'var(--green)',plat:'var(--amber)',non:'var(--red)'}[verdict];
+  const titre={ok:'✓ CONSTRUCTIBLE',plat:'= POINTS ALIGNÉS',non:'✗ IMPOSSIBLE'}[verdict];
+  const sous={ok:'Le détour est plus long que la ligne droite : en route !',plat:'Le détour… c\'est la ligne droite ! Le sommet se pose dessus.',non:'Le détour est plus court que la ligne droite !!!'}[verdict];
+  const ecart=Math.abs(D-L);const bilan={ok:`${fr(ecart)} cm de plus : le chemin peut « monter » jusqu'au sommet ${r[2]}`,plat:'pile la même longueur !',non:`il manque ${fr(ecart)} cm !`}[verdict];
+  const bar=(x,y,l,c,txt)=>l<=0?'':`<rect x="${x}" y="${y}" width="${l}" height="24" rx="5" fill="${c}" fill-opacity=".85"/>`+(l>60?`<text x="${x+l/2}" y="${y+13}" font-size="15" font-weight="700" text-anchor="middle" dominant-baseline="middle" style="fill:var(--paper)">${txt}</text>`:'');
+  const lab=(y,t1,t2)=>`<text x="${x0-14}" y="${y+6}" font-size="17" font-weight="700" text-anchor="end">${t1}</text><text x="${x0-14}" y="${y+26}" font-size="14" text-anchor="end" style="fill:var(--muted)">${t2}</text>`;
+  return {cap,dur:5,transient:true,draw:u=>{let g='';
+    if(u<.1){const o=1-u/.1;g+=`<g opacity="${o}"><text x="${W/2}" y="${H/2-10}" font-size="120" font-weight="800" text-anchor="middle" dominant-baseline="middle" style="fill:var(--blue);font-family:var(--f-display)">?</text>`+
+      `<text x="${W/2}" y="${H/2+80}" font-size="20" text-anchor="middle" style="fill:var(--muted)">Le détour est-il plus long que la ligne droite ?</text></g>`}
+    const a1=ease(clamp(u,.08,.25)),a2=ease(clamp(u,.3,.43)),a3=ease(clamp(u,.45,.58));
+    if(a1>0){g+=lab(110,'Ligne droite',`[${r[1]}]`)+bar(x0,104,L*k*a1,'var(--ink)',`${fr(L)} cm`)}
+    if(a2>0){g+=lab(200,`Détour par ${r[2]}`,`[${p[1]}] puis [${q[1]}]`)+bar(x0,194,p[0]*k*a2,'var(--blue)',`${fr(p[0])} cm`)}
+    if(a3>0)g+=bar(x0+p[0]*k+2,194,q[0]*k*a3,'var(--violet)',`${fr(q[0])} cm`);
+    if(u>.6){const o=clamp(u,.6,.68);const xL=x0+L*k,xD=x0+D*k+(D>0?2:0);
+      g+=`<g opacity="${o}"><line x1="${xL}" y1="92" x2="${xL}" y2="236" stroke="${col}" stroke-width="2.5" stroke-dasharray="6 5"/>`;
+      if(verdict!=='plat'){const xa=Math.min(xL,xD),xb=Math.max(xL,xD);g+=`<rect x="${xa}" y="190" width="${xb-xa}" height="32" rx="4" fill="${col}" fill-opacity="${verdict==='ok'?0:.18}" stroke="${col}" stroke-width="2" stroke-dasharray="4 3"/>`}
+      g+=`<text x="${x0}" y="262" font-size="18" font-weight="700" style="fill:${col}">${bilan}</text></g>`}
+    if(u>.7){const e=ease(clamp(u,.7,.82));const sc=2.2-1.2*e;
+      g+=`<g transform="translate(${W/2} 345) rotate(-6) scale(${sc})" opacity="${e}"><rect x="-230" y="-46" width="460" height="92" rx="14" fill="var(--paper)" fill-opacity=".9" stroke="${col}" stroke-width="5"/>`+
+        `<rect x="-221" y="-37" width="442" height="74" rx="9" fill="none" stroke="${col}" stroke-width="1.5"/>`+
+        `<text y="-6" font-size="32" font-weight="800" letter-spacing="3" text-anchor="middle" style="fill:${col};font-family:var(--f-display)">${titre}</text>`+
+        `<text y="24" font-size="15" font-weight="700" text-anchor="middle" style="fill:${col}">${sous}</text></g>`}
+    return g}}}
 function build(){
   const vals=[...document.querySelectorAll('#params input.v')].map(i=>parseFloat(i.value.replace(',','.')));
-  message='';steps=[];idx=0;t=0;
+  message='';steps=[];idx=0;t=0;attente=(cur==='a');uneEtape=false;
   const lus=[...document.querySelectorAll('#params input.nm')].map(i=>i.value.trim().toUpperCase());
   if(lus.some(x=>!/^[A-Z]$/.test(x))){message='Chaque point se nomme avec une lettre majuscule.';render();return}
   if(new Set(lus).size<3){message='Les trois points doivent avoir des noms différents.';render();return}
@@ -186,12 +211,15 @@ function build(){
   if(cur==='a'){const [c,b,a]=vals;// AB=c, AC=b, BC=a
     const A=[0,0],B=[c,0];const x=(c*c+b*b-a*a)/(2*c),y2=b*b-x*x;
     const so=[a,b,c].sort((p,q)=>p-q);const eg=Math.abs(so[0]+so[1]-so[2])<1e-9;  // cas d'égalité : triangle aplati
-    const ok=!eg&&y2>1e-9;const C=ok?[x,Math.sqrt(y2)]:eg?[x,0]:null;
+    const ok=!eg&&so[0]+so[1]>so[2];const C=ok?[x,Math.sqrt(Math.max(y2,0))]:eg?[x,0]:null;
     const tA=ok?Math.atan2(C[1],C[0])*180/Math.PI:60, tB=ok?Math.atan2(C[1],C[0]-c)*180/Math.PI:120;
     if(eg){const e=Math.max(a,b)*0.5+0.8;view=makeView([A,B,C,[Math.min(0,x)-1,e],[Math.max(c,x)+1,-e]]);}
     else view=makeView([A,B,[0,b],[c,a],[-b*.3,0],[c+a*.3,0],ok?C:[c/2,0]].concat(ok?[]:[[c/2,Math.max(a,b)]]));
-    steps.push({cap:'On fait d\'abord une figure à main levée codée, puis on vérifie : '+(ok?`${fr(Math.min(a,b))} + ${fr(Math.max(a,b))}`:'')+'…',dur:1.5,draw:()=>''});
-    const s=[a,b,c].sort((p,q)=>p-q);steps[0].cap=`Vérification : le plus grand côté mesure ${fr(s[2])} cm et ${fr(s[0])} + ${fr(s[1])} = ${fr(s[0]+s[1])}`+(eg?` : la somme est égale au plus grand côté. Les points seront alignés.`:s[0]+s[1]>s[2]?` > ${fr(s[2])}. On peut construire le triangle.`:false?` = ${fr(s[2])}. Les points seront alignés.`:` < ${fr(s[2])}. Regardons ce qui se passe…`);
+    // côtés triés : [longueur, nom du côté, sommet opposé]
+    const cotes=[[c,N0+N1,N2],[b,N0+N2,N1],[a,N1+N2,N0]].sort((p,q)=>p[0]-q[0]);const [s0,s1,s2]=cotes;
+    const verdict=eg?'plat':ok?'ok':'non';
+    const debut=`Le plus grand côté, [${s2[1]}], mesure ${fr(s2[0])} cm : c'est la ligne droite. Le détour par ${s2[2]} mesure ${fr(s0[0])} + ${fr(s1[0])} = ${fr(s0[0]+s1[0])} cm`;
+    steps.push(verifStep(debut+{ok:` > ${fr(s2[0])} cm : le triangle est constructible !`,plat:`, exactement ${fr(s2[0])} cm : les trois points seront alignés (triangle aplati).`,non:` < ${fr(s2[0])} cm : le détour serait plus court que la ligne droite, c'est impossible ! Regardons ce qui se passe…`}[verdict],cotes,verdict));
     steps.push(segStep(`Tracer le segment [${N0}${N1}] de longueur ${fr(c)} cm.`,A,B,fr(c)+' cm',N0,N1));
     if(ok){steps.push(arcStep(`Tracer un arc de cercle de centre ${N0} et de rayon ${fr(b)} cm.`,A,b,tA-14,tA+14));
       steps.push(arcStep(`Tracer un arc de cercle de centre ${N1} et de rayon ${fr(a)} cm.`,B,a,tB-14,tB+14));
@@ -255,26 +283,28 @@ function grid(){if(!view)return '';let g='';const K=view.K;const [ox,oy]=view.P(
 function render(){
   if(message){svg.innerHTML=`<text x="${W/2}" y="${H/2}" text-anchor="middle" font-size="20" style="fill:var(--red)">${message}</text>`;$('#cap').textContent='';$('#num').textContent='';$('#dots').innerHTML='';return}
   let s=grid();
-  for(let i=0;i<idx;i++){s+=steps[i].draw(1);s+=''}
+  for(let i=0;i<idx;i++)if(!steps[i].transient)s+=steps[i].draw(1);
   let pers='';for(let i=0;i<idx;i++)pers=persistent(i);
   s+=pers;
   if(idx<steps.length)s+=steps[idx].draw(t);
   svg.innerHTML=s;
+  if(attente){svg.innerHTML=s;$('#num').textContent='Prêt ?';$('#cap').textContent='Ce triangle est-il constructible ? Clique sur ▶ Lecture ou sur « Étape suivante » pour le vérifier.';$('#dots').innerHTML='';$('#prev').disabled=true;$('#next').disabled=false;return}
   const shown=Math.min(idx,steps.length-1);
   $('#num').textContent=`Étape ${shown+1} / ${steps.length}`;$('#cap').textContent=steps[shown].cap;
   $('#dots').innerHTML=steps.map((_,i)=>`<span class="dot ${i<=shown?'on':''}"></span>`).join('');
   $('#prev').disabled=idx===0&&t===0;$('#next').disabled=idx>=steps.length;
 }
 function frame(ts){if(!playing)return;const dt=(ts-last)/1000;last=ts;const sp=+$('#speed').value;
-  if(idx<steps.length){t+=dt*sp/steps[idx].dur;if(t>=1){t=0;idx++;if(idx>=steps.length){if($('#boucle').checked&&!message){fin=0}else{playing=false;setPlay()}}}}
+  if(idx<steps.length){t+=dt*sp/steps[idx].dur;if(uneEtape&&t>=1){t=1;playing=false;uneEtape=false;setPlay()}else if(t>=1){t=0;idx++;if(idx>=steps.length){if($('#boucle').checked&&!message){fin=0}else{playing=false;setPlay()}}}}
   else if($('#boucle').checked&&steps.length){fin+=dt*sp;if(fin>=2.5){idx=0;t=0}}  /* boucle : la figure finie reste 2,5 s, puis on recommence */
   else{playing=false;setPlay()}
   render();if(playing)requestAnimationFrame(frame)}
 function setPlay(){$('#play').textContent=playing?'❚❚ Pause':(idx>=steps.length?'↺ Rejouer':'▶ Lecture')}
-$('#play').onclick=()=>{if(idx>=steps.length){idx=0;t=0}playing=!playing;setPlay();if(playing){last=performance.now();requestAnimationFrame(frame)}};
-$('#next').onclick=()=>{playing=false;if(idx<steps.length){idx++;t=0}setPlay();render()};
-$('#prev').onclick=()=>{playing=false;if(t>0)t=0;else if(idx>0)idx--;setPlay();render()};
-$('#reset').onclick=()=>{playing=false;idx=0;t=0;setPlay();render()};
+$('#play').onclick=()=>{attente=false;uneEtape=false;if(idx>=steps.length){idx=0;t=0}playing=!playing;setPlay();if(playing){last=performance.now();requestAnimationFrame(frame)}};
+$('#next').onclick=()=>{if(attente){attente=false;uneEtape=true;playing=true;t=0;setPlay();last=performance.now();requestAnimationFrame(frame);return}/* 1er clic : on joue l'animation de vérification */
+  playing=false;uneEtape=false;if(idx<steps.length){idx++;t=0}setPlay();render()};
+$('#prev').onclick=()=>{playing=false;uneEtape=false;if(t>0)t=0;else if(idx>0)idx--;setPlay();render()};
+$('#reset').onclick=()=>{playing=false;uneEtape=false;idx=0;t=0;attente=(cur==='a');setPlay();render()};
 
 function setCase(c){cur=c;playing=false;document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.c===c));
   const f=$('#params');const n=noms[c];
