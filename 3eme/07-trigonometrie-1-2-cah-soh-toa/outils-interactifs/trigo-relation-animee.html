@@ -117,6 +117,7 @@ details.perso summary{cursor:pointer;font:700 1rem "Space Grotesk",sans-serif;co
 .err{color:var(--cherche);font-weight:600}
 .k{color:var(--connu);font-weight:700}.q{color:var(--cherche);font-weight:700}
 @media (prefers-reduced-motion:reduce){.new,.touche.on{animation:none}svg.fig .dessin{animation:none;stroke-dashoffset:0}.progress span,.mot{transition:none}}
+.attn{display:block;margin-top:.5em;padding:.4em .6em;border-left:4px solid #dc2626;background:rgba(220,38,38,.08);border-radius:6px;font-size:.95em}
 </style>
 </head>
 <body>
@@ -249,7 +250,7 @@ function genere(perso){
 }
 
 // ---------- textes ----------
-const nomCote={hyp:"l'hypoténuse",adj:"le côté adjacent",opp:"le côté opposé"};
+const nomCote={hyp:"l'hypoténuse",adj:"le côté adjacent à l'angle",opp:"le côté opposé à l'angle"};
 const ab={hyp:"H",adj:"A",opp:"O"};
 function vAng(e){return e.a+"°";}
 function texteEnonce(e){
@@ -273,10 +274,10 @@ function etapes(e){
   E.push({t:"Connu / cherché",b: mode==="L"
       ?`Je mets en évidence <b class="k">en bleu ce que je connais</b> (l'angle ${ang(e.nomAng)} et ${c[e.connu]}) et <b class="q">en rouge ce que je cherche</b> (${c[e.cherche]}).`
       :`Je mets en évidence <b class="k">en bleu ce que je connais</b> (${c[e.num]} et ${c[e.den]}) et <b class="q">en rouge ce que je cherche</b> (l'angle ${ang(e.nomAng)}).`,fig:3});
-  const role={hyp:"l'hypoténuse (en face de l'angle droit)",opp:"le côté opposé à l'angle (en face de l'angle)",adj:"le côté adjacent à l'angle (il touche l'angle et n'est pas l'hypoténuse)"};
-  E.push({t:"Nommer les côtés",b:`Par rapport à l'angle ${ang(e.nomAng)}, je nomme seulement les deux côtés utiles : <b class="k">${c[e.connu]}</b> (connu) est ${role[e.connu]} → <b class="k">${ab[e.connu]}</b> ; <b class="q">${c[e.cherche]}</b> (cherché) est ${role[e.cherche]} → <b class="q">${ab[e.cherche]} ?</b>`,fig:4});
+  const role={hyp:"l'hypoténuse (en face de l'angle droit)",opp:`le côté opposé à l'angle ${ang(e.nomAng)} (en face de cet angle)`,adj:`le côté adjacent à l'angle ${ang(e.nomAng)} (il touche cet angle et n'est pas l'hypoténuse)`};
+  E.push({t:"Nommer les côtés",b:`Par rapport à l'angle ${ang(e.nomAng)}, je nomme seulement les deux côtés utiles : <b class="k">${c[e.connu]}</b> (connu) est ${role[e.connu]} → <b class="k">${ab[e.connu]}</b> ; <b class="q">${c[e.cherche]}</b> (cherché) est ${role[e.cherche]} → <b class="q">${ab[e.cherche]} ?</b><br><span class="attn">⚠ « Opposé » ou « adjacent » tout seul ne veut rien dire : je dis toujours <b>à quel angle</b> (ici ${ang(e.nomAng)}). Par rapport à l'autre angle aigu, le côté opposé et le côté adjacent sont échangés !</span>`,fig:4});
   const utiles=mode==="L"?[e.connu,e.cherche]:[e.num,e.den];
-  E.push({t:"CAH SOH TOA",b:`J'utilise <b>${utiles.map(x=>nomCote[x]+" ("+ab[x]+")").join(" et ")}</b> : la seule formule qui contient ${ab[utiles[0]]} et ${ab[utiles[1]]} est <b>${MOT[e.f]}</b>, donc <b>${{cos:"cosinus = adjacent ÷ hypoténuse",sin:"sinus = opposé ÷ hypoténuse",tan:"tangente = opposé ÷ adjacent"}[e.f]}</b>.`,fig:4,cst:1});
+  E.push({t:"CAH SOH TOA",b:`J'utilise <b>${utiles.map(x=>nomCote[x]+" ("+ab[x]+")").join(" et ")}</b> : la seule formule qui contient ${ab[utiles[0]]} et ${ab[utiles[1]]} est <b>${MOT[e.f]}</b>, donc <b>${{cos:"cosinus = côté adjacent ÷ hypoténuse",sin:"sinus = côté opposé ÷ hypoténuse",tan:"tangente = côté opposé ÷ côté adjacent"}[e.f]}</b>.`,fig:4,cst:1});
   // rédaction
   E.push({t:"Je rédige",b:`Je commence toujours par dire <b>dans quel triangle rectangle</b> je travaille.`,fig:4,red:`On sait que le triangle ${e.nomTri} est rectangle en ${e.D}.`});
   E.push({t:"La formule",b:`J'écris la formule avec <b>les lettres de la figure</b> : ${MOT[e.f][0]} = ${f}, ${MOT[e.f][1]} en haut, ${MOT[e.f][2]} en bas.`,fig:4,red:`Donc : ${f} ${ang(e.nomAng)} = ${fr(c[e.num],c[e.den])}`});
@@ -396,7 +397,7 @@ function dessine(e,niv,anim){
   if(niv>=1){for(const p of [e.S,e.D,e.T]){const q=horsTri(e,P[p],20);h+=`<text x="${q[0]}" y="${q[1]+6}" text-anchor="middle">${p}</text>`;}}
   svg.innerHTML=h;
   const lg=document.getElementById("leg");
-  lg.innerHTML=niv>=3?`<span><b class="c">■ connu</b></span><span><b class="h">■ cherché</b></span>`+(niv>=4?`<span>H : hypoténuse · O : opposé · A : adjacent</span>`:""):"";
+  lg.innerHTML=niv>=3?`<span><b class="c">■ connu</b></span><span><b class="h">■ cherché</b></span>`+(niv>=4?`<span>H : hypoténuse · O : opposé à ${ang(e.nomAng)} · A : adjacent à ${ang(e.nomAng)}</span>`:""):"";
 }
 
 function cst(e,show,anim){

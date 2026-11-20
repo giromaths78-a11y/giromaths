@@ -110,7 +110,7 @@ table.tp td.inc{background:#fee2e2;color:#b91c1c}
       <div class="saisie"><button class="btn primary" id="suivante">Question suivante ▶</button></div>
     </div>
   </div>
-  <div class="rappel"><b>Rappel :</b> dans un triangle rectangle, pour un angle aigu : <b>CAH</b> cos = adjacent ÷ hypoténuse · <b>SOH</b> sin = opposé ÷ hypoténuse · <b>TOA</b> tan = opposé ÷ adjacent. Calculatrice réglée en <b>degrés</b>.</div>
+  <div class="rappel"><b>Rappel :</b> dans un triangle rectangle, pour un angle aigu : <b>CAH</b> cos = adjacent ÷ hypoténuse · <b>SOH</b> sin = opposé ÷ hypoténuse · <b>TOA</b> tan = opposé ÷ adjacent. <br>⚠ « Opposé » et « adjacent » tout seuls ne veulent rien dire : on dit toujours <b>opposé à l'angle …</b> ou <b>adjacent à l'angle …</b>. Calculatrice réglée en <b>degrés</b>.</div>
 </section>
 </div>
 
@@ -126,7 +126,9 @@ const ang=t=>`<span class="ang">${t}</span>`;
 const DEG=Math.PI/180;
 const MOT={cos:"CAH",sin:"SOH",tan:"TOA"};
 const PAIRE={cos:["adj","hyp"],sin:["opp","hyp"],tan:["opp","adj"]};
-const NOMC={hyp:"l'hypoténuse",adj:"le côté adjacent",opp:"le côté opposé"};
+const NOMC0={hyp:"l'hypoténuse",adj:"le côté adjacent",opp:"le côté opposé"};
+// « adjacent » / « opposé » ne veulent rien dire sans l'angle : on le précise toujours
+const nomc=(k,a)=>k==="hyp"?NOMC0.hyp:`${NOMC0[k]} à l'angle ${ang(a)}`;
 const LETTRES="ABCDEFGHIJKLMNPRSTUVWXYZ".split("");
 const $=id=>document.getElementById(id);
 let onglet="voc",q=null,score={voc:[0,0],form:[0,0],long:[0,0],pb:[0,0]},repondu=false;
@@ -174,7 +176,7 @@ function redaction(t,f,inc,v,u,dec,prec,nomCherche){
   const val=inc==="num"?v*rap:v/rap;
   const L=[];
   L.push(`On sait que le triangle ${t.nom} est rectangle en ${t.D}.`);
-  L.push(`Pour l'angle ${ang(t.angNom)} : je connais ${NOMC[conn]} ${c[conn]} et je cherche ${NOMC[cher]} ${c[cher]} → <b>${MOT[f]}</b>.`);
+  L.push(`Pour l'angle ${ang(t.angNom)} : je connais ${nomc(conn,t.angNom)} ${c[conn]} et je cherche ${nomc(cher,t.angNom)} ${c[cher]} → <b>${MOT[f]}</b>.`);
   L.push(`Donc : ${f} ${ang(t.angNom)} = ${fr(c[nu],c[de])}`);
   L.push(`On remplace : ${f}(${t.a}°) = ${inc==="num"?fr(c[nu],vC):fr(vC,c[de])}`);
   const fa=`${f}(${t.a}°)`,X=c[cher];
@@ -198,12 +200,12 @@ function verifie(txt,val,dec){
 function qVoc(){
   const t=triangle(R(25,65));const quoi=pick(["hyp","adj","opp"]);
   dessine(t,{angleCl:"connu"});
-  $("enonce").innerHTML=`Le triangle ${t.nom} est rectangle en ${t.D}. Par rapport à l'angle ${ang(t.angNom)} (marqué sur la figure), quel est <b>${NOMC[quoi]}</b> ?`;
+  $("enonce").innerHTML=`Le triangle ${t.nom} est rectangle en ${t.D}. ${quoi==="hyp"?"Quelle":"Quel"} est <b>${nomc(quoi,t.angNom)}</b> ?`;
   const opts=melange(["hyp","adj","opp"]);
   $("zone").innerHTML=`<div class="choix">${opts.map(c=>`<button class="ch" data-c="${c}">[${t.c[c]}]</button>`).join("")}</div>`;
   $("zone").querySelectorAll(".ch").forEach(b=>b.onclick=()=>{if(repondu)return;repondu=true;
     const ok=b.dataset.c===quoi;note(ok);$("zone").querySelectorAll(".ch").forEach(x=>{x.disabled=true;if(x.dataset.c===quoi)x.classList.add("bon");else if(x===b)x.classList.add("faux");});
-    $("retour").innerHTML=`<div class="msg ${ok?"ok":"ko"}">${ok?"Bravo !":"Non."} ${NOMC[quoi][0].toUpperCase()+NOMC[quoi].slice(1)} est [${t.c[quoi]}].</div>`;
+    $("retour").innerHTML=`<div class="msg ${ok?"ok":"ko"}">${ok?"Bravo !":"Non."} ${(q=>q[0].toUpperCase()+q.slice(1))(nomc(quoi,t.angNom))} est [${t.c[quoi]}].</div>`;
     $("correction").innerHTML=`<div class="corr"><h3>Comment trouver</h3><ol><li>L'hypoténuse est en face de l'angle droit (en ${t.D}) : [${t.c.hyp}].</li><li>Le côté opposé à ${ang(t.angNom)} est en face de cet angle : il ne touche pas le sommet ${t.S} : [${t.c.opp}].</li><li>Le côté adjacent touche le sommet ${t.S} et n'est pas l'hypoténuse : [${t.c.adj}].</li></ol></div>`;});
 }
 
@@ -229,7 +231,7 @@ function qForm(){
     if(!ok){const juste=(o[0]==="cos"&&o[1]==="adj"&&o[2]==="hyp")||(o[0]==="sin"&&o[1]==="opp"&&o[2]==="hyp")||(o[0]==="tan"&&o[1]==="opp"&&o[2]==="adj");
       pourquoi=juste?" Cette égalité est vraie, mais elle n'utilise pas à la fois ce que l'on connaît et ce que l'on cherche.":" Cette égalité est fausse : vérifie avec CAH SOH TOA.";}
     $("retour").innerHTML=`<div class="msg ${ok?"ok":"ko"}">${ok?"Bravo !":"Non."}${pourquoi}</div>`;
-    $("correction").innerHTML=`<div class="corr"><h3>Raisonnement</h3><ol><li>Par rapport à ${ang(t.angNom)} : <span class="k">${c[conn]}</span> est ${NOMC[conn]} (connu) et <span class="q">${c[cher]}</span> est ${NOMC[cher]} (cherché).</li><li>${NOMC[nu][0].toUpperCase()+NOMC[nu].slice(1)} et ${NOMC[de]} : <b>${MOT[f]}</b>.</li><li>Donc : ${f} ${ang(t.angNom)} = ${fr(c[nu],c[de])}</li></ol></div>`;});
+    $("correction").innerHTML=`<div class="corr"><h3>Raisonnement</h3><ol><li>Par rapport à ${ang(t.angNom)} : <span class="k">${c[conn]}</span> est ${nomc(conn,t.angNom)} (connu) et <span class="q">${c[cher]}</span> est ${nomc(cher,t.angNom)} (cherché).</li><li>${nomc(nu,t.angNom)[0].toUpperCase()+nomc(nu,t.angNom).slice(1)} et ${nomc(de,t.angNom)} : <b>${MOT[f]}</b>.</li><li>Donc : ${f} ${ang(t.angNom)} = ${fr(c[nu],c[de])}</li></ol></div>`;});
 }
 
 // ---------- onglet 3 : calculer une longueur ----------
