@@ -62,7 +62,7 @@
     ev.preventDefault();
     var sec = a.closest('section'), form = sec.querySelector('.eval-mdp');
     form._lien = a;
-    var mdp = lire(sessionStorage, MDP) || lire(localStorage, MDP);
+    var mdp = lire(sessionStorage, MDP) || lire(localStorage, MDP) || lire(sessionStorage, 'giro-code-admin');  // même mot de passe que admin.html
     if (mdp) { ouvrir(a, mdp, fenetre(), form); return; }
     form.hidden = false;
     form.querySelector('.eval-msg').textContent = '';
