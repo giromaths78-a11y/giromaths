@@ -81,6 +81,367 @@
   </div>
 </section>
 <section class="wrap">
+  <style>
+.roue-admin{display:none}
+.vis-admin .roue-admin{display:block}
+.roue-band{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin:26px 0 6px;padding:16px 20px;border:2px dashed #151831;border-radius:20px;background:linear-gradient(120deg,#fff7ed,#fdf4ff 55%,#eff6ff)}
+.roue-band .roue-mini{width:62px;height:62px;flex:none;animation:roue-mini 9s linear infinite}
+@keyframes roue-mini{to{transform:rotate(360deg)}}
+.roue-band .roue-txt{flex:1;min-width:200px}
+.roue-band .roue-txt b{font-family:var(--font-title);font-size:1.25rem;color:var(--ink);display:block}
+.roue-band .roue-txt span{color:var(--muted);font-size:.95rem}
+.roue-band .roue-tag{font-size:.7rem;font-weight:700;background:#151831;color:#fff;border-radius:6px;padding:2px 8px;margin-left:8px;vertical-align:middle}
+.roue-btn{font:700 1rem var(--font-title);border:2px solid #151831;border-radius:14px;padding:10px 18px;background:#fbbf24;color:#151831;cursor:pointer;box-shadow:4px 4px 0 #151831;transition:transform .12s,box-shadow .12s}
+.roue-btn:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 #151831}
+.roue-btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 #151831}
+.roue-btn:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:4px 4px 0 #151831}
+.roue-btn.sec{background:#fff;font-size:.85rem;padding:6px 12px;box-shadow:3px 3px 0 #151831}
+
+.roue-ov{position:fixed;inset:0;z-index:1000;background:#0f1226;color:#fff;display:none;overflow:auto;
+  background-image:radial-gradient(circle at 20% 15%,rgba(124,58,237,.35),transparent 45%),radial-gradient(circle at 85% 80%,rgba(234,88,12,.28),transparent 45%)}
+.roue-ov.on{display:block}
+body.roue-ouverte{overflow:hidden}
+.roue-in{max-width:1280px;margin:0 auto;padding:18px 20px 28px;display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:24px;min-height:100%;box-sizing:border-box}
+.roue-head{grid-column:1/-1;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.roue-head h2{color:#fff;margin:0;font-size:1.6rem;flex:1}
+.roue-head h2 small{font:500 .95rem var(--font);color:#a5b4fc;margin-left:8px}
+.roue-head select{font:600 1rem var(--font);padding:8px 12px;border-radius:12px;border:2px solid #fbbf24;background:#1b1f3b;color:#fff}
+.roue-x{font-size:1.5rem;line-height:1;width:44px;height:44px;border-radius:50%;border:2px solid #fff;background:transparent;color:#fff;cursor:pointer}
+.roue-son{font-size:1.2rem;width:44px;height:44px;border-radius:50%;border:2px solid #a5b4fc;background:transparent;color:#fff;cursor:pointer}
+.roue-scene{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;min-width:0}
+.roue-wrap{position:relative;width:min(70vh,100%);max-width:720px;aspect-ratio:1}
+.roue-wrap canvas{width:100%;height:100%;display:block;border-radius:50%;box-shadow:0 0 0 10px #151831,0 0 0 14px #fbbf24,0 0 60px 18px rgba(251,191,36,.25)}
+.roue-wrap .roue-ptr{position:absolute;left:50%;top:-26px;width:46px;height:62px;margin-left:-23px;transform-origin:50% 18px;filter:drop-shadow(0 4px 4px rgba(0,0,0,.5));z-index:2}
+.roue-wrap .roue-ptr.tic{animation:roue-tic .12s ease-out}
+@keyframes roue-tic{40%{transform:rotate(-22deg)}}
+.roue-centre{position:absolute;left:50%;top:50%;width:21%;height:21%;transform:translate(-50%,-50%);border-radius:50%;border:5px solid #151831;background:radial-gradient(circle at 35% 30%,#fde68a,#f59e0b);
+  display:flex;align-items:center;justify-content:center;font:700 clamp(.9rem,2.3vw,1.5rem) var(--font-title);color:#151831;cursor:pointer;box-shadow:0 4px 0 #151831;user-select:none}
+.roue-centre:hover{filter:brightness(1.07)}
+.roue-wrap.tourne .roue-centre{cursor:default}
+.roue-msg{min-height:2.2em;font:700 clamp(1.1rem,2.4vw,1.6rem) var(--font-title);color:#fde68a;text-align:center}
+.roue-msg.vide{color:#fca5a5}
+.roue-side{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:10px;min-height:0}
+.roue-side h3{color:#fff;margin:0;font-size:1.05rem}
+.roue-side p.aide{margin:0;color:#c7d2fe;font-size:.82rem;line-height:1.35}
+.roue-cpt{display:flex;gap:6px;flex-wrap:wrap;font-size:.8rem}
+.roue-cpt span{background:rgba(255,255,255,.1);border-radius:999px;padding:2px 10px}
+.roue-liste{list-style:none;margin:0;padding:0;overflow:auto;max-height:56vh;display:grid;gap:4px}
+.roue-liste li{display:flex;align-items:center;gap:8px;padding:5px 10px;border-radius:10px;background:rgba(255,255,255,.05);cursor:pointer;font-size:.92rem}
+.roue-liste li:hover{background:rgba(255,255,255,.12)}
+.roue-liste li .nm{flex:1}
+.roue-liste li .pt{letter-spacing:2px;color:#fbbf24;font-size:.85rem}
+.roue-liste li .pt i{font-style:normal;color:rgba(255,255,255,.22)}
+.roue-liste li.max{opacity:.5}.roue-liste li.max .nm{text-decoration:line-through}
+.roue-liste li.abs{opacity:.45}.roue-liste li.abs .nm::after{content:" · absent";font-size:.75rem;color:#fca5a5}
+.roue-liste li.der{outline:2px solid #fbbf24}
+.roue-act{display:flex;gap:8px;flex-wrap:wrap}
+.roue-act .roue-btn.sec{background:transparent;color:#fff;border-color:#a5b4fc;box-shadow:none}
+.roue-act .roue-btn.sec:hover{background:rgba(255,255,255,.1)}
+.roue-vide{display:none}.roue-in.vide .roue-scene,.roue-in.vide .roue-side,.roue-in.vide #roue-classe,.roue-in.vide #roue-son{display:none}.roue-in.vide .roue-vide{display:block;grid-column:1/-1;text-align:center;padding:60px 20px;font-size:1.1rem}
+.roue-vide a{color:#fbbf24}
+
+.roue-win{position:fixed;inset:0;z-index:1002;display:none;align-items:center;justify-content:center;background:rgba(10,12,30,.6);backdrop-filter:blur(3px)}
+.roue-win.on{display:flex}
+.roue-carte{position:relative;text-align:center;background:#fff;color:#151831;border:4px solid #151831;border-radius:28px;padding:28px 48px 26px;box-shadow:12px 12px 0 #fbbf24;animation:roue-pop .7s cubic-bezier(.2,1.6,.4,1) both;max-width:90vw}
+@keyframes roue-pop{from{transform:scale(.2) rotate(-12deg);opacity:0}}
+.roue-carte .k{font:700 1rem var(--font-title);text-transform:uppercase;letter-spacing:.12em;color:#7c3aed}
+.roue-carte .n{font:700 clamp(2.6rem,8vw,6rem) var(--font-title);line-height:1.05;margin:8px 0 6px;background:linear-gradient(90deg,#c026d3,#2563eb,#ea580c);-webkit-background-clip:text;background-clip:text;color:transparent;word-break:break-word}
+.roue-carte .s{color:#62677f;font-size:1rem;margin-bottom:16px}
+.roue-carte .roue-act{justify-content:center}
+.roue-carte .roue-btn.sec{color:#151831;border-color:#151831}
+.roue-confetti{position:fixed;inset:0;z-index:1001;pointer-events:none;width:100%;height:100%}
+
+@media (max-width:900px){.roue-in{grid-template-columns:1fr}.roue-liste{max-height:40vh}}
+</style>
+
+<section class="roue-admin" aria-label="Tirage au sort (professeur)">
+  <div class="roue-band">
+    <svg class="roue-mini" viewBox="0 0 64 64" aria-hidden="true">
+      <g stroke="#151831" stroke-width="2">
+        <path d="M32 32V3A29 29 0 0 1 57.1 17.5Z" fill="#2563eb"/><path d="M32 32L57.1 17.5A29 29 0 0 1 57.1 46.5Z" fill="#0d9488"/>
+        <path d="M32 32L57.1 46.5A29 29 0 0 1 32 61Z" fill="#fbbf24"/><path d="M32 32V61A29 29 0 0 1 6.9 46.5Z" fill="#ea580c"/>
+        <path d="M32 32L6.9 46.5A29 29 0 0 1 6.9 17.5Z" fill="#c026d3"/><path d="M32 32L6.9 17.5A29 29 0 0 1 32 3Z" fill="#7c3aed"/>
+        <circle cx="32" cy="32" r="7" fill="#fde68a"/>
+      </g>
+    </svg>
+    <p class="roue-txt"><b>Roue des élèves <span class="roue-tag">Professeur</span></b><span>Tirer au sort l’élève à interroger · 2 passages maximum par élève</span></p>
+    <button type="button" class="roue-btn" id="roue-ouvrir">🎡 Lancer la roue</button>
+  </div>
+</section>
+<div class="roue-ov" id="roue-ov" role="dialog" aria-modal="true" aria-label="Roue des élèves">
+  <div class="roue-in" id="roue-in">
+    <div class="roue-head">
+      <h2>🎡 Roue des élèves<small id="roue-sous"></small></h2>
+      <select id="roue-classe" aria-label="Classe"></select>
+      <button type="button" class="roue-son" id="roue-son" title="Son activé / coupé">🔊</button>
+      <button type="button" class="roue-x" id="roue-fermer" title="Fermer (Échap)">×</button>
+    </div>
+    <div class="roue-scene">
+      <div class="roue-wrap" id="roue-wrap">
+        <svg class="roue-ptr" id="roue-ptr" viewBox="0 0 46 62" aria-hidden="true"><path d="M23 60 L4 20 A19 19 0 1 1 42 20 Z" fill="#ef4444" stroke="#151831" stroke-width="3" stroke-linejoin="round"/><circle cx="23" cy="18" r="6" fill="#fff" stroke="#151831" stroke-width="2"/></svg>
+        <canvas id="roue-cv" width="1000" height="1000"></canvas>
+        <div class="roue-centre" id="roue-go" role="button" tabindex="0" aria-label="Faire tourner la roue">GO !</div>
+      </div>
+      <div class="roue-msg" id="roue-msg" aria-live="polite"></div>
+      <button type="button" class="roue-btn" id="roue-tourner">Faire tourner la roue</button>
+    </div>
+    <p class="roue-vide">Aucune classe trouvée sur cet appareil.<br>Ajoute d’abord tes listes d’élèves dans le <a href="plan-de-classe.html">Plan de classe</a> (ou importe ta sauvegarde .json), puis reviens ici.</p>
+    <aside class="roue-side">
+      <h3>Élèves de la classe</h3>
+      <div class="roue-cpt" id="roue-cpt"></div>
+      <p class="aide">Clique sur un nom pour le marquer absent aujourd’hui (il sort de la roue). ★ = déjà interrogé ; à ★★ l’élève ne peut plus sortir.</p>
+      <ul class="roue-liste" id="roue-liste"></ul>
+      <div class="roue-act">
+        <button type="button" class="roue-btn sec" id="roue-annuler">↶ Annuler le dernier tirage</button>
+        <button type="button" class="roue-btn sec" id="roue-zero">Remettre la classe à zéro</button>
+      </div>
+    </aside>
+  </div>
+</div>
+<div class="roue-win" id="roue-win">
+  <div class="roue-carte">
+    <div class="k">🎉 L’élève interrogé est…</div>
+    <div class="n" id="roue-nom"></div>
+    <div class="s" id="roue-info"></div>
+    <div class="roue-act">
+      <button type="button" class="roue-btn" id="roue-ok">C’est parti !</button>
+      <button type="button" class="roue-btn sec" id="roue-absent">Absent : relancer</button>
+    </div>
+  </div>
+</div>
+<canvas class="roue-confetti" id="roue-conf" hidden></canvas>
+<script>
+(function () {
+  var admin = false; try { admin = localStorage.getItem('giro-admin') === '1'; } catch (e) {}
+  if (!admin) return;
+  var $ = function (s) { return document.getElementById(s); };
+  var MAX = 2, DUREE = 10000, CLE = 'giro-roue', CLE_PLAN = 'giro-plan-classe';
+  var COUL = ['#2563eb', '#c026d3', '#ea580c', '#0d9488', '#7c3aed', '#e11d48', '#0891b2', '#ca8a04', '#16a34a', '#db2777'];
+  var classes = [], cur = null, etat = {}, absents = {}, angle = 0, enCours = false, son = true, actx = null;
+  var roueNoms = [], E = {};
+
+  function lireJSON(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+  function sauver() { try { localStorage.setItem(CLE, JSON.stringify(etat)); } catch (e) {} }
+  function estAESH(n) { return /^AESH\b/i.test(n); }
+  function decouper(n) {
+    var m = n.split(' '), i = 0;
+    while (i < m.length - 1 && /[A-Z]/.test(m[i]) && m[i] === m[i].toUpperCase()) i++;
+    return i ? { nom: m.slice(0, i).join(' '), pre: m.slice(i).join(' ') } : { nom: '', pre: n };
+  }
+  function etiquettes(L) {
+    var R = {}, compte = {};
+    L.forEach(function (n) { var p = decouper(n).pre.toLowerCase(); compte[p] = (compte[p] || 0) + 1; });
+    L.forEach(function (n) { var d = decouper(n); R[n] = !d.nom ? n : (compte[d.pre.toLowerCase()] > 1 ? d.pre + ' ' + d.nom.charAt(0) + '.' : d.pre); });
+    var vu = {}; L.forEach(function (n) { vu[R[n]] = (vu[R[n]] || 0) + 1; });
+    L.forEach(function (n) { if (vu[R[n]] > 1) { var d = decouper(n); R[n] = d.nom ? d.pre + ' ' + d.nom : n; } });  // initiales identiques : nom complet
+    return R;
+  }
+  function charger() {
+    var p = lireJSON(CLE_PLAN);
+    classes = (p && p.classes || []).map(function (c) {
+      return { nom: c.nom, eleves: (c.eleves || []).map(function (e) { return e.n; }).filter(function (n) { return n && !estAESH(n); }) };
+    }).filter(function (c) { return c.eleves.length; });
+    etat = lireJSON(CLE) || {};
+  }
+  function E_() { var x = etat[cur.nom]; if (!x) x = etat[cur.nom] = { c: {}, h: [] }; return x; }
+  function nb(n) { return E_().c[n] || 0; }
+  function eligibles() { return cur.eleves.filter(function (n) { return nb(n) < MAX && !absents[cur.nom][n]; }); }
+  function melanger(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var x = a[i]; a[i] = a[j]; a[j] = x; } return a; }
+  function hasard() { if (window.crypto && crypto.getRandomValues) { var u = new Uint32Array(1); crypto.getRandomValues(u); return u[0] / 4294967296; } return Math.random(); }
+
+  // ---------- Dessin de la roue
+  var cv = $('roue-cv'), g = cv.getContext('2d');
+  function dessiner() {
+    var W = cv.width, R = W / 2 - 4, n = roueNoms.length;
+    g.clearRect(0, 0, W, W);
+    g.save(); g.translate(W / 2, W / 2);
+    if (!n) {
+      g.fillStyle = '#1b1f3b'; g.beginPath(); g.arc(0, 0, R, 0, 2 * Math.PI); g.fill(); g.restore(); return;
+    }
+    var a = 2 * Math.PI / n;
+    g.rotate(angle - Math.PI / 2);
+    for (var i = 0; i < n; i++) {
+      var c = COUL[i % COUL.length];
+      if (n % COUL.length === 1 && i === n - 1) c = COUL[3];  // deux voisins jamais de la même couleur
+      g.beginPath(); g.moveTo(0, 0); g.arc(0, 0, R, i * a, (i + 1) * a); g.closePath();
+      g.fillStyle = c; g.fill();
+      g.lineWidth = 3; g.strokeStyle = 'rgba(255,255,255,.85)'; g.stroke();
+    }
+    var fs = Math.max(20, Math.min(54, 2 * Math.PI * R * 0.62 / n * 0.62));
+    g.fillStyle = '#fff'; g.textAlign = 'right'; g.textBaseline = 'middle';
+    for (i = 0; i < n; i++) {
+      g.save(); g.rotate((i + 0.5) * a);
+      var t = E[roueNoms[i]], f = fs;
+      g.font = '700 ' + f + 'px "Space Grotesk", Inter, sans-serif';
+      while (g.measureText(t).width > R * 0.70 && f > 14) { f -= 1; g.font = '700 ' + f + 'px "Space Grotesk", Inter, sans-serif'; }
+      g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 4;
+      g.fillText(t, R - 26, 0);
+      g.restore();
+    }
+    // clous sur le bord
+    for (i = 0; i < n; i++) {
+      g.save(); g.rotate(i * a); g.beginPath(); g.arc(R - 9, 0, 6, 0, 2 * Math.PI);
+      g.fillStyle = '#fde68a'; g.fill(); g.lineWidth = 2; g.strokeStyle = '#151831'; g.stroke(); g.restore();
+    }
+    g.restore();
+  }
+  // index du secteur sous le pointeur (en haut)
+  function secteur(th) { var n = roueNoms.length, a = 2 * Math.PI / n; var x = ((-th) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI); return Math.floor(x / a) % n; }
+
+  // ---------- Sons (Web Audio, aucun fichier)
+  function audio() { if (!son) return null; try { actx = actx || new (window.AudioContext || window.webkitAudioContext)(); if (actx.state === 'suspended') actx.resume(); } catch (e) { actx = null; } return actx; }
+  function bip(freq, dur, type, vol, quand) {
+    var A = audio(); if (!A) return;
+    var t = A.currentTime + (quand || 0), o = A.createOscillator(), v = A.createGain();
+    o.type = type || 'square'; o.frequency.setValueAtTime(freq, t);
+    v.gain.setValueAtTime(vol || 0.06, t); v.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(v); v.connect(A.destination); o.start(t); o.stop(t + dur + 0.02);
+  }
+  function tic() { bip(1400, 0.035, 'square', 0.05); var p = $('roue-ptr'); p.classList.remove('tic'); void p.offsetWidth; p.classList.add('tic'); }
+  function fanfare() { [523, 659, 784, 1047].forEach(function (f, i) { bip(f, i === 3 ? 0.6 : 0.16, 'triangle', 0.14, i * 0.13); }); }
+
+  // ---------- Liste latérale
+  function liste() {
+    var ul = $('roue-liste'); ul.innerHTML = '';
+    var der = E_().h[E_().h.length - 1];
+    var tri = cur.eleves.slice().sort(function (x, y) { return E[x].localeCompare(E[y], 'fr'); });
+    tri.forEach(function (n) {
+      var li = document.createElement('li'), k = nb(n);
+      if (k >= MAX) li.className = 'max';
+      if (absents[cur.nom][n]) li.className += ' abs';
+      if (n === der) li.className += ' der';
+      var s1 = document.createElement('span'); s1.className = 'nm'; s1.textContent = E[n];
+      var s2 = document.createElement('span'); s2.className = 'pt';
+      s2.innerHTML = '★'.repeat(k) + '<i>' + '☆'.repeat(Math.max(0, MAX - k)) + '</i>';
+      li.title = n + ' : interrogé ' + k + ' fois';
+      li.appendChild(s1); li.appendChild(s2);
+      li.addEventListener('click', function () { if (enCours) return; absents[cur.nom][n] = !absents[cur.nom][n]; maj(); });
+      ul.appendChild(li);
+    });
+    var z = 0, u = 0, d = 0;
+    cur.eleves.forEach(function (n) { var k = nb(n); if (!k) z++; else if (k === 1) u++; else d++; });
+    $('roue-cpt').innerHTML = '';
+    [['Jamais interrogés', z], ['1 fois', u], ['2 fois', d]].forEach(function (x) { var s = document.createElement('span'); s.textContent = x[0] + ' : ' + x[1]; $('roue-cpt').appendChild(s); });
+    $('roue-annuler').disabled = !E_().h.length;
+  }
+  function maj() {
+    E = etiquettes(cur.eleves);
+    roueNoms = melanger(eligibles());
+    $('roue-sous').textContent = cur.nom + ' · ' + roueNoms.length + ' élève' + (roueNoms.length > 1 ? 's' : '') + ' dans la roue';
+    var m = $('roue-msg');
+    if (!roueNoms.length) { m.className = 'roue-msg vide'; m.textContent = cur.eleves.every(function (n) { return nb(n) >= MAX; }) ? 'Tout le monde est passé 2 fois ! Remets la classe à zéro.' : 'Plus personne dans la roue.'; }
+    else { m.className = 'roue-msg'; m.textContent = 'Qui va être interrogé ?'; }
+    $('roue-tourner').disabled = !roueNoms.length;
+    dessiner(); liste();
+  }
+
+  // ---------- Rotation (≈ 10 s)
+  var MSGS = [[0, 'C’est parti… 🎲'], [0.25, 'Ça tourne, ça tourne…'], [0.5, 'Qui sera l’heureux élu ?'], [0.72, 'Suspense… 🥁'], [0.88, 'Ça ralentit…'], [0.96, 'Encore un tout petit peu…']];
+  function tourner() {
+    if (enCours || !roueNoms.length) return;
+    audio();
+    enCours = true; $('roue-wrap').classList.add('tourne'); $('roue-tourner').disabled = true; $('roue-classe').disabled = true;
+    var n = roueNoms.length, a = 2 * Math.PI / n, w = Math.floor(hasard() * n);
+    var r = 0.18 + 0.64 * hasard();
+    var cible = -(w + r) * a, depart = angle;
+    var delta = ((cible - depart) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) + 2 * Math.PI * 11;
+    var t0 = performance.now(), dernier = secteur(angle), im = -1;
+    function ease(t) { return 1 - Math.pow(1 - t, 4); }
+    function pas(now) {
+      var t = Math.min(1, (now - t0) / DUREE);
+      angle = depart + delta * ease(t);
+      var s = secteur(angle); if (s !== dernier) { dernier = s; tic(); }
+      for (var i = MSGS.length - 1; i >= 0; i--) if (t >= MSGS[i][0]) { if (i !== im) { im = i; $('roue-msg').textContent = MSGS[i][1]; } break; }
+      dessiner();
+      if (t < 1) requestAnimationFrame(pas); else fin(roueNoms[secteur(angle)]);
+    }
+    requestAnimationFrame(pas);
+  }
+  function fin(n) {
+    var x = E_(); x.c[n] = (x.c[n] || 0) + 1; x.h.push(n); sauver();
+    enCours = false; $('roue-wrap').classList.remove('tourne'); $('roue-classe').disabled = false;
+    $('roue-nom').textContent = E[n];
+    var k = x.c[n];
+    $('roue-info').textContent = cur.nom + ' · ' + (k >= MAX ? '2e passage : ne pourra plus sortir de la roue' : '1er passage');
+    $('roue-msg').textContent = '🎉 ' + E[n] + ' !';
+    $('roue-win').classList.add('on'); fanfare(); confettis();
+    setTimeout(function () { $('roue-ok').focus(); }, 50);
+  }
+  function fermerGagnant() { $('roue-win').classList.remove('on'); stopConf(); maj(); }
+
+  // ---------- Confettis
+  var cc = $('roue-conf'), cg = cc.getContext('2d'), parts = [], anim = 0;
+  function confettis() {
+    cc.hidden = false; cc.width = innerWidth; cc.height = innerHeight; parts = [];
+    for (var i = 0; i < 220; i++) parts.push({ x: innerWidth / 2 + (Math.random() - .5) * 200, y: innerHeight * .45, vx: (Math.random() - .5) * 18, vy: -Math.random() * 18 - 6,
+      r: Math.random() * 2 * Math.PI, vr: (Math.random() - .5) * .4, w: 8 + Math.random() * 8, h: 5 + Math.random() * 6, c: COUL[i % COUL.length] });
+    var t0 = performance.now();
+    cancelAnimationFrame(anim);
+    (function f(now) {
+      cg.clearRect(0, 0, cc.width, cc.height);
+      parts.forEach(function (p) { p.vy += .35; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        cg.save(); cg.translate(p.x, p.y); cg.rotate(p.r); cg.fillStyle = p.c; cg.fillRect(-p.w / 2, -p.h / 2, p.w, p.h); cg.restore(); });
+      if (now - t0 < 4500) anim = requestAnimationFrame(f); else stopConf();
+    })(t0);
+  }
+  function stopConf() { cancelAnimationFrame(anim); cg.clearRect(0, 0, cc.width, cc.height); cc.hidden = true; }
+
+  // ---------- Ouverture / classe
+  function choisir(i) {
+    cur = classes[i]; absents[cur.nom] = absents[cur.nom] || {};
+    try { localStorage.setItem('giro-roue-classe', cur.nom); } catch (e) {}
+    maj();
+  }
+  function ouvrir() {
+    charger();
+    var ov = $('roue-ov'), sel = $('roue-classe');
+    ov.classList.add('on'); document.body.classList.add('roue-ouverte');
+    if (!classes.length) {
+      $('roue-in').classList.add('vide'); $('roue-sous').textContent = ''; return;
+    }
+    $('roue-in').classList.remove('vide');
+    sel.innerHTML = '';
+    var pref = null; try { pref = localStorage.getItem('giro-roue-classe'); } catch (e) {}
+    var idx = 0;
+    classes.forEach(function (c, i) { var o = document.createElement('option'); o.value = i; o.textContent = c.nom + ' (' + c.eleves.length + ')'; sel.appendChild(o); if (c.nom === pref) idx = i; });
+    sel.value = idx;
+    var go = function () { choisir(idx); };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(go); else go();
+  }
+  function fermer() {
+    if (enCours) return;
+    $('roue-ov').classList.remove('on'); document.body.classList.remove('roue-ouverte'); fermerGagnant();
+  }
+
+  $('roue-ouvrir').addEventListener('click', ouvrir);
+  $('roue-fermer').addEventListener('click', fermer);
+  $('roue-classe').addEventListener('change', function () { choisir(+this.value); });
+  $('roue-tourner').addEventListener('click', tourner);
+  $('roue-go').addEventListener('click', tourner);
+  $('roue-go').addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); tourner(); } });
+  $('roue-son').addEventListener('click', function () { son = !son; this.textContent = son ? '🔊' : '🔇'; });
+  $('roue-ok').addEventListener('click', fermerGagnant);
+  $('roue-absent').addEventListener('click', function () {
+    var x = E_(), n = x.h.pop(); if (n) { x.c[n] = Math.max(0, (x.c[n] || 1) - 1); sauver(); absents[cur.nom][n] = true; }
+    fermerGagnant(); setTimeout(tourner, 400);
+  });
+  $('roue-annuler').addEventListener('click', function () {
+    var x = E_(); if (!x.h.length || enCours) return;
+    var n = x.h[x.h.length - 1];
+    if (!confirm('Annuler le dernier tirage (' + E[n] + ') ?')) return;
+    x.h.pop(); x.c[n] = Math.max(0, (x.c[n] || 1) - 1); sauver(); maj();
+  });
+  $('roue-zero').addEventListener('click', function () {
+    if (enCours || !confirm('Remettre à zéro les passages de la classe ' + cur.nom + ' ?')) return;
+    etat[cur.nom] = { c: {}, h: [] }; sauver(); maj();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!$('roue-ov').classList.contains('on')) return;
+    if (e.key === 'Escape') { if ($('roue-win').classList.contains('on')) fermerGagnant(); else fermer(); }
+    else if ((e.key === ' ' || e.key === 'Enter') && !$('roue-win').classList.contains('on') && document.activeElement.tagName !== 'SELECT' && document.activeElement.tagName !== 'BUTTON') { e.preventDefault(); tourner(); }
+  });
+})();
+</script>
   <h2 class="section-title home-choix">Choisis ton niveau</h2>
   <div class="level-grid grid-niveaux">
 <a class="level-card" href="6eme.html" style="--c:#2563eb;--cl:#e6eeff">
