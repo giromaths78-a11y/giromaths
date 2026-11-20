@@ -30,8 +30,4 @@ _Bientôt disponible._
 
 _Bientôt disponible._
 
-## Autres fichiers
-
-- [trigo-relation-animee.html](autres/trigo-relation-animee.html)
-
 [← Toutes les séquences de 3ème](../README.md)
