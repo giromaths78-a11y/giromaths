@@ -151,6 +151,7 @@ table.tp td.tr{background:#ffedd5;color:#c2410c}
 #etapes.anim4 td.t3{animation:hiOff .5s 4.4s both,clignT .6s 4.9s 2}
 #etapes.anim4 td.t3 .bdg{animation:pop .5s 4.4s both}
 #etapes.anim4 .c4d{display:inline-block;animation:vient .6s 5.4s both}
+#etapes.anim4 .c4e,#etapes.anim4 li.der .note{display:inline-block;margin-left:6px;animation:vient .6s 6.4s both}
 #bulle .ph{transition:none}
 .bulle-anim .ph2{animation:phIn .5s 4.4s both}
 @keyframes phIn{from{opacity:.25}}
@@ -319,7 +320,7 @@ function etapes(e){
   // rédaction
   E.push({t:"Je rédige",b:`Je commence toujours par dire <b>dans quel triangle rectangle</b> je travaille.`,fig:4,red:`On sait que le triangle ${e.nomTri} est rectangle en ${e.D}.`});
   E.push({t:"La formule",b:`J'écris la formule avec <b>les lettres de la figure</b> : ${MOT[e.f][0]} = ${f}, ${MOT[e.f][1]} en haut, ${MOT[e.f][2]} en bas.`,fig:4,red:`Donc : ${f} ${ang(e.nomAng)} = ${fr(c[e.num],c[e.den])}`});
-  let remp,exact,calcIn,calcOut,res,phrase,noteEx;
+  let remp,exact,calcIn,calcOut,res,phrase,noteEx,arrL=false;
   if(mode==="L"){
     const vC=valTxt(e.vConnu);
     const n=e.inconnue==="num"?c[e.num]:vC, d=e.inconnue==="num"?vC:c[e.den];
@@ -331,6 +332,7 @@ function etapes(e){
     const vr=arr?valTxt(Math.round(e.vCherche*1e6)/1e6):nf(e.vCherche,e.dec);
     res=`${c[e.cherche]} ${arr?"=":"≈"} ${vr} ${u}`;
     e.noteRes=arr?"(valeur exacte)":`(arrondi ${e.prec.replace(" près","")})`;
+    arrL=arr;
     phrase=`La longueur ${c[e.cherche]} mesure ${arr?"":"environ "}${vr} ${u}.`;
   }else{
     remp=`On remplace : ${f} ${ang(e.nomAng)} = ${fr(valTxt(e.vNum),valTxt(e.vDen))}`;
@@ -363,10 +365,10 @@ function etapes(e){
     E.push({t:"Dénominateur 1",b:`J'écris ${fa} comme une fraction de <b>dénominateur 1</b> : l'égalité des deux fractions donne un <b>tableau de proportionnalité</b>.`,fig:4,
       red:`${fr(fa,"1")} = ${fr(n,d)}<div class="tpw">${tabH(false)}</div>`,
       redHL:`${fr(fa,"1")} = ${fr(n,d)}<div class="tpw">${tabH(true)}</div>`});
-    E.push({t:"Quatrième proportionnelle",b:`Sur le tableau : <span class="ph ph1">① je repère les <b>deux nombres en diagonale</b> (${vC} et ${b2}, en bleu) et je les <b>multiplie</b> ;</span> <span class="ph ph2">② je <b>divise par le troisième nombre</b> (${t3}, en orange).</span>`,fig:4,hl:1,
-      red:calc4});
+    E.push({t:"Quatrième proportionnelle",b:`Sur le tableau : <span class="ph ph1">① je repère les <b>deux nombres en diagonale</b> (${vC} et ${b2}, en bleu) et je les <b>multiplie</b> ;</span> <span class="ph ph2">② je <b>divise par le troisième nombre</b> (${t3}, en orange) ;</span> <span class="ph ph3">③ je simplifie l'écriture${arrL?"":" : c'est la <b>valeur exacte</b>"}.</span>`,fig:4,hl:1,
+      red:`${calc4}<span class="c4e"> = ${exact.replace(/^[^=]*= /,"")}</span>`,note:arrL?"":"(valeur exacte)"});
   }
-  E.push({t:"Valeur exacte",b: mode==="L"
+  if(mode!=="L")E.push({t:"Valeur exacte",b: mode==="L"
       ? `Je simplifie l'écriture : c'est la <b>valeur exacte</b> de ${c[e.cherche]}.`
       : `Pour retrouver l'angle à partir de son ${ {cos:"cosinus",sin:"sinus",tan:"tangente"}[e.f]}, on utilise la fonction réciproque : <b>${ {cos:"arccos",sin:"arcsin",tan:"arctan"}[e.f]}</b> (ou <b>${f}<sup>-1</sup></b>). C'est la valeur exacte ; cette écriture n'est <b>pas exigible en 3<sup>e</sup></b>.`,
     fig:4,red:exact,note:noteEx});
@@ -382,7 +384,7 @@ function etapes(e){
       `${f}(${valTxt(e.a)}°) = ${fr(n,d)} <span class="opt">(on remplace)</span>`,
       `${fr(f+"("+valTxt(e.a)+"°)","1")} = ${fr(n,d)} <span class="opt">(facultatif : dénominateur 1)</span>`,
       `<span class="tpw">${e.tab4}</span> <span class="opt">(facultatif : tableau de proportionnalité)</span>`,
-      `Donc ${exact.replace(/^/,"")} <span class="opt">(valeur exacte)</span>`,
+      `Donc ${exact}${arrL?"":' <span class="opt">(valeur exacte)</span>'}`,
       `<mark class="final">Donc ${res}</mark> <span class="opt">${e.noteRes}</span>`];
     E.push({t:"Sur ma copie",b:`Voici <b>tout ce que j'écris sur ma copie</b>. La ligne avec le dénominateur 1 et le tableau de proportionnalité sont <b>facultatifs</b> : ils aident à faire le bon calcul. La calculatrice, elle, reste au brouillon.`,fig:5,copie:1});
   }
@@ -504,7 +506,7 @@ btn("debut").onclick=()=>{stop();k=0;rendu();};
 btn("nouv").onclick=nouveau;
 btn("formule").onchange=nouveau;
 btn("auto").onclick=()=>{if(timer){stop();return;}btn("auto").textContent="⏸ Pause";if(k===ex.E.length-1)k=-1;
-  const go=()=>{if(k<ex.E.length-1){k++;rendu();timer=setTimeout(go,ex.E[k].hl?7800:4200);}else stop();};timer=1;go();};
+  const go=()=>{if(k<ex.E.length-1){k++;rendu();timer=setTimeout(go,ex.E[k].hl?9000:4200);}else stop();};timer=1;go();};
 // ---------- mon exemple ----------
 const lettre=id=>btn(id).value.trim().toUpperCase();
 function persoSommets(){const nom=lettre("pNom"),D=lettre("pD"),S=lettre("pS");const T=[...nom].find(x=>x!==D&&x!==S)||"?";return {nom,D,S,T};}
