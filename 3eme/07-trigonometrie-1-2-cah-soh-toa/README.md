@@ -12,12 +12,11 @@ Page du site : [index.html](index.html)
 ## Cours professeur
 
 - [Cours complet – Trigonométrie (1/2) : vocabulaire, cosinus, sinus, tangente, calculatrice, calculer une longueur](cours-prof/cours-trigonometrie-prof.pdf) (PDF)
-- [Fiche à coller, version complétée](cours-prof/fiche-a-coller-trigonometrie-prof.pdf) (PDF)
 
 ## Cours élève
 
 - [Cours élève à compléter – Trigonométrie (1/2)](cours-eleve/cours-trigonometrie-eleve.pdf) (PDF)
-- [Fiche à découper et à coller dans le cahier (CAH SOH TOA, calculatrice, quelle formule ?), 2 par page](cours-eleve/fiche-a-coller-trigonometrie.pdf) (PDF)
+- [Fiche à découper et à coller dans le cahier, dans l’ordre du cours (cosinus, CAH SOH TOA, calculatrice à compléter, méthode, quelle formule ?)](cours-eleve/fiche-a-coller-trigonometrie.pdf) (PDF)
 
 ## Fiches d'exercices
 
