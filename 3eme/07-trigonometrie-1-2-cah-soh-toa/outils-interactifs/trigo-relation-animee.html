@@ -118,11 +118,15 @@ details.perso summary{cursor:pointer;font:700 1rem "Space Grotesk",sans-serif;co
 .k{color:var(--connu);font-weight:700}.q{color:var(--cherche);font-weight:700}
 @media (prefers-reduced-motion:reduce){.new,.touche.on{animation:none}svg.fig .dessin{animation:none;stroke-dashoffset:0}.progress span,.mot{transition:none}}
 .attn{display:block;margin-top:.5em;padding:.4em .6em;border-left:4px solid #dc2626;background:rgba(220,38,38,.08);border-radius:6px;font-size:.95em}
+.fsbtn{position:absolute;top:14px;right:14px;z-index:2;background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.6);border-radius:10px;padding:6px 12px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
+.fsbtn:hover{background:rgba(255,255,255,.3)}
+html:fullscreen{overflow:auto}html:fullscreen .wrap{max-width:1500px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header class="hero">
+  <button class="fsbtn" id="fsbtn" type="button" title="Plein écran (touche F)">⛶ Plein écran</button>
   <div class="eyebrow">3<sup>e</sup> · Trigonométrie · outil animé</div>
   <h1>Écrire la bonne relation trigonométrique</h1>
   <p>Calculer une longueur : figure à main levée codée, ce que l'on connaît et ce que l'on cherche, CAH SOH TOA, puis la rédaction ligne par ligne jusqu'au résultat (exact ou arrondi). Exemple au hasard, ou votre propre exemple.</p>
@@ -465,7 +469,7 @@ btn("auto").onclick=()=>{if(timer){stop();return;}btn("auto").textContent="⏸ P
 const lettre=id=>btn(id).value.trim().toUpperCase();
 function persoSommets(){const nom=lettre("pNom"),D=lettre("pD"),S=lettre("pS");const T=[...nom].find(x=>x!==D&&x!==S)||"?";return {nom,D,S,T};}
 function persoSelects(){
-  const {D,S,T}=persoSommets(),cc={hyp:S+T,adj:S+D,opp:D+T},nom={hyp:"hypoténuse",adj:"côté adjacent à l'angle",opp:"côté opposé à l'angle"};
+  const {D,S,T}=persoSommets(),cc={hyp:S+T,adj:S+D,opp:D+T},nom={hyp:"hypoténuse",adj:`côté adjacent à l'angle ${T}${S}${D}`,opp:`côté opposé à l'angle ${T}${S}${D}`};
   for(const id of ["pConnu","pCherche"]){const sel=btn(id),old=sel.value;
     sel.innerHTML=["hyp","adj","opp"].map(k=>`<option value="${k}">[${cc[k]}] ${nom[k]}</option>`).join("");if(old)sel.value=old;}
   if(!btn("pConnu").value)btn("pConnu").value="adj";
@@ -489,6 +493,13 @@ btn("pGo").onclick=()=>{
 persoSelects();
 document.addEventListener("keydown",ev=>{if(ev.target.tagName==="SELECT")return;if(ev.key==="ArrowRight")btn("suiv").click();if(ev.key==="ArrowLeft")btn("prec").click();});
 nouveau();
+</script>
+<script>
+(()=>{const b=document.getElementById("fsbtn");const maj=()=>{b.textContent=document.fullscreenElement?"✕ Quitter le plein écran":"⛶ Plein écran";};
+const bascule=()=>{try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen();}catch(e){}};
+b.addEventListener("click",bascule);document.addEventListener("fullscreenchange",maj);
+document.addEventListener("keydown",ev=>{if((ev.key==="f"||ev.key==="F")&&!/INPUT|SELECT|TEXTAREA/.test(ev.target.tagName))bascule();});
+if(!document.fullscreenEnabled)b.style.display="none";})();
 </script>
 </body>
 </html>

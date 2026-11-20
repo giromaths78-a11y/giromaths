@@ -80,11 +80,15 @@ table.tp td{border:1.5px solid var(--acc);padding:2px 10px;text-align:center;fon
 table.tp td.dg{background:#dbeafe;color:#1d4ed8}
 table.tp td.inc{background:#fee2e2;color:#b91c1c}
 .rappel{font-size:.9rem;background:var(--soft);border-radius:10px;padding:8px 12px;margin-top:10px}
+.fsbtn{position:absolute;top:14px;right:14px;z-index:2;background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.6);border-radius:10px;padding:6px 12px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
+.fsbtn:hover{background:rgba(255,255,255,.3)}
+html:fullscreen{overflow:auto}html:fullscreen .wrap{max-width:1500px}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header class="hero">
+  <button class="fsbtn" id="fsbtn" type="button" title="Plein écran (touche F)">⛶ Plein écran</button>
   <div class="eyebrow">3<sup>e</sup> · Trigonométrie 1/2 · exercices interactifs</div>
   <h1>Cosinus, sinus, tangente : je m'entraîne</h1>
   <p>Repérer les côtés, choisir la bonne formule avec CAH SOH TOA, calculer une longueur, résoudre des problèmes. Une nouvelle question à chaque fois, avec la correction rédigée comme dans le cours.</p>
@@ -337,6 +341,13 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelect
 $("suivante").onclick=nouvelle;
 const h=location.hash.slice(1);if(ONG[h]){onglet=h;document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x.dataset.t===h));}
 nouvelle();
+</script>
+<script>
+(()=>{const b=document.getElementById("fsbtn");const maj=()=>{b.textContent=document.fullscreenElement?"✕ Quitter le plein écran":"⛶ Plein écran";};
+const bascule=()=>{try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen();}catch(e){}};
+b.addEventListener("click",bascule);document.addEventListener("fullscreenchange",maj);
+document.addEventListener("keydown",ev=>{if((ev.key==="f"||ev.key==="F")&&!/INPUT|SELECT|TEXTAREA/.test(ev.target.tagName))bascule();});
+if(!document.fullscreenEnabled)b.style.display="none";})();
 </script>
 </body>
 </html>

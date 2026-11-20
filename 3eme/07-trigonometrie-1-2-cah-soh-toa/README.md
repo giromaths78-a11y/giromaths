@@ -35,13 +35,4 @@ Page du site : [index.html](index.html)
 - [Animation pas à pas : écrire la bonne relation trigonométrique (figure codée, connu / cherché, CAH SOH TOA, rédaction, calculatrice, arrondi)](outils-interactifs/trigo-relation-animee.html) (Interactif)
 - [Cosinus, sinus, tangente : exercices interactifs (nommer les côtés, choisir la formule, calculer une longueur, problèmes) avec correction rédigée](outils-interactifs/trigo-exercices.html) (Interactif)
 
-## Autres fichiers
-
-- [copie.png](autres/copie.png)
-- [tag0.png](autres/tag0.png)
-- [tag1.png](autres/tag1.png)
-- [tag2.png](autres/tag2.png)
-- [tag3.png](autres/tag3.png)
-- [top.png](autres/top.png)
-
 [← Toutes les séquences de 3ème](../README.md)
