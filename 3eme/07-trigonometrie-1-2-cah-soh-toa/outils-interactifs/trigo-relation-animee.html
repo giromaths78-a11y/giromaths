@@ -121,6 +121,21 @@ details.perso summary{cursor:pointer;font:700 1rem "Space Grotesk",sans-serif;co
 .fsbtn{position:absolute;top:14px;right:14px;z-index:2;background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.6);border-radius:10px;padding:6px 12px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
 .fsbtn:hover{background:rgba(255,255,255,.3)}
 html:fullscreen{overflow:auto}html:fullscreen .wrap{max-width:1500px}
+.tpbox{position:relative;display:inline-block}
+table.tp td{position:relative;width:96px}
+.tpbox.hl table.tp td{padding:9px 12px 9px 28px}
+.tpbox.hl table.tp td.dg{box-shadow:inset 0 0 0 2px var(--connu)}
+.tpbox.hl table.tp td.tr{box-shadow:inset 0 0 0 2px #ea580c}
+table.tp td.tr{background:#ffedd5;color:#c2410c}
+.tpbox .bdg{position:absolute;top:50%;left:5px;margin-top:-9px;width:18px;height:18px;border-radius:50%;background:var(--connu);color:#fff;font:700 12px/18px Inter,sans-serif;font-style:normal;text-align:center;z-index:2}
+.tpbox td.tr .bdg{background:#ea580c}
+.tpbox svg.diag{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.tpbox svg.diag line{stroke:var(--connu);stroke-width:4;stroke-linecap:round;vector-effect:non-scaling-stroke;opacity:.75}
+#etapes.anim4 .tpbox.hl svg.diag line{animation:trace 1.1s ease-out}
+#etapes.anim4 .tpbox.hl .bdg,#etapes.anim4 .tpbox.hl td.dg,#etapes.anim4 .tpbox.hl td.tr{animation:pop .6s ease-out}
+@keyframes pop{0%{transform:scale(.6);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+@keyframes trace{from{opacity:0}to{opacity:.75}}
+mark.final{background:#fde047;color:#111;padding:2px 8px;border-radius:5px;font-weight:700;box-decoration-break:clone}
 </style>
 </head>
 <body>
@@ -315,16 +330,20 @@ function etapes(e){
     const vC=valTxt(e.vConnu),fa=`${f}(${valTxt(e.a)}°)`,X=c[e.cherche];
     const n=e.inconnue==="num"?X:vC, d=e.inconnue==="num"?vC:X;
     // tableau : [fa | n] / [1 | d] ; l'inconnue est n (en haut) ou d (en bas)
-    const cell=(t,cl)=>`<td class="${cl}">${t}</td>`;
-    const tab=e.inconnue==="num"
-      ?`<table class="tp"><tr>${cell(fa,"dg")}${cell(X,"inc")}</tr><tr>${cell("1","")}${cell(vC,"dg")}</tr></table>`
-      :`<table class="tp"><tr>${cell(fa,"")}${cell(vC,"dg")}</tr><tr>${cell("1","dg")}${cell(X,"inc")}</tr></table>`;
-    const calc4=e.inconnue==="num"?`${X} = ${fr(vC+" × "+fa,"1")}`:`${X} = ${fr(vC+" × 1",fa)}`;
-    e.tab4=tab;
+    // hl=false : tableau simple ; hl=true : même tableau, diagonale (×) et troisième nombre (÷) mis en évidence
+    const cell=(t,cl,badge)=>`<td class="${cl}">${t}${badge?`<i class="bdg">${badge}</i>`:""}</td>`;
+    const num=e.inconnue==="num";
+    const tabH=hl=>`<span class="tpbox${hl?" hl "+(num?"d1":"d2"):""}"><table class="tp">`+(num
+      ?`<tr>${cell(fa,hl?"dg":"",hl&&"×")}${cell(X,"inc")}</tr><tr>${cell("1",hl?"tr":"",hl&&"÷")}${cell(vC,hl?"dg":"",hl&&"×")}</tr>`
+      :`<tr>${cell(fa,hl?"tr":"",hl&&"÷")}${cell(vC,hl?"dg":"",hl&&"×")}</tr><tr>${cell("1",hl?"dg":"",hl&&"×")}${cell(X,"inc")}</tr>`)
+      +`</table>${hl?'<svg class="diag" viewBox="0 0 100 100" preserveAspectRatio="none"><line x1="'+(num?42:58)+'" y1="38" x2="'+(num?58:42)+'" y2="62"/></svg>':""}</span>`;
+    const calc4=num?`${X} = ${fr(vC+" × "+fa,"1")}`:`${X} = ${fr(vC+" × 1",fa)}`;
+    e.tab4=tabH(false);
     E.push({t:"Dénominateur 1",b:`J'écris ${fa} comme une fraction de <b>dénominateur 1</b> : l'égalité des deux fractions donne un <b>tableau de proportionnalité</b>.`,fig:4,
-      red:`${fr(fa,"1")} = ${fr(n,d)}<div class="tpw">${tab}</div>`});
-    E.push({t:"Quatrième proportionnelle",b:`Pour trouver la <b>quatrième proportionnelle</b>, je multiplie les deux nombres <b>en diagonale</b> (surlignés en bleu) et je divise par le <b>troisième</b> nombre.`,fig:4,
-      red:`<div class="tpw">${tab}</div>${calc4}`});
+      red:`${fr(fa,"1")} = ${fr(n,d)}<div class="tpw">${tabH(false)}</div>`,
+      redHL:`${fr(fa,"1")} = ${fr(n,d)}<div class="tpw">${tabH(true)}</div>`});
+    E.push({t:"Quatrième proportionnelle",b:`Sur le tableau, je <b>multiplie les deux nombres en diagonale</b> (×, en bleu) puis je <b>divise par le troisième</b> nombre (÷, en orange).`,fig:4,hl:1,
+      red:calc4});
   }
   E.push({t:"Valeur exacte",b: mode==="L"
       ? `Je simplifie l'écriture : c'est la <b>valeur exacte</b> de ${c[e.cherche]}.`
@@ -334,8 +353,7 @@ function etapes(e){
   E.push({t:"Résultat",b: mode==="L"
       ?(e.noteRes==="(valeur exacte)"?`La calculatrice donne un nombre décimal exact : j'écris <b>=</b> et je précise que c'est la <b>valeur exacte</b>.`
         :`Le résultat n'est pas un nombre « rond » : j'écris <b>≈</b> et je précise que c'est un <b>arrondi</b>, avec la précision demandée (${e.prec}${e.dec?" : "+e.dec+" chiffre"+(e.dec>1?"s":"")+" après la virgule en "+u:""}).`)
-      :`J'écris <b>≈</b> car c'est un <b>arrondi</b>, avec la précision demandée (${e.prec}).`,fig:5,red:res,note:e.noteRes});
-  E.push({t:"Phrase réponse",b:`Je termine par une <b>phrase réponse</b>.`,fig:5,red:phrase});
+      :`J'écris <b>≈</b> car c'est un <b>arrondi</b>, avec la précision demandée (${e.prec}).`,fig:5,red:`<mark class="final">${res}</mark>`,note:e.noteRes});
   if(mode==="L"){
     const vC=valTxt(e.vConnu),n=e.inconnue==="num"?c[e.num]:vC,d=e.inconnue==="num"?vC:c[e.den];
     e.copie=[`On sait que le triangle ${e.nomTri} est rectangle en ${e.D}.`,
@@ -344,8 +362,7 @@ function etapes(e){
       `${fr(f+"("+valTxt(e.a)+"°)","1")} = ${fr(n,d)} <span class="opt">(facultatif : dénominateur 1)</span>`,
       `<span class="tpw">${e.tab4}</span> <span class="opt">(facultatif : tableau de proportionnalité)</span>`,
       `Donc ${exact.replace(/^/,"")} <span class="opt">(valeur exacte)</span>`,
-      `Donc ${res} <span class="opt">${e.noteRes}</span>`,
-      phrase];
+      `<mark class="final">Donc ${res}</mark> <span class="opt">${e.noteRes}</span>`];
     E.push({t:"Sur ma copie",b:`Voici <b>tout ce que j'écris sur ma copie</b>. La ligne avec le dénominateur 1 et le tableau de proportionnalité sont <b>facultatifs</b> : ils aident à faire le bon calcul. La calculatrice, elle, reste au brouillon.`,fig:5,copie:1});
   }
   return E;
@@ -446,10 +463,11 @@ function rendu(anim=true){
   btn("bulle").innerHTML=`<span class="lab">${s.t}</span>${s.b}`;
   // rédaction
   btn("titreRed").textContent=s.copie?"Sur ma copie":"Je rédige";
+  btn("etapes").classList.toggle("anim4",!!(s.hl&&anim));
   if(s.copie){btn("etapes").innerHTML=`<li class="copie${anim?" new":""}">${ex.copie.map(x=>`<p>${x}</p>`).join("")}</li>`;}
   else{
-  const lignes=E.filter(x=>x.red), vues=E.slice(0,k+1).filter(x=>x.red);
-  btn("etapes").innerHTML=vues.length?vues.map((x,i)=>`<li class="${i===vues.length-1?"der":""}${x.fin?" fin":""}${i===vues.length-1&&anim?" new":""}"><span class="n">${x.t}</span>${x.red}${x.note?`<span class="note">${x.note}</span>`:""}</li>`).join("")
+  const vues=E.slice(0,k+1).filter(x=>x.red), hl=vues.some(x=>x.hl);
+  btn("etapes").innerHTML=vues.length?vues.map((x,i)=>`<li class="${i===vues.length-1?"der":""}${x.fin?" fin":""}${i===vues.length-1&&anim?" new":""}"><span class="n">${x.t}</span>${hl&&x.redHL?x.redHL:x.red}${x.note?`<span class="note">${x.note}</span>`:""}</li>`).join("")
      :`<li class="vide">La rédaction apparaît ici à partir de l'étape ${E.findIndex(x=>x.red)+1}.</li>`;
   }
   btn("etape").textContent=`Étape ${k+1} / ${E.length}`;
