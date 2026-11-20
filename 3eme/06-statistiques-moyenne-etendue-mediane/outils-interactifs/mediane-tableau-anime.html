@@ -90,6 +90,8 @@ table.t tr.ajout th{box-shadow:inset 4px 0 0 var(--acc)}
 .etapes li::before{content:counter(e);position:absolute;left:9px;top:8px;width:22px;height:22px;border-radius:50%;background:var(--acc);color:#fff;font:700 .8rem/22px "Space Grotesk",sans-serif;text-align:center}
 .etapes li.der{background:var(--hi);color:var(--hiink);border:2px solid #f59e0b;font-size:1.08rem;font-weight:600}
 .etapes li.der .rep{color:inherit}
+.etapes li.rem{counter-increment:none;padding-left:12px;background:var(--oksoft);border:2px solid var(--ok);font-size:1rem}
+.etapes li.rem::before{display:none}
 .etapes li.vide{padding-left:10px;background:none;border:0}
 .etapes li.vide::before{display:none}
 .etapes .rep{font-weight:700;color:var(--acc2)}
@@ -199,6 +201,11 @@ function buildSteps(){
   }
   L.push(k.pair?(k.a===k.b?`Les deux données valent ${F(k.a)}, donc <span class="rep">M = ${F(k.M)}</span>.`:`M = (${F(k.a)} + ${F(k.b)}) ÷ 2, donc <span class="rep">M = ${F(k.M)}</span>.`):`Donc <span class="rep">M = ${F(k.M)}</span>.`);
   push({msg:k.pair?(k.a===k.b?`Les deux données du milieu ont la même valeur : la médiane est <b>M = ${F(k.M)}</b>.`:`La médiane est la demi-somme de ces deux données : (${F(k.a)} + ${F(k.b)}) ÷ 2 = <b>${F(k.M)}</b>.`):`La médiane est cette donnée : <b>M = ${F(k.M)}</b>.`});
+  const rem=!k.pair?`Quand l'effectif total est <b>impair</b>, la médiane est la donnée du milieu de la série ordonnée : c'est <b>obligatoirement une valeur de la série</b> (ici ${F(k.M)}).`
+    :k.a===k.b?`Ici l'effectif total est pair, mais les deux données du milieu ont la même valeur : la médiane ${F(k.M)} est une valeur de la série. Ce n'est pas toujours le cas quand l'effectif total est pair. En revanche, quand l'effectif total est <b>impair</b>, la médiane est <b>obligatoirement une valeur de la série</b>.`
+    :`Ici l'effectif total est pair et la médiane ${F(k.M)} <b>n'est pas une valeur de la série</b>. En revanche, quand l'effectif total est <b>impair</b>, la médiane est la donnée du milieu : c'est <b>obligatoirement une valeur de la série</b>.`;
+  L.push("REM:"+rem);
+  push({msg:`<b>Remarque</b> : `+rem});
   return {st,L};
 }
 
@@ -235,7 +242,7 @@ function render(dir){
   $("tab").innerHTML=h+`</table>`;
   const foc=$("tab").querySelector("td.cible,td.src,td.new");if(foc){const w=$("tab"),x=foc.offsetLeft-w.clientWidth/2+foc.offsetWidth/2;w.scrollLeft=Math.max(0,x);}
   const nl=st.nL;
-  $("etapes").innerHTML=nl?LINES.slice(0,nl).map((x,i)=>{const c=[];if(i===nl-1)c.push("der");if(i>=prev.nL&&dir>0)c.push("new");return `<li class="${c.join(" ")}">${x}</li>`;}).join(""):`<li class="vide">Les étapes apparaîtront ici au fur et à mesure.</li>`;
+  $("etapes").innerHTML=nl?LINES.slice(0,nl).map((x,i)=>{const c=[],r=x.startsWith("REM:");if(r)c.push("rem");else if(i===nl-1)c.push("der");if(i>=prev.nL&&dir>0)c.push("new");return `<li class="${c.join(" ")}">${r?"<b>Remarque :</b> "+x.slice(4):x}</li>`;}).join(""):`<li class="vide">Les étapes apparaîtront ici au fur et à mesure.</li>`;
   $("etape").textContent=`Étape ${cur+1} / ${STEPS.length}`;
   $("prog").style.width=(100*(cur+1)/STEPS.length)+"%";
   $("prec").disabled=cur===0;$("suiv").disabled=cur===STEPS.length-1;
