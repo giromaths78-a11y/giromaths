@@ -44,6 +44,22 @@ button:focus-visible,input:focus-visible{outline:3px solid var(--blue);outline-o
 svg{display:block;width:100%;height:auto}
 svg text{font-family:var(--f-body);fill:var(--ink)}
 .controls{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+/* Plein écran (vidéoprojecteur) : la figure prend toute la hauteur disponible */
+body.fs{overflow:hidden}
+body.fs .wrap{max-width:none;height:100vh;height:100dvh;padding:8px 14px;gap:8px}
+body.fs .wrap>div:first-child{display:none}
+body.fs nav button{padding:4px 10px;font-size:.9rem}
+body.fs .params{padding:6px 10px;gap:8px}
+body.fs .params label{font-size:.8rem}
+body.fs .params input{padding:3px 6px}
+body.fs .params .btn{padding:4px 10px;font-size:.9rem}
+body.fs .stage{flex:1 1 auto;min-height:0;display:flex;flex-direction:column}
+body.fs .caption{padding:8px 16px;min-height:0}
+body.fs .caption .t{font-size:clamp(1.15rem,2.2vw,1.7rem)}
+body.fs svg#svg{flex:1 1 auto;min-height:0;height:100%}
+body.fs .controls{gap:8px}
+body.fs .controls .btn{padding:6px 12px}
+body.fs.sans-reglages nav,body.fs.sans-reglages .params{display:none}
 .controls label{display:flex;gap:6px;align-items:center;color:var(--muted)}
 input[type=range]{accent-color:var(--blue)}
 .dots{display:flex;gap:5px;flex-wrap:wrap}
@@ -69,6 +85,8 @@ input[type=range]{accent-color:var(--blue)}
     <button class="btn primary" id="play">▶ Lecture</button>
     <button class="btn" id="next">Étape suivante ▶</button>
     <button class="btn" id="reset">↺ Recommencer</button>
+    <button class="btn" id="fs" title="Plein écran (touche F)">⛶ Plein écran</button>
+    <button class="btn" id="regl" hidden>Masquer les réglages</button>
     <label for="boucle"><input type="checkbox" id="boucle"> Lecture en boucle</label>
     <label for="speed">Vitesse <input type="range" id="speed" min="0.5" max="2" step="0.25" value="1"></label>
     <div class="dots" id="dots"></div>
@@ -271,6 +289,23 @@ $('#params').addEventListener('submit',e=>{e.preventDefault();playing=false;buil
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{location.hash=b.dataset.c;setCase(b.dataset.c)});
 window.addEventListener('hashchange',()=>{const h=location.hash.slice(1);if(presets[h]&&h!==cur)setCase(h)});
 setCase(presets[location.hash.slice(1)]?location.hash.slice(1):'a');
+/* ---------- plein écran ---------- */
+const docEl=document.documentElement;
+const fsApi=!!(docEl.requestFullscreen||docEl.webkitRequestFullscreen);
+const enFs=()=>!!(document.fullscreenElement||document.webkitFullscreenElement);
+function majFs(on){document.body.classList.toggle('fs',on);if(!on)document.body.classList.remove('sans-reglages');
+  $('#fs').textContent=on?'✕ Quitter le plein écran':'⛶ Plein écran';$('#regl').hidden=!on;$('#regl').textContent='Masquer les réglages'}
+function basculerFs(){const on=document.body.classList.contains('fs');
+  if(fsApi){if(!on){(docEl.requestFullscreen||docEl.webkitRequestFullscreen).call(docEl);majFs(true)}else{if(enFs())(document.exitFullscreen||document.webkitExitFullscreen).call(document);majFs(false)}}
+  else majFs(!on)}  // iPhone : pas d'API plein écran, on agrandit dans la fenêtre
+$('#fs').onclick=basculerFs;
+['fullscreenchange','webkitfullscreenchange'].forEach(ev=>document.addEventListener(ev,()=>{if(!enFs())majFs(false)}));
+$('#regl').onclick=()=>{const c=document.body.classList.toggle('sans-reglages');$('#regl').textContent=c?'Afficher les réglages':'Masquer les réglages'};
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT')return;
+  if(e.key==='f'||e.key==='F'){e.preventDefault();basculerFs()}
+  else if(e.key===' '){e.preventDefault();$('#play').click()}
+  else if(e.key==='ArrowRight')$('#next').click();else if(e.key==='ArrowLeft')$('#prev').click();
+  else if(e.key==='Escape'&&document.body.classList.contains('fs')&&!enFs())majFs(false)});
 // état initial lisible : afficher la figure terminée en aperçu ? on montre l'étape 1 prête.
 })();
 </script>
