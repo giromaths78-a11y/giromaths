@@ -121,6 +121,11 @@ svg .small{font-size:11px;fill:var(--muted)}
 
 
 <style>
+
+.stage{display:grid;grid-template-columns:minmax(170px,220px) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:700px){.stage{grid-template-columns:minmax(0,1fr)}}
+.stage .card h2{font-size:1rem}
+
 #ggb{width:100%;min-height:420px;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}
 .panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;margin-top:14px}
 @media (max-width:700px){.panel{grid-template-columns:minmax(0,1fr)}}
@@ -158,12 +163,17 @@ table.m th{background:var(--accent-soft);font-weight:700}
     <button class="btn" type="button" data-preset="2">Situation 2 : pas parallèles</button>
     <button class="btn" type="button" data-preset="3">Papillon</button>
   </div>
-  <div id="ggb"></div>
-  <div class="panel">
-    <div class="card"><h2>Longueurs mesurées <small class="hint">(en unités de la figure, au dixième)</small></h2>
-      <table class="m"><tr><th>AB</th><th>AM</th><th>AC</th><th>AN</th><th>BC</th><th>MN</th></tr>
-      <tr><td id="ab">–</td><td id="am">–</td><td id="ac">–</td><td id="an">–</td><td id="bc">–</td><td id="mn">–</td></tr></table>
+  <div class="stage">
+    <div class="card"><h2>Longueurs mesurées</h2>
+      <p class="hint" style="margin:0 0 6px">En unités de la figure, au dixième.</p>
+      <table class="m lens"><tr><th>Triangle ABC</th><th>Triangle AMN</th></tr>
+      <tr><td>AB = <span id="ab">–</span></td><td>AM = <span id="am">–</span></td></tr>
+      <tr><td>AC = <span id="ac">–</span></td><td>AN = <span id="an">–</span></td></tr>
+      <tr><td>BC = <span id="bc">–</span></td><td>MN = <span id="mn">–</span></td></tr></table>
     </div>
+    <div id="ggb"></div>
+  </div>
+  <div class="panel" style="grid-template-columns:minmax(0,1fr)">
     <div class="card" id="qcard"><h2>Quotients <small class="hint">(arrondis au centième)</small></h2>
       <table class="m"><tr><th><span class="frac"><span>AB</span><span>AM</span></span></th><th><span class="frac"><span>AC</span><span>AN</span></span></th><th><span class="frac"><span>BC</span><span>MN</span></span></th></tr>
       <tr class="big"><td class="val" id="q1">–</td><td class="val" id="q2">–</td><td class="val" id="q3">–</td></tr></table>
@@ -194,6 +204,7 @@ const cmds=[
 function setup(a){
   if(svgm) return;
   api=a;
+  try{api.setPerspective('G');}catch(e){}
   cmds.forEach(c=>api.evalCommand(c));
   api.evalCommand('SetCoords(M,-2.11,1.47)'); api.evalCommand('SetCoords(Nl,1.6,0.8)');
   ['pBC','Np','N','par','ab','am','ac','an','bc','mn'].forEach(o=>{api.setVisible(o,false);});
@@ -201,6 +212,8 @@ function setup(a){
   api.evalCommand('SetConditionToShowObject(Np,par)'); api.evalCommand('SetConditionToShowObject(Nl,par==false)');
   ['Np','Nl'].forEach(o=>{api.setCaption(o,'N');api.setLabelStyle(o,3);api.setLabelVisible(o,true);});
   ['A','B','C','M'].forEach(o=>api.setLabelVisible(o,true));
+  // aucun nom (dAB, sBC, ...) ni valeur écrit sur les droites et segments
+  ['dAB','dAC','sBC','sMN','pBC'].forEach(o=>api.setLabelVisible(o,false));
   api.setColor('dAB',90,107,133); api.setColor('dAC',90,107,133);
   api.setColor('sBC',30,110,200); api.setLineThickness('sBC',7);
   api.setColor('sMN',200,40,40); api.setLineThickness('sMN',7);
@@ -281,7 +294,7 @@ function startSvg(){
 function inject(){
   if(typeof GGBApplet==='undefined'){startSvg();return;}
   const w=Math.max(300,$('ggb').clientWidth), h=Math.round(Math.min(560,Math.max(380,w*0.62)));
-  const params={appName:'classic',width:w,height:h,showToolBar:false,showAlgebraInput:false,showMenuBar:false,enableRightClick:false,
+  const params={appName:'classic',width:w,height:h,perspective:'G',showToolBar:false,showAlgebraInput:false,showAlgebraView:false,showMenuBar:false,enableRightClick:false,
     enableLabelDrags:false,enableShiftDragZoom:true,showZoomButtons:true,showResetIcon:false,language:'fr',borderColor:'#FFFFFF',
     appletOnLoad:setup};
   new GGBApplet(params,true).inject('ggb');
