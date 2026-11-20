@@ -18,6 +18,7 @@
 body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
 .wrap{max-width:1180px;margin:0 auto;padding:20px 16px 60px}
 header.hero{background:linear-gradient(135deg,#c026d3,#701a75);color:#fff;border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
+@media (min-width:601px){header.hero{padding-right:180px}}
 header.hero::after{content:"3 + 7 = 10";position:absolute;right:14px;bottom:-12px;font:700 50px/1 "Space Grotesk",sans-serif;opacity:.15;white-space:nowrap}
 .eyebrow{font:600 .8rem "Space Grotesk",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
 h1{font:700 clamp(1.6rem,4.5vw,2.3rem)/1.1 "Space Grotesk",sans-serif;margin:4px 0 6px}
@@ -116,11 +117,22 @@ svg.acco path{fill:none;stroke:var(--acc);stroke-width:2}
 .fl{position:absolute;top:0;left:50%;transform:translateX(-50%);font:700 .78rem/1.05 Inter,sans-serif;color:#d97706;text-align:center;height:30px;white-space:nowrap}
 .fl.new{animation:none}
 .rangee.grpd{align-items:flex-start}
+.etapes li.copie{counter-increment:none;padding:12px 16px;background:var(--card);border:2px solid var(--ok);font-size:1.02rem}
+.etapes li.copie::before{display:none}
+.etapes li.copie .cl{display:block;line-height:1.9;border-bottom:1px dashed var(--line);padding:5px 0}
+.etapes li.copie .cl:last-child{border-bottom:0}
+.etapes .opt{color:var(--muted);font-style:italic;font-size:.9em}
+mark.final{background:#fde047;color:#111;padding:2px 8px;border-radius:5px;font-weight:700}
+.fsbtn{position:absolute;top:14px;right:14px;z-index:2;background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.6);border-radius:10px;padding:6px 12px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
+.fsbtn:hover{background:rgba(255,255,255,.3)}
+html:fullscreen{overflow:auto}html:fullscreen .wrap{max-width:1500px}
+@media (max-width:600px){.fsbtn{display:none}}
 </style>
 
 <body>
 <div class="wrap">
 <header class="hero">
+  <button class="fsbtn" id="fsbtn" type="button" title="Plein écran (touche F)">⛶ Plein écran</button>
   <div class="eyebrow">3<sup>e</sup> · S6 Statistiques · outil animé</div>
   <h1>Trouver la médiane pas à pas</h1>
   <p>À partir d'une liste de données (qu'on range dans l'ordre croissant), d'un tableau des effectifs (avec les effectifs cumulés croissants) ou d'un diagramme en bâtons : on retrouve la médiane étape par étape.</p>
@@ -150,7 +162,7 @@ svg.acco path{fill:none;stroke:var(--acc);stroke-width:2}
 <section class="card"><h2 id="tabT">Tableau des effectifs</h2><div class="enonce" id="enonce"></div><div class="tw" id="tab"></div>
 <div class="bulle" id="bulle" aria-live="polite"></div></section>
 </div>
-<section class="card panneau"><h2>Étapes du raisonnement</h2><ol class="etapes" id="etapes"></ol></section>
+<section class="card panneau"><h2 id="titreRed">Étapes du raisonnement</h2><ol class="etapes" id="etapes"></ol></section>
 </div>
 </div>
 
@@ -161,12 +173,12 @@ const F=x=>String(Math.round(x*100)/100).replace(".",",");
 const eme=n=>n+"<sup>e</sup>";
 
 const CTX=[
- {enonceL:"Notes (sur 20) obtenues par des élèves à un contrôle.",lst:()=>R(4,19),enonce:"Notes (sur 20) obtenues par les élèves d'une classe à un contrôle.",interp:m=>[`Au moins la moitié des élèves ont eu ${m} ou plus`,`au moins la moitié des élèves ont eu ${m} ou moins`],lab:"Note",
+ {enonceL:"Notes (sur 20) obtenues par des élèves à un contrôle.",lst:()=>R(4,19),enonce:"Notes (sur 20) obtenues par les élèves d'une classe à un contrôle.",interp:m=>[`Au moins la moitié des élèves ont eu ${m} ou plus`,`au moins la moitié des élèves ont eu ${m} ou moins`],mot:"notes",ind:"élèves",phrase:m=>`La note médiane est de ${m} sur 20.`,lab:"Note",
   vals:()=>{const a=R(6,12),s=R(1,2);return [0,1,2,3,4,5].map(k=>a+k*s).filter(v=>v<=20);}},
- {enonceL:"Pointures de quelques élèves d'une classe.",lst:()=>R(35,42),enonce:"Pointures des élèves d'une classe.",interp:m=>[`Au moins la moitié des élèves chaussent du ${m} ou plus`,`au moins la moitié des élèves chaussent du ${m} ou moins`],lab:"Pointure",vals:()=>{const a=R(35,37);return [0,1,2,3,4,5].map(k=>a+k);}},
- {enonceL:"Nombre de frères et sœurs de quelques élèves.",lst:()=>R(0,4),enonce:"Nombre de frères et sœurs des élèves d'une classe.",interp:m=>[`Au moins la moitié des élèves ont ${m} frères et sœurs ou plus`,`au moins la moitié des élèves ont ${m} frères et sœurs ou moins`],lab:"Nombre de frères et sœurs",vals:()=>[0,1,2,3,4,5].slice(0,R(5,6))},
- {enonceL:"Nombre de buts marqués à chaque match par une équipe de football.",lst:()=>R(0,5),enonce:"Nombre de buts marqués à chaque match par une équipe de football pendant la saison.",interp:m=>[`Lors d'au moins la moitié des matchs, l'équipe a marqué ${m} buts ou plus`,`lors d'au moins la moitié des matchs, l'équipe a marqué ${m} buts ou moins`],lab:"Nombre de buts",vals:()=>[0,1,2,3,4,5].slice(0,R(5,6))},
- {enonceL:"Temps de trajet (en minutes) entre le domicile et le collège de quelques élèves.",lst:()=>5*R(1,9),enonce:"Temps de trajet (en minutes) entre le domicile et le collège des élèves d'une classe.",interp:m=>[`Au moins la moitié des élèves mettent ${m} minutes ou plus`,`au moins la moitié des élèves mettent ${m} minutes ou moins`],lab:"Temps (en min)",vals:()=>[5,10,15,20,25,30].slice(0,R(5,6))},
+ {enonceL:"Pointures de quelques élèves d'une classe.",lst:()=>R(35,42),enonce:"Pointures des élèves d'une classe.",interp:m=>[`Au moins la moitié des élèves chaussent du ${m} ou plus`,`au moins la moitié des élèves chaussent du ${m} ou moins`],mot:"pointures",ind:"élèves",phrase:m=>`La pointure médiane est ${m}.`,lab:"Pointure",vals:()=>{const a=R(35,37);return [0,1,2,3,4,5].map(k=>a+k);}},
+ {enonceL:"Nombre de frères et sœurs de quelques élèves.",lst:()=>R(0,4),enonce:"Nombre de frères et sœurs des élèves d'une classe.",interp:m=>[`Au moins la moitié des élèves ont ${m} frères et sœurs ou plus`,`au moins la moitié des élèves ont ${m} frères et sœurs ou moins`],mot:"données",ind:"élèves",phrase:m=>`Le nombre médian de frères et sœurs est ${m}.`,lab:"Nombre de frères et sœurs",vals:()=>[0,1,2,3,4,5].slice(0,R(5,6))},
+ {enonceL:"Nombre de buts marqués à chaque match par une équipe de football.",lst:()=>R(0,5),enonce:"Nombre de buts marqués à chaque match par une équipe de football pendant la saison.",interp:m=>[`Lors d'au moins la moitié des matchs, l'équipe a marqué ${m} buts ou plus`,`lors d'au moins la moitié des matchs, l'équipe a marqué ${m} buts ou moins`],mot:"données",ind:"matchs",phrase:m=>`Le nombre médian de buts marqués par match est ${m}.`,lab:"Nombre de buts",vals:()=>[0,1,2,3,4,5].slice(0,R(5,6))},
+ {enonceL:"Temps de trajet (en minutes) entre le domicile et le collège de quelques élèves.",lst:()=>5*R(1,9),enonce:"Temps de trajet (en minutes) entre le domicile et le collège des élèves d'une classe.",interp:m=>[`Au moins la moitié des élèves mettent ${m} minutes ou plus`,`au moins la moitié des élèves mettent ${m} minutes ou moins`],mot:"durées",ind:"élèves",phrase:m=>`Le temps de trajet médian est de ${m} minutes.`,lab:"Temps (en min)",vals:()=>[5,10,15,20,25,30].slice(0,R(5,6))},
 ];
 
 let MODE="tab",S=null,STEPS=[],cur=0,timer=null,lastCtx=-1;
@@ -190,6 +202,19 @@ function calc(s){
 function remTxt(k){return !k.pair?`Quand l'effectif total est <b>impair</b>, la médiane est la donnée du milieu de la série ordonnée : c'est <b>obligatoirement une valeur de la série</b> (ici ${F(k.M)}).`
     :k.a===k.b?`Ici l'effectif total est pair, mais les deux données du milieu ont la même valeur : la médiane ${F(k.M)} est une valeur de la série. Ce n'est pas toujours le cas quand l'effectif total est pair. En revanche, quand l'effectif total est <b>impair</b>, la médiane est <b>obligatoirement une valeur de la série</b>.`
     :`Ici l'effectif total est pair et la médiane ${F(k.M)} <b>n'est pas une valeur de la série</b>. En revanche, quand l'effectif total est <b>impair</b>, la médiane est la donnée du milieu : c'est <b>obligatoirement une valeur de la série</b>.`;}
+function copieLignes(liste){
+  const s=S,k=calc(s),N=s.N,so=s.vals.flatMap((v,i)=>Array(s.eff[i]).fill(v)),it=s.c.interp(F(k.M)),fr=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`,C=[];
+  if(liste)C.push(`Série ordonnée : ${so.join(" ; ")}`);
+  C.push(`Effectif total : N = ${N} (${N} ${s.c.mot} car ${N} ${s.c.ind}).`);
+  C.push(k.pair?`${N} est pair, donc on calcule ${fr(N,2)} = ${k.p}.`:`${N} est impair, donc on calcule ${fr(N+" + 1",2)} = ${k.p}.`);
+  C.push(k.pair?`La médiane est comprise entre la ${eme(k.p)} et la ${eme(k.p+1)} donnée de la série ordonnée.`:`La médiane est la ${eme(k.p)} donnée de la série ordonnée.`);
+  const lec=liste?(k.pair?`Dans la série ordonnée, la ${eme(k.p)} donnée est ${F(k.a)} et la ${eme(k.p+1)} donnée est ${F(k.b)}.`:`Dans la série ordonnée, la ${eme(k.p)} donnée est ${F(k.a)}.`)
+    :(k.pair?`Par lecture du tableau, la ${eme(k.p)} donnée correspond à la valeur ${F(k.a)} et la ${eme(k.p+1)} donnée à la valeur ${F(k.b)}.`:`Par lecture du tableau, la ${eme(k.p)} donnée correspond à la valeur ${F(k.a)}.`);
+  C.push(lec);
+  C.push(k.pair?`Donc M = ${fr(F(k.a)+" + "+F(k.b),2)} &nbsp;<mark class="final">M = ${F(k.M)}</mark>`:`Donc <mark class="final">M = ${F(k.M)}</mark>`);
+  C.push(s.c.phrase(F(k.M)));
+  C.push(`Interprétation <span class="opt">(si l'énoncé la demande)</span> : « ${it[0]} » et « ${it[1]} ».`);
+  return C;}
 function buildStepsListe(){
   const s=S,k=calc(s),n=s.vals.length,N=s.N,st=[],L=[];
   const base={moved:0,hiV:null,ordRow:false,ranks:false,pick:[],sep:false,dec:false,nL:0};
@@ -219,6 +244,7 @@ function buildStepsListe(){
   const it=s.c.interp(F(k.M));
   L.push(`<b>Interprétation :</b> « ${it[0]} » et « ${it[1]} ».`);
   push({msg:`<b>Interprétation de la médiane</b> : la médiane partage la série ordonnée en deux parties de même effectif. On écrit les deux phrases, avec les mots de l'énoncé : « ${it[0]} » et « ${it[1]} ».`,interp:true});
+  push({copie:copieLignes(true),dec:false,col:[],cible:[],scan:[],src:[],non:[],msg:`<b>Sur ma copie</b> : voici <b>tout ce que j'écris sur ma copie</b> (la série ordonnée, puis la rédaction), en sautant une ligne entre chaque étape. Le résultat est surligné.`});
   return {st,L};
 }
 function listeHTML(st,dir,prev){
@@ -289,6 +315,7 @@ function buildSteps(){
   const it=s.c.interp(F(k.M));
   L.push(`<b>Interprétation :</b> « ${it[0]} » et « ${it[1]} ».`);
   push({msg:`<b>Interprétation de la médiane</b> : la médiane partage la série ordonnée en deux parties de même effectif. On écrit les deux phrases, avec les mots de l'énoncé : « ${it[0]} » et « ${it[1]} ».`,interp:true});
+  push({copie:copieLignes(false),dec:false,col:[],cible:[],scan:[],src:[],non:[],msg:`<b>Sur ma copie</b> : voici <b>tout ce que j'écris sur ma copie</b>${MODE==="diag"?" (le tableau des effectifs avec la ligne des ECC, puis la rédaction)":" (le tableau avec la ligne des ECC, puis la rédaction)"}, en sautant une ligne entre chaque étape. Le résultat est surligné.`});
   return {st,L};
 }
 
@@ -327,6 +354,8 @@ function render(dir){
   const foc=$("tab").querySelector("td.cible,td.src,td.new");if(foc){const w=$("tab"),x=foc.offsetLeft-w.clientWidth/2+foc.offsetWidth/2;w.scrollLeft=Math.max(0,x);}
   }
   const nl=st.nL;
+  $("titreRed").textContent=st.copie?"Sur ma copie":"Étapes du raisonnement";
+  if(st.copie)$("etapes").innerHTML=`<li class="copie${dir>0?" new":""}">${st.copie.map(x=>`<div class="cl">${x}</div>`).join("")}</li>`;else
   $("etapes").innerHTML=nl?LINES.slice(0,nl).map((x,i)=>{const c=[],r=x.startsWith("REM:");if(r)c.push("rem");else if(i===nl-1)c.push("der");if(i>=prev.nL&&dir>0)c.push("new");return `<li class="${c.join(" ")}">${r?"<b>Remarque :</b> "+x.slice(4):x}</li>`;}).join(""):`<li class="vide">Les étapes apparaîtront ici au fur et à mesure.</li>`;
   $("etape").textContent=`Étape ${cur+1} / ${STEPS.length}`;
   $("prog").style.width=(100*(cur+1)/STEPS.length)+"%";
@@ -347,6 +376,11 @@ document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setMode(b.dataset.m))
 document.addEventListener("keydown",e=>{if(e.target.tagName==="SELECT")return;if(e.key==="ArrowRight"){stopAuto();go(1);}if(e.key==="ArrowLeft"){stopAuto();go(-1);}});
 window.__t={get S(){return S},calc,goEnd(){cur=STEPS.length-1;render(0);},setMode};
 setMode(["#diag","#liste"].includes(location.hash)?location.hash.slice(1):"tab");
+(()=>{const b=document.getElementById("fsbtn");const maj=()=>{b.textContent=document.fullscreenElement?"✕ Quitter le plein écran":"⛶ Plein écran";};
+const bascule=()=>{try{if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen();}catch(e){}};
+b.addEventListener("click",bascule);document.addEventListener("fullscreenchange",maj);
+document.addEventListener("keydown",ev=>{if((ev.key==="f"||ev.key==="F")&&!/INPUT|SELECT|TEXTAREA/.test(ev.target.tagName))bascule();});
+if(!document.fullscreenEnabled)b.style.display="none";})();
 </script>
 </body>
 </html>
