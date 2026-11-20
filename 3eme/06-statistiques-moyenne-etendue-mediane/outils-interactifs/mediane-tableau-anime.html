@@ -96,17 +96,27 @@ table.t tr.ajout th{box-shadow:inset 4px 0 0 var(--acc)}
 .etapes li.vide::before{display:none}
 .etapes .rep{font-weight:700;color:var(--acc2)}
 @media (max-width:600px){table.t th{white-space:normal;max-width:96px;font-size:.82rem;line-height:1.2;padding:4px 6px}table.t td{min-width:34px;padding:5px 4px}}
+.lignes .lab2{font:600 .85rem Inter,sans-serif;color:var(--muted);margin:10px 0 2px}
+.rangee{display:flex;flex-wrap:wrap;gap:6px 6px;align-items:flex-start;min-height:2.6em;padding:5px 3px 0}
+.d{display:flex;flex-direction:column;align-items:center}
+.d .chip{min-width:2.4em}
+.d .rg{font-size:.72rem;color:var(--muted);line-height:1.2;margin-top:2px}
+.chip.cib{background:var(--hi);color:var(--hiink);border-color:#f59e0b;box-shadow:0 0 0 2px #f59e0b;font-weight:700}
+.chip.ok{border-color:var(--acc);background:var(--soft)}
+.slot{min-width:2.4em;height:2.1em;border:1.5px dashed var(--line);border-radius:8px}
+.sep{align-self:stretch;width:3px;background:var(--acc);border-radius:2px;margin:0 2px}
 </style>
 
 <body>
 <div class="wrap">
 <header class="hero">
   <div class="eyebrow">3<sup>e</sup> · S6 Statistiques · outil animé</div>
-  <h1>Trouver la médiane dans un tableau</h1>
-  <p>On part du tableau des effectifs, on ajoute la ligne des effectifs cumulés croissants (ECC), puis on s'en sert pour retrouver la valeur de la médiane, étape par étape.</p>
+  <h1>Trouver la médiane pas à pas</h1>
+  <p>À partir d'une liste de données (qu'on range dans l'ordre croissant), d'un tableau des effectifs (avec les effectifs cumulés croissants) ou d'un diagramme en bâtons : on retrouve la médiane étape par étape.</p>
 </header>
 
 <div class="tabs" role="tablist">
+  <button class="tab" role="tab" data-m="liste" aria-selected="false">Liste de données</button>
   <button class="tab" role="tab" data-m="tab" aria-selected="true">Tableau des effectifs</button>
   <button class="tab" role="tab" data-m="diag" aria-selected="false">Diagramme en bâtons → tableau</button>
 </div>
@@ -126,7 +136,7 @@ table.t tr.ajout th{box-shadow:inset 4px 0 0 var(--acc)}
 <div class="scene">
 <div>
 <section class="card" id="srcCard"><h2>Diagramme en bâtons</h2><div class="enonce" id="enonceD"></div><div id="src"></div></section>
-<section class="card"><h2>Tableau des effectifs</h2><div class="enonce" id="enonce"></div><div class="tw" id="tab"></div>
+<section class="card"><h2 id="tabT">Tableau des effectifs</h2><div class="enonce" id="enonce"></div><div class="tw" id="tab"></div>
 <div class="bulle" id="bulle" aria-live="polite"></div></section>
 </div>
 <section class="card panneau"><h2>Étapes du raisonnement</h2><ol class="etapes" id="etapes"></ol></section>
@@ -140,12 +150,12 @@ const F=x=>String(Math.round(x*100)/100).replace(".",",");
 const eme=n=>n+"<sup>e</sup>";
 
 const CTX=[
- {enonce:"Notes (sur 20) obtenues par les élèves d'une classe à un contrôle.",lab:"Note",
+ {enonceL:"Notes (sur 20) obtenues par des élèves à un contrôle.",lst:()=>R(4,19),enonce:"Notes (sur 20) obtenues par les élèves d'une classe à un contrôle.",lab:"Note",
   vals:()=>{const a=R(6,12),s=R(1,2);return [0,1,2,3,4,5].map(k=>a+k*s).filter(v=>v<=20);}},
- {enonce:"Pointures des élèves d'une classe.",lab:"Pointure",vals:()=>{const a=R(35,37);return [0,1,2,3,4,5].map(k=>a+k);}},
- {enonce:"Nombre de frères et sœurs des élèves d'une classe.",lab:"Nombre de frères et sœurs",vals:()=>[0,1,2,3,4,5].slice(0,R(5,6))},
- {enonce:"Nombre de buts marqués à chaque match par une équipe de football pendant la saison.",lab:"Nombre de buts",vals:()=>[0,1,2,3,4,5].slice(0,R(5,6))},
- {enonce:"Temps de trajet (en minutes) entre le domicile et le collège des élèves d'une classe.",lab:"Temps (en min)",vals:()=>[5,10,15,20,25,30].slice(0,R(5,6))},
+ {enonceL:"Pointures de quelques élèves d'une classe.",lst:()=>R(35,42),enonce:"Pointures des élèves d'une classe.",lab:"Pointure",vals:()=>{const a=R(35,37);return [0,1,2,3,4,5].map(k=>a+k);}},
+ {enonceL:"Nombre de frères et sœurs de quelques élèves.",lst:()=>R(0,4),enonce:"Nombre de frères et sœurs des élèves d'une classe.",lab:"Nombre de frères et sœurs",vals:()=>[0,1,2,3,4,5].slice(0,R(5,6))},
+ {enonceL:"Nombre de buts marqués à chaque match par une équipe de football.",lst:()=>R(0,5),enonce:"Nombre de buts marqués à chaque match par une équipe de football pendant la saison.",lab:"Nombre de buts",vals:()=>[0,1,2,3,4,5].slice(0,R(5,6))},
+ {enonceL:"Temps de trajet (en minutes) entre le domicile et le collège de quelques élèves.",lst:()=>5*R(1,9),enonce:"Temps de trajet (en minutes) entre le domicile et le collège des élèves d'une classe.",lab:"Temps (en min)",vals:()=>[5,10,15,20,25,30].slice(0,R(5,6))},
 ];
 
 let MODE="tab",S=null,STEPS=[],cur=0,timer=null,lastCtx=-1;
@@ -153,6 +163,9 @@ let MODE="tab",S=null,STEPS=[],cur=0,timer=null,lastCtx=-1;
 function genSerie(){
   const par=document.getElementById("parite").value;
   let ci;do{ci=R(0,CTX.length-1);}while(ci===lastCtx);lastCtx=ci;const c=CTX[ci];
+  if(MODE==="liste"){for(;;){const N=R(7,13);if(par==="i"&&N%2===0||par==="p"&&N%2===1)continue;
+    const raw=Array.from({length:N},c.lst),vals=[...new Set(raw)].sort((a,b)=>a-b),eff=vals.map(v=>raw.filter(x=>x===v).length);
+    return {c,vals,eff,N,raw};}}
   for(;;){const vals=c.vals(),eff=vals.map(()=>R(1,8)),N=eff.reduce((a,b)=>a+b,0);
     if(N<15||N>35)continue;if(par==="i"&&N%2===0||par==="p"&&N%2===1)continue;return {c,vals,eff,N};}
 }
@@ -163,6 +176,53 @@ function calc(s){
   return {ecc,pair,p,i1,i2,a,b,M:pair?(a+b)/2:a};
 }
 
+function remTxt(k){return !k.pair?`Quand l'effectif total est <b>impair</b>, la médiane est la donnée du milieu de la série ordonnée : c'est <b>obligatoirement une valeur de la série</b> (ici ${F(k.M)}).`
+    :k.a===k.b?`Ici l'effectif total est pair, mais les deux données du milieu ont la même valeur : la médiane ${F(k.M)} est une valeur de la série. Ce n'est pas toujours le cas quand l'effectif total est pair. En revanche, quand l'effectif total est <b>impair</b>, la médiane est <b>obligatoirement une valeur de la série</b>.`
+    :`Ici l'effectif total est pair et la médiane ${F(k.M)} <b>n'est pas une valeur de la série</b>. En revanche, quand l'effectif total est <b>impair</b>, la médiane est la donnée du milieu : c'est <b>obligatoirement une valeur de la série</b>.`;}
+function buildStepsListe(){
+  const s=S,k=calc(s),n=s.vals.length,N=s.N,st=[],L=[];
+  const base={moved:0,hiV:null,ordRow:false,ranks:false,pick:[],sep:false,dec:false,nL:0};
+  const push=o=>st.push(Object.assign({},st.length?st[st.length-1]:base,{hiV:null},o,{nL:L.length}));
+  push({msg:`Voici les <b>${N} données</b> relevées. Elles ne sont <b>pas rangées</b> : on ne peut pas encore trouver la médiane.`});
+  push({ordRow:true,msg:`<b>Première étape obligatoire</b> : on range les données dans l'<b>ordre croissant</b>, de la plus petite à la plus grande. On les barre au fur et à mesure dans la série de départ.`});
+  s.vals.forEach((v,i)=>push({moved:i+1,hiV:v,msg:i===0
+    ?`La plus petite donnée est <b>${v}</b>${s.eff[i]>1?` (elle apparaît ${s.eff[i]} fois)`:""} : on l'écrit en premier.`
+    :`Parmi les données restantes, la plus petite est <b>${v}</b>${s.eff[i]>1?` (${s.eff[i]} fois)`:""} : on l'écrit à la suite.`}));
+  const so=s.vals.flatMap((v,i)=>Array(s.eff[i]).fill(v));
+  L.push(`Série ordonnée (ordre croissant) : ${so.join(" ; ")}.`);
+  L.push(`On compte les données : <span class="rep">N = ${N}</span>.`);
+  push({ranks:true,msg:`La série est rangée. On numérote les données : il y en a <b>${N}</b>, c'est l'<b>effectif total</b> N = ${N}.`});
+  L.push(k.pair?`${N} est pair : ${N} ÷ 2 = ${k.p}, la médiane est comprise entre la <span class="rep">${eme(k.p)} et la ${eme(k.p+1)} donnée</span> de la série ordonnée.`
+              :`${N} est impair : (${N} + 1) ÷ 2 = ${k.p}, la médiane est la <span class="rep">${eme(k.p)} donnée</span> de la série ordonnée.`);
+  push({msg:k.pair?`<b>Position de la médiane</b> : ${N} est pair, on calcule ${N} ÷ 2 = ${k.p}. La médiane est comprise entre la ${eme(k.p)} et la ${eme(k.p+1)} donnée de la série ordonnée.`
+                  :`<b>Position de la médiane</b> : ${N} est impair, on calcule (${N} + 1) ÷ 2 = ${k.p}. La médiane est la ${eme(k.p)} donnée de la série ordonnée.`});
+  L.push(k.pair?`La ${eme(k.p)} donnée est <span class="rep">${F(k.a)}</span> et la ${eme(k.p+1)} donnée est <span class="rep">${F(k.b)}</span>.`:`La ${eme(k.p)} donnée est <span class="rep">${F(k.a)}</span>.`);
+  push({pick:k.pair?[k.p,k.p+1]:[k.p],sep:true,msg:k.pair
+    ?`On repère la ${eme(k.p)} et la ${eme(k.p+1)} donnée : ${F(k.a)} et ${F(k.b)}. La « ligne de partage » passe entre elles : <b>${k.p} données de chaque côté</b>.`
+    :`On repère la ${eme(k.p)} donnée : <b>${F(k.a)}</b>. Elle est au milieu : <b>${k.p-1} données avant et ${k.p-1} données après</b>.`});
+  L.push(k.pair?(k.a===k.b?`Les deux données valent ${F(k.a)}, donc <span class="rep">M = ${F(k.M)}</span>.`:`M = (${F(k.a)} + ${F(k.b)}) ÷ 2, donc <span class="rep">M = ${F(k.M)}</span>.`):`Donc <span class="rep">M = ${F(k.M)}</span>.`);
+  push({msg:k.pair?(k.a===k.b?`Les deux données du milieu ont la même valeur : la médiane est <b>M = ${F(k.M)}</b>.`:`La médiane est la demi-somme de ces deux données : (${F(k.a)} + ${F(k.b)}) ÷ 2 = <b>${F(k.M)}</b>.`):`La médiane est cette donnée : <b>M = ${F(k.M)}</b>.`});
+  const rd=`On peut aussi ranger les données dans l'<b>ordre décroissant</b> : les données du milieu sont les mêmes, donc on trouve la <b>même médiane</b> (${F(k.M)}).`;
+  L.push("REM:"+rd);push({dec:true,msg:`<b>Remarque</b> : `+rd});
+  const rem=remTxt(k);L.push("REM:"+rem);push({msg:`<b>Remarque</b> : `+rem});
+  return {st,L};
+}
+function listeHTML(st,dir,prev){
+  const s=S,k=calc(s),N=s.N,so=s.vals.flatMap((v,i)=>Array(s.eff[i]).fill(v));
+  const movedVals=new Set(s.vals.slice(0,st.moved));
+  let h=`<div class="enonce">${s.c.enonceL}</div><div class="lignes"><div class="lab2">Série de départ</div><div class="rangee">`
+    +s.raw.map(v=>`<span class="chip ${v===st.hiV?"hi":movedVals.has(v)?"done":""}">${v}</span>`).join("")+`</div>`;
+  const row=(arr,titre,isDec)=>{let r=`<div class="lab2">${titre}</div><div class="rangee">`;
+    arr.forEach((v,j)=>{const rang=j+1,shown=isDec||j<s.eff.slice(0,st.moved).reduce((a,b)=>a+b,0);
+      const was=isDec?prev.dec:j<s.eff.slice(0,prev.moved).reduce((a,b)=>a+b,0);
+      const pk=isDec?(k.pair?[N-k.p,N-k.p+1]:[N-k.p+1]):st.pick;
+      if(st.sep&&k.pair&&rang===k.p+1)r+=`<span class="sep"></span>`;
+      r+=`<span class="d">${shown?`<span class="chip ${pk.includes(rang)&&st.pick.length?"cib":v===st.hiV&&!isDec?"hi":"ok"}${shown&&!was&&dir>0?" new":""}">${v}</span>`:`<span class="slot"></span>`}${st.ranks?`<span class="rg">${eme(rang)}</span>`:""}</span>`;});
+    return r+`</div>`;};
+  if(st.ordRow)h+=row(so,"Série ordonnée (ordre croissant)",false);
+  if(st.dec)h+=row(so.slice().reverse(),"Série ordonnée (ordre décroissant)",true);
+  return h+`</div>`;
+}
 function buildSteps(){
   const s=S,k=calc(s),n=s.vals.length,st=[],L=[];
   const base={eff:MODE==="tab"?n:0,eccRow:false,ecc:0,hi:-1,done:0,src:[],calc:-1,scan:[],non:[],cible:[],col:[],nL:0};
@@ -228,9 +288,10 @@ function render(dir){
   const st=STEPS[cur],prev=dir>0&&cur>0?STEPS[cur-1]:st,s=S,k=calc(s);
   const $=id=>document.getElementById(id);
   $("bulle").innerHTML=`<span class="lab">Étape ${cur+1}</span>`+st.msg;if(dir>0){$("bulle").classList.remove("new");void $("bulle").offsetWidth;$("bulle").classList.add("new");}
-  $("srcCard").hidden=MODE!=="diag";$("enonceD").textContent=s.c.enonce;
+  $("srcCard").hidden=MODE!=="diag";$("tabT").textContent=MODE==="liste"?"Liste des données":"Tableau des effectifs";$("enonceD").textContent=s.c.enonce;
   $("enonce").textContent=MODE==="tab"?s.c.enonce:"";
   if(MODE==="diag")$("src").innerHTML=svgDiag(st);
+  if(MODE==="liste"){$("enonce").textContent="";$("tab").innerHTML=listeHTML(st,dir,prev);}else{
   const has=(arr,r,i)=>arr.some(([a,b])=>a===r&&b===i);
   const cell=(r,i,show,txt,was)=>{const c=[];
     if(has(st.cible,r,i)||has(st.scan,r,i))c.push("cible");else if(has(st.src,r,i))c.push("src");else if(st.col.includes(i))c.push("col");
@@ -241,6 +302,7 @@ function render(dir){
   if(st.eccRow)h+=row("Effectif cumulé croissant",i=>cell(2,i,i<st.ecc,k.ecc[i]+(i===st.calc?`<span class="calc">${k.ecc[i-1]} + ${s.eff[i]}</span>`:""),i<prev.ecc),!prev.eccRow||cur===0?"ajout":"");
   $("tab").innerHTML=h+`</table>`;
   const foc=$("tab").querySelector("td.cible,td.src,td.new");if(foc){const w=$("tab"),x=foc.offsetLeft-w.clientWidth/2+foc.offsetWidth/2;w.scrollLeft=Math.max(0,x);}
+  }
   const nl=st.nL;
   $("etapes").innerHTML=nl?LINES.slice(0,nl).map((x,i)=>{const c=[],r=x.startsWith("REM:");if(r)c.push("rem");else if(i===nl-1)c.push("der");if(i>=prev.nL&&dir>0)c.push("new");return `<li class="${c.join(" ")}">${r?"<b>Remarque :</b> "+x.slice(4):x}</li>`;}).join(""):`<li class="vide">Les étapes apparaîtront ici au fur et à mesure.</li>`;
   $("etape").textContent=`Étape ${cur+1} / ${STEPS.length}`;
@@ -249,7 +311,7 @@ function render(dir){
 }
 function stopAuto(){if(timer){clearInterval(timer);timer=null;}document.getElementById("auto").textContent="▶▶ Lecture auto";}
 function go(d){if(cur+d<0||cur+d>=STEPS.length)return;cur+=d;render(d);if(cur===STEPS.length-1)stopAuto();}
-function nouvelle(){stopAuto();S=genSerie();const b=buildSteps();STEPS=b.st;LINES=b.L;cur=0;render(0);}
+function nouvelle(){stopAuto();S=genSerie();const b=MODE==="liste"?buildStepsListe():buildSteps();STEPS=b.st;LINES=b.L;cur=0;render(0);}
 document.getElementById("suiv").onclick=()=>{stopAuto();go(1);};
 document.getElementById("prec").onclick=()=>{stopAuto();go(-1);};
 document.getElementById("debut").onclick=()=>{stopAuto();cur=0;render(0);};
@@ -261,7 +323,7 @@ function setMode(m){MODE=m;document.querySelectorAll(".tab").forEach(x=>x.setAtt
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>setMode(b.dataset.m));
 document.addEventListener("keydown",e=>{if(e.target.tagName==="SELECT")return;if(e.key==="ArrowRight"){stopAuto();go(1);}if(e.key==="ArrowLeft"){stopAuto();go(-1);}});
 window.__t={get S(){return S},calc,goEnd(){cur=STEPS.length-1;render(0);},setMode};
-setMode(location.hash==="#diag"?"diag":"tab");
+setMode(["#diag","#liste"].includes(location.hash)?location.hash.slice(1):"tab");
 </script>
 </body>
 </html>
