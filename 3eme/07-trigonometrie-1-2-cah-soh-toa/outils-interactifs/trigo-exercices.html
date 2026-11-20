@@ -83,6 +83,10 @@ table.tp td.inc{background:#fee2e2;color:#b91c1c}
 .fsbtn{position:absolute;top:14px;right:14px;z-index:2;background:rgba(255,255,255,.18);color:#fff;border:1.5px solid rgba(255,255,255,.6);border-radius:10px;padding:6px 12px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}
 .fsbtn:hover{background:rgba(255,255,255,.3)}
 html:fullscreen{overflow:auto}html:fullscreen .wrap{max-width:1500px}
+.grid>.sansfig{display:none}
+@media (min-width:760px){.grid:has(>.sansfig){grid-template-columns:minmax(0,1fr)}}
+.grid:has(>.sansfig)>div:last-child{max-width:640px}
+.sansfig-msg{margin-top:8px;padding:8px 10px;border-radius:10px;background:var(--soft,#fdf4ff);border:1px dashed currentColor;font-size:.95em}
 </style>
 </head>
 <body>
@@ -156,6 +160,7 @@ function horsTri(t,[x,y],d){const p=Object.values(t.pts),cx=(p[0][0]+p[1][0]+p[2
 function mil(t,c){const [a,b]=ext(t,c).map(p=>t.pts[p]);return [(a[0]+b[0])/2,(a[1]+b[1])/2];}
 // opts : {angle:"40°"|"?"|"", angleCl:"connu"|"cherche"|"", cotes:{hyp:{txt,cl}}, deco:"svg"}
 function dessine(t,o={}){
+  $("fig").parentElement.classList.remove("sansfig");
   const P=t.pts,[sx,sy]=P[t.S],[dx,dy]=P[t.D],[tx,ty]=P[t.T];let h=o.fond||"";
   h+=`<path class="tri" d="M${sx},${sy}L${dx},${dy}L${tx},${ty}Z"/>`;
   for(const c in (o.cotes||{})){const v=o.cotes[c];if(v.cl){const [a,b]=ext(t,c).map(p=>P[p]);h+=`<path class="${v.cl}" d="M${a[0]},${a[1]}L${b[0]},${b[1]}"/>`;}}
@@ -204,11 +209,15 @@ function verifie(txt,val,dec){
 function qVoc(){
   const t=triangle(R(25,65));const quoi=pick(["hyp","adj","opp"]);
   dessine(t,{angleCl:"connu"});
-  $("enonce").innerHTML=`Le triangle ${t.nom} est rectangle en ${t.D}. ${quoi==="hyp"?"Quelle":"Quel"} est <b>${nomc(quoi,t.angNom)}</b> ?`;
+  // environ une question sur deux sans figure : l'élève la fait au brouillon (ou dans sa tête)
+  const sansFig=Math.random()<.5;
+  if(sansFig)$("fig").parentElement.classList.add("sansfig");
+  $("enonce").innerHTML=`Le triangle ${t.nom} est rectangle en ${t.D}. ${quoi==="hyp"?"Quelle":"Quel"} est <b>${nomc(quoi,t.angNom)}</b> ?`+(sansFig?`<div class="sansfig-msg">✏️ Pas de figure : fais une <b>figure à main levée</b> au brouillon (ou dans ta tête), avec l'angle droit en ${t.D} et l'angle ${ang(t.angNom)} marqué.</div>`:"");
   const opts=melange(["hyp","adj","opp"]);
   $("zone").innerHTML=`<div class="choix">${opts.map(c=>`<button class="ch" data-c="${c}">[${t.c[c]}]</button>`).join("")}</div>`;
   $("zone").querySelectorAll(".ch").forEach(b=>b.onclick=()=>{if(repondu)return;repondu=true;
     const ok=b.dataset.c===quoi;note(ok);$("zone").querySelectorAll(".ch").forEach(x=>{x.disabled=true;if(x.dataset.c===quoi)x.classList.add("bon");else if(x===b)x.classList.add("faux");});
+    $("fig").parentElement.classList.remove("sansfig");
     $("retour").innerHTML=`<div class="msg ${ok?"ok":"ko"}">${ok?"Bravo !":"Non."} ${(q=>q[0].toUpperCase()+q.slice(1))(nomc(quoi,t.angNom))} est [${t.c[quoi]}].</div>`;
     $("correction").innerHTML=`<div class="corr"><h3>Comment trouver</h3><ol><li>L'hypoténuse est en face de l'angle droit (en ${t.D}) : [${t.c.hyp}].</li><li>Le côté opposé à ${ang(t.angNom)} est en face de cet angle : il ne touche pas le sommet ${t.S} : [${t.c.opp}].</li><li>Le côté adjacent touche le sommet ${t.S} et n'est pas l'hypoténuse : [${t.c.adj}].</li></ol></div>`;});
 }
@@ -329,7 +338,7 @@ function qPb(){
 }
 
 // ---------- navigation ----------
-const ONG={voc:{t:"Nommer les côtés",c:"Clique sur le bon côté. L'angle étudié est marqué d'un arc.",f:qVoc},
+const ONG={voc:{t:"Nommer les côtés",c:"Clique sur le bon côté. L'angle étudié est marqué d'un arc ; parfois il n'y a pas de figure : fais-la au brouillon. La figure apparaît après ta réponse.",f:qVoc},
   form:{t:"Choisir la bonne formule",c:"En bleu ce que l'on connaît, en rouge ce que l'on cherche. Choisis l'égalité qui relie les deux (CAH SOH TOA).",f:qForm},
   long:{t:"Calculer une longueur",c:"Choisis d'abord le bon calcul, puis donne le résultat arrondi comme demandé. La correction rédigée s'affiche ensuite.",f:qLong},
   pb:{t:"Problèmes",c:"Repère le triangle rectangle, ce que l'on connaît et ce que l'on cherche. Rédige sur ton cahier, puis vérifie ton résultat.",f:qPb}};
