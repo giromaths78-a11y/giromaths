@@ -1,0 +1,332 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Trigonométrie : exercices</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;600&display=swap">
+<style>
+:root{--acc:#c026d3;--acc2:#86198f;--soft:#fbe6fd;--bg:#fdf7fe;--card:#fff;--ink:#2a1530;--muted:#6b5873;--line:#ecd5f0;
+  --ok:#15803d;--oksoft:#dcfce7;--ko:#b91c1c;--kosoft:#fee2e2;--warn:#b45309;--warnsoft:#fef3c7;--connu:#2563eb;--cherche:#dc2626;--trait:#2a1530;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--acc:#e879f9;--acc2:#f5d0fe;--soft:#3a1740;--bg:#170e1a;--card:#221626;--ink:#f6eaf8;--muted:#bfa9c6;--line:#43294a;
+  --ok:#4ade80;--oksoft:#0f2e1b;--ko:#f87171;--kosoft:#450a0a;--warn:#fbbf24;--warnsoft:#422006;--connu:#60a5fa;--cherche:#f87171;--trait:#f6eaf8;color-scheme:dark}}
+:root[data-theme="dark"]{--acc:#e879f9;--acc2:#f5d0fe;--soft:#3a1740;--bg:#170e1a;--card:#221626;--ink:#f6eaf8;--muted:#bfa9c6;--line:#43294a;
+  --ok:#4ade80;--oksoft:#0f2e1b;--ko:#f87171;--kosoft:#450a0a;--warn:#fbbf24;--warnsoft:#422006;--connu:#60a5fa;--cherche:#f87171;--trait:#f6eaf8;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 Inter,system-ui,sans-serif}
+.wrap{max-width:980px;margin:0 auto;padding:20px 16px 60px}
+header.hero{background:linear-gradient(135deg,#c026d3,#701a75);color:#fff;border-radius:18px;padding:20px 22px;position:relative;overflow:hidden}
+header.hero::after{content:"sin² + cos² = 1";position:absolute;right:14px;bottom:-12px;font:700 46px/1 "Space Grotesk",sans-serif;opacity:.14;white-space:nowrap}
+.eyebrow{font:600 .8rem "Space Grotesk",sans-serif;letter-spacing:.08em;text-transform:uppercase;opacity:.9}
+h1{font:700 clamp(1.6rem,4.5vw,2.3rem)/1.1 "Space Grotesk",sans-serif;margin:4px 0 6px}
+header.hero p{margin:0;max-width:64ch;opacity:.95;position:relative;z-index:1}
+.tabs{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 12px}
+.tab{border:1.5px solid var(--line);background:var(--card);color:var(--ink);border-radius:999px;padding:6px 14px;font:600 .9rem Inter,sans-serif;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.tab .st{color:#f59e0b;font-size:.8em;margin-left:3px}
+.tab[aria-selected="true"] .st{color:#fde68a}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px 16px;margin-bottom:12px}
+.card h2{font:700 1.05rem "Space Grotesk",sans-serif;color:var(--acc2);margin:0 0 8px;display:flex;flex-wrap:wrap;gap:8px;align-items:baseline}
+.score{margin-left:auto;font:700 .95rem "Space Grotesk",sans-serif;color:var(--muted);font-variant-numeric:tabular-nums}
+.consigne{color:var(--muted);font-size:.93rem;margin:0 0 8px}
+.enonce{font-weight:600;font-size:1.05rem;margin:6px 0}
+.grid{display:grid;gap:14px;grid-template-columns:minmax(0,1fr)}
+@media (min-width:760px){.grid{grid-template-columns:minmax(0,1fr) minmax(0,1.1fr)}}
+svg.fig{width:100%;max-width:420px;height:auto;display:block;margin:0 auto}
+svg.fig text{font:600 16px Inter,sans-serif;fill:var(--ink)}
+svg.fig .cote{font-size:14px}
+svg.fig .tri{fill:var(--soft);stroke:var(--trait);stroke-width:2;stroke-linejoin:round}
+svg.fig .cd,svg.fig .arc{fill:none;stroke:var(--trait);stroke-width:1.5}
+svg.fig .connu{stroke:var(--connu);stroke-width:5;stroke-linecap:round;fill:none}
+svg.fig .cherche{stroke:var(--cherche);stroke-width:5;stroke-linecap:round;fill:none;stroke-dasharray:9 6}
+svg.fig .arc.connu{stroke-width:3}
+svg.fig text.tc{fill:var(--connu);font-weight:700}
+svg.fig text.th{fill:var(--cherche);font-weight:700}
+svg.fig .sol{stroke:var(--muted);stroke-width:2}
+svg.fig .objet{fill:var(--muted);opacity:.5}
+.choix{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.ch{border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:8px 14px;font:600 1.02rem Inter,sans-serif;cursor:pointer;min-width:64px}
+.ch:hover{border-color:var(--acc)}
+.ch.bon{background:var(--oksoft);border-color:var(--ok);color:var(--ok)}
+.ch.faux{background:var(--kosoft);border-color:var(--ko);color:var(--ko)}
+.ch:disabled{cursor:default}
+.saisie{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.saisie input{font:600 1.05rem Inter,sans-serif;width:9em;padding:7px 10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
+.btn{border:1.5px solid var(--acc);background:var(--card);color:var(--acc);border-radius:8px;padding:7px 14px;font:600 .95rem Inter,sans-serif;cursor:pointer}
+.btn:hover{background:var(--soft)}
+.btn.primary{background:var(--acc);color:#fff}
+.btn:focus-visible,.tab:focus-visible,.ch:focus-visible,input:focus-visible{outline:3px solid var(--acc);outline-offset:2px}
+.msg{border-radius:10px;padding:8px 12px;margin:8px 0;font-weight:600}
+.msg.ok{background:var(--oksoft);color:var(--ok)}
+.msg.ko{background:var(--kosoft);color:var(--ko)}
+.msg.warn{background:var(--warnsoft);color:var(--warn)}
+.corr{border:2px solid var(--ok);border-radius:12px;padding:10px 14px;margin-top:8px;background:var(--card)}
+.corr h3{font:700 .85rem "Space Grotesk",sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--ok);margin:0 0 4px}
+.corr ol{margin:0;padding-left:1.3em}
+.corr li{padding:2px 0}
+.corr .note{color:var(--muted);font-style:italic;font-size:.9rem}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;font-size:.95em;margin:0 3px;line-height:1.25}
+.fr>span:first-child{border-bottom:1.5px solid currentColor;padding:0 4px}
+.ang{position:relative;display:inline-block;padding-top:2px}
+.ang::before{content:"";position:absolute;left:8%;right:8%;top:-1px;height:7px;border:1.5px solid currentColor;border-bottom:0;border-radius:50% 50% 0 0/100% 100% 0 0}
+.k{color:var(--connu);font-weight:700}.q{color:var(--cherche);font-weight:700}
+.legende{display:flex;flex-wrap:wrap;gap:4px 14px;justify-content:center;font-size:.85rem;color:var(--muted)}
+.etapeq{font:700 .8rem "Space Grotesk",sans-serif;letter-spacing:.05em;text-transform:uppercase;color:var(--acc);margin-top:10px}
+.hide{display:none!important}
+.rappel{font-size:.9rem;background:var(--soft);border-radius:10px;padding:8px 12px;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header class="hero">
+  <div class="eyebrow">3<sup>e</sup> · Trigonométrie 1/2 · exercices interactifs</div>
+  <h1>Cosinus, sinus, tangente : je m'entraîne</h1>
+  <p>Repérer les côtés, choisir la bonne formule avec CAH SOH TOA, calculer une longueur, résoudre des problèmes. Une nouvelle question à chaque fois, avec la correction rédigée comme dans le cours.</p>
+</header>
+
+<div class="tabs" role="tablist">
+  <button class="tab" role="tab" data-t="voc" aria-selected="true">1. Nommer les côtés<span class="st">★</span></button>
+  <button class="tab" role="tab" data-t="form" aria-selected="false">2. Quelle formule ?<span class="st">★★</span></button>
+  <button class="tab" role="tab" data-t="long" aria-selected="false">3. Calculer une longueur<span class="st">★★</span></button>
+  <button class="tab" role="tab" data-t="pb" aria-selected="false">4. Problèmes<span class="st">★★★</span></button>
+</div>
+
+<section class="card">
+  <h2><span id="titre"></span><span class="score" id="score"></span></h2>
+  <p class="consigne" id="consigne"></p>
+  <div class="grid">
+    <div><svg class="fig" id="fig" viewBox="0 0 440 300" role="img" aria-label="Figure"></svg><div class="legende" id="leg"></div></div>
+    <div>
+      <div class="enonce" id="enonce"></div>
+      <div id="zone"></div>
+      <div id="retour"></div>
+      <div id="correction"></div>
+      <div class="saisie"><button class="btn primary" id="suivante">Question suivante ▶</button></div>
+    </div>
+  </div>
+  <div class="rappel"><b>Rappel :</b> dans un triangle rectangle, pour un angle aigu : <b>CAH</b> cos = adjacent ÷ hypoténuse · <b>SOH</b> sin = opposé ÷ hypoténuse · <b>TOA</b> tan = opposé ÷ adjacent. Calculatrice réglée en <b>degrés</b>.</div>
+</section>
+</div>
+
+<script>
+"use strict";
+const R=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+const melange=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const nf=(x,d)=>(Math.round(x*10**d)/10**d).toFixed(d).replace(".",",");
+const vt=v=>nf(v,Math.abs(v-Math.round(v))<1e-9?0:1);
+const fr=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+const ang=t=>`<span class="ang">${t}</span>`;
+const DEG=Math.PI/180;
+const MOT={cos:"CAH",sin:"SOH",tan:"TOA"};
+const PAIRE={cos:["adj","hyp"],sin:["opp","hyp"],tan:["opp","adj"]};
+const NOMC={hyp:"l'hypoténuse",adj:"le côté adjacent",opp:"le côté opposé"};
+const LETTRES="ABCDEFGHIJKLMNPRSTUVWXYZ".split("");
+const $=id=>document.getElementById(id);
+let onglet="voc",q=null,score={voc:[0,0],form:[0,0],long:[0,0],pb:[0,0]},repondu=false;
+
+// ---------- triangle aléatoire ----------
+function triangle(a){
+  const [S,D,T]=melange(LETTRES).slice(0,3);
+  const ordre=pick([[S,D,T],[D,S,T],[T,S,D],[S,T,D],[D,T,S],[T,D,S]]);
+  const seg=(x,y)=>ordre.indexOf(x)<ordre.indexOf(y)?x+y:y+x;
+  const t={S,D,T,a,nom:ordre.join(""),c:{hyp:seg(S,T),adj:seg(S,D),opp:seg(D,T)},angNom:pick([D+S+T,T+S+D])};
+  const ar=a*DEG,pts={};pts[S]=[0,0];pts[D]=[Math.cos(ar),0];pts[T]=[Math.cos(ar),Math.sin(ar)];
+  const rot=R(0,359)*DEG,sym=Math.random()<.5?-1:1;
+  for(const p in pts){let [x,y]=pts[p];y*=sym;pts[p]=[x*Math.cos(rot)-y*Math.sin(rot),x*Math.sin(rot)+y*Math.cos(rot)];}
+  place(pts,330,200,220,150);t.pts=pts;return t;
+}
+function place(pts,W,H,cx,cy){const xs=Object.values(pts).map(p=>p[0]),ys=Object.values(pts).map(p=>p[1]);
+  const mx=Math.min(...xs),Mx=Math.max(...xs),my=Math.min(...ys),My=Math.max(...ys),sc=Math.min(W/(Mx-mx||1),H/(My-my||1));
+  for(const p in pts)pts[p]=[cx+(pts[p][0]-(mx+Mx)/2)*sc,cy-(pts[p][1]-(my+My)/2)*sc];}
+const ext=(t,c)=>c==="hyp"?[t.S,t.T]:c==="adj"?[t.S,t.D]:[t.D,t.T];
+function horsTri(t,[x,y],d){const p=Object.values(t.pts),cx=(p[0][0]+p[1][0]+p[2][0])/3,cy=(p[0][1]+p[1][1]+p[2][1])/3;const vx=x-cx,vy=y-cy,n=Math.hypot(vx,vy)||1;return [x+vx/n*d,y+vy/n*d];}
+function mil(t,c){const [a,b]=ext(t,c).map(p=>t.pts[p]);return [(a[0]+b[0])/2,(a[1]+b[1])/2];}
+// opts : {angle:"40°"|"?"|"", angleCl:"connu"|"cherche"|"", cotes:{hyp:{txt,cl}}, deco:"svg"}
+function dessine(t,o={}){
+  const P=t.pts,[sx,sy]=P[t.S],[dx,dy]=P[t.D],[tx,ty]=P[t.T];let h=o.fond||"";
+  h+=`<path class="tri" d="M${sx},${sy}L${dx},${dy}L${tx},${ty}Z"/>`;
+  for(const c in (o.cotes||{})){const v=o.cotes[c];if(v.cl){const [a,b]=ext(t,c).map(p=>P[p]);h+=`<path class="${v.cl}" d="M${a[0]},${a[1]}L${b[0]},${b[1]}"/>`;}}
+  const u=[sx-dx,sy-dy],v=[tx-dx,ty-dy],nu=Math.hypot(...u),nv=Math.hypot(...v),l=14;
+  const A=[dx+u[0]/nu*l,dy+u[1]/nu*l],B=[dx+v[0]/nv*l,dy+v[1]/nv*l];
+  h+=`<path class="cd" d="M${A[0]},${A[1]}L${A[0]+B[0]-dx},${A[1]+B[1]-dy}L${B[0]},${B[1]}"/>`;
+  const a1=Math.atan2(dy-sy,dx-sx),a2=Math.atan2(ty-sy,tx-sx),r=34;let d=a2-a1;while(d>Math.PI)d-=2*Math.PI;while(d<-Math.PI)d+=2*Math.PI;
+  const p1=[sx+r*Math.cos(a1),sy+r*Math.sin(a1)],p2=[sx+r*Math.cos(a1+d),sy+r*Math.sin(a1+d)];
+  h+=`<path class="arc ${o.angleCl||""}" d="M${p1[0]},${p1[1]}A${r},${r} 0 0 ${d>0?1:0} ${p2[0]},${p2[1]}"/>`;
+  if(o.angle){const am=a1+d/2;h+=`<text class="cote ${o.angleCl==="connu"?"tc":o.angleCl==="cherche"?"th":""}" x="${sx+(r+20)*Math.cos(am)}" y="${sy+(r+20)*Math.sin(am)+5}" text-anchor="middle">${o.angle}</text>`;}
+  for(const c in (o.cotes||{})){const vv=o.cotes[c];if(!vv.txt)continue;const m=horsTri(t,mil(t,c),22);
+    h+=`<text class="cote ${vv.cl==="connu"?"tc":vv.cl==="cherche"?"th":""}" x="${m[0]}" y="${m[1]+5}" text-anchor="middle">${vv.txt}</text>`;}
+  for(const p of [t.S,t.D,t.T]){const m=horsTri(t,P[p],18);h+=`<text x="${m[0]}" y="${m[1]+6}" text-anchor="middle">${p}</text>`;}
+  $("fig").innerHTML=h+(o.deco||"");
+  $("leg").innerHTML=o.leg?`<span class="k">■ connu</span><span class="q">■ cherché</span>`:"";
+}
+
+// ---------- rédaction type ----------
+function redaction(t,f,inc,v,u,dec,prec,nomCherche){
+  const c=t.c,[nu,de]=PAIRE[f],conn=inc==="num"?de:nu,cher=inc==="num"?nu:de;
+  const vC=vt(v),rap={cos:Math.cos,sin:Math.sin,tan:Math.tan}[f](t.a*DEG);
+  const val=inc==="num"?v*rap:v/rap;
+  const L=[];
+  L.push(`On sait que le triangle ${t.nom} est rectangle en ${t.D}.`);
+  L.push(`Pour l'angle ${ang(t.angNom)} : je connais ${NOMC[conn]} ${c[conn]} et je cherche ${NOMC[cher]} ${c[cher]} → <b>${MOT[f]}</b>.`);
+  L.push(`Donc : ${f} ${ang(t.angNom)} = ${fr(c[nu],c[de])}`);
+  L.push(`On remplace : ${f}(${t.a}°) = ${inc==="num"?fr(c[nu],vC):fr(vC,c[de])}`);
+  L.push(inc==="num"?`${c[cher]} = ${vC} × ${f}(${t.a}°) <span class="note">(valeur exacte)</span>`:`${c[cher]} = ${fr(vC,f+"("+t.a+"°)")} <span class="note">(valeur exacte, produit en croix)</span>`);
+  L.push(`À la calculatrice : ${c[cher]} ≈ ${nf(val,dec)} ${u} <span class="note">(arrondi ${prec})</span>`);
+  return {L,val};
+}
+function verifie(txt,val,dec){
+  const s=String(txt).trim().replace(/\s/g,"").replace(",",".").replace(/(cm|m|mm|km)$/i,"");
+  if(!/^-?\d+(\.\d+)?$/.test(s))return "vide";
+  const x=parseFloat(s),cible=Math.round(val*10**dec)/10**dec;
+  if(Math.abs(x-cible)<1e-9)return "ok";
+  if(Math.abs(x-val)<10**-dec)return "arrondi";
+  return "faux";
+}
+
+// ---------- onglet 1 : nommer les côtés ----------
+function qVoc(){
+  const t=triangle(R(25,65));const quoi=pick(["hyp","adj","opp"]);
+  dessine(t,{angleCl:"connu"});
+  $("enonce").innerHTML=`Le triangle ${t.nom} est rectangle en ${t.D}. Par rapport à l'angle ${ang(t.angNom)} (marqué sur la figure), quel est <b>${NOMC[quoi]}</b> ?`;
+  const opts=melange(["hyp","adj","opp"]);
+  $("zone").innerHTML=`<div class="choix">${opts.map(c=>`<button class="ch" data-c="${c}">[${t.c[c]}]</button>`).join("")}</div>`;
+  $("zone").querySelectorAll(".ch").forEach(b=>b.onclick=()=>{if(repondu)return;repondu=true;
+    const ok=b.dataset.c===quoi;note(ok);$("zone").querySelectorAll(".ch").forEach(x=>{x.disabled=true;if(x.dataset.c===quoi)x.classList.add("bon");else if(x===b)x.classList.add("faux");});
+    $("retour").innerHTML=`<div class="msg ${ok?"ok":"ko"}">${ok?"Bravo !":"Non."} ${NOMC[quoi][0].toUpperCase()+NOMC[quoi].slice(1)} est [${t.c[quoi]}].</div>`;
+    $("correction").innerHTML=`<div class="corr"><h3>Comment trouver</h3><ol><li>L'hypoténuse est en face de l'angle droit (en ${t.D}) : [${t.c.hyp}].</li><li>Le côté opposé à ${ang(t.angNom)} est en face de cet angle : il ne touche pas le sommet ${t.S} : [${t.c.opp}].</li><li>Le côté adjacent touche le sommet ${t.S} et n'est pas l'hypoténuse : [${t.c.adj}].</li></ol></div>`;});
+}
+
+// ---------- onglet 2 : quelle formule ? ----------
+function qForm(){
+  const a=R(22,68),t=triangle(a),f=pick(["cos","sin","tan"]),inc=pick(["num","den"]);
+  const [nu,de]=PAIRE[f],conn=inc==="num"?de:nu,cher=inc==="num"?nu:de;
+  const v=R(25,110)/10;
+  const cotes={};cotes[conn]={txt:vt(v)+" cm",cl:"connu"};cotes[cher]={txt:"?",cl:"cherche"};
+  dessine(t,{angle:a+"°",angleCl:"connu",cotes,leg:1});
+  $("enonce").innerHTML=`Le triangle ${t.nom} est rectangle en ${t.D}. On connaît ${ang(t.angNom)} = ${a}° et ${t.c[conn]} = ${vt(v)} cm. On cherche ${t.c[cher]}.<br>Quelle égalité faut-il écrire ?`;
+  const c=t.c;
+  const toutes=[["cos","adj","hyp"],["sin","opp","hyp"],["tan","opp","adj"],["cos","hyp","adj"],["sin","hyp","opp"],["tan","adj","opp"],["cos","opp","hyp"],["sin","adj","hyp"],["tan","adj","hyp"]];
+  const bonne=[f,nu,de];
+  // distracteurs : autres formules justes mais inutiles + formules fausses
+  let d=melange(toutes.filter(x=>x.join()!==bonne.join())).slice(0,3);
+  const opts=melange([bonne,...d]);
+  $("zone").innerHTML=`<div class="choix">${opts.map((o,i)=>`<button class="ch" data-i="${i}">${o[0]} ${ang(t.angNom)} = ${fr(c[o[1]],c[o[2]])}</button>`).join("")}</div>`;
+  $("zone").querySelectorAll(".ch").forEach(b=>b.onclick=()=>{if(repondu)return;repondu=true;
+    const o=opts[+b.dataset.i],ok=o.join()===bonne.join();note(ok);
+    $("zone").querySelectorAll(".ch").forEach(x=>{x.disabled=true;if(opts[+x.dataset.i].join()===bonne.join())x.classList.add("bon");else if(x===b)x.classList.add("faux");});
+    let pourquoi="";
+    if(!ok){const juste=(o[0]==="cos"&&o[1]==="adj"&&o[2]==="hyp")||(o[0]==="sin"&&o[1]==="opp"&&o[2]==="hyp")||(o[0]==="tan"&&o[1]==="opp"&&o[2]==="adj");
+      pourquoi=juste?" Cette égalité est vraie, mais elle n'utilise pas à la fois ce que l'on connaît et ce que l'on cherche.":" Cette égalité est fausse : vérifie avec CAH SOH TOA.";}
+    $("retour").innerHTML=`<div class="msg ${ok?"ok":"ko"}">${ok?"Bravo !":"Non."}${pourquoi}</div>`;
+    $("correction").innerHTML=`<div class="corr"><h3>Raisonnement</h3><ol><li>Par rapport à ${ang(t.angNom)} : <span class="k">${c[conn]}</span> est ${NOMC[conn]} (connu) et <span class="q">${c[cher]}</span> est ${NOMC[cher]} (cherché).</li><li>${NOMC[nu][0].toUpperCase()+NOMC[nu].slice(1)} et ${NOMC[de]} : <b>${MOT[f]}</b>.</li><li>Donc : ${f} ${ang(t.angNom)} = ${fr(c[nu],c[de])}</li></ol></div>`;});
+}
+
+// ---------- onglet 3 : calculer une longueur ----------
+function qLong(){
+  const a=R(22,68),t=triangle(a),f=pick(["cos","sin","tan"]),inc=Math.random()<.6?"num":"den";
+  const [nu,de]=PAIRE[f],conn=inc==="num"?de:nu,cher=inc==="num"?nu:de;
+  const u=pick(["cm","cm","m"]),dec=u==="cm"?1:2,prec=u==="cm"?"au mm":"au cm";
+  let v=R(20,120)/10;if(Math.random()<.4)v=Math.round(v);
+  const cotes={};cotes[conn]={txt:vt(v)+" "+u};
+  dessine(t,{angle:a+"°",cotes});
+  $("enonce").innerHTML=`Le triangle ${t.nom} est rectangle en ${t.D}, avec ${ang(t.angNom)} = ${a}° et ${t.c[conn]} = ${vt(v)} ${u}.<br>Calculer ${t.c[cher]}, arrondie ${prec} près.`;
+  const R0=redaction(t,f,inc,v,u,dec,prec);
+  const vC=vt(v),c=t.c;
+  // étape 1 : choisir le calcul
+  const bon=inc==="num"?`${vC} × ${f}(${a}°)`:`${vC} ÷ ${f}(${a}°)`;
+  const autres=melange([inc==="num"?`${vC} ÷ ${f}(${a}°)`:`${vC} × ${f}(${a}°)`, `${f}(${a}°) ÷ ${vC}`, `${vC} × ${pick(["cos","sin","tan"].filter(x=>x!==f))}(${a}°)`]);
+  const opts=melange([bon,...autres]);
+  $("zone").innerHTML=`<div class="etapeq">Étape 1 : quel calcul donne ${c[cher]} ?</div><div class="choix">${opts.map((o,i)=>`<button class="ch" data-i="${i}">${c[cher]} = ${o}</button>`).join("")}</div>
+   <div id="et2" class="hide"><div class="etapeq">Étape 2 : à la calculatrice (en degrés)</div><div class="saisie"><label>${c[cher]} ≈ <input id="rep" inputmode="decimal" autocomplete="off"> ${u}</label><button class="btn" id="valider">Vérifier</button></div></div>`;
+  let e1=null;
+  $("zone").querySelectorAll(".ch").forEach(b=>b.onclick=()=>{if(e1!==null)return;e1=opts[+b.dataset.i]===bon;
+    $("zone").querySelectorAll(".ch").forEach(x=>{x.disabled=true;if(opts[+x.dataset.i]===bon)x.classList.add("bon");else if(x===b)x.classList.add("faux");});
+    $("retour").innerHTML=`<div class="msg ${e1?"ok":"ko"}">${e1?"Oui !":"Non : il fallait "+c[cher]+" = "+bon+"."}</div>`;
+    $("et2").classList.remove("hide");$("rep").focus();});
+  $("zone").addEventListener("click",ev=>{if(ev.target.id!=="valider"||repondu)return;
+    const r=verifie($("rep").value,R0.val,dec);if(r==="vide"){$("retour").innerHTML=`<div class="msg warn">Écris un nombre (avec une virgule si besoin).</div>`;return;}
+    repondu=true;note(r==="ok"&&e1);
+    $("retour").innerHTML+=`<div class="msg ${r==="ok"?"ok":r==="arrondi"?"warn":"ko"}">${r==="ok"?"Bonne réponse !":r==="arrondi"?"Presque : attention à l'arrondi ("+prec+" près, soit "+dec+" chiffre"+(dec>1?"s":"")+" après la virgule).":"Ce n'est pas le bon résultat. Vérifie que ta calculatrice est en degrés."} ${c[cher]} ≈ ${nf(R0.val,dec)} ${u}.</div>`;
+    corrige(R0.L);});
+  $("zone").addEventListener("keydown",ev=>{if(ev.key==="Enter"&&ev.target.id==="rep")$("valider").click();});
+}
+function corrige(L,phrase){$("correction").innerHTML=`<div class="corr"><h3>Correction rédigée</h3><ol>${L.map(x=>`<li>${x}</li>`).join("")}${phrase?`<li>${phrase}</li>`:""}</ol></div>`;}
+
+// ---------- onglet 4 : problèmes ----------
+const PB=[
+ // échelle contre un mur : longueur L, angle avec le sol a -> hauteur (sin) ou distance au mur (cos)
+ ()=>{const a=R(60,78),L=pick([3,3.5,4,4.5,5,6]),quoi=pick(["haut","pied"]);
+  return {ctx:"echelle",a,f:quoi==="haut"?"sin":"cos",inc:"num",v:L,u:"m",dec:2,prec:"au cm",
+   txt:`Une échelle de ${vt(L)} m est appuyée contre un mur vertical. Elle forme un angle de ${a}° avec le sol horizontal.<br>${quoi==="haut"?"À quelle hauteur l'échelle touche-t-elle le mur ?":"À quelle distance du mur se trouve le pied de l'échelle ?"} Arrondir au cm.`,
+   phrase:v=>quoi==="haut"?`L'échelle touche le mur à environ ${v} m de hauteur.`:`Le pied de l'échelle est à environ ${v} m du mur.`,
+   noms:{S:"P",D:"M",T:"H"},legende:"P : pied de l'échelle, M : pied du mur, H : haut de l'échelle"};},
+ // arbre et ombre : ombre o, angle des rayons a -> hauteur (tan)
+ ()=>{const a=R(25,60),o=R(40,150)/10;
+  return {ctx:"arbre",a,f:"tan",inc:"num",v:o,u:"m",dec:1,prec:"au dm",
+   txt:`Au soleil, un arbre vertical a une ombre de ${vt(o)} m sur le sol horizontal. Les rayons du soleil font un angle de ${a}° avec le sol.<br>Quelle est la hauteur de l'arbre ? Arrondir au dm (0,1 m).`,
+   phrase:v=>`L'arbre mesure environ ${v} m de haut.`,noms:{S:"O",D:"P",T:"S"},legende:"O : bout de l'ombre, P : pied de l'arbre, S : sommet"};},
+ // cerf-volant : ficelle L, angle a -> hauteur (sin)
+ ()=>{const a=R(30,65),L=R(20,60);
+  return {ctx:"cerf",a,f:"sin",inc:"num",v:L,u:"m",dec:1,prec:"au dm",
+   txt:`Léa tient la ficelle de son cerf-volant au niveau du sol. La ficelle, bien tendue, mesure ${L} m et forme un angle de ${a}° avec le sol.<br>À quelle hauteur vole le cerf-volant ? Arrondir au dm.`,
+   phrase:v=>`Le cerf-volant vole à environ ${v} m de hauteur.`,noms:{S:"L",D:"H",T:"C"},legende:"L : main de Léa, C : cerf-volant, H : point du sol sous le cerf-volant"};},
+ // rampe : longueur horizontale h, angle a -> longueur de la rampe (cos, inconnue au dénominateur)
+ ()=>{const a=R(3,9),h=R(30,90)/10;
+  return {ctx:"rampe",a,f:"cos",inc:"den",v:h,u:"m",dec:2,prec:"au cm",
+   txt:`Une rampe d'accès pour fauteuil roulant fait un angle de ${a}° avec le sol horizontal. Elle s'étend sur une distance horizontale de ${vt(h)} m.<br>Quelle est la longueur de la rampe ? Arrondir au cm.`,
+   phrase:v=>`La rampe mesure environ ${v} m de long.`,noms:{S:"A",D:"C",T:"B"},legende:"A : bas de la rampe, B : haut de la rampe, C : sous le haut de la rampe"};},
+ // toboggan / téléphérique : dénivelé d, angle a -> longueur du câble (sin, dénominateur)
+ ()=>{const a=R(20,40),d=R(80,400);
+  return {ctx:"cable",a,f:"sin",inc:"den",v:d,u:"m",dec:0,prec:"au mètre",
+   txt:`Un téléphérique monte d'une station A à une station B en ligne droite. Le câble forme un angle de ${a}° avec l'horizontale, et le dénivelé entre les deux stations est de ${d} m.<br>Quelle est la longueur du câble AB ? Arrondir au mètre.`,
+   phrase:v=>`Le câble mesure environ ${v} m.`,noms:{S:"A",D:"H",T:"B"},legende:"H : point à la verticale de B, à la hauteur de A"};}
+];
+function qPb(){
+  const p=pick(PB)();
+  // triangle avec lettres imposées, orientation « réelle » : sol horizontal
+  const {S,D,T}=p.noms,ar=p.a*DEG;
+  let pts={};pts[S]=[0,0];pts[D]=[Math.cos(ar),0];pts[T]=[Math.cos(ar),Math.sin(ar)];
+  if(p.ctx==="echelle"||p.ctx==="arbre"){for(const k in pts)pts[k]=[-pts[k][0],pts[k][1]];}
+  place(pts,p.ctx==="rampe"?340:300,180,220,150);
+  const seg=(x,y)=>x+y;
+  const t={S,D,T,a:p.a,nom:S+D+T,c:{hyp:seg(S,T),adj:seg(S,D),opp:seg(D,T)},angNom:D+S+T,pts};
+  const [nu,de]=PAIRE[p.f],conn=p.inc==="num"?de:nu,cher=p.inc==="num"?nu:de;
+  const cotes={};cotes[conn]={txt:vt(p.v)+" m",cl:"connu"};cotes[cher]={txt:"?",cl:"cherche"};
+  // décor : sol
+  const ys=Object.values(pts).map(q=>q[1]),yb=Math.max(...ys);
+  let deco=`<line class="sol" x1="20" y1="${yb}" x2="420" y2="${yb}"/>`;
+  if(p.ctx==="echelle"){const [mx]=pts[D];deco+=`<rect class="objet" x="${mx}" y="${pts[T][1]-30}" width="16" height="${yb-pts[T][1]+30}"/>`;}
+  if(p.ctx==="arbre"){const [px]=pts[D],[,sy]=pts[T];deco+=`<circle class="objet" cx="${px}" cy="${sy+10}" r="22"/>`;}
+  if(p.ctx==="cerf"){const [cx,cy]=pts[T];deco+=`<path class="objet" d="M${cx},${cy-16}L${cx+12},${cy}L${cx},${cy+22}L${cx-12},${cy}Z"/>`;}
+  dessine(t,{angle:p.a+"°",angleCl:"connu",cotes,deco,leg:1});
+  $("leg").innerHTML+=`<span>${p.legende}</span>`;
+  $("enonce").innerHTML=p.txt;
+  const R0=redaction(t,p.f,p.inc,p.v,"m",p.dec,p.prec);
+  $("zone").innerHTML=`<div class="consigne">Fais le calcul sur ton cahier (rédaction complète), puis donne le résultat.</div><div class="saisie"><label>Réponse ≈ <input id="rep" inputmode="decimal" autocomplete="off"> m</label><button class="btn" id="valider">Vérifier</button></div>`;
+  $("valider").onclick=()=>{if(repondu)return;const r=verifie($("rep").value,R0.val,p.dec);
+    if(r==="vide"){$("retour").innerHTML=`<div class="msg warn">Écris un nombre (avec une virgule si besoin).</div>`;return;}
+    repondu=true;note(r==="ok");
+    $("retour").innerHTML=`<div class="msg ${r==="ok"?"ok":r==="arrondi"?"warn":"ko"}">${r==="ok"?"Bonne réponse !":r==="arrondi"?"Presque : attention à l'arrondi ("+p.prec+").":"Ce n'est pas le bon résultat."} Réponse : environ ${nf(R0.val,p.dec)} m.</div>`;
+    corrige(R0.L,p.phrase(nf(R0.val,p.dec)));};
+  $("rep").onkeydown=ev=>{if(ev.key==="Enter")$("valider").click();};
+}
+
+// ---------- navigation ----------
+const ONG={voc:{t:"Nommer les côtés",c:"Clique sur le bon côté. L'angle étudié est marqué d'un arc.",f:qVoc},
+  form:{t:"Choisir la bonne formule",c:"En bleu ce que l'on connaît, en rouge ce que l'on cherche. Choisis l'égalité qui relie les deux (CAH SOH TOA).",f:qForm},
+  long:{t:"Calculer une longueur",c:"Choisis d'abord le bon calcul, puis donne le résultat arrondi comme demandé. La correction rédigée s'affiche ensuite.",f:qLong},
+  pb:{t:"Problèmes",c:"Repère le triangle rectangle, ce que l'on connaît et ce que l'on cherche. Rédige sur ton cahier, puis vérifie ton résultat.",f:qPb}};
+function note(ok){score[onglet][1]++;if(ok)score[onglet][0]++;majScore();}
+function majScore(){const [a,b]=score[onglet];$("score").textContent=b?`Score : ${a} / ${b}`:"";}
+function nouvelle(){repondu=false;$("retour").innerHTML="";$("correction").innerHTML="";const o=ONG[onglet];$("titre").textContent=o.t;$("consigne").textContent=o.c;
+  const z=$("zone").cloneNode(false);$("zone").replaceWith(z);o.f();majScore();}
+document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x===b));onglet=b.dataset.t;history.replaceState(null,"","#"+onglet);nouvelle();});
+$("suivante").onclick=nouvelle;
+const h=location.hash.slice(1);if(ONG[h]){onglet=h;document.querySelectorAll(".tab").forEach(x=>x.setAttribute("aria-selected",x.dataset.t===h));}
+nouvelle();
+</script>
+</body>
+</html>

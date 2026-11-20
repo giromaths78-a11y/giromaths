@@ -2,4 +2,4 @@
 
 [← Retour à la séquence](../README.md)
 
-_Bientôt disponible._
+- [Animation pas à pas : calculer un angle (CAH SOH TOA, arccos ou cos⁻¹, calculatrice, arrondi)](trigo-relation-animee.html?angle) (Interactif)

@@ -2,4 +2,4 @@
 
 [← Retour à la séquence](../README.md)
 
-_Bientôt disponible._
+- [Calculer un angle (★ à ★★) : calculatrice, bonne formule, échelle, problème, pente](fiche-trigo-calculer-un-angle.pdf) (PDF) · [corrigé](fiche-trigo-calculer-un-angle-corrige.pdf)

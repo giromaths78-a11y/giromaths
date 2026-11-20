@@ -20,7 +20,7 @@ _Bientôt disponible._
 
 ## Fiches d'exercices
 
-_Bientôt disponible._
+- [Calculer un angle (★ à ★★) : calculatrice, bonne formule, échelle, problème, pente](exercices/fiche-trigo-calculer-un-angle.pdf) (PDF) · [corrigé](exercices/fiche-trigo-calculer-un-angle-corrige.pdf)
 
 ## Vidéos
 
@@ -28,6 +28,6 @@ _Bientôt disponible._
 
 ## Outils interactifs
 
-_Bientôt disponible._
+- [Animation pas à pas : calculer un angle (CAH SOH TOA, arccos ou cos⁻¹, calculatrice, arrondi)](outils-interactifs/trigo-relation-animee.html?angle) (Interactif)
 
 [← Toutes les séquences de 3ème](../README.md)

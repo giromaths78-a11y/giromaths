@@ -19,7 +19,10 @@ _Bientôt disponible._
 
 ## Fiches d'exercices
 
-_Bientôt disponible._
+- [Les bases (★ à ★★★) : hypoténuse, côté opposé, côté adjacent, écrire cos, sin, tan, calculer une longueur, l'angle de 45°](exercices/fiche-trigo-bases.pdf) (PDF) · [corrigé](exercices/fiche-trigo-bases-corrige.pdf)
+- [Utiliser la bonne formule (★ à ★★) : coder la figure, CAH SOH TOA, rédiger le calcul d'une longueur](exercices/fiche-trigo-bonne-formule.pdf) (PDF) · [corrigé](exercices/fiche-trigo-bonne-formule-corrige.pdf)
+- [Problèmes (★★ à ★★★★) : tour Eiffel, construire un angle, triangle isocèle ?, longueur exacte, problème](exercices/fiche-trigo-problemes.pdf) (PDF) · [corrigé](exercices/fiche-trigo-problemes-corrige.pdf)
+- [La pente d'une route (★ à ★★★)](exercices/fiche-trigo-pentes.pdf) (Problème) · [corrigé](exercices/fiche-trigo-pentes-corrige.pdf)
 
 ## Vidéos
 
@@ -27,10 +30,7 @@ _Bientôt disponible._
 
 ## Outils interactifs
 
-_Bientôt disponible._
-
-## Autres fichiers
-
-- [trigo-relation-animee.html](autres/trigo-relation-animee.html)
+- [Animation pas à pas : écrire la bonne relation trigonométrique (figure codée, connu / cherché, CAH SOH TOA, rédaction, calculatrice, arrondi)](outils-interactifs/trigo-relation-animee.html) (Interactif)
+- [Cosinus, sinus, tangente : exercices interactifs (nommer les côtés, choisir la formule, calculer une longueur, problèmes) avec correction rédigée](outils-interactifs/trigo-exercices.html) (Interactif)
 
 [← Toutes les séquences de 3ème](../README.md)

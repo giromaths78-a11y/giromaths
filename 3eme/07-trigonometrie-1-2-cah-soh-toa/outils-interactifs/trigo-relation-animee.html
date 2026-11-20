@@ -389,7 +389,7 @@ btn("auto").onclick=()=>{if(timer){stop();return;}btn("auto").textContent="⏸ P
   const go=()=>{if(k<ex.E.length-1){k++;rendu();}else stop();};go();timer=setInterval(go,4200);};
 document.querySelectorAll(".tab").forEach(t=>t.onclick=()=>{document.querySelectorAll(".tab").forEach(u=>u.setAttribute("aria-selected",u===t));mode=t.dataset.m;history.replaceState(null,"","#"+(mode==="A"?"angle":"longueur"));nouveau();});
 document.addEventListener("keydown",ev=>{if(ev.target.tagName==="SELECT")return;if(ev.key==="ArrowRight")btn("suiv").click();if(ev.key==="ArrowLeft")btn("prec").click();});
-if(location.hash==="#angle"){mode="A";document.querySelectorAll(".tab").forEach(u=>u.setAttribute("aria-selected",u.dataset.m==="A"));}
+if(location.hash==="#angle"||/angle/.test(location.search)){mode="A";document.querySelectorAll(".tab").forEach(u=>u.setAttribute("aria-selected",u.dataset.m==="A"));}
 nouveau();
 </script>
 </body>
