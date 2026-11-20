@@ -125,12 +125,12 @@ svg.acco path{fill:none;stroke:var(--acc);stroke-width:2}
 .copieS .grpc{gap:3px;flex-wrap:nowrap}
 .copieS .chip{min-width:1.7em;padding:1px 3px;font-size:.88rem;border-radius:6px}
 .copieS .txt{font-size:1rem;white-space:nowrap;padding:0 2px}
-.copieS .pv{padding:15px 0 0}
+.copieS .pv{padding:24px 0 0}
 .copieS .mil .txt{padding:0}
 .copieS mark.mm{background:var(--hi);color:var(--hiink);border-radius:4px;padding:0 3px;font-weight:700}
 .copieS .fl{font-size:.7rem;line-height:1;height:auto}
 .copieS{min-height:0;padding:2px 0 0;margin-top:2px}
-.copieS .grp,.copieS .mil{padding-top:15px}
+.copieS .grp,.copieS .mil{padding-top:24px}
 .copieS .mil.zero{padding:0;margin:0}
 .copieS svg.acco{height:9px;margin-top:1px}
 .copieS .acc{font-size:.78rem;line-height:1.1}
@@ -220,7 +220,7 @@ function serieCopie(){
   const s=S,k=calc(s),N=s.N,so=s.vals.flatMap((v,i)=>Array(s.eff[i]).fill(v)),nb=k.pair?k.p:k.p-1;
   const brace=`<svg class="acco" viewBox="0 0 100 12" preserveAspectRatio="none" aria-hidden="true"><path d="M1,1 Q1,6 8,6 L44,6 Q50,6 50,11 Q50,6 56,6 L92,6 Q99,6 99,1" vector-effect="non-scaling-stroke"/></svg>`;
   const grp=(x,y)=>`<span class="grp"><span class="grpc txt">${so.slice(x,y).join(" ; ")}</span>${brace}<span class="acc">${nb} donnée${nb>1?"s":""}</span></span>`;
-  const fl=`<span class="fl">médiane ▼</span>`;
+  const fl=`<span class="fl">médiane<br>▼</span>`;
   const pv=`<span class="txt pv">;</span>`;
   return `<div class="rangee copieS">${grp(0,nb)}${pv}${k.pair?`<span class="mil zero">${fl}</span>`:`<span class="mil">${fl}<span class="txt"><mark class="mm">${so[nb]}</mark></span></span>${pv}`}${grp(N-nb,N)}</div>`;}
 function copieLignes(liste){
