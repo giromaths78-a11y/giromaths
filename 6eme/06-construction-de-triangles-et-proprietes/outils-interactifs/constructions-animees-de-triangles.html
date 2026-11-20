@@ -175,41 +175,48 @@ function rayStep(cap,v,dir,len){return {cap,dur:1.8,draw:u=>{const k=ease(clamp(
 function pointStep(cap,p,n,dx,dy){return {cap,dur:1.2,draw:u=>{let s='';if(u>.2){const [x,y]=P(p);const r=u<.6?20*(1-(u-.2)/.4)+6:0;if(r)s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="var(--red)" stroke-width="2"/>`;s+=cross(p)+label(p,n,dx,dy)}return s}}}
 function finStep(cap,segs){return {cap,dur:2,draw:u=>{let s='';segs.forEach((g,i)=>{const k=ease(clamp(u,i/segs.length,(i+1)/segs.length));if(k>0)s+=line(g[0],lerp(g[0],g[1],k),'fin');if(k>=1&&g[2])s+=len(g[0],g[1],g[2],g[3]||1)});return s}}}
 
-/* vérification « ligne droite / détour » : la route droite est le plus grand côté [YZ] ;
-   deux bâtons (les deux autres côtés), fixés en Y et en Z, se lèvent pour essayer de se rejoindre en X */
+/* vérification « ligne droite / détour » : une voiture roule de Y à Z en ligne droite (plus grand côté [YZ]),
+   une autre fait le détour par X (les deux autres côtés) ; on compare les compteurs */
 function verifStep(cap,cotes,verdict){const r=cotes[2],Y=r[1][0],Z=r[1][1],X=r[2];const L=r[0];
   const sY=cotes[0][1].includes(Y)?cotes[0]:cotes[1], sZ=sY===cotes[0]?cotes[1]:cotes[0];const lY=sY[0],lZ=sZ[0],D=lY+lZ;
   const xa=(L*L+lY*lY-lZ*lZ)/(2*L),h=verdict==='ok'?Math.sqrt(Math.max(lY*lY-xa*xa,0)):0;
-  const k=Math.min(50,440/L,h>0?160/h:50);const by=320,yx=W/2-L*k/2,zx=W/2+L*k/2;
-  const aY=Math.atan2(h,xa),aZ=Math.atan2(h,L-xa);
+  const k=Math.min(50,440/L,h>0?160/h:50);const by=300,yx=W/2-L*k/2,zx=W/2+L*k/2;
+  const pA=[yx,by],pB=[zx,by],pC=verdict==='ok'?[yx+xa*k,by-h*k]:[yx+lY*k,by];  // sinon : le détour est posé sur la route
+  const pFin=verdict==='ok'?pB:[yx+D*k,by];
   const col={ok:'var(--green)',plat:'var(--amber)',non:'var(--red)'}[verdict];
   const titre={ok:'✓ CONSTRUCTIBLE',plat:'= POINTS ALIGNÉS',non:'✗ IMPOSSIBLE'}[verdict];
   const sous={ok:'Le détour est plus long que la ligne droite : en route !',plat:'Le détour… c\'est la ligne droite ! Le sommet se pose dessus.',non:'Le détour est plus court que la ligne droite !!!'}[verdict];
-  const ecart=Math.abs(D-L);
-  const bilan={ok:`${fr(lY)} + ${fr(lZ)} = ${fr(D)} cm > ${fr(L)} cm : les bâtons se rejoignent au-dessus de la route en ${X} !`,plat:`${fr(lY)} + ${fr(lZ)} = ${fr(D)} cm = ${fr(L)} cm : les bâtons se touchent… sur la route !`,non:`${fr(lY)} + ${fr(lZ)} = ${fr(D)} cm < ${fr(L)} cm : il manque ${fr(ecart)} cm, les bâtons ne se touchent pas !`}[verdict];
-  const baton=(x,y,ang,l,c,dir,txt)=>{const x2=x+dir*l*k*Math.cos(ang),y2=y-l*k*Math.sin(ang);const mx=(x+x2)/2-dir*0*1,my=(y+y2)/2;
-    return `<line x1="${x}" y1="${y}" x2="${x2}" y2="${y2}" stroke="${c}" stroke-width="9" stroke-linecap="round"/>`+
-      `<text x="${mx-dir*14*Math.sin(ang)}" y="${my-16*Math.cos(ang)-4}" font-size="16" font-weight="700" text-anchor="middle" style="fill:${c};paint-order:stroke;stroke:var(--paper);stroke-width:4px">${txt}</text>`};
+  const bilan={ok:`Le détour est plus long : ${fr(D)} cm > ${fr(L)} cm. Le point ${X} existe, hors de la route !`,plat:`Même distance : ${fr(D)} cm = ${fr(L)} cm. ${X} est sur la route : les points sont alignés.`,non:`Le détour arrive avant ${Z} : ${fr(D)} cm < ${fr(L)} cm. Il manque ${fr(L-D)} cm, impossible !`}[verdict];
+  const route=(a,b,w=16)=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="var(--pencil)" stroke-width="${w}" stroke-linecap="round"/><line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="var(--paper)" stroke-width="2" stroke-dasharray="10 8"/>`;
+  const voiture=(p,ang,c)=>`<g transform="translate(${p[0]} ${p[1]-11}) rotate(${-ang*180/Math.PI})"><rect x="-18" y="-7" width="36" height="13" rx="4" fill="${c}"/><path d="M-9 -7l4 -8h12l5 8z" fill="${c}"/><path d="M-5 -8l2.5 -5h4v5zM3.5 -8v-5h3l3 5z" fill="var(--paper)" opacity=".85"/><circle cx="-10" cy="7" r="4.5" fill="var(--ink)"/><circle cx="10" cy="7" r="4.5" fill="var(--ink)"/><circle cx="17" cy="-2" r="2" fill="#ffd34d"/></g>`;
+  const pos=(a,b,f)=>[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f], angle=(a,b)=>Math.atan2(a[1]-b[1],b[0]-a[0]);
   const maison=x=>`<path d="M${x-44} ${by-6}v-26l16-14 16 14v26z" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2"/><rect x="${x-32}" y="${by-22}" width="8" height="16" fill="var(--blue)"/>`;
   const drapeau=x=>`<line x1="${x+16}" y1="${by-4}" x2="${x+16}" y2="${by-50}" stroke="var(--ink)" stroke-width="2.5"/><path d="M${x+16} ${by-50}l22 7-22 7z" fill="var(--red)"/>`;
-  return {cap,dur:6,transient:true,draw:u=>{let g='';
+  const compteur=(y,txt,c)=>`<text x="${W/2}" y="${y}" font-size="17" font-weight="700" text-anchor="middle" style="fill:${c}">${txt}</text>`;
+  return {cap,dur:8,transient:true,draw:u=>{let g='';
     if(u<.1){const o=1-u/.1;g+=`<g opacity="${o}"><text x="${W/2}" y="${H/2-10}" font-size="120" font-weight="800" text-anchor="middle" dominant-baseline="middle" style="fill:var(--blue);font-family:var(--f-display)">?</text>`+
       `<text x="${W/2}" y="${H/2+80}" font-size="20" text-anchor="middle" style="fill:var(--muted)">Le détour est-il plus long que la ligne droite ?</text></g>`}
-    const a1=clamp(u,.08,.22);
-    if(a1>0){const e=ease(a1);g+=`<g opacity="${e}">${maison(yx)}${drapeau(zx)}`+
-      `<line x1="${yx}" y1="${by}" x2="${zx}" y2="${by}" stroke="var(--pencil)" stroke-width="16" stroke-linecap="round"/>`+
-      `<line x1="${yx+10}" y1="${by}" x2="${zx-10}" y2="${by}" stroke="var(--paper)" stroke-width="2" stroke-dasharray="10 8"/>`+
-      `<text x="${yx}" y="${by+34}" font-size="22" font-style="italic" text-anchor="middle">${Y}</text><text x="${zx}" y="${by+34}" font-size="22" font-style="italic" text-anchor="middle">${Z}</text>`+
-      `<text x="${W/2}" y="${by+34}" font-size="16" font-weight="700" text-anchor="middle" style="fill:var(--muted)">ligne droite [${Y}${Z}] : ${fr(L)} cm</text></g>`}
-    if(u>.24){const op=ease(clamp(u,.24,.32));const v=clamp(u,.36,.62);
-      let tY,tZ;if(verdict==='ok'){const e=ease(v);tY=aY*e;tZ=aZ*e}else{tY=tZ=rad(28)*Math.sin(Math.PI*v)}/* aplati ou impossible : ils essaient de se lever, puis retombent */
-      g+=`<g opacity="${op}">`+baton(yx,by-2,tY,lY,'var(--blue)',1,`[${Y}${X}] ${fr(lY)} cm`)+baton(zx,by-2,tZ,lZ,'var(--violet)',-1,`[${Z}${X}] ${fr(lZ)} cm`)+`</g>`}
-    if(u>.64){const o=clamp(u,.64,.72);g+=`<g opacity="${o}">`;
-      if(verdict==='non'){const x1=yx+lY*k,x2=zx-lZ*k;g+=`<rect x="${x1}" y="${by-14}" width="${x2-x1}" height="24" rx="5" fill="var(--red)" fill-opacity=".15" stroke="var(--red)" stroke-width="2" stroke-dasharray="5 4"/><text x="${(x1+x2)/2}" y="${by-22}" font-size="26" font-weight="800" text-anchor="middle" style="fill:var(--red)">?</text>`}
-      else{const px=verdict==='ok'?yx+xa*k:yx+xa*k,py=verdict==='ok'?by-2-h*k:by-2;
-        g+=`<circle cx="${px}" cy="${py}" r="12" fill="none" stroke="${col}" stroke-width="3"/><text x="${px}" y="${py-20}" font-size="24" font-style="italic" font-weight="700" text-anchor="middle" style="fill:${col};paint-order:stroke;stroke:var(--paper);stroke-width:5px">${X}</text>`}
-      g+=`<text x="${W/2}" y="${by+70}" font-size="17" font-weight="700" text-anchor="middle" style="fill:${col}">${bilan}</text></g>`}
-    if(u>.74){const e=ease(clamp(u,.74,.86));const sc=.8*(2.2-1.2*e);
+    const a1=clamp(u,.06,.14);
+    if(a1>0)g+=`<g opacity="${ease(a1)}">${maison(yx)}${drapeau(zx)}${route(pA,pB)}<text x="${yx}" y="${by+32}" font-size="22" font-style="italic" text-anchor="middle">${Y}</text><text x="${zx}" y="${by+32}" font-size="22" font-style="italic" text-anchor="middle">${Z}</text></g>`;
+    // route du détour (seulement si X est hors de la route)
+    const a3=clamp(u,.42,.5);if(a3>0&&verdict==='ok')g+=`<g opacity="${ease(a3)}">${route(pA,pC,12)}${route(pC,pB,12)}</g>`;
+    if(a3>0&&verdict!=='non'){g+=`<g opacity="${ease(a3)}"><circle cx="${pC[0]}" cy="${pC[1]}" r="6" fill="${verdict==='ok'?'var(--violet)':'var(--amber)'}"/><text x="${pC[0]}" y="${pC[1]-16}" font-size="22" font-style="italic" font-weight="700" text-anchor="middle" style="fill:var(--violet);paint-order:stroke;stroke:var(--paper);stroke-width:5px">${X}</text></g>`}
+    // voiture 1 : ligne droite
+    const v1=clamp(u,.15,.38);
+    if(u>.12&&u<.46){const o=u<.4?1:1-(u-.4)/.06;g+=`<g opacity="${o}">${voiture(pos(pA,pB,ease(v1)),0,'var(--blue)')}</g>`}
+    if(u>.14)g+=compteur(by+60,`🚗 Ligne droite de ${Y} à ${Z} : ${fr(L*ease(v1))} cm`,'var(--blue)');
+    // voiture 2 : le détour (pause en X)
+    if(u>.48){const v=clamp(u,.5,.78);let d,p,an;
+      if(v<.45){const f=ease(v/.45);d=lY*f;p=pos(pA,pC,f);an=angle(pA,pC)}
+      else if(v<.55){d=lY;p=pC;an=angle(pA,pC)}
+      else{const f=ease((v-.55)/.45);d=lY+lZ*f;p=pos(pC,pFin,f);an=angle(pC,pFin)}
+      g+=voiture(p,an,'var(--violet)');
+      const txt=v<.5?`${fr(d)} cm`:`${fr(lY)} + ${fr(d-lY)} = ${fr(d)} cm`;
+      g+=compteur(by+86,`🚙 Détour par ${X} : ${txt}`,'var(--violet)')}
+    if(u>.8){const o=clamp(u,.8,.86);g+=`<g opacity="${o}">`;
+      if(verdict==='non'){const x1=pFin[0],x2=zx;g+=`<rect x="${x1}" y="${by-12}" width="${x2-x1}" height="24" rx="5" fill="var(--red)" fill-opacity=".15" stroke="var(--red)" stroke-width="2" stroke-dasharray="5 4"/><text x="${(x1+x2)/2}" y="${by-22}" font-size="18" font-weight="800" text-anchor="middle" style="fill:var(--red)">il manque ${fr(L-D)} cm</text>`}
+      g+=compteur(by+116,bilan,col)+`</g>`}
+    if(u>.86){const e=ease(clamp(u,.86,.96));const sc=.8*(2.2-1.2*e);
       g+=`<g transform="translate(${W/2} 62) rotate(-4) scale(${sc})" opacity="${e}"><rect x="-230" y="-46" width="460" height="92" rx="14" fill="var(--paper)" fill-opacity=".92" stroke="${col}" stroke-width="5"/>`+
         `<rect x="-221" y="-37" width="442" height="74" rx="9" fill="none" stroke="${col}" stroke-width="1.5"/>`+
         `<text y="-6" font-size="32" font-weight="800" letter-spacing="3" text-anchor="middle" style="fill:${col};font-family:var(--f-display)">${titre}</text>`+
