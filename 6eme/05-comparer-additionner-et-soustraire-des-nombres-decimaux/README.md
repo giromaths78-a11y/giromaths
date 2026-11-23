@@ -18,13 +18,12 @@ Page du site : [index.html](index.html)
 
 - [Cours élève à compléter – Comparer, additionner et soustraire des décimaux](cours-eleve/cours-decimaux-eleve.pdf) (PDF)
 - [Images à découper et à coller dans le cours](cours-eleve/images-a-decouper-decimaux.pdf) (PDF)
-- [Mini-notice : s'entraîner en ligne (Comparer, Ranger, Encadrer et intercaler)](cours-eleve/notice-exercices-en-ligne.pdf) (PDF)
-- [Mini-notice : s'entraîner en ligne (Comparer, Ranger, Encadrer et intercaler, Arrondir)](cours-eleve/notice-exercices-en-ligne-avec-arrondir.pdf) (PDF)
 
 ## Fiches d'exercices
 
 - [Fiche d'exercices (difficulté ★ à ★★★) : p. 1 comparer, encadrer, arrondir ; p. 2 additionner, soustraire](exercices/fiche-exercices-decimaux.pdf) (PDF) · [corrigé](exercices/fiche-exercices-decimaux-corrige.pdf)
 - [Fiche niveau expert (★★★★) : p. 1 comparer, encadrer, arrondir ; p. 2 additionner, soustraire](exercices/fiche-expert-decimaux.pdf) (PDF) · [corrigé](exercices/fiche-expert-decimaux-corrige.pdf)
+- [Fiche Indigo p. 23 : additionner et soustraire des nombres décimaux (exercices 7 à 16, 1 page)](exercices/fiche-indigo-p23-additionner-soustraire.pdf) (PDF) · [corrigé](exercices/fiche-indigo-p23-additionner-soustraire-corrige.pdf)
 
 ## Vidéos
 
