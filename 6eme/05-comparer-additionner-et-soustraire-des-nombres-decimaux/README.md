@@ -24,6 +24,7 @@ Page du site : [index.html](index.html)
 - [Fiche d'exercices (difficulté ★ à ★★★) : p. 1 comparer, encadrer, arrondir ; p. 2 additionner, soustraire](exercices/fiche-exercices-decimaux.pdf) (PDF) · [corrigé](exercices/fiche-exercices-decimaux-corrige.pdf)
 - [Fiche niveau expert (★★★★) : p. 1 comparer, encadrer, arrondir ; p. 2 additionner, soustraire](exercices/fiche-expert-decimaux.pdf) (PDF) · [corrigé](exercices/fiche-expert-decimaux-corrige.pdf)
 - [Fiche Indigo p. 23 : additionner et soustraire des nombres décimaux (exercices 7 à 16, 1 page)](exercices/fiche-indigo-p23-additionner-soustraire.pdf) (PDF) · [corrigé](exercices/fiche-indigo-p23-additionner-soustraire-corrige.pdf)
+- [Fiche Indigo p. 26-27 : problèmes avec les nombres décimaux (exercices 29 à 42, 2 pages)](exercices/fiche-problemes-indigo-p26-27.pdf) (PDF) · [corrigé](exercices/fiche-problemes-indigo-p26-27-corrige.pdf)
 
 ## Vidéos
 
