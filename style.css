@@ -757,3 +757,20 @@ body.at-ouvert{overflow:hidden}
 .seq-hero .hero-ico{position:absolute;right:0;top:0;color:rgba(255,255,255,.75);pointer-events:none}
 .seq-hero .hero-ico .seq-ico{width:72px;height:72px;color:inherit;margin:0}
 @media (max-width:760px){.seq-hero-title.has-ico{padding-right:72px}.seq-hero .hero-ico .seq-ico{width:60px;height:60px}}
+
+/* === Contrôle commun (tableau repliable, prof) === */
+.cc-fold>summary{display:flex;align-items:center;gap:12px;cursor:pointer;list-style:none;font-family:var(--font-title);font-weight:700;font-size:1.1rem}
+.cc-fold>summary::-webkit-details-marker{display:none}
+.cc-fold>summary .res-icon{flex:none}
+.cc-titre small{font-weight:600;color:var(--muted,#666);font-size:.85em}
+.cc-aide{margin-left:auto;font:600 .8rem var(--font-body,inherit);color:var(--accent);border:1px solid var(--accent);border-radius:999px;padding:3px 12px}
+.cc-fold[open] .cc-aide::after{content:" ▴"}.cc-fold:not([open]) .cc-aide::after{content:" ▾"}
+.cc-desc{margin:10px 0 8px;font-size:.88rem;color:var(--muted,#666)}
+.cc-table{width:100%;border-collapse:collapse;font-size:.9rem;background:var(--card,#fff);border-radius:10px;overflow:hidden}
+.cc-table th{background:var(--accent-light);color:var(--accent);text-align:left;padding:6px 10px;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em}
+.cc-table td{padding:7px 10px;border-top:1px solid var(--line);vertical-align:middle}
+.cc-n{font-weight:700;color:var(--accent);white-space:nowrap}
+.cc-liens{white-space:nowrap}.cc-liens a{display:inline-block;margin-right:6px;padding:3px 10px;border-radius:999px;background:var(--accent-light);color:var(--accent);font-weight:700;text-decoration:none}
+.cc-liens a.cor{background:var(--accent);color:#fff}
+.cc-vide{font-size:.9rem;color:var(--muted,#666)}
+@media (max-width:760px){.cc-table{display:block;overflow-x:auto}}
