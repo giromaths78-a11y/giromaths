@@ -749,3 +749,11 @@ body.at-ouvert{overflow:hidden}
 .eval-mdp button{padding:7px 16px;border:0;border-radius:999px;background:var(--accent);color:#fff;font-weight:700;cursor:pointer}
 .eval-msg{flex-basis:100%;margin:0;font-weight:600;color:#b91c1c}
 .eval-msg:empty{display:none}
+
+/* === Dessins des séquences (icones.py) === */
+.seq-ico{flex:none;margin-left:auto;width:56px;height:56px;color:var(--accent)}
+.seq-hero-title{position:relative}
+.seq-hero-title.has-ico{padding-right:84px}
+.seq-hero .hero-ico{position:absolute;right:0;top:0;color:rgba(255,255,255,.75);pointer-events:none}
+.seq-hero .hero-ico .seq-ico{width:72px;height:72px;color:inherit;margin:0}
+@media (max-width:760px){.seq-hero-title.has-ico{padding-right:72px}.seq-hero .hero-ico .seq-ico{width:60px;height:60px}}
