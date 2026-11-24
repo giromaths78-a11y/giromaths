@@ -774,3 +774,6 @@ body.at-ouvert{overflow:hidden}
 .cc-liens a.cor{background:var(--accent);color:#fff}
 .cc-vide{font-size:.9rem;color:var(--muted,#666)}
 @media (max-width:760px){.cc-table{display:block;overflow-x:auto}}
+.cc-liens a.w{background:transparent;border:1px solid var(--accent);color:var(--accent);font-weight:600;font-size:.82rem;padding:2px 9px}
+.cc-liens{white-space:normal;min-width:190px}
+.cc-table td:nth-child(3){white-space:nowrap}

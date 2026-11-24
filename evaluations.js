@@ -27,7 +27,7 @@
     var n = (b[5] << 8) | b[6], env = b.subarray(7, 7 + n), iv = b.subarray(7 + n, 19 + n), ct = b.subarray(19 + n);
     var brut = await C.decrypt({ name: 'RSA-OAEP' }, priv, env);
     var k = await C.importKey('raw', brut, 'AES-GCM', false, ['decrypt']);
-    return new Blob([await C.decrypt({ name: 'AES-GCM', iv: iv }, k, ct)], { type: 'application/pdf' });
+    return new Blob([await C.decrypt({ name: 'AES-GCM', iv: iv }, k, ct)], { type: /\.docx$/.test(url) ? 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' : 'application/pdf' });
   }
   function message(e) {
     if (!window.crypto || !crypto.subtle) return "Ce navigateur ne peut pas déchiffrer ici : ouvre le site en ligne (adresse en https).";
@@ -63,7 +63,7 @@
     var sec = a.closest('section'), form = sec.querySelector('.eval-mdp');
     form._lien = a;
     var mdp = lire(sessionStorage, MDP) || lire(localStorage, MDP) || lire(sessionStorage, 'giro-code-admin');  // même mot de passe que admin.html
-    if (mdp) { ouvrir(a, mdp, fenetre(), form); return; }
+    if (mdp) { ouvrir(a, mdp, /\.docx$/.test(a.getAttribute('data-eval')) ? null : fenetre(), form); return; }
     form.hidden = false;
     form.querySelector('.eval-msg').textContent = '';
     form.querySelector('input[type=password]').focus();
@@ -74,6 +74,6 @@
     ev.preventDefault();
     var mdp = form.querySelector('input[type=password]').value, souv = form.querySelector('.eval-souv input').checked;
     if (!form._lien || !mdp) return;
-    ouvrir(form._lien, mdp, fenetre(), form).then(function (ok) { if (ok && souv) ecrire(localStorage, MDP, mdp); });
+    ouvrir(form._lien, mdp, /\.docx$/.test(form._lien.getAttribute('data-eval')) ? null : fenetre(), form).then(function (ok) { if (ok && souv) ecrire(localStorage, MDP, mdp); });
   });
 })();
