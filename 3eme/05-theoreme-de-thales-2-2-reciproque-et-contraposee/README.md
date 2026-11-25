@@ -24,6 +24,7 @@ Page du site : [index.html](index.html)
 
 - [Fiche d'exercices : réciproque, contraposée et Pythagore](exercices/fiche-thales-exercices-eleve.pdf) (PDF) · [corrigé](exercices/fiche-thales-exercices-corrige.pdf)
 - [Fiche AP : déterminer si deux droites sont parallèles](exercices/ap-paralleles-ou-non.pdf) (AP) · [corrigé](exercices/ap-paralleles-ou-non-corrige.pdf)
+- [Fiche AP (version quotients) : mêmes exercices, corrigé avec fractions irréductibles à la calculatrice, sans produits en croix](exercices/ap-paralleles-ou-non.pdf) (AP) · [corrigé](exercices/ap-paralleles-ou-non-corrige-quotients.pdf)
 - [Parcours fléché : réciproque et contraposée](exercices/parcours-fleche-reciproque-contraposee.pdf) (Parcours) · [corrigé](exercices/parcours-fleche-reciproque-contraposee-corrige.pdf)
 
 ## Vidéos
