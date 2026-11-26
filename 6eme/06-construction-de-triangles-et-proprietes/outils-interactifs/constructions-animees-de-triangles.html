@@ -175,46 +175,40 @@ function rayStep(cap,v,dir,len){return {cap,dur:1.8,draw:u=>{const k=ease(clamp(
 function pointStep(cap,p,n,dx,dy){return {cap,dur:1.2,draw:u=>{let s='';if(u>.2){const [x,y]=P(p);const r=u<.6?20*(1-(u-.2)/.4)+6:0;if(r)s+=`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="var(--red)" stroke-width="2"/>`;s+=cross(p)+label(p,n,dx,dy)}return s}}}
 function finStep(cap,segs){return {cap,dur:2,draw:u=>{let s='';segs.forEach((g,i)=>{const k=ease(clamp(u,i/segs.length,(i+1)/segs.length));if(k>0)s+=line(g[0],lerp(g[0],g[1],k),'fin');if(k>=1&&g[2])s+=len(g[0],g[1],g[2],g[3]||1)});return s}}}
 
-/* vérification « ligne droite / détour » : une voiture roule de Y à Z en ligne droite (plus grand côté [YZ]),
-   une autre fait le détour par X (les deux autres côtés) ; on compare les compteurs */
+/* vérification de constructibilité : plus grand côté [YZ] ; une voiture part de Y et roule la longueur d'un autre côté,
+   une autre part de Z et roule la longueur du 3e côté ; peuvent-elles se rejoindre ? (hors route / sur la route / non) */
 function verifStep(cap,cotes,verdict){const r=cotes[2],Y=r[1][0],Z=r[1][1],X=r[2];const L=r[0];
   const sY=cotes[0][1].includes(Y)?cotes[0]:cotes[1], sZ=sY===cotes[0]?cotes[1]:cotes[0];const lY=sY[0],lZ=sZ[0],D=lY+lZ;
   const xa=(L*L+lY*lY-lZ*lZ)/(2*L),h=verdict==='ok'?Math.sqrt(Math.max(lY*lY-xa*xa,0)):0;
   const k=Math.min(50,440/L,h>0?160/h:50);const by=300,yx=W/2-L*k/2,zx=W/2+L*k/2;
-  const pA=[yx,by],pB=[zx,by],pC=verdict==='ok'?[yx+xa*k,by-h*k]:[yx+lY*k,by];  // sinon : le détour est posé sur la route
-  const pFin=verdict==='ok'?pB:[yx+D*k,by];
+  const pA=[yx,by],pB=[zx,by],pC=verdict==='ok'?[yx+xa*k,by-h*k]:[yx+lY*k,by];  // point de rencontre (sur la route si aplati)
+  const pS=verdict==='non'?[zx-lZ*k,by]:pC;  // où s'arrête la voiture partie de Z
   const col={ok:'var(--green)',plat:'var(--amber)',non:'var(--red)'}[verdict];
   const titre={ok:'✓ CONSTRUCTIBLE',plat:'= POINTS ALIGNÉS',non:'✗ IMPOSSIBLE'}[verdict];
-  const sous={ok:'Le détour est plus long que la ligne droite : en route !',plat:'Le détour… c\'est la ligne droite ! Le sommet se pose dessus.',non:'Le détour est plus court que la ligne droite !!!'}[verdict];
-  const bilan={ok:`Le détour est plus long : ${fr(D)} cm > ${fr(L)} cm. Le point ${X} existe, hors de la route !`,plat:`Même distance : ${fr(D)} cm = ${fr(L)} cm. ${X} est sur la route : les points sont alignés.`,non:`Le détour arrive avant ${Z} : ${fr(D)} cm < ${fr(L)} cm. Il manque ${fr(L-D)} cm, impossible !`}[verdict];
+  const sous={ok:'Elles se rejoignent en dehors du chemin direct',plat:'Elles se rejoignent sur le chemin direct',non:'Les distances sont trop courtes !'}[verdict];
+  const bilan={ok:`${fr(lY)} + ${fr(lZ)} = ${fr(D)} cm > ${fr(L)} cm : rencontre en ${X}, hors de la route directe.`,plat:`${fr(lY)} + ${fr(lZ)} = ${fr(D)} cm = ${fr(L)} cm : rencontre en ${X}, sur la route directe (alignés).`,non:`${fr(lY)} + ${fr(lZ)} = ${fr(D)} cm < ${fr(L)} cm : il reste ${fr(L-D)} cm entre elles, pas de rencontre.`}[verdict];
   const route=(a,b,w=16)=>`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="var(--pencil)" stroke-width="${w}" stroke-linecap="round"/><line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="var(--paper)" stroke-width="2" stroke-dasharray="10 8"/>`;
-  const voiture=(p,ang,c)=>`<g transform="translate(${p[0]} ${p[1]-11}) rotate(${-ang*180/Math.PI})"><rect x="-18" y="-7" width="36" height="13" rx="4" fill="${c}"/><path d="M-9 -7l4 -8h12l5 8z" fill="${c}"/><path d="M-5 -8l2.5 -5h4v5zM3.5 -8v-5h3l3 5z" fill="var(--paper)" opacity=".85"/><circle cx="-10" cy="7" r="4.5" fill="var(--ink)"/><circle cx="10" cy="7" r="4.5" fill="var(--ink)"/><circle cx="17" cy="-2" r="2" fill="#ffd34d"/></g>`;
+  const voiture=(p,ang,c)=>{const fl=Math.cos(ang)<0;if(fl)ang-=Math.PI;return `<g transform="translate(${p[0]} ${p[1]-11}) rotate(${-ang*180/Math.PI}) scale(${fl?-1:1} 1)"><rect x="-18" y="-7" width="36" height="13" rx="4" fill="${c}"/><path d="M-9 -7l4 -8h12l5 8z" fill="${c}"/><path d="M-5 -8l2.5 -5h4v5zM3.5 -8v-5h3l3 5z" fill="var(--paper)" opacity=".85"/><circle cx="-10" cy="7" r="4.5" fill="var(--ink)"/><circle cx="10" cy="7" r="4.5" fill="var(--ink)"/><circle cx="17" cy="-2" r="2" fill="#ffd34d"/></g>`};
   const pos=(a,b,f)=>[a[0]+(b[0]-a[0])*f,a[1]+(b[1]-a[1])*f], angle=(a,b)=>Math.atan2(a[1]-b[1],b[0]-a[0]);
   const maison=x=>`<path d="M${x-44} ${by-6}v-26l16-14 16 14v26z" fill="var(--blue-soft)" stroke="var(--blue)" stroke-width="2"/><rect x="${x-32}" y="${by-22}" width="8" height="16" fill="var(--blue)"/>`;
   const drapeau=x=>`<line x1="${x+16}" y1="${by-4}" x2="${x+16}" y2="${by-50}" stroke="var(--ink)" stroke-width="2.5"/><path d="M${x+16} ${by-50}l22 7-22 7z" fill="var(--red)"/>`;
   const compteur=(y,txt,c)=>`<text x="${W/2}" y="${y}" font-size="17" font-weight="700" text-anchor="middle" style="fill:${c}">${txt}</text>`;
   return {cap,dur:8,transient:true,draw:u=>{let g='';
     if(u<.1){const o=1-u/.1;g+=`<g opacity="${o}"><text x="${W/2}" y="${H/2-10}" font-size="120" font-weight="800" text-anchor="middle" dominant-baseline="middle" style="fill:var(--blue);font-family:var(--f-display)">?</text>`+
-      `<text x="${W/2}" y="${H/2+80}" font-size="20" text-anchor="middle" style="fill:var(--muted)">Le détour est-il plus long que la ligne droite ?</text></g>`}
+      `<text x="${W/2}" y="${H/2+80}" font-size="20" text-anchor="middle" style="fill:var(--muted)">Les deux voitures peuvent-elles se rejoindre ?</text></g>`}
     const a1=clamp(u,.06,.14);
-    if(a1>0)g+=`<g opacity="${ease(a1)}">${maison(yx)}${drapeau(zx)}${route(pA,pB)}<text x="${yx}" y="${by+32}" font-size="22" font-style="italic" text-anchor="middle">${Y}</text><text x="${zx}" y="${by+32}" font-size="22" font-style="italic" text-anchor="middle">${Z}</text></g>`;
-    // route du détour (seulement si X est hors de la route)
-    const a3=clamp(u,.42,.5);if(a3>0&&verdict==='ok')g+=`<g opacity="${ease(a3)}">${route(pA,pC,12)}${route(pC,pB,12)}</g>`;
-    if(a3>0&&verdict!=='non'){g+=`<g opacity="${ease(a3)}"><circle cx="${pC[0]}" cy="${pC[1]}" r="6" fill="${verdict==='ok'?'var(--violet)':'var(--amber)'}"/><text x="${pC[0]}" y="${pC[1]-16}" font-size="22" font-style="italic" font-weight="700" text-anchor="middle" style="fill:var(--violet);paint-order:stroke;stroke:var(--paper);stroke-width:5px">${X}</text></g>`}
-    // voiture 1 : ligne droite
-    const v1=clamp(u,.15,.38);
-    if(u>.12&&u<.46){const o=u<.4?1:1-(u-.4)/.06;g+=`<g opacity="${o}">${voiture(pos(pA,pB,ease(v1)),0,'var(--blue)')}</g>`}
-    if(u>.14)g+=compteur(by+60,`🚗 Ligne droite de ${Y} à ${Z} : ${fr(L*ease(v1))} cm`,'var(--blue)');
-    // voiture 2 : le détour (pause en X)
-    if(u>.48){const v=clamp(u,.5,.78);let d,p,an;
-      if(v<.45){const f=ease(v/.45);d=lY*f;p=pos(pA,pC,f);an=angle(pA,pC)}
-      else if(v<.55){d=lY;p=pC;an=angle(pA,pC)}
-      else{const f=ease((v-.55)/.45);d=lY+lZ*f;p=pos(pC,pFin,f);an=angle(pC,pFin)}
-      g+=voiture(p,an,'var(--violet)');
-      const txt=v<.5?`${fr(d)} cm`:`${fr(lY)} + ${fr(d-lY)} = ${fr(d)} cm`;
-      g+=compteur(by+86,`🚙 Détour par ${X} : ${txt}`,'var(--violet)')}
+    if(a1>0)g+=`<g opacity="${ease(a1)}">${maison(yx)}${maison(zx+44)}${route(pA,pB)}<text x="${yx}" y="${by+32}" font-size="22" font-style="italic" text-anchor="middle">${Y}</text><text x="${zx}" y="${by+32}" font-size="22" font-style="italic" text-anchor="middle">${Z}</text></g>`;
+    // routes parcourues + point de rencontre
+    const a3=clamp(u,.12,.2);
+    if(verdict==='ok')g+=`<g opacity="${ease(a3)}">${route(pA,pC,12)}${route(pC,pB,12)}</g>`;
+    const v=ease(clamp(u,.22,.7));
+    if(u>.7&&verdict!=='non'){g+=`<g opacity="${clamp((u-.7)/.08,0,1)}"><circle cx="${pC[0]}" cy="${pC[1]}" r="7" fill="none" stroke="var(--red)" stroke-width="3"/><text x="${pC[0]}" y="${pC[1]-18}" font-size="22" font-style="italic" font-weight="700" text-anchor="middle" style="fill:var(--red);paint-order:stroke;stroke:var(--paper);stroke-width:5px">${X}</text></g>`}
+    // deux voitures qui partent en même temps de Y et de Z
+    if(u>.12){const p1=pos(pA,pC,v),p2=pos(pB,pS,v);
+      g+=voiture(p1,angle(pA,pC),'var(--blue)')+voiture(p2,angle(pB,pS),'var(--violet)');
+      g+=compteur(by+60,`🚗 part de ${Y} : ${fr(lY*v)} cm sur ${fr(lY)} cm`,'var(--blue)')+compteur(by+86,`🚙 part de ${Z} : ${fr(lZ*v)} cm sur ${fr(lZ)} cm`,'var(--violet)')}
     if(u>.8){const o=clamp(u,.8,.86);g+=`<g opacity="${o}">`;
-      if(verdict==='non'){const x1=pFin[0],x2=zx;g+=`<rect x="${x1}" y="${by-12}" width="${x2-x1}" height="24" rx="5" fill="var(--red)" fill-opacity=".15" stroke="var(--red)" stroke-width="2" stroke-dasharray="5 4"/><text x="${(x1+x2)/2}" y="${by-22}" font-size="18" font-weight="800" text-anchor="middle" style="fill:var(--red)">il manque ${fr(L-D)} cm</text>`}
+      if(verdict==='non'){const x1=pC[0],x2=pS[0];g+=`<rect x="${x1}" y="${by-12}" width="${x2-x1}" height="24" rx="5" fill="var(--red)" fill-opacity=".15" stroke="var(--red)" stroke-width="2" stroke-dasharray="5 4"/><text x="${(x1+x2)/2}" y="${by-42}" font-size="18" font-weight="800" text-anchor="middle" style="fill:var(--red)">il reste ${fr(L-D)} cm</text>`}
       g+=compteur(by+116,bilan,col)+`</g>`}
     if(u>.86){const e=ease(clamp(u,.86,.96));const sc=.8*(2.2-1.2*e);
       g+=`<g transform="translate(${W/2} 62) rotate(-4) scale(${sc})" opacity="${e}"><rect x="-230" y="-46" width="460" height="92" rx="14" fill="var(--paper)" fill-opacity=".92" stroke="${col}" stroke-width="5"/>`+
@@ -240,8 +234,8 @@ function build(){
     // côtés triés : [longueur, nom du côté, sommet opposé]
     const cotes=[[c,N0+N1,N2],[b,N0+N2,N1],[a,N1+N2,N0]].sort((p,q)=>p[0]-q[0]);const [s0,s1,s2]=cotes;
     const verdict=eg?'plat':ok?'ok':'non';
-    const debut=`Le plus grand côté, [${s2[1]}], mesure ${fr(s2[0])} cm : c'est la ligne droite. Le détour par ${s2[2]} mesure ${fr(s0[0])} + ${fr(s1[0])} = ${fr(s0[0]+s1[0])} cm`;
-    steps.push(verifStep(debut+{ok:` > ${fr(s2[0])} cm : le triangle est constructible !`,plat:`, exactement ${fr(s2[0])} cm : les trois points seront alignés (triangle aplati).`,non:` < ${fr(s2[0])} cm : le détour serait plus court que la ligne droite, c'est impossible ! Regardons ce qui se passe…`}[verdict],cotes,verdict));
+    const debut=`Le plus grand côté, [${s2[1]}], mesure ${fr(s2[0])} cm. Une voiture part de ${s2[1][0]} et roule ${fr(s0[0])} cm, l'autre part de ${s2[1][1]} et roule ${fr(s1[0])} cm : ${fr(s0[0])} + ${fr(s1[0])} = ${fr(s0[0]+s1[0])} cm`;
+    steps.push(verifStep(debut+{ok:` > ${fr(s2[0])} cm : elles peuvent se rejoindre en dehors du chemin direct, le triangle est constructible !`,plat:` = ${fr(s2[0])} cm : elles se rejoignent sur le chemin direct, les trois points seront alignés (triangle aplati).`,non:` < ${fr(s2[0])} cm : les distances sont trop courtes, elles ne peuvent pas se rejoindre, c'est impossible ! Regardons ce qui se passe…`}[verdict],cotes,verdict));
     steps.push(segStep(`Tracer le segment [${N0}${N1}] de longueur ${fr(c)} cm.`,A,B,fr(c)+' cm',N0,N1));
     if(ok){steps.push(arcStep(`Tracer un arc de cercle de centre ${N0} et de rayon ${fr(b)} cm.`,A,b,tA-14,tA+14));
       steps.push(arcStep(`Tracer un arc de cercle de centre ${N1} et de rayon ${fr(a)} cm.`,B,a,tB-14,tB+14));
