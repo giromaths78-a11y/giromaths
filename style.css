@@ -777,3 +777,7 @@ body.at-ouvert{overflow:hidden}
 .cc-liens a.w{background:transparent;border:1px solid var(--accent);color:var(--accent);font-weight:600;font-size:.82rem;padding:2px 9px}
 .cc-liens{white-space:normal;min-width:190px}
 .cc-table td:nth-child(3){white-space:nowrap}
+
+/* === Tableur === */
+.tab-prof{display:none;margin-top:8px;border-top:2px dashed var(--line);padding-top:6px}
+.vis-admin .tab-prof{display:block}
