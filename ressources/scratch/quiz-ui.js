@@ -47,10 +47,10 @@
       q.choices.forEach(function (c, k) {
         var l = document.createElement('label'); l.className = 'qz-opt';
         l.innerHTML = '<input type="radio" name="qz-r" value="' + k + '"><span></span>'; l.lastChild.textContent = c; w.appendChild(l);
-      }); inn.appendChild(w);
+      }); w.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); valider(); } }); inn.appendChild(w);
     } else {
       inn.innerHTML = '<div class="qz-ans"><input type="text" id="qz-r" inputmode="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Ta réponse"> <span class="qz-small">Décimaux : virgule ou point</span></div>';
-      $('qz-r').addEventListener('keydown', function (e) { if (e.key === 'Enter') valider(); }); $('qz-r').focus();
+      $('qz-r').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); valider(); } }); $('qz-r').focus();
     }
     var b = document.createElement('button'); b.type = 'button'; b.className = 'go'; b.id = 'qz-ok'; b.textContent = 'Valider'; b.style.marginTop = '12px'; b.onclick = valider; inn.appendChild(b);
   }
