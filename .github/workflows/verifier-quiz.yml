@@ -1,0 +1,14 @@
+name: Vérifier les quiz
+on: [push, pull_request]
+jobs:
+  quiz:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Les quiz Scratch et Tableur sont présents et reliés
+        run: |
+          # Une régénération du site (gen2.py) peut les écraser : ils ne sont pas dans site-maths-source.
+          for f in scratch-quiz.html tableur-quiz.html ressources/scratch/quiz.js ressources/scratch/quiz-ui.js ressources/tableur/quiz.js ressources/tableur/quiz-ui.js; do test -s "$f" || { echo "MANQUE $f"; exit 1; }; done
+          grep -q 'scratch-quiz.html' scratch.html || { echo "scratch.html : sélecteur Quiz absent"; exit 1; }
+          grep -q 'tableur-quiz.html' tableur.html || { echo "tableur.html : sélecteur Quiz absent"; exit 1; }
+          grep -q '\.sc-switch' style.css && grep -q '\.tq-grid' style.css || { echo "style.css : CSS des quiz absent"; exit 1; }

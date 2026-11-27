@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Quiz Scratch · GiroMaths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Caveat:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=b45739f6">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script src="visibilite.js"></script>
+</head>
+<body class="lvl scratch" style="--accent:#4d7c0f;--accent-light:#ecfccb">
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html"><svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+<rect x="2" y="2" width="17" height="17" rx="5" fill="#c026d3"/><rect x="21" y="2" width="17" height="17" rx="5" fill="#2563eb"/>
+<rect x="2" y="21" width="17" height="17" rx="5" fill="#ea580c"/><rect x="21" y="21" width="17" height="17" rx="5" fill="#0d9488"/>
+<path d="M6 32 Q 14 8 20 20 T 34 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span>Giro<b>Maths</b></span></a>
+    <nav class="main-nav"><a href="6eme.html" style="--c:#2563eb">6ème</a><a href="5eme.html" style="--c:#0d9488">5ème</a><a href="4eme.html" style="--c:#ea580c">4ème</a><a href="3eme.html" style="--c:#c026d3">3ème</a><a href="brevet.html" style="--c:#1e293b">Brevet</a><a href="concours.html" style="--c:#4f46e5">Concours</a><a href="podcasts.html" style="--c:#e11d48">Podcasts/Vidéos</a><a href="culture.html" style="--c:#0891b2">Culture</a><a href="enigmes.html" style="--c:#7c3aed">Énigmes</a><a href="methode.html" style="--c:#b45309">Méthode</a><a href="tableur.html" style="--c:#0f766e">Tableur</a><a href="scratch.html" style="--c:#4d7c0f">Scratch</a></nav>
+  </div>
+</header>
+<main>
+<section class="level-hero sc-hero">
+  <div class="wrap"><p class="crumbs"><a href="index.html">Accueil</a> / <a href="scratch.html">Scratch</a> / Quiz</p>
+  <h1>Quiz Scratch</h1><p class="lead">Que fait ce programme ? Lis les blocs, trouve la réponse.</p></div>
+  <svg class="sc-hero-art" width="170" height="136" viewBox="0 0 200 160" aria-hidden="true">
+<path d="M10 20h40a6 6 0 0 0 12 0h120v34H62a6 6 0 0 1-12 0H10z" fill="#fff" fill-opacity=".9"/>
+<path d="M30 62h40a6 6 0 0 0 12 0h100v34H82a6 6 0 0 1-12 0H30z" fill="#fff" fill-opacity=".7"/>
+<path d="M30 104h40a6 6 0 0 0 12 0h70v34H82a6 6 0 0 1-12 0H30z" fill="#fff" fill-opacity=".5"/>
+</svg>
+</section>
+<div class="wrap seq-page sc-page qz" id="qz">
+  <div class="sc-switch" role="navigation" aria-label="Rubriques Scratch"><a href="scratch.html">🧩 Activités</a><a href="scratch-quiz.html" class="on" aria-current="page">❓ Quiz</a></div>
+  <div id="qz-setup">
+    <div class="card"><h2>1. Mon niveau</h2><div class="chips" id="qz-niv" role="group" aria-label="Niveau"></div></div>
+    <div class="card"><h2>2. Les thèmes <small style="font-weight:500;color:var(--muted)">(un ou plusieurs)</small></h2><div class="chips" id="qz-th" role="group" aria-label="Thèmes"></div>
+      <p class="warn" id="qz-warn" role="alert"></p></div>
+    <div class="card"><h2>3. C’est parti !</h2><p style="margin:0 0 10px">Une série de <b>10 questions</b>. Pour chaque programme, trouve ce qu’il fait. Après chaque réponse, tu vois le corrigé.</p>
+      <button type="button" class="go" id="qz-start">Commencer le quiz</button></div>
+  </div>
+  <div id="qz-play" hidden>
+    <div class="card">
+      <div class="qz-bar"><span id="qz-n"></span><span id="qz-sc"></span></div>
+      <div class="qz-prog"><i id="qz-pb"></i></div>
+      <span class="qz-theme" id="qz-tag"></span>
+      <div class="qz-prog-box"><pre class="blocks" id="qz-blocks"></pre></div>
+      <p class="qz-q" id="qz-q"></p>
+      <div id="qz-in"></div>
+      <div id="qz-out" aria-live="polite"></div>
+    </div>
+  </div>
+  <div id="qz-end" hidden>
+    <div class="card"><div class="qz-score" id="qz-total"></div><p id="qz-msg" style="margin:8px 0 0"></p></div>
+    <div class="card"><h2>Mes réponses</h2><div id="qz-rev"></div></div>
+    <button type="button" class="go" id="qz-again">Nouvelle série</button> <button type="button" class="go alt" id="qz-change">Changer niveau / thèmes</button>
+  </div>
+  <p class="sc-credit">Blocs dessinés avec <a href="https://scratchblocks.github.io/" target="_blank" rel="noopener">scratchblocks</a> (licence MIT). Rien n’est envoyé : tout se passe dans ton navigateur.</p>
+</div>
+<script src="ressources/scratch/scratchblocks.min.js"></script>
+<script src="ressources/scratch/scratchblocks-fr.js"></script>
+<script src="ressources/scratch/quiz.js"></script>
+<script src="ressources/scratch/quiz-ui.js"></script>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span class="logo small"><svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+<rect x="2" y="2" width="17" height="17" rx="5" fill="#c026d3"/><rect x="21" y="2" width="17" height="17" rx="5" fill="#2563eb"/>
+<rect x="2" y="21" width="17" height="17" rx="5" fill="#ea580c"/><rect x="21" y="21" width="17" height="17" rx="5" fill="#0d9488"/>
+<path d="M6 32 Q 14 8 20 20 T 34 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span>Giro<b>Maths</b></span></span><span>Cours de mathématiques de la 6ème à la 3ème</span><p class="copyright">© 2026 Stéphane GIROLD - Professeur Certifié de Mathématiques - Collège Claude DEBUSSY - ST. GERMAIN-EN-LAYE. Tous droits réservés.</p></div></footer>
+</body>
+</html>
