@@ -241,7 +241,7 @@ function montre(id,qs){const c=$('#'+id);
     const mp=lettres();const a=remap(p[0].q,mp),b=remap(p[1].q,mp);
     const f=fiche(c,'Fiche '+(k+1)+' · Figure codée');
     f.classList.add('vl-withfig');
-    const hl=p[0].hand||Math.random()<0.25;const g=document.createElement('div');g.className='vl-bigfig';g.innerHTML=(hl?'<div class="vl-hand-badge">✏️ Figure à main levée : ne regarde que les codages !</div>'+main(a.fig):a.fig);f.appendChild(g);
+    const hl=true;const g=document.createElement('div');g.className='vl-bigfig';g.innerHTML=(hl?'<div class="vl-hand-badge">✏️ Figure à main levée : ne regarde que les codages !</div>'+main(a.fig):a.fig);f.appendChild(g);
     a.fig='';b.fig='';f.appendChild(carte(a));f.appendChild(carte(b))})}
 // ---------- Partie 1 : figures codées
 const V=(t,ok)=>[t,ok];
