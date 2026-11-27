@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vers le lycée · GiroMaths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Caveat:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=b45739f6">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script src="visibilite.js"></script>
+</head>
+<body class="lvl vl" style="--accent:#334155;--accent-light:#e2e8f0">
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html"><svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+<rect x="2" y="2" width="17" height="17" rx="5" fill="#c026d3"/><rect x="21" y="2" width="17" height="17" rx="5" fill="#2563eb"/>
+<rect x="2" y="21" width="17" height="17" rx="5" fill="#ea580c"/><rect x="21" y="21" width="17" height="17" rx="5" fill="#0d9488"/>
+<path d="M6 32 Q 14 8 20 20 T 34 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span>Giro<b>Maths</b></span></a>
+    <nav class="main-nav"><a href="6eme.html" style="--c:#2563eb">6ème</a><a href="5eme.html" style="--c:#0d9488">5ème</a><a href="4eme.html" style="--c:#ea580c">4ème</a><a href="3eme.html" style="--c:#c026d3">3ème</a><a href="brevet.html" style="--c:#1e293b">Brevet</a><a href="concours.html" style="--c:#4f46e5">Concours</a><a href="podcasts.html" style="--c:#e11d48">Podcasts/Vidéos</a><a href="culture.html" style="--c:#0891b2">Culture</a><a href="enigmes.html" style="--c:#7c3aed">Énigmes</a><a href="vers-lycee.html" style="--c:#334155">Vers le lycée</a><a href="methode.html" style="--c:#b45309">Méthode</a><a href="tableur.html" style="--c:#0f766e">Tableur</a><a href="scratch.html" style="--c:#4d7c0f">Scratch</a></nav>
+  </div>
+</header>
+<main>
+<style>
+.vl-page{max-width:900px}
+.vl-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.vl-tabs button{font:inherit;font-weight:700;padding:10px 16px;border-radius:12px;border:2px solid #cbd5e1;background:#fff;cursor:pointer;color:#334155}
+.vl-tabs button[aria-pressed=true]{background:#334155;color:#fff;border-color:#334155}
+.vl-part{display:none}.vl-part.on{display:block}
+.vl-retenir{background:#f1f5f9;border-left:6px solid #334155;border-radius:10px;padding:12px 16px;margin:14px 0}
+.vl-retenir h3{margin:0 0 6px;font-size:1.05rem}.vl-retenir p,.vl-retenir ul{margin:6px 0}
+.vl-q{border:2px solid #e2e8f0;border-radius:14px;padding:14px 16px;margin:16px 0;background:#fff}
+.vl-q h3{margin:0 0 8px;font-size:1.05rem}
+.vl-fig{width:240px;max-width:100%;display:block;margin:6px auto 10px}
+.vl-leg{width:90px;height:30px;vertical-align:middle}
+.vl-leg-row{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.vl-leg-row span{display:flex;align-items:center;gap:6px}
+.vl-opts{display:grid;gap:8px;margin:8px 0}
+.vl-opts label{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;line-height:1.35}
+.vl-opts label:hover{border-color:#94a3b8}
+.vl-opts label.ok{border-color:#16a34a;background:#dcfce7}
+.vl-opts label.ko{border-color:#dc2626;background:#fee2e2}
+.vl-opts label.miss{border-color:#16a34a;border-style:dashed}
+.vl-sub{font-weight:700;margin:10px 0 2px}
+.vl-btn{font:inherit;font-weight:700;padding:8px 18px;border-radius:10px;border:0;background:#334155;color:#fff;cursor:pointer}
+.vl-btn:disabled{opacity:.45;cursor:default}
+.vl-fb{margin-top:8px;padding:10px 12px;border-radius:10px;display:none;line-height:1.4}
+.vl-fb.ok{display:block;background:#dcfce7}.vl-fb.ko{display:block;background:#fee2e2}
+.vl-score{position:sticky;bottom:10px;margin:20px 0;padding:10px 16px;border-radius:12px;background:#334155;color:#fff;font-weight:700;text-align:center}
+.vl-end{border:3px solid #334155;border-radius:14px;padding:14px 18px;margin:20px 0;background:#f8fafc}
+.vl-end h2{margin-top:0}.vl-end li{margin:6px 0}
+.vl-card-lien{display:block;padding:18px 20px;border:2px solid #334155;border-radius:16px;background:#f8fafc;color:inherit;text-decoration:none;margin:14px 0}
+.vl-card-lien:hover{background:#e2e8f0}
+.vl-prog{opacity:.75;border-style:dashed}
+.vl-prop{font-style:italic;background:#f1f5f9;border-radius:8px;padding:8px 12px;margin:6px 0}
+</style>
+<section class="level-hero"><div class="wrap"><p class="crumbs"><a href="index.html">Accueil</a> / Vers le lycée</p>
+<h1>Vers le lycée</h1><p class="lead">Se préparer pendant l'été : activités et fiches de révision pour aborder la seconde.</p></div><span class="hero-sym" aria-hidden="true">↗</span></section>
+<div class="wrap seq-page vl-page">
+<h2>Activités</h2>
+<a class="vl-card-lien" href="vers-lycee-logique.html"><b>🧩 Raisonner avec logique</b><br>Figures codées, contre-exemples, réciproque et contraposée. Activité interactive corrigée pas à pas.</a>
+<h2>Fiches de révision d'été</h2>
+<p class="vl-card-lien vl-prog">Les fiches de révision arrivent bientôt.</p>
+</div>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span class="logo small"><svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+<rect x="2" y="2" width="17" height="17" rx="5" fill="#c026d3"/><rect x="21" y="2" width="17" height="17" rx="5" fill="#2563eb"/>
+<rect x="2" y="21" width="17" height="17" rx="5" fill="#ea580c"/><rect x="21" y="21" width="17" height="17" rx="5" fill="#0d9488"/>
+<path d="M6 32 Q 14 8 20 20 T 34 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span>Giro<b>Maths</b></span></span><span>Cours de mathématiques de la 6ème à la 3ème</span><p class="copyright">© 2026 Stéphane GIROLD - Professeur Certifié de Mathématiques - Collège Claude DEBUSSY - ST. GERMAIN-EN-LAYE. Tous droits réservés.</p></div></footer>
+</body>
+</html>

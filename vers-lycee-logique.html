@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Activité Logique · Vers le lycée · GiroMaths</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Caveat:wght@600;700&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css?v=b45739f6">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<script src="visibilite.js"></script>
+</head>
+<body class="lvl vl" style="--accent:#334155;--accent-light:#e2e8f0">
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="logo" href="index.html"><svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+<rect x="2" y="2" width="17" height="17" rx="5" fill="#c026d3"/><rect x="21" y="2" width="17" height="17" rx="5" fill="#2563eb"/>
+<rect x="2" y="21" width="17" height="17" rx="5" fill="#ea580c"/><rect x="21" y="21" width="17" height="17" rx="5" fill="#0d9488"/>
+<path d="M6 32 Q 14 8 20 20 T 34 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span>Giro<b>Maths</b></span></a>
+    <nav class="main-nav"><a href="6eme.html" style="--c:#2563eb">6ème</a><a href="5eme.html" style="--c:#0d9488">5ème</a><a href="4eme.html" style="--c:#ea580c">4ème</a><a href="3eme.html" style="--c:#c026d3">3ème</a><a href="brevet.html" style="--c:#1e293b">Brevet</a><a href="concours.html" style="--c:#4f46e5">Concours</a><a href="podcasts.html" style="--c:#e11d48">Podcasts/Vidéos</a><a href="culture.html" style="--c:#0891b2">Culture</a><a href="enigmes.html" style="--c:#7c3aed">Énigmes</a><a href="vers-lycee.html" style="--c:#334155">Vers le lycée</a><a href="methode.html" style="--c:#b45309">Méthode</a><a href="tableur.html" style="--c:#0f766e">Tableur</a><a href="scratch.html" style="--c:#4d7c0f">Scratch</a></nav>
+  </div>
+</header>
+<main>
+<style>
+.vl-page{max-width:900px}
+.vl-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0}
+.vl-tabs button{font:inherit;font-weight:700;padding:10px 16px;border-radius:12px;border:2px solid #cbd5e1;background:#fff;cursor:pointer;color:#334155}
+.vl-tabs button[aria-pressed=true]{background:#334155;color:#fff;border-color:#334155}
+.vl-part{display:none}.vl-part.on{display:block}
+.vl-retenir{background:#f1f5f9;border-left:6px solid #334155;border-radius:10px;padding:12px 16px;margin:14px 0}
+.vl-retenir h3{margin:0 0 6px;font-size:1.05rem}.vl-retenir p,.vl-retenir ul{margin:6px 0}
+.vl-q{border:2px solid #e2e8f0;border-radius:14px;padding:14px 16px;margin:16px 0;background:#fff}
+.vl-q h3{margin:0 0 8px;font-size:1.05rem}
+.vl-fig{width:240px;max-width:100%;display:block;margin:6px auto 10px}
+.vl-leg{width:90px;height:30px;vertical-align:middle}
+.vl-leg-row{display:flex;gap:18px;flex-wrap:wrap;align-items:center;margin:8px 0}
+.vl-leg-row span{display:flex;align-items:center;gap:6px}
+.vl-opts{display:grid;gap:8px;margin:8px 0}
+.vl-opts label{display:flex;gap:10px;align-items:flex-start;padding:8px 12px;border:2px solid #e2e8f0;border-radius:10px;cursor:pointer;line-height:1.35}
+.vl-opts label:hover{border-color:#94a3b8}
+.vl-opts label.ok{border-color:#16a34a;background:#dcfce7}
+.vl-opts label.ko{border-color:#dc2626;background:#fee2e2}
+.vl-opts label.miss{border-color:#16a34a;border-style:dashed}
+.vl-sub{font-weight:700;margin:10px 0 2px}
+.vl-btn{font:inherit;font-weight:700;padding:8px 18px;border-radius:10px;border:0;background:#334155;color:#fff;cursor:pointer}
+.vl-btn:disabled{opacity:.45;cursor:default}
+.vl-fb{margin-top:8px;padding:10px 12px;border-radius:10px;display:none;line-height:1.4}
+.vl-fb.ok{display:block;background:#dcfce7}.vl-fb.ko{display:block;background:#fee2e2}
+.vl-score{position:sticky;bottom:10px;margin:20px 0;padding:10px 16px;border-radius:12px;background:#334155;color:#fff;font-weight:700;text-align:center}
+.vl-end{border:3px solid #334155;border-radius:14px;padding:14px 18px;margin:20px 0;background:#f8fafc}
+.vl-end h2{margin-top:0}.vl-end li{margin:6px 0}
+.vl-card-lien{display:block;padding:18px 20px;border:2px solid #334155;border-radius:16px;background:#f8fafc;color:inherit;text-decoration:none;margin:14px 0}
+.vl-card-lien:hover{background:#e2e8f0}
+.vl-prog{opacity:.75;border-style:dashed}
+.vl-prop{font-style:italic;background:#f1f5f9;border-radius:8px;padding:8px 12px;margin:6px 0}
+</style>
+<section class="level-hero"><div class="wrap"><p class="crumbs"><a href="index.html">Accueil</a> / <a href="vers-lycee.html">Vers le lycée</a> / Logique</p>
+<h1>Activité : raisonner avec logique</h1><p class="lead">Lire une figure codée, trouver un contre-exemple, utiliser réciproque et contraposée.</p></div><span class="hero-sym" aria-hidden="true">↗</span></section>
+<div class="wrap seq-page vl-page">
+<p>Trois parties à faire dans l'ordre. Chaque question se corrige tout de suite : lis l'explication, même quand tu as juste ! À la fin, tu sauras répondre à trois questions :</p>
+<ol><li><b>Quels éléments d'une figure codée me permettent de répondre à une question ?</b> (nature d'une figure…)</li>
+<li><b>Comment montrer qu'une affirmation est fausse ?</b> (contre-exemple)</li>
+<li><b>Quelles sont la réciproque et la contraposée d'une propriété ?</b></li></ol>
+<div class="vl-tabs" role="group" aria-label="Parties">
+<button type="button" data-p="1" aria-pressed="true">1 · Figures codées</button><button type="button" data-p="2" aria-pressed="false">2 · Contre-exemples</button><button type="button" data-p="3" aria-pressed="false">3 · Réciproque et contraposée</button><button type="button" data-p="4" aria-pressed="false">Bilan</button></div>
+
+<section class="vl-part on" id="part-1"><h2>1 · Lire une figure codée</h2>
+<div class="vl-retenir"><h3>À retenir</h3>
+<div class="vl-leg-row"><span><svg viewBox="0 0 90 30" class="vl-leg"><line x1="5" y1="15" x2="85" y2="15" stroke="#1e293b" stroke-width="2"/><line x1="45.0" y1="7.0" x2="45.0" y2="23.0" stroke="#dc2626" stroke-width="2"/></svg> côtés de <b>même longueur</b></span><span><svg viewBox="0 0 90 30" class="vl-leg"><path d="M10 25 H50 M10 25 L35 4" stroke="#1e293b" stroke-width="2" fill="none"/><path d="M26 25 A16 16 0 0 0 20 14" fill="none" stroke="#dc2626" stroke-width="2"/></svg> angles de <b>même mesure</b></span><span><svg viewBox="0 0 90 30" class="vl-leg"><path d="M10 25 H50 M10 25 V4" stroke="#1e293b" stroke-width="2" fill="none"/><polygon points="10,25 20,25 20,15 10,15" fill="none" stroke="#dc2626" stroke-width="2"/></svg> <b>angle droit</b></span></div>
+<ul><li>Sur une figure, on peut utiliser <b>uniquement</b> ce qui est <b>codé</b> (traits, arcs, angle droit) ou écrit dans l'énoncé.</li>
+<li>Ce qui « a l'air vrai » (alignés, perpendiculaires, égaux…) <b>n'est pas une information</b> : le dessin n'est pas à l'échelle.</li>
+<li>Pour nommer une figure, on cherche les propriétés <b>codées</b> qui correspondent à sa définition (côtés opposés égaux, quatre côtés égaux, angle droit…).</li></ul></div>
+<div id="p1"></div></section>
+
+<section class="vl-part" id="part-2"><h2>2 · Trouver un contre-exemple</h2>
+<div class="vl-retenir"><h3>À retenir</h3><ul>
+<li>Une affirmation du type « Si … alors … » est <b>fausse</b> dès qu'on trouve <b>un seul</b> cas où l'hypothèse est vraie et la conclusion fausse : c'est un <b>contre-exemple</b>.</li>
+<li>Un contre-exemple doit vérifier l'hypothèse : sinon il ne prouve rien.</li>
+<li>Pour montrer qu'une affirmation est <b>vraie</b>, des exemples <b>ne suffisent pas</b> : il faut une démonstration.</li></ul></div>
+<div id="p2"></div></section>
+
+<section class="vl-part" id="part-3"><h2>3 · Réciproque et contraposée</h2>
+<div class="vl-retenir"><h3>À retenir</h3>
+<p>Propriété de départ : <b>Si P, alors Q</b>.</p><ul>
+<li><b>Réciproque</b> : Si Q, alors P (on échange). Elle peut être vraie ou fausse.</li>
+<li><b>Contraposée</b> : Si non Q, alors non P (on échange et on nie). Elle est <b>vraie exactement quand la propriété de départ l'est</b>.</li>
+<li>Avec la propriété de Pythagore : sa réciproque prouve qu'un triangle est rectangle, sa contraposée prouve qu'il ne l'est pas.</li></ul></div>
+<div id="p3"></div></section>
+
+<section class="vl-part" id="part-4"><h2>Bilan</h2>
+<div class="vl-end"><h2>Ce que je sais faire</h2><ul>
+<li>✔ Dire quels codages de la figure justifient la nature d'un triangle ou d'un quadrilatère, sans me fier à l'apparence.</li>
+<li>✔ Pour montrer qu'une affirmation est fausse, donner un <b>contre-exemple</b> qui vérifie l'hypothèse.</li>
+<li>✔ Savoir qu'on ne prouve pas qu'une affirmation est vraie avec des exemples.</li>
+<li>✔ Écrire la <b>réciproque</b> (on échange) et la <b>contraposée</b> (on échange et on nie), et savoir que la contraposée a la même valeur de vérité que la propriété de départ.</li></ul>
+<p>Ton score est affiché en bas de page. Tu peux recommencer en rechargeant la page.</p></div></section>
+
+<div class="vl-score"><span id="vl-score-n"></span></div>
+</div>
+<script>const FIG1='<svg viewBox="0 0 240 160" class="vl-fig" role="img" aria-label="Figure codée"><polygon points="120,25 45,135 195,135" fill="#f8fafc" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round"/><line x1="89.1" y1="84.5" x2="75.9" y2="75.5" stroke="#dc2626" stroke-width="2"/><line x1="150.9" y1="84.5" x2="164.1" y2="75.5" stroke="#dc2626" stroke-width="2"/><text x="120.0" y="16.0" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">A</text><text x="32.4" y="146.1" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">B</text><text x="207.6" y="146.1" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">C</text></svg>',FIG2='<svg viewBox="0 0 240 160" class="vl-fig" role="img" aria-label="Figure codée"><polygon points="35,135 165,135 215,40 85,40" fill="#f8fafc" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round"/><line x1="100.0" y1="127.0" x2="100.0" y2="143.0" stroke="#dc2626" stroke-width="2"/><line x1="150.0" y1="48.0" x2="150.0" y2="32.0" stroke="#dc2626" stroke-width="2"/><line x1="181.8" y1="86.0" x2="195.9" y2="93.4" stroke="#dc2626" stroke-width="2"/><line x1="184.1" y1="81.6" x2="198.2" y2="89.0" stroke="#dc2626" stroke-width="2"/><line x1="68.2" y1="89.0" x2="54.1" y2="81.6" stroke="#dc2626" stroke-width="2"/><line x1="65.9" y1="93.4" x2="51.8" y2="86.0" stroke="#dc2626" stroke-width="2"/><text x="22.6" y="146.5" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">A</text><text x="174.0" y="150.7" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">B</text><text x="227.4" y="38.5" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">C</text><text x="76.0" y="34.3" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">D</text></svg>',FIG3='<svg viewBox="0 0 240 160" class="vl-fig" role="img" aria-label="Figure codée"><polygon points="70,25 170,25 170,135 70,135" fill="#f8fafc" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round"/><line x1="120.0" y1="17.0" x2="120.0" y2="33.0" stroke="#dc2626" stroke-width="2"/><line x1="178.0" y1="80.0" x2="162.0" y2="80.0" stroke="#dc2626" stroke-width="2"/><line x1="120.0" y1="143.0" x2="120.0" y2="127.0" stroke="#dc2626" stroke-width="2"/><line x1="62.0" y1="80.0" x2="78.0" y2="80.0" stroke="#dc2626" stroke-width="2"/><polygon points="70.0,25.0 82.0,25.0 82.0,37.0 70.0,37.0" fill="none" stroke="#dc2626" stroke-width="2"/><text x="60.6" y="19.6" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">A</text><text x="179.4" y="19.6" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">B</text><text x="179.4" y="150.4" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">C</text><text x="60.6" y="150.4" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">D</text></svg>',FIG4='<svg viewBox="0 0 240 160" class="vl-fig" role="img" aria-label="Figure codée"><polygon points="30,80 120,25 210,80 120,135" fill="#f8fafc" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round"/><line x1="70.8" y1="45.7" x2="79.2" y2="59.3" stroke="#dc2626" stroke-width="2"/><line x1="169.2" y1="45.7" x2="160.8" y2="59.3" stroke="#dc2626" stroke-width="2"/><line x1="169.2" y1="114.3" x2="160.8" y2="100.7" stroke="#dc2626" stroke-width="2"/><line x1="70.8" y1="114.3" x2="79.2" y2="100.7" stroke="#dc2626" stroke-width="2"/><text x="16.0" y="85.0" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">A</text><text x="120.0" y="16.0" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">B</text><text x="224.0" y="85.0" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">C</text><text x="120.0" y="154.0" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">D</text></svg>',FIG5='<svg viewBox="0 0 240 160" class="vl-fig" role="img" aria-label="Figure codée"><polygon points="60,135 60,30 165,135" fill="#f8fafc" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round"/><line x1="52.0" y1="82.5" x2="68.0" y2="82.5" stroke="#dc2626" stroke-width="2"/><line x1="112.5" y1="127.0" x2="112.5" y2="143.0" stroke="#dc2626" stroke-width="2"/><polygon points="60.0,135.0 60.0,123.0 72.0,123.0 72.0,135.0" fill="none" stroke="#dc2626" stroke-width="2"/><text x="50.1" y="149.9" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">A</text><text x="53.7" y="22.5" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">B</text><text x="177.5" y="146.3" text-anchor="middle" font-size="15" font-weight="700" fill="#1e293b">C</text></svg>';
+
+const $=(s,r=document)=>r.querySelector(s);
+let tot=0,bon=0;
+const sc=$('#vl-score-n');
+function maj(){sc.textContent=bon+' / '+tot+' question'+(tot>1?'s':'')+' réussie'+(bon>1?'s':'')+' du premier coup'}
+// q = {t: énoncé, fig: svg, multi: bool, opts: [[texte, ok]], e: explication}
+function carte(q,titre){
+  const d=document.createElement('div');d.className='vl-q';
+  const name='q'+Math.random().toString(36).slice(2);
+  d.innerHTML=(titre?'<h3>'+titre+'</h3>':'')+(q.fig||'')+'<p class="vl-sub">'+q.t+(q.multi?' <small>(plusieurs réponses possibles)</small>':'')+'</p>';
+  const o=document.createElement('div');o.className='vl-opts';
+  q.opts.forEach((x,i)=>{const l=document.createElement('label');
+    l.innerHTML='<input type="'+(q.multi?'checkbox':'radio')+'" name="'+name+'" value="'+i+'"><span>'+x[0]+'</span>';o.appendChild(l)});
+  const b=document.createElement('button');b.className='vl-btn';b.type='button';b.textContent='Vérifier';
+  const fb=document.createElement('div');fb.className='vl-fb';
+  d.append(o,b,fb);
+  let essai=0;
+  b.onclick=()=>{
+    const ch=[...o.querySelectorAll('input')].map(i=>i.checked);
+    if(!ch.some(Boolean))return;
+    const bien=q.opts.every((x,i)=>!!x[1]===ch[i]);
+    if(essai===0){tot++;if(bien)bon++;maj()}
+    essai++;
+    o.querySelectorAll('label').forEach((l,i)=>{l.className='';
+      if(ch[i]&&q.opts[i][1])l.className='ok';else if(ch[i])l.className='ko';else if(q.opts[i][1]&&bien===false&&essai>1)l.className='miss'});
+    if(bien){fb.className='vl-fb ok';fb.innerHTML='✅ <b>Bravo !</b> '+q.e;b.disabled=true;o.querySelectorAll('input').forEach(i=>i.disabled=true);}
+    else{fb.className='vl-fb ko';fb.innerHTML='❌ Pas tout à fait. Regarde les réponses en rouge, relis le « À retenir » et essaie encore.'+(essai>1?'<br>'+q.e:'')}
+  };
+  return d;
+}
+function montre(id,qs){const c=$('#'+id);qs.forEach(q=>c.appendChild(carte(q.q||q,q.titre)))}
+// ---------- Partie 1 : figures codées
+const V=(t,ok)=>[t,ok];
+const P1=[
+ {titre:'Figure 1',q:{fig:FIG1,t:'Quelle est la nature du triangle ABC ?',opts:[V('Isocèle en A',1),V('Équilatéral',0),V('Rectangle en A',0),V('Quelconque',0)],e:'Les deux côtés [AB] et [AC] portent le même codage : AB = AC, donc ABC est isocèle en A.'}},
+ {q:{t:'Quels éléments de la figure permettent de répondre ?',multi:1,opts:[V('Le codage identique (1 trait) sur [AB] et sur [AC]',1),V('Le triangle a l’air symétrique',0),V('[BC] a l’air plus long que les deux autres côtés',0),V('Le point A est en haut de la figure',0)],e:'Seul le codage est une information sûre. « Avoir l’air » n’est pas une preuve : on ne lit que ce qui est codé ou donné dans l’énoncé.'}},
+ {titre:'Figure 2',q:{fig:FIG2,t:'Quelle est la nature du quadrilatère ABCD ?',opts:[V('Parallélogramme',1),V('Rectangle',0),V('Losange',0),V('Carré',0)],e:'Les côtés opposés sont deux à deux de même longueur (AB = CD et AD = BC) : c’est un parallélogramme. Rien ne dit qu’il a un angle droit ou quatre côtés égaux.'}},
+ {q:{t:'Quels éléments de la figure permettent de répondre ?',multi:1,opts:[V('[AB] et [CD] ont le même codage (1 trait)',1),V('[AD] et [BC] ont le même codage (2 traits)',1),V('Il a l’air d’avoir un angle droit',0),V('[AB] et [AD] ont l’air de la même longueur',0)],e:'Attention : 1 trait et 2 traits sont deux codages différents, donc AB et AD ne sont pas égaux. Les deux couples de côtés opposés égaux suffisent pour un parallélogramme.'}},
+ {titre:'Figure 3',q:{fig:FIG3,t:'Quelle est la nature la plus précise de ABCD ?',opts:[V('Carré',1),V('Losange',0),V('Rectangle',0),V('Parallélogramme',0)],e:'Quatre côtés égaux : c’est un losange. Avec en plus un angle droit codé en A, c’est un carré (le plus précis).'}},
+ {q:{t:'Quels éléments de la figure permettent de répondre ?',multi:1,opts:[V('Les quatre côtés ont le même codage',1),V('Un angle droit est codé en A',1),V('Il a l’air d’un carré',0),V('Les diagonales ne sont pas tracées : on ne peut rien dire',0)],e:'Deux informations codées : 4 côtés égaux + un angle droit. L’apparence ne compte pas.'}},
+ {titre:'Figure 4',q:{fig:FIG4,t:'Quelle est la nature la plus précise de ABCD ?',opts:[V('Losange',1),V('Carré',0),V('Rectangle',0),V('Parallélogramme',0)],e:'Les quatre côtés sont égaux : losange. Aucun angle droit n’est codé, donc on ne peut pas dire que c’est un carré (ici il n’en est pas un).'}},
+ {q:{t:'Quels éléments de la figure permettent de répondre ?',multi:1,opts:[V('Les quatre côtés ont le même codage',1),V('Aucun angle droit n’est codé : on ne peut pas affirmer « carré »',1),V('Les diagonales ont l’air perpendiculaires',0),V('On peut mesurer les angles à la règle et au rapporteur sur le dessin',0)],e:'Une figure à main levée ou dessinée n’est pas à l’échelle : on ne mesure pas, on lit le codage.'}},
+ {titre:'Figure 5',q:{fig:FIG5,t:'Quelle est la nature du triangle ABC ?',opts:[V('Rectangle et isocèle en A',1),V('Seulement rectangle en A',0),V('Seulement isocèle en A',0),V('Équilatéral',0)],e:'Angle droit codé en A (rectangle) et AB = AC codé (isocèle) : on peut dire les deux.'}}
+];
+// ---------- Partie 2 : contre-exemples
+const P2=[
+ {a:'Si un nombre entier est multiple de 3, alors il est multiple de 6.',vrai:0,ce:[V('9',1),V('12',0),V('18',0),V('30',0)],e:'9 est multiple de 3 (3 × 3) mais pas de 6 : l’hypothèse est vraie, la conclusion est fausse. 12, 18 et 30 sont bien multiples de 6, ils ne contredisent rien.'},
+ {a:'Pour tout nombre x, x² est supérieur à x.',vrai:0,ce:[V('x = 5',0),V('x = 2',0),V('x = 0,5',1),V('x = −3',0)],e:'0,5² = 0,25 et 0,25 &lt; 0,5. Pour 5, 2 et −3, l’affirmation est vérifiée : ce ne sont pas des contre-exemples.'},
+ {a:'Si x² = 9, alors x = 3.',vrai:0,ce:[V('x = 3',0),V('x = −3',1),V('x = 9',0),V('x = 0',0)],e:'(−3)² = 9 mais −3 ≠ 3. Le nombre 3 vérifie l’affirmation : ce n’est pas un contre-exemple.'},
+ {a:'Un quadrilatère qui a ses quatre côtés égaux est un carré.',vrai:0,ce:[V('Un carré de côté 4 cm',0),V('Un losange dont les angles mesurent 60° et 120°',1),V('Un rectangle de 3 cm sur 5 cm',0),V('Un triangle équilatéral',0)],e:'Le losange 60°/120° a quatre côtés égaux mais pas d’angle droit : ce n’est pas un carré.'},
+ {a:'Si un quadrilatère a ses diagonales de même longueur, alors c’est un rectangle.',vrai:0,ce:[V('Un carré',0),V('Un rectangle 3 cm sur 4 cm',0),V('Un trapèze isocèle (non rectangle) : ses diagonales sont égales',1),V('Un losange quelconque',0)],e:'Un trapèze isocèle a des diagonales égales sans être un rectangle. Le carré et le rectangle vérifient la propriété, ils sont des rectangles : pas des contre-exemples.'},
+ {a:'La somme de deux nombres entiers impairs est un nombre pair.',vrai:1,e:'C’est vrai (3 + 5 = 8, 7 + 11 = 18…). Mais des exemples ne suffisent pas à le prouver : il faut une démonstration (2a + 1 + 2b + 1 = 2(a + b + 1)).'}
+];
+function bloc2(){const c=$('#p2');P2.forEach((s,i)=>{
+  c.appendChild(carte({t:'Affirmation : <span class="vl-prop">'+s.a+'</span> Est-elle vraie ou fausse ?',opts:[V('Vraie, on peut le démontrer',s.vrai),V('Fausse, on peut trouver un contre-exemple',!s.vrai)],e:s.vrai?'Elle est vraie. '+s.e:'Elle est fausse : un seul contre-exemple suffit.'},'Affirmation '+(i+1)));
+  if(s.vrai)c.appendChild(carte({t:'J’ai testé 3 + 5, 7 + 9 et 11 + 13 : à chaque fois la somme est paire. Est-ce une preuve ?',opts:[V('Oui : 3 exemples, c’est suffisant',0),V('Non : des exemples ne prouvent pas, il faut une démonstration avec des lettres',1)],e:s.e}));
+  else c.appendChild(carte({t:'Quel est un contre-exemple ?',opts:s.ce,e:s.e}))
+})}
+// ---------- Partie 3 : réciproque et contraposée
+const P3=[
+ {p:'Si un quadrilatère est un rectangle, alors ses diagonales ont la même longueur.',rec:'Si un quadrilatère a ses diagonales de même longueur, alors c’est un rectangle.',con:'Si un quadrilatère n’a pas ses diagonales de même longueur, alors ce n’est pas un rectangle.',inv:'Si un quadrilatère n’est pas un rectangle, alors ses diagonales n’ont pas la même longueur.',fau:'Si un quadrilatère est un rectangle, alors ses diagonales n’ont pas la même longueur.',recV:0,conV:1,er:'La réciproque est fausse : le trapèze isocèle est un contre-exemple (diagonales égales, pas un rectangle).',ec:'La contraposée est vraie : elle a toujours la même valeur de vérité que la propriété de départ.'},
+ {p:'Si un nombre entier est multiple de 6, alors il est pair.',rec:'Si un nombre entier est pair, alors il est multiple de 6.',con:'Si un nombre entier est impair, alors il n’est pas multiple de 6.',inv:'Si un nombre entier n’est pas multiple de 6, alors il est impair.',fau:'Si un nombre entier est multiple de 6, alors il est impair.',recV:0,conV:1,er:'La réciproque est fausse : 4 est pair mais n’est pas multiple de 6.',ec:'La contraposée est vraie, comme la propriété de départ.'},
+ {p:'Si un triangle ABC est rectangle en A, alors BC² = AB² + AC².',rec:'Si dans un triangle ABC on a BC² = AB² + AC², alors il est rectangle en A.',con:'Si dans un triangle ABC on a BC² ≠ AB² + AC², alors il n’est pas rectangle en A.',inv:'Si un triangle ABC n’est pas rectangle en A, alors BC² ≠ AB² + AC².',fau:'Si un triangle ABC est rectangle en A, alors BC² ≠ AB² + AC².',recV:1,conV:1,er:'La réciproque est vraie : c’est la réciproque du théorème de Pythagore (elle prouve qu’un triangle est rectangle).',ec:'La contraposée est vraie : c’est elle qui prouve qu’un triangle n’est pas rectangle quand l’égalité est fausse.'},
+ {p:'Si deux angles sont opposés par le sommet, alors ils ont la même mesure.',rec:'Si deux angles ont la même mesure, alors ils sont opposés par le sommet.',con:'Si deux angles n’ont pas la même mesure, alors ils ne sont pas opposés par le sommet.',inv:'Si deux angles ne sont pas opposés par le sommet, alors ils n’ont pas la même mesure.',fau:'Si deux angles sont opposés par le sommet, alors ils n’ont pas la même mesure.',recV:0,conV:1,er:'La réciproque est fausse : deux angles droits quelconques ont la même mesure sans être opposés par le sommet.',ec:'La contraposée est vraie, comme la propriété de départ.'},
+ {p:'S’il pleut, alors le sol est mouillé.',rec:'Si le sol est mouillé, alors il pleut.',con:'Si le sol n’est pas mouillé, alors il ne pleut pas.',inv:'S’il ne pleut pas, alors le sol n’est pas mouillé.',fau:'S’il pleut, alors le sol n’est pas mouillé.',recV:0,conV:1,er:'La réciproque est fausse : le sol peut être mouillé parce qu’on l’a lavé.',ec:'La contraposée est vraie : si le sol est sec, c’est qu’il n’a pas plu.'}
+];
+function bloc3(){const c=$('#p3');P3.forEach((s,i)=>{
+  const t='Propriété '+(i+1);
+  const mel=(a)=>a.map((x,k)=>[x,k===0]).sort(()=>Math.random()-.5);
+  c.appendChild(carte({t:'Propriété : <span class="vl-prop">'+s.p+'</span> Quelle est sa <b>réciproque</b> ?',opts:mel([s.rec,s.con,s.inv,s.fau]),e:'La réciproque échange l’hypothèse et la conclusion : « Si Q alors P ».'},t));
+  c.appendChild(carte({t:'Quelle est sa <b>contraposée</b> ?',opts:mel([s.con,s.rec,s.inv,s.fau]),e:'La contraposée : on échange ET on nie les deux : « Si non Q alors non P ».'}));
+  c.appendChild(carte({t:'Cette réciproque est-elle vraie ou fausse ?',opts:[V('Vraie',s.recV),V('Fausse',!s.recV)],e:s.er}));
+  c.appendChild(carte({t:'Cette contraposée est-elle vraie ou fausse ?',opts:[V('Vraie',s.conV),V('Fausse',!s.conV)],e:s.ec}));
+})}
+montre('p1',P1);bloc2();bloc3();maj();
+document.querySelectorAll('.vl-tabs button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.vl-tabs button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  document.querySelectorAll('.vl-part').forEach(p=>p.classList.toggle('on',p.id==='part-'+b.dataset.p));
+  window.scrollTo({top:0,behavior:'smooth'})});
+</script>
+</main>
+<footer class="site-footer"><div class="wrap footer-inner"><span class="logo small"><svg class="logo-mark" viewBox="0 0 40 40" aria-hidden="true">
+<rect x="2" y="2" width="17" height="17" rx="5" fill="#c026d3"/><rect x="21" y="2" width="17" height="17" rx="5" fill="#2563eb"/>
+<rect x="2" y="21" width="17" height="17" rx="5" fill="#ea580c"/><rect x="21" y="21" width="17" height="17" rx="5" fill="#0d9488"/>
+<path d="M6 32 Q 14 8 20 20 T 34 8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg><span>Giro<b>Maths</b></span></span><span>Cours de mathématiques de la 6ème à la 3ème</span><p class="copyright">© 2026 Stéphane GIROLD - Professeur Certifié de Mathématiques - Collège Claude DEBUSSY - ST. GERMAIN-EN-LAYE. Tous droits réservés.</p></div></footer>
+</body>
+</html>
