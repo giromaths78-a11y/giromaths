@@ -269,13 +269,14 @@ function R3(L) { /* QCM : quelle formule après recopie ? */
   var got = shift(F, dr, dc); if (got !== want) throw new Error('recopie ' + got + ' / ' + want);
   var ch = shuffle([want].concat(bad.filter(function (x, i, a) { return x !== want && a.indexOf(x) === i; })).slice(0, 4));
   if (ch.indexOf(want) < 0 || ch.length < 3) throw new Error('choix');
+  ch[ch.findIndex(function (x) { return x !== want; })] = want.slice(1); /* oubli du « = » */
   var shown = {}; shown[from] = fcell(F); shown[ref] = QM;
   var expl;
   if (v === 0) expl = '<p>Vers le bas, la <b>ligne</b> de chaque référence augmente de ' + dr + ' : <b>A1</b> devient <b>A' + (1 + dr) + '</b>. Le nombre ' + k + ' ne change pas.</p>';
   else if (v === 1) expl = '<p>Vers la droite, la <b>colonne</b> de chaque référence avance de ' + dc + ' lettre' + (dc > 1 ? 's' : '') + ' : <b>A1</b> devient <b>' + colL(1 + dc) + '1</b>. Le nombre ' + k + ' ne change pas.</p>';
   else expl = '<p>On descend de ' + dr + ' ligne' + (dr > 1 ? 's' : '') + ' et on avance de ' + dc + ' colonne' + (dc > 1 ? 's' : '') + ' : <b>A1</b> devient <b>' + colL(1 + dc) + (1 + dr) + '</b>. Le nombre ' + k + ' ne change pas.</p>';
   return { theme: 'recopie', type: 'qcm', grid: grid({ cols: cols, rows: rows, cells: shown }), bar: '', q: where, choices: ch, correct: ch.indexOf(want),
-    corrige: expl + '<p>En ' + ref + ', on trouve donc <b>' + esc(want) + '</b>.</p>' };
+    corrige: expl + '<p>En ' + ref + ', on trouve donc <b>' + esc(want) + '</b>.</p><p class="qz-small">Une formule commence toujours par <b>=</b> : sans ce signe, le tableur prend la saisie pour du texte et ne calcule rien.</p>' };
 }
 function R4(L) { /* référence absolue : valeur après recopie */
   var rate = pick([2, 3, 4, 5, 10, 1.5, 2.5]), n = R(2, 4), A = [], cells = { D1: rate }, shown = { D1: num(rate) }, i, forget = R(0, 1) === 1;
@@ -299,11 +300,12 @@ function R5(L) { /* QCM : quelle formule écrire pour pouvoir recopier ? */
     return [1, 2, 3, 4].every(function (r) { return tryValue(c, 'B' + r, ['B1', tg]) !== null && same(tryValue(c, 'B' + r, ['B1', tg]), A[r - 1] * rate); });
   });
   if (okc.filter(Boolean).length !== 1 || !okc[0]) throw new Error('unicité');
+  ch[ch.findIndex(function (x) { return x !== good; })] = good.slice(1); /* oubli du « = » */
   ch = shuffle(ch); shown.B1 = QM;
   return { theme: 'recopie', type: 'qcm', grid: grid({ cols: 4, rows: 4, cells: shown }), bar: '',
     q: 'On veut calculer en colonne B le produit de chaque nombre de la colonne A par le coefficient de <b>D1</b>. On écrit une formule en <b>B1</b> puis on la recopie vers le bas. Laquelle faut-il écrire ?',
     choices: ch, correct: ch.indexOf(good),
-    corrige: '<p>Il faut que <b>A1</b> devienne A2, A3, A4… (elle doit <b>descendre</b>) mais que <b>D1</b> reste <b>D1</b> (elle doit être <b>bloquée</b> avec des $ : <b>$D$1</b>).</p><p>La bonne formule est <b>=A1*$D$1</b>.</p><p class="qz-small">Avec =A1*D1, la ligne de D change : D2, D3… sont vides. Avec $A$1, c’est A1 qui est bloquée : on ne calcule que le premier nombre.</p>' };
+    corrige: '<p>Il faut que <b>A1</b> devienne A2, A3, A4… (elle doit <b>descendre</b>) mais que <b>D1</b> reste <b>D1</b> (elle doit être <b>bloquée</b> avec des $ : <b>$D$1</b>).</p><p>La bonne formule est <b>=A1*$D$1</b>.</p><p class="qz-small">Avec =A1*D1, la ligne de D change : D2, D3… sont vides. Avec $A$1, c’est A1 qui est bloquée : on ne calcule que le premier nombre.</p><p class="qz-small">Une formule commence toujours par <b>=</b> : sans ce signe, le tableur prend la saisie pour du texte et ne calcule rien.</p>' };
 }
 
 /* --- SOMME, MOYENNE, MEDIANE… --- */
@@ -410,11 +412,12 @@ function L3(L) { /* QCM : quelle formule calcule f(x) ? */
   var oks = ch.map(function (F) { return [-3, -1, 0, 2, 5, 7].every(function (x) { var r = tryValue({ A2: x, B2: F }, 'B2'); return r !== null && same(r, f(x)); }); });
   if (oks.filter(Boolean).length !== 1 || !oks[0]) throw new Error('unicité');
   var chk2 = v === 0 ? k + ' × 2 ' + (m < 0 ? '−' : '+') + ' ' + Math.abs(m) : v === 1 ? '2² − ' + k + ' × 2 − ' + m : k + ' × (2 + ' + m + ') − ' + p;
+  ch[ch.findIndex(function (x) { return x !== good; })] = good.slice(1); /* oubli du « = » */
   var shuf = shuffle(ch);
   var bads = '<p class="qz-small">' + (v === 0 ? 'Un tableur ne comprend pas « ' + k + 'A2 » : il faut écrire le signe × avec <b>*</b>. Changer le signe de ' + Math.abs(m) + ' ou mettre le ' + Math.abs(m) + ' dans une parenthèse donne une autre fonction.' : v === 1 ? 'Il faut écrire <b>*</b> pour multiplier, et « ^2 » pour le carré : A2*2 est le double de x, pas son carré.' : 'Pour multiplier ' + k + ' par la parenthèse il faut écrire <b>*</b> devant, et la parenthèse doit contenir x + ' + m + ' : distribuer ou non change le résultat.') + '</p>';
   return { theme: 'listes', type: 'qcm', grid: grid({ cols: 2, rows: 3, cells: { A1: { t: 'x', c: 'h' }, B1: { t: 'f(x)', c: 'h' }, A2: num(2), B2: QM } }), bar: '',
     q: 'On veut calculer <b>' + txt + '</b>. La cellule <b>A2</b> contient la valeur de x. Quelle formule faut-il écrire en <b>B2</b> ?', choices: shuf, correct: shuf.indexOf(good),
-    corrige: '<p>La bonne formule est <b>' + esc(good) + '</b>.</p><p>Vérification avec x = 2 : ' + chk2 + ' = ' + fmt(f(2)) + ', et la formule donne la même valeur.</p>' + bads };
+    corrige: '<p>La bonne formule est <b>' + esc(good) + '</b>.</p><p>Vérification avec x = 2 : ' + chk2 + ' = ' + fmt(f(2)) + ', et la formule donne la même valeur.</p>' + bads + '<p class="qz-small">Une formule commence toujours par <b>=</b> : sans ce signe, le tableur prend la saisie pour du texte et ne calcule rien.</p>' };
 }
 
 var THEMES = [
