@@ -93,6 +93,31 @@
 .vl-tabs button[data-p="1"]{--c:#2563eb}.vl-tabs button[data-p="2"]{--c:#ea580c}.vl-tabs button[data-p="3"]{--c:#7c3aed}.vl-tabs button[data-p="4"]{--c:#16a34a}
 .vl-tabs button{border-color:var(--c);color:var(--c)}.vl-tabs button[aria-pressed=true]{background:var(--c);border-color:var(--c);color:#fff}
 .vl-score{background:linear-gradient(90deg,#2563eb,#7c3aed,#ea580c);border-radius:999px}
+
+/* fiche condensée : questions côte à côte */
+.vl-fiche.vl-cur{display:grid!important;grid-template-columns:1fr 1fr;gap:0 14px;min-height:0;align-content:start}
+.vl-fiche>.vl-fh,.vl-fiche>.vl-dots,.vl-fiche>.vl-sub,.vl-fiche>.vl-prop,.vl-fiche>.vl-nav{grid-column:1/-1}
+.vl-fiche>.vl-sub{margin-top:8px!important;margin-bottom:0}
+.vl-fiche>.vl-prop{margin-top:4px!important;margin-bottom:2px!important;padding:8px 14px}
+.vl-fiche>.vl-dots{margin-top:6px!important}
+.vl-q{margin:8px 8px 0 16px!important;padding:4px 0;min-width:0}.vl-q.vl-c2{margin:8px 16px 0 8px!important}
+.vl-fiche.vl-cur{grid-auto-flow:row dense}
+.vl-q>.vl-sub{margin:2px 0 4px;font-size:.98rem}
+.vl-opts{gap:5px;margin:4px 0}.vl-opts label{padding:6px 10px;font-size:.93rem;border-width:2px}
+.vl-vf label{font-size:1.5rem!important;padding:8px!important}
+.vl-btn{padding:6px 16px;font-size:.92rem}
+.vl-fb{padding:6px 10px;font-size:.92rem;margin-top:5px}
+.vl-q>.vl-fig{width:170px;margin:2px auto 4px;padding:2px}.vl-fb .vl-fig{width:190px;margin:4px auto 0}
+.vl-nav{margin-top:10px!important;padding-top:8px}.vl-nb{padding:8px 16px;font-size:.95rem}
+.vl-fh{padding:8px 14px;font-size:1.1rem!important}.vl-num{width:30px;height:30px}
+.vl-fs{font:inherit;font-weight:700;font-size:.85rem;border:2px solid #fff;background:transparent;color:#fff;border-radius:999px;padding:5px 12px;cursor:pointer}
+.vl-fs:hover{background:#fff;color:var(--pc)}
+@media(max-width:700px){.vl-fiche.vl-cur{grid-template-columns:1fr}.vl-q,.vl-q.vl-c2{margin:8px 16px 0!important;grid-column:1!important}}
+/* plein écran */
+body.vl-full>header,body.vl-full .site-header,body.vl-full footer,body.vl-full .level-hero,body.vl-full .vl-tabs,body.vl-full .vl-intro,body.vl-full .vl-retenir,body.vl-full .vl-part>h2,body.vl-full .vl-score{display:none!important}
+body.vl-full .vl-fiche.vl-cur{position:fixed;inset:0;z-index:9999;margin:0;border:0;border-radius:0;box-shadow:none;background:#fff;overflow:auto;padding-bottom:10px;grid-template-rows:auto auto auto auto 1fr;align-content:start;animation:none}
+body.vl-full .vl-fiche.vl-cur>.vl-nav{position:sticky;bottom:0;background:#fff;z-index:2}
+body.vl-full .vl-opts label{font-size:.95rem;padding:5px 10px}body.vl-full .vl-fiche>.vl-prop{font-size:1rem}
 </style>
 <section class="level-hero"><div class="wrap"><p class="crumbs"><a href="index.html">Accueil</a> / Lycée</p>
 <h1>Lycée</h1><p class="lead">Se préparer pendant l'été : activités et fiches de révision pour aborder la seconde.</p></div><span class="hero-sym" aria-hidden="true">↗</span></section>
