@@ -84,7 +84,9 @@
 <div class="vl-retenir"><h3>À retenir</h3>
 <p>Propriété de départ : <b>Si P, alors Q</b>.</p><ul>
 <li><b>Réciproque</b> : Si Q, alors P (on échange). Elle peut être vraie ou fausse.</li>
-<li><b>Contraposée</b> : Si non Q, alors non P (on échange et on nie). Elle est <b>vraie exactement quand la propriété de départ l'est</b>.</li>
+<li><b>Contraposée</b> : Si non Q, alors non P (on échange et on nie). <b>Une propriété et sa contraposée ont le même sens logique</b> : « P ⇒ Q » et « non Q ⇒ non P » sont la même idée écrite de deux façons, vraies ou fausses ensemble.</li>
+<li><b>Une propriété et sa réciproque n'ont PAS le même sens logique.</b> Une propriété peut être vraie et sa réciproque fausse.</li>
+<li>Une propriété <b>fausse</b> a quand même une réciproque : on peut toujours l'écrire, et elle peut être vraie ou fausse.</li>
 <li>Avec la propriété de Pythagore : sa réciproque prouve qu'un triangle est rectangle, sa contraposée prouve qu'il ne l'est pas.</li></ul></div>
 <div id="p3"></div></section>
 
@@ -93,7 +95,7 @@
 <li>✔ Dire quels codages de la figure justifient la nature d'un triangle ou d'un quadrilatère, sans me fier à l'apparence.</li>
 <li>✔ Pour montrer qu'une affirmation est fausse, donner un <b>contre-exemple</b> qui vérifie l'hypothèse.</li>
 <li>✔ Savoir qu'on ne prouve pas qu'une affirmation est vraie avec des exemples.</li>
-<li>✔ Écrire la <b>réciproque</b> (on échange) et la <b>contraposée</b> (on échange et on nie), et savoir que la contraposée a la même valeur de vérité que la propriété de départ.</li></ul>
+<li>✔ Écrire la <b>réciproque</b> (on échange) et la <b>contraposée</b> (on échange et on nie), et savoir que la contraposée a le même sens logique que la propriété de départ (P ⇒ Q et non Q ⇒ non P), alors que la réciproque est une autre propriété : vraie ou fausse, même quand la propriété de départ est vraie, et on peut l'écrire même si la propriété de départ est fausse.</li></ul>
 <p>Ton score est affiché en bas de page. Tu peux recommencer en rechargeant la page.</p></div></section>
 
 <div class="vl-score"><span id="vl-score-n"></span></div>
@@ -163,6 +165,7 @@ const P3=[
  {p:'Si un nombre entier est multiple de 6, alors il est pair.',rec:'Si un nombre entier est pair, alors il est multiple de 6.',con:'Si un nombre entier est impair, alors il n’est pas multiple de 6.',inv:'Si un nombre entier n’est pas multiple de 6, alors il est impair.',fau:'Si un nombre entier est multiple de 6, alors il est impair.',recV:0,conV:1,er:'La réciproque est fausse : 4 est pair mais n’est pas multiple de 6.',ec:'La contraposée est vraie, comme la propriété de départ.'},
  {p:'Si un triangle ABC est rectangle en A, alors BC² = AB² + AC².',rec:'Si dans un triangle ABC on a BC² = AB² + AC², alors il est rectangle en A.',con:'Si dans un triangle ABC on a BC² ≠ AB² + AC², alors il n’est pas rectangle en A.',inv:'Si un triangle ABC n’est pas rectangle en A, alors BC² ≠ AB² + AC².',fau:'Si un triangle ABC est rectangle en A, alors BC² ≠ AB² + AC².',recV:1,conV:1,er:'La réciproque est vraie : c’est la réciproque du théorème de Pythagore (elle prouve qu’un triangle est rectangle).',ec:'La contraposée est vraie : c’est elle qui prouve qu’un triangle n’est pas rectangle quand l’égalité est fausse.'},
  {p:'Si deux angles sont opposés par le sommet, alors ils ont la même mesure.',rec:'Si deux angles ont la même mesure, alors ils sont opposés par le sommet.',con:'Si deux angles n’ont pas la même mesure, alors ils ne sont pas opposés par le sommet.',inv:'Si deux angles ne sont pas opposés par le sommet, alors ils n’ont pas la même mesure.',fau:'Si deux angles sont opposés par le sommet, alors ils n’ont pas la même mesure.',recV:0,conV:1,er:'La réciproque est fausse : deux angles droits quelconques ont la même mesure sans être opposés par le sommet.',ec:'La contraposée est vraie, comme la propriété de départ.'},
+ {p:'Si un nombre entier est pair, alors il est multiple de 4.',pV:0,rec:'Si un nombre entier est multiple de 4, alors il est pair.',con:'Si un nombre entier n’est pas multiple de 4, alors il est impair.',inv:'Si un nombre entier est impair, alors il n’est pas multiple de 4.',fau:'Si un nombre entier est pair, alors il n’est pas multiple de 4.',recV:1,conV:0,er:'La réciproque est vraie (4 = 2 × 2, un multiple de 4 est pair) alors que la propriété de départ est fausse : on peut écrire la réciproque d’une propriété fausse, et elle peut être vraie.',ec:'La contraposée est fausse, comme la propriété de départ : 6 n’est pas multiple de 4 et pourtant il est pair (contre-exemple).'},
  {p:'S’il pleut, alors le sol est mouillé.',rec:'Si le sol est mouillé, alors il pleut.',con:'Si le sol n’est pas mouillé, alors il ne pleut pas.',inv:'S’il ne pleut pas, alors le sol n’est pas mouillé.',fau:'S’il pleut, alors le sol n’est pas mouillé.',recV:0,conV:1,er:'La réciproque est fausse : le sol peut être mouillé parce qu’on l’a lavé.',ec:'La contraposée est vraie : si le sol est sec, c’est qu’il n’a pas plu.'}
 ];
 function bloc3(){const c=$('#p3');P3.forEach((s,i)=>{
@@ -170,9 +173,19 @@ function bloc3(){const c=$('#p3');P3.forEach((s,i)=>{
   const mel=(a)=>a.map((x,k)=>[x,k===0]).sort(()=>Math.random()-.5);
   c.appendChild(carte({t:'Propriété : <span class="vl-prop">'+s.p+'</span> Quelle est sa <b>réciproque</b> ?',opts:mel([s.rec,s.con,s.inv,s.fau]),e:'La réciproque échange l’hypothèse et la conclusion : « Si Q alors P ».'},t));
   c.appendChild(carte({t:'Quelle est sa <b>contraposée</b> ?',opts:mel([s.con,s.rec,s.inv,s.fau]),e:'La contraposée : on échange ET on nie les deux : « Si non Q alors non P ».'}));
+  if(s.pV===0)c.appendChild(carte({t:'La propriété de départ est-elle vraie ou fausse ?',opts:[V('Vraie',0),V('Fausse : 6 est pair mais n’est pas multiple de 4',1)],e:'Elle est fausse : 6 est un contre-exemple. On peut malgré tout écrire sa réciproque et sa contraposée.'}));
   c.appendChild(carte({t:'Cette réciproque est-elle vraie ou fausse ?',opts:[V('Vraie',s.recV),V('Fausse',!s.recV)],e:s.er}));
   c.appendChild(carte({t:'Cette contraposée est-elle vraie ou fausse ?',opts:[V('Vraie',s.conV),V('Fausse',!s.conV)],e:s.ec}));
-})}
+})
+  const G=[
+   {t:'La propriété « Si P, alors Q » et sa <b>contraposée</b> « Si non Q, alors non P » ont-elles le même sens logique ?',opts:[V('Oui : ce sont deux écritures différentes de la même idée, elles sont vraies ou fausses en même temps',1),V('Non : l’une peut être vraie et l’autre fausse',0)],e:'Oui : P ⇒ Q et non Q ⇒ non P disent la même chose, écrite différemment. C’est pourquoi on peut démontrer la contraposée pour prouver la propriété.'},
+   {t:'La propriété « Si P, alors Q » et sa <b>réciproque</b> « Si Q, alors P » ont-elles le même sens logique ?',opts:[V('Oui, c’est la même chose écrite à l’envers',0),V('Non : ce sont deux propriétés différentes',1)],e:'Non : elles n’ont pas le même sens. Il faut les démontrer ou les réfuter séparément.'},
+   {t:'Une propriété est vraie. Sa réciproque est…',opts:[V('forcément vraie',0),V('forcément fausse',0),V('peut-être vraie, peut-être fausse',1)],e:'Exemple : « Si un nombre est multiple de 6, il est pair » est vraie, mais sa réciproque est fausse (4). Au contraire, la réciproque de Pythagore est vraie aussi.'},
+   {t:'Une propriété est fausse. Peut-on écrire sa réciproque ?',opts:[V('Non, on ne peut écrire une réciproque que d’une propriété vraie',0),V('Oui : on peut toujours l’écrire, et elle peut être vraie ou fausse',1)],e:'Oui. « Si un nombre est pair, il est multiple de 4 » est fausse, mais sa réciproque « Si un nombre est multiple de 4, il est pair » est vraie.'}
+  ];
+  const t=document.createElement('h3');t.textContent='À retenir : bien distinguer';t.style.marginTop='28px';c.appendChild(t);
+  G.forEach(q=>c.appendChild(carte(q)));
+}
 montre('p1',P1);bloc2();bloc3();maj();
 document.querySelectorAll('.vl-tabs button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('.vl-tabs button').forEach(x=>x.setAttribute('aria-pressed',x===b));
