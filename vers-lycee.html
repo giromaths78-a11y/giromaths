@@ -54,6 +54,36 @@
 .vl-card-lien:hover{background:#e2e8f0}
 .vl-prog{opacity:.75;border-style:dashed}
 .vl-fiche{border:3px solid #334155;border-radius:16px;padding:6px 16px 14px;margin:24px 0;background:#f8fafc}.vl-fh{margin:10px 0 0;font-size:1.15rem;color:#334155}.vl-prop{font-style:italic;background:#f1f5f9;border-radius:8px;padding:8px 12px;margin:6px 0}
+
+.vl-part{--pc:#2563eb;--pl:#dbeafe}#part-2{--pc:#ea580c;--pl:#ffedd5}#part-3{--pc:#7c3aed;--pl:#ede9fe}#part-4{--pc:#16a34a;--pl:#dcfce7}
+.vl-part>h2{background:var(--pc);color:#fff;padding:14px 18px;border-radius:14px;font-size:1.4rem}
+.vl-part>h2::before{content:attr(data-e);margin-right:10px;font-size:1.7rem}
+.vl-retenir{background:var(--pl);border-left-color:var(--pc)}
+.vl-fiche{border-color:var(--pc);background:#fff;box-shadow:0 4px 0 var(--pc);padding:0 0 14px;overflow:hidden}
+.vl-fiche>*:not(.vl-fh){margin-left:16px;margin-right:16px}
+.vl-fh{display:flex;align-items:center;gap:12px;background:var(--pc);color:#fff!important;margin:0!important;padding:12px 16px;font-size:1.2rem!important}
+.vl-num{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fff;color:var(--pc);font-weight:900}
+.vl-ft{flex:1}.vl-done{font-size:.95rem;font-weight:700}
+.vl-dots{display:flex;gap:6px;margin:10px 16px 0}.vl-dots i{width:26px;height:8px;border-radius:5px;background:#e2e8f0;transition:.3s}.vl-dots i.on{background:#16a34a}
+.vl-fiche.fini{box-shadow:0 4px 0 #16a34a;border-color:#16a34a}.vl-fiche.fini .vl-fh{background:#16a34a}.vl-fiche.fini .vl-num{color:#16a34a}
+.vl-hide{display:none}
+.vl-q{border:0;padding:6px 0;margin:12px 16px 0;animation:vlin .35s ease both}
+@keyframes vlin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.vl-prop{background:var(--pl);font-style:normal;font-weight:600;font-size:1.08rem;padding:12px 16px;border-radius:12px;border:2px dashed var(--pc)}
+.vl-sub{font-size:1.05rem}
+.vl-opts label{border-radius:14px;padding:11px 14px;font-size:1.02rem;transition:.15s}
+.vl-opts label:hover{background:var(--pl);border-color:var(--pc);transform:translateX(3px)}
+.vl-vf label:hover{transform:scale(1.03)}
+.vl-opts label.ok{animation:vlpop .4s}.vl-opts label.ko{animation:vlshake .35s}
+@keyframes vlpop{50%{transform:scale(1.04)}}@keyframes vlshake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.vl-btn{background:var(--pc);font-size:1rem;padding:9px 22px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.vl-fb{font-size:1.02rem;border-radius:12px}.vl-fb.ok{border-left:6px solid #16a34a}.vl-fb.ko{border-left:6px solid #dc2626}
+.vl-fb .vl-fig{background:#fff;border-radius:12px;padding:6px;width:min(300px,100%)}
+.vl-fig{background:#fff;border:2px solid #e2e8f0;border-radius:14px;padding:6px}
+.vl-tabs button{border-radius:999px;border-width:3px;padding:10px 18px}
+.vl-tabs button[data-p="1"]{--c:#2563eb}.vl-tabs button[data-p="2"]{--c:#ea580c}.vl-tabs button[data-p="3"]{--c:#7c3aed}.vl-tabs button[data-p="4"]{--c:#16a34a}
+.vl-tabs button{border-color:var(--c);color:var(--c)}.vl-tabs button[aria-pressed=true]{background:var(--c);border-color:var(--c);color:#fff}
+.vl-score{background:linear-gradient(90deg,#2563eb,#7c3aed,#ea580c);border-radius:999px}
 </style>
 <section class="level-hero"><div class="wrap"><p class="crumbs"><a href="index.html">Accueil</a> / Lycée</p>
 <h1>Lycée</h1><p class="lead">Se préparer pendant l'été : activités et fiches de révision pour aborder la seconde.</p></div><span class="hero-sym" aria-hidden="true">↗</span></section>

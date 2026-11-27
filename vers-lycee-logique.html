@@ -54,6 +54,36 @@
 .vl-card-lien:hover{background:#e2e8f0}
 .vl-prog{opacity:.75;border-style:dashed}
 .vl-fiche{border:3px solid #334155;border-radius:16px;padding:6px 16px 14px;margin:24px 0;background:#f8fafc}.vl-fh{margin:10px 0 0;font-size:1.15rem;color:#334155}.vl-prop{font-style:italic;background:#f1f5f9;border-radius:8px;padding:8px 12px;margin:6px 0}
+
+.vl-part{--pc:#2563eb;--pl:#dbeafe}#part-2{--pc:#ea580c;--pl:#ffedd5}#part-3{--pc:#7c3aed;--pl:#ede9fe}#part-4{--pc:#16a34a;--pl:#dcfce7}
+.vl-part>h2{background:var(--pc);color:#fff;padding:14px 18px;border-radius:14px;font-size:1.4rem}
+.vl-part>h2::before{content:attr(data-e);margin-right:10px;font-size:1.7rem}
+.vl-retenir{background:var(--pl);border-left-color:var(--pc)}
+.vl-fiche{border-color:var(--pc);background:#fff;box-shadow:0 4px 0 var(--pc);padding:0 0 14px;overflow:hidden}
+.vl-fiche>*:not(.vl-fh){margin-left:16px;margin-right:16px}
+.vl-fh{display:flex;align-items:center;gap:12px;background:var(--pc);color:#fff!important;margin:0!important;padding:12px 16px;font-size:1.2rem!important}
+.vl-num{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#fff;color:var(--pc);font-weight:900}
+.vl-ft{flex:1}.vl-done{font-size:.95rem;font-weight:700}
+.vl-dots{display:flex;gap:6px;margin:10px 16px 0}.vl-dots i{width:26px;height:8px;border-radius:5px;background:#e2e8f0;transition:.3s}.vl-dots i.on{background:#16a34a}
+.vl-fiche.fini{box-shadow:0 4px 0 #16a34a;border-color:#16a34a}.vl-fiche.fini .vl-fh{background:#16a34a}.vl-fiche.fini .vl-num{color:#16a34a}
+.vl-hide{display:none}
+.vl-q{border:0;padding:6px 0;margin:12px 16px 0;animation:vlin .35s ease both}
+@keyframes vlin{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.vl-prop{background:var(--pl);font-style:normal;font-weight:600;font-size:1.08rem;padding:12px 16px;border-radius:12px;border:2px dashed var(--pc)}
+.vl-sub{font-size:1.05rem}
+.vl-opts label{border-radius:14px;padding:11px 14px;font-size:1.02rem;transition:.15s}
+.vl-opts label:hover{background:var(--pl);border-color:var(--pc);transform:translateX(3px)}
+.vl-vf label:hover{transform:scale(1.03)}
+.vl-opts label.ok{animation:vlpop .4s}.vl-opts label.ko{animation:vlshake .35s}
+@keyframes vlpop{50%{transform:scale(1.04)}}@keyframes vlshake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.vl-btn{background:var(--pc);font-size:1rem;padding:9px 22px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.vl-fb{font-size:1.02rem;border-radius:12px}.vl-fb.ok{border-left:6px solid #16a34a}.vl-fb.ko{border-left:6px solid #dc2626}
+.vl-fb .vl-fig{background:#fff;border-radius:12px;padding:6px;width:min(300px,100%)}
+.vl-fig{background:#fff;border:2px solid #e2e8f0;border-radius:14px;padding:6px}
+.vl-tabs button{border-radius:999px;border-width:3px;padding:10px 18px}
+.vl-tabs button[data-p="1"]{--c:#2563eb}.vl-tabs button[data-p="2"]{--c:#ea580c}.vl-tabs button[data-p="3"]{--c:#7c3aed}.vl-tabs button[data-p="4"]{--c:#16a34a}
+.vl-tabs button{border-color:var(--c);color:var(--c)}.vl-tabs button[aria-pressed=true]{background:var(--c);border-color:var(--c);color:#fff}
+.vl-score{background:linear-gradient(90deg,#2563eb,#7c3aed,#ea580c);border-radius:999px}
 </style>
 <section class="level-hero"><div class="wrap"><p class="crumbs"><a href="index.html">Accueil</a> / <a href="vers-lycee.html">Lycée</a> / Logique</p>
 <h1>Activité : raisonner avec logique</h1><p class="lead">Lire une figure codée, trouver un contre-exemple, utiliser réciproque et contraposée.</p></div><span class="hero-sym" aria-hidden="true">↗</span></section>
@@ -63,9 +93,9 @@
 <li><b>Comment montrer qu'une affirmation est fausse ?</b> (contre-exemple)</li>
 <li><b>Quelles sont la réciproque et la contraposée d'une propriété ?</b></li></ol>
 <div class="vl-tabs" role="group" aria-label="Parties">
-<button type="button" data-p="1" aria-pressed="true">1 · Figures codées</button><button type="button" data-p="2" aria-pressed="false">2 · Contre-exemples</button><button type="button" data-p="3" aria-pressed="false">3 · Réciproque et contraposée</button><button type="button" data-p="4" aria-pressed="false">Bilan</button></div>
+<button type="button" data-p="1" aria-pressed="true">📐 1 · Figures codées</button><button type="button" data-p="2" aria-pressed="false">🔍 2 · Contre-exemples</button><button type="button" data-p="3" aria-pressed="false">🔄 3 · Réciproque et contraposée</button><button type="button" data-p="4" aria-pressed="false">🏆 Bilan</button></div>
 
-<section class="vl-part on" id="part-1"><h2>1 · Lire une figure codée</h2>
+<section class="vl-part on" id="part-1"><h2 data-e="📐">1 · Lire une figure codée</h2>
 <div class="vl-retenir"><h3>À retenir</h3>
 <div class="vl-leg-row"><span><svg viewBox="0 0 90 30" class="vl-leg"><line x1="5" y1="15" x2="85" y2="15" stroke="#1e293b" stroke-width="2"/><line x1="45.0" y1="7.0" x2="45.0" y2="23.0" stroke="#dc2626" stroke-width="2"/></svg> côtés de <b>même longueur</b></span><span><svg viewBox="0 0 90 30" class="vl-leg"><path d="M10 25 H50 M10 25 L35 4" stroke="#1e293b" stroke-width="2" fill="none"/><path d="M26 25 A16 16 0 0 0 20 14" fill="none" stroke="#dc2626" stroke-width="2"/></svg> angles de <b>même mesure</b></span><span><svg viewBox="0 0 90 30" class="vl-leg"><path d="M10 25 H50 M10 25 V4" stroke="#1e293b" stroke-width="2" fill="none"/><polygon points="10,25 20,25 20,15 10,15" fill="none" stroke="#dc2626" stroke-width="2"/></svg> <b>angle droit</b></span></div>
 <ul><li>Sur une figure, on peut utiliser <b>uniquement</b> ce qui est <b>codé</b> (traits, arcs, angle droit) ou écrit dans l'énoncé.</li>
@@ -73,14 +103,14 @@
 <li>Pour nommer une figure, on cherche les propriétés <b>codées</b> qui correspondent à sa définition (côtés opposés égaux, quatre côtés égaux, angle droit…).</li></ul></div>
 <div id="p1"></div></section>
 
-<section class="vl-part" id="part-2"><h2>2 · Trouver un contre-exemple</h2>
+<section class="vl-part" id="part-2"><h2 data-e="🔍">2 · Trouver un contre-exemple</h2>
 <div class="vl-retenir"><h3>À retenir</h3><ul>
 <li>Une affirmation du type « Si … alors … » est <b>fausse</b> dès qu'on trouve <b>un seul</b> cas où l'hypothèse est vraie et la conclusion fausse : c'est un <b>contre-exemple</b>.</li>
 <li>Un contre-exemple doit vérifier l'hypothèse : sinon il ne prouve rien.</li>
 <li>Pour montrer qu'une affirmation est <b>vraie</b>, des exemples <b>ne suffisent pas</b> : il faut une démonstration.</li></ul></div>
 <div id="p2"></div></section>
 
-<section class="vl-part" id="part-3"><h2>3 · Réciproque et contraposée</h2>
+<section class="vl-part" id="part-3"><h2 data-e="🔄">3 · Réciproque et contraposée</h2>
 <div class="vl-retenir"><h3>À retenir</h3>
 <p>Propriété de départ : <b>Si P, alors Q</b>.</p><ul>
 <li><b>Réciproque</b> : Si Q, alors P (on échange). Elle peut être vraie ou fausse.</li>
@@ -90,7 +120,7 @@
 <li>Avec la propriété de Pythagore : sa réciproque prouve qu'un triangle est rectangle, sa contraposée prouve qu'il ne l'est pas.</li></ul></div>
 <div id="p3"></div></section>
 
-<section class="vl-part" id="part-4"><h2>Bilan</h2>
+<section class="vl-part" id="part-4"><h2 data-e="🏆">Bilan</h2>
 <div class="vl-end"><h2>Ce que je sais faire</h2><ul>
 <li>✔ Dire quels codages de la figure justifient la nature d'un triangle ou d'un quadrilatère, sans me fier à l'apparence.</li>
 <li>✔ Pour montrer qu'une affirmation est fausse, donner un <b>contre-exemple</b> qui vérifie l'hypothèse.</li>
@@ -127,12 +157,23 @@ function carte(q,titre){
     essai++;
     o.querySelectorAll('label').forEach((l,i)=>{l.className='';
       if(ch[i]&&q.opts[i][1])l.className='ok';else if(ch[i])l.className='ko';else if(q.opts[i][1]&&bien===false&&essai>1)l.className='miss'});
-    if(bien){fb.className='vl-fb ok';fb.innerHTML='✅ <b>Bravo !</b> '+q.e;b.disabled=true;o.querySelectorAll('input').forEach(i=>i.disabled=true);}
+    if(bien){d.dispatchEvent(new Event('vl-ok',{bubbles:true}));fb.className='vl-fb ok';fb.innerHTML='✅ <b>Bravo !</b> '+q.e;b.disabled=true;o.querySelectorAll('input').forEach(i=>i.disabled=true);}
     else{fb.className='vl-fb ko';fb.innerHTML='❌ Pas tout à fait. Regarde les réponses en rouge, relis le « À retenir » et essaie encore.'+(essai>1?'<br>'+q.e:'')}
   };
   return d;
 }
-function fiche(c,titre,sous){const f=document.createElement('section');f.className='vl-fiche';f.innerHTML='<h3 class="vl-fh">'+titre+'</h3>'+(sous||'');c.appendChild(f);return f}
+let nf=0;
+function fiche(c,titre,sous){nf++;const f=document.createElement('section');f.className='vl-fiche';
+  f.innerHTML='<h3 class="vl-fh"><span class="vl-num">'+titre.split(' · ')[0].replace('Fiche ','')+'</span><span class="vl-ft">'+titre.split(' · ').slice(1).join(' · ')+'</span><span class="vl-done" aria-hidden="true"></span></h3><div class="vl-dots"></div>'+(sous||'');
+  c.appendChild(f);
+  f.addEventListener('vl-ok',e=>{const qs=[...f.querySelectorAll('.vl-q')];const i=qs.indexOf(e.target);
+    f.querySelectorAll('.vl-dots i')[i].classList.add('on');
+    if(qs[i+1]){qs[i+1].classList.remove('vl-hide');setTimeout(()=>qs[i+1].scrollIntoView({behavior:'smooth',block:'center'}),150)}
+    else{f.classList.add('fini');f.querySelector('.vl-done').textContent='🎉 Fiche réussie !'}});
+  const o=new MutationObserver(()=>{const qs=[...f.querySelectorAll('.vl-q')];if(!qs.length||f.dataset.s)return;f.dataset.s=1;
+    const d=f.querySelector('.vl-dots');qs.forEach((q,k)=>{d.appendChild(document.createElement('i'));if(k)q.classList.add('vl-hide')});o.disconnect()});
+  o.observe(f,{childList:true});
+  return f}
 function montre(id,qs){const c=$('#'+id);
   for(let i=0;i<qs.length;i+=2){const a=qs[i].q,b=qs[i+1].q;
     const f=fiche(c,'Fiche '+(i/2+1)+' · '+qs[i].titre);
@@ -176,9 +217,7 @@ const P3=[
  {t:'Triangle équilatéral',p:'Si un triangle est équilatéral, alors ses trois angles mesurent 60°.',rec:'Si un triangle a trois angles de 60°, alors il est équilatéral.',con:'Si un triangle n’a pas trois angles de 60°, alors il n’est pas équilatéral.',inv:'Si un triangle n’est pas équilatéral, alors il n’a pas trois angles de 60°.',fau:'Si un triangle est équilatéral, alors ses angles ne mesurent pas 60°.',recV:1,ex:'<b>Réciproque vraie.</b> Un triangle dont les trois angles mesurent 60° a ses trois angles égaux, donc ses trois côtés égaux : il est équilatéral. Ici la propriété et sa réciproque sont toutes les deux vraies.'}
 ];
 function bloc3(){const c=$('#p3');P3.forEach((s,i)=>{
-  const f=document.createElement('section');f.className='vl-fiche';
-  f.innerHTML='<h3 class="vl-fh">Fiche '+(i+1)+' · '+s.t+'</h3><p class="vl-sub">Propriété (vraie)</p><p class="vl-prop">'+s.p+'</p>';
-  c.appendChild(f);
+  const f=fiche(c,'Fiche '+(i+1)+' · '+s.t,'<p class="vl-sub">Propriété (vraie)</p><p class="vl-prop">'+s.p+'</p>');
   const add=q=>f.appendChild(carte(q));
   const mel=(a)=>a.map((x,k)=>[x,k===0]).sort(()=>Math.random()-.5);
   add({t:'Quelle est la <b>contraposée</b> de cette propriété ?',opts:mel([s.con,s.rec,s.inv,s.fau]),e:'On échange ET on nie les deux : « Si non Q, alors non P ».'});
