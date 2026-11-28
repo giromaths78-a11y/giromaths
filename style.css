@@ -839,3 +839,12 @@ body.at-ouvert{overflow:hidden}
 .grid-niveaux .brevet-card,.grid-niveaux .lycee-card{grid-column:auto}
 .grid-niveaux .brevet-card{box-shadow:5px 5px 0 #fbbf24}.grid-niveaux .brevet-card:hover{box-shadow:7px 7px 0 #fbbf24}
 .grid-niveaux .brevet-card .level-sym{right:10px;top:-6px}
+.tq-bar code{flex:1;min-width:10em;border:1px solid #b6c0c8;background:#fff;border-radius:6px;padding:3px 10px;font:600 1.05rem ui-monospace,Menlo,monospace;color:#0f172a}
+.qz-opt code{font:600 1rem ui-monospace,Menlo,monospace}
+/* Plein écran du quiz */
+.qz-full-btn{float:right;background:#fff;border:2px solid var(--ink);border-radius:12px;padding:6px 12px;font:600 .9rem var(--font-body,inherit);cursor:pointer;box-shadow:3px 3px 0 var(--c,var(--accent));margin:0 0 8px 8px}
+.qz-full-btn:hover{transform:translate(-1px,-1px)}
+.qz.qz-full{position:fixed;inset:0;z-index:1000;overflow:auto;background:var(--bg,#fdfbf6);max-width:none;margin:0;padding:24px max(24px,calc((100vw - 980px)/2));font-size:1.15rem}
+.qz.qz-full .go,.qz.qz-full .chip{font-size:1.05rem}
+.qz:fullscreen{overflow:auto;background:var(--bg,#fdfbf6);padding:24px max(24px,calc((100vw - 980px)/2));font-size:1.15rem}
+body.qz-is-full{overflow:hidden}

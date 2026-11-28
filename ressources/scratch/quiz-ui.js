@@ -89,3 +89,19 @@
   $('qz-change').onclick = function () { show('qz-setup'); };
   couleur(); chips();
 })();
+
+/* Mode plein écran (bouton en haut du quiz ; Échap pour quitter) */
+(function () {
+  var root = document.getElementById('qz'); if (!root || document.getElementById('qz-full-btn')) return;
+  var b = document.createElement('button'); b.type = 'button'; b.id = 'qz-full-btn'; b.className = 'qz-full-btn'; b.textContent = '⛶ Plein écran';
+  root.insertBefore(b, root.firstChild);
+  function etat(on) { root.classList.toggle('qz-full', on); document.body.classList.toggle('qz-is-full', on); b.textContent = on ? '✕ Quitter le plein écran' : '⛶ Plein écran'; }
+  function actif() { return !!(document.fullscreenElement || root.classList.contains('qz-full')); }
+  b.onclick = function () {
+    if (actif()) { if (document.fullscreenElement && document.exitFullscreen) document.exitFullscreen(); etat(false); return; }
+    etat(true);
+    try { if (root.requestFullscreen) root.requestFullscreen().catch(function () {}); } catch (e) {}
+  };
+  document.addEventListener('fullscreenchange', function () { if (!document.fullscreenElement) etat(false); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && root.classList.contains('qz-full') && !document.fullscreenElement) etat(false); });
+})();
