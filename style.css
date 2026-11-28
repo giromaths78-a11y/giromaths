@@ -835,3 +835,7 @@ body.at-ouvert{overflow:hidden}
 .tq-fx{font:italic 700 .9rem Georgia,serif;color:#64748b}
 .tq-bar code{flex:1;min-width:10em;border:1px solid #b6c0c8;background:#fff;border-radius:6px;padding:3px 10px;font:600 1.05rem ui-monospace,Menlo,monospace;color:#0f172a}
 .qz-opt code{font:600 1rem ui-monospace,Menlo,monospace}
+/* Accueil : Brevet et Lycée dans « Choisis ton niveau » */
+.grid-niveaux .brevet-card,.grid-niveaux .lycee-card{grid-column:auto}
+.grid-niveaux .brevet-card{box-shadow:5px 5px 0 #fbbf24}.grid-niveaux .brevet-card:hover{box-shadow:7px 7px 0 #fbbf24}
+.grid-niveaux .brevet-card .level-sym{right:10px;top:-6px}
